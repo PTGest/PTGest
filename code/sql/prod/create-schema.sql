@@ -8,7 +8,8 @@ create table if not exists prod."user"
 (
     id            uuid default uuid_generate_v4() primary key,
     name          varchar(15)  not null,
-    email         varchar(50) unique,
+    email         varchar(50)
+        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique,
     password_hash varchar(256) not null
 );
 
@@ -88,9 +89,9 @@ create table if not exists prod.session_exercise
     session_pt_id      uuid,
     session_date       date,
     exercise_id        uuid references prod.exercise (id) on delete cascade,
-    sets               integer not null,
-    reps               integer not null,
-    weight             integer not null,
+    sets               integer check ( sets > 0 )   not null,
+    reps               integer check ( reps > 0 )   not null,
+    weight             integer check ( weight > 0 ) not null,
     primary key (session_trainee_id, session_pt_id, session_date, exercise_id),
     foreign key (session_trainee_id, session_pt_id, session_date) references prod.session (trainee_id, pt_id, date) on delete cascade
 );
