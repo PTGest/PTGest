@@ -1,0 +1,13 @@
+name: ptgest
+services:
+  database:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-db
+    environment:
+      - POSTGRES_USER=ptgestdbuser
+      - POSTGRES_PASSWORD=ptgestdbpassword
+      - POSTGRES_DB=ptgest-db
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - "5432:5432"
