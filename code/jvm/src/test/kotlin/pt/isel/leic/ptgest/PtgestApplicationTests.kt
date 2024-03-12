@@ -1,10 +1,10 @@
-package pt.isel.leic.PTGest
+package pt.isel.leic.ptgest
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class PtGestApplicationTests {
+class PtgestApplicationTests {
 
 	@Test
 	fun contextLoads() {

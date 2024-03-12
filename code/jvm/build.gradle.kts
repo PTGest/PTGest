@@ -23,7 +23,25 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	// for JDBI
+	implementation("org.jdbi:jdbi3-core:3.37.1")
+	implementation("org.jdbi:jdbi3-kotlin:3.37.1")
+	implementation("org.jdbi:jdbi3-postgres:3.37.1")
+	implementation("org.postgresql:postgresql:42.7.2")
+
+
+	// To get password encode
+	implementation("org.springframework.security:spring-security-core:6.0.2")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+	testImplementation("org.mockito:mockito-core:3.12.4")
+	testImplementation(kotlin("test"))
+	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 }
 
 tasks.withType<KotlinCompile> {

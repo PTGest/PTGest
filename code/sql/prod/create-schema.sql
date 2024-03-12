@@ -21,6 +21,7 @@ create table if not exists prod.company
 create table if not exists prod.personal_trainer
 (
     id      uuid primary key references prod."user" (id) on delete cascade,
+    gender    char check (gender in ('M', 'F', 'O', 'U')) default 'U' not null,
     contact varchar(20) check ( contact ~ '^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$' )
 );
 

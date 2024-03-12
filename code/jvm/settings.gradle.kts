@@ -1,1 +1,1 @@
-rootProject.name = "PTGest"
+rootProject.name = "Ptgest"
