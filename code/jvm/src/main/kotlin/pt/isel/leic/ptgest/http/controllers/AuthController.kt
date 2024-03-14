@@ -1,6 +1,7 @@
 package pt.isel.leic.ptgest.http.controllers
 
 import jakarta.validation.Valid
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.leic.ptgest.domain.auth.AuthenticatedUser
 import pt.isel.leic.ptgest.http.model.request.*
@@ -10,32 +11,28 @@ import pt.isel.leic.ptgest.http.utils.Uris
 @RequestMapping(Uris.AUTH_PREFIX)
 class AuthController {
 
-    @PostMapping(Uris.Auth.SIGNUP_TRAINEE)
-    fun signupTrainee(
+    @PostMapping(Uris.Auth.SIGNUP)
+    fun signup(
         @Valid @RequestBody
-        traineeInfo: SignupTraineeRequest
-    ) {
-    }
-
-    @PostMapping(Uris.Auth.SIGNUP_INDEPENDENT_TRAINER)
-    fun signupIndependentTrainer(
-        @Valid @RequestBody
-        trainerInfo: SignupIndependentTrainerRequest
-    ) {
-    }
-
-    @PostMapping(Uris.Auth.SIGNUP_HIRED_TRAINER)
-    fun signupHiredTrainer(
-        @Valid @RequestBody
-        trainerInfo: SignupHiredTrainerRequest
-    ) {
-    }
-
-    @PostMapping(Uris.Auth.SIGNUP_COMPANY)
-    fun signupCompany(
-        @Valid @RequestBody
-        companyInfo: SignupCompanyRequest
-    ) {
+        userInfo: SignupRequest
+    ): ResponseEntity<String> {
+        return when (userInfo) {
+            is SignupRequest.Company ->
+                ResponseEntity.ok(
+                    "Company: ${userInfo.name}, ${userInfo.email}, ${userInfo.password}")
+            is SignupRequest.IndependentTrainer ->
+                ResponseEntity.ok(
+                    "Independent Trainer: ${userInfo.name}, ${userInfo.email}, ${userInfo.password}, ${userInfo.gender}, ${userInfo.phoneNumber}"
+                )
+            is SignupRequest.HiredTrainer ->
+                ResponseEntity.ok(
+                    "Hired Trainer: ${userInfo.name}, ${userInfo.email}, ${userInfo.gender}, ${userInfo.phoneNumber}"
+                )
+            is SignupRequest.Trainee ->
+                ResponseEntity.ok(
+                    "Trainee: ${userInfo.name}, ${userInfo.email}, ${userInfo.birthdate}, ${userInfo.gender}, ${userInfo.phoneNumber}"
+                )
+        }
     }
 
     @PostMapping(Uris.Auth.LOGIN)
@@ -51,7 +48,7 @@ class AuthController {
     ) {
     }
 
-    @PostMapping(Uris.Auth.VALIDATE_TOKEN)
+    @GetMapping(Uris.Auth.VALIDATE_TOKEN)
     fun validateToken(
         authenticatedUser: AuthenticatedUser
     ) {
