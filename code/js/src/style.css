@@ -1,4 +1,12 @@
 :root {
+
+
+  --navbar-color:#1b1c1e;
+  --primary-color:#25262a;
+  --secundary-color:#44494f;
+  --tertiary-color:#6e7379;
+
+
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
