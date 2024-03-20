@@ -1,4 +1,4 @@
-begin work;
+begin;
 
 drop table if exists dev.company_pt cascade;
 
@@ -9,6 +9,12 @@ drop table if exists dev.pt_trainee cascade;
 drop table if exists dev.trainee_data cascade;
 
 drop table if exists dev.report cascade;
+
+drop table if exists dev.exercise_category cascade;
+
+drop table if exists dev.category cascade;
+
+drop table if exists dev.trainer_favorite_exercise cascade;
 
 drop table if exists dev.session_feedback cascade;
 
@@ -28,5 +34,4 @@ drop table if exists dev."user" cascade;
 
 drop table if exists dev.feedback cascade;
 
-end work;
-
+end;

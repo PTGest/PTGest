@@ -1,17 +1,20 @@
 begin work;
 truncate
-    dev.company,
     dev.company_pt,
-    dev.exercise,
-    dev.feedback,
-    dev.personal_trainer,
+    dev.company,
     dev.pt_trainee,
-    dev.report,
-    dev.session,
-    dev.session_exercise,
-    dev.session_exercise_feedback,
-    dev.session_feedback,
-    dev.trainee,
     dev.trainee_data,
-    dev."user";
+    dev.report,
+    dev.exercise_category,
+    dev.category,
+    dev.trainer_favorite_exercise,
+    dev.session_feedback,
+    dev.session_exercise_feedback,
+    dev.session_exercise,
+    dev.session,
+    dev.trainee,
+    dev.exercise,
+    dev.personal_trainer,
+    dev."user",
+    dev.feedback;
 end work;

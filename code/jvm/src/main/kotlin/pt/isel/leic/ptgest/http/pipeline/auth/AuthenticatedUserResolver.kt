@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.pipeline
+package pt.isel.leic.ptgest.http.pipeline.auth
 
 import org.springframework.core.MethodParameter
 import org.springframework.web.bind.support.WebDataBinderFactory

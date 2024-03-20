@@ -1,6 +1,7 @@
 package pt.isel.leic.ptgest.http.model.request
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import jakarta.validation.constraints.NotEmpty
@@ -15,10 +16,10 @@ import java.util.*
     property = "user_type"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = SignupRequest.Company::class, name = "company"),
-    JsonSubTypes.Type(value = SignupRequest.IndependentTrainer::class, name = "independent_trainer"),
-    JsonSubTypes.Type(value = SignupRequest.HiredTrainer::class, name = "hired_trainer"),
-    JsonSubTypes.Type(value = SignupRequest.Trainee::class, name = "trainee")
+    Type(value = SignupRequest.Company::class, name = "company"),
+    Type(value = SignupRequest.IndependentTrainer::class, name = "independent_trainer"),
+    Type(value = SignupRequest.HiredTrainer::class, name = "hired_trainer"),
+    Type(value = SignupRequest.Trainee::class, name = "trainee")
 )
 sealed class SignupRequest {
 
@@ -27,18 +28,20 @@ sealed class SignupRequest {
         @NotEmpty
         val name: String,
 
+        @NotEmpty
         @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
         val email: String,
 
         @field:Size(min = 8)
         val password: String
-    ): SignupRequest()
+    ) : SignupRequest()
 
     @JsonTypeName("independent_trainer")
     data class IndependentTrainer(
         @NotEmpty
         val name: String,
 
+        @NotEmpty
         @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
         val email: String,
 
@@ -48,28 +51,30 @@ sealed class SignupRequest {
         val gender: Gender,
 
         @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
-        val phoneNumber: String? //can be optional
-    ): SignupRequest()
+        val phoneNumber: String?
+    ) : SignupRequest()
 
     @JsonTypeName("hired_trainer")
     data class HiredTrainer(
         @NotEmpty
         val name: String,
 
+        @NotEmpty
         @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
         val email: String,
 
         val gender: Gender,
 
         @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
-        val phoneNumber: String? //can be optional
-    ): SignupRequest()
+        val phoneNumber: String?
+    ) : SignupRequest()
 
     @JsonTypeName("trainee")
     data class Trainee(
         @NotEmpty
         val name: String,
 
+        @NotEmpty
         @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
         val email: String,
 
@@ -78,6 +83,6 @@ sealed class SignupRequest {
         val gender: Gender,
 
         @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
-        val phoneNumber: String? //can be optional
-    ): SignupRequest()
+        val phoneNumber: String?
+    ) : SignupRequest()
 }

@@ -1,17 +1,20 @@
 begin work;
 truncate
-    prod.company,
     prod.company_pt,
-    prod.exercise,
-    prod.feedback,
-    prod.personal_trainer,
+    prod.company,
     prod.pt_trainee,
-    prod.report,
-    prod.session,
-    prod.session_exercise,
-    prod.session_exercise_feedback,
-    prod.session_feedback,
-    prod.trainee,
     prod.trainee_data,
-    prod."user";
+    prod.report,
+    prod.exercise_category,
+    prod.category,
+    prod.trainer_favorite_exercise,
+    prod.session_feedback,
+    prod.session_exercise_feedback,
+    prod.session_exercise,
+    prod.session,
+    prod.trainee,
+    prod.exercise,
+    prod.personal_trainer,
+    prod."user",
+    prod.feedback;
 end work;

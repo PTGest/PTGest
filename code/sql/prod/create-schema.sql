@@ -7,10 +7,18 @@ create extension if not exists "uuid-ossp";
 create table if not exists prod."user"
 (
     id            uuid default uuid_generate_v4() primary key,
-    name          varchar(15)  not null,
+    name          varchar(15)                                                       not null,
     email         varchar(50)
-        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique,
-    password_hash varchar(256) not null
+        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
+    password_hash varchar(256)                                                      not null
+);
+
+create table if not exists prod.token
+(
+    token        varchar(256) primary key                                                            not null,
+    user_id      uuid references prod."user" (id) on delete cascade                                   not null,
+    role         varchar(20)  check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null,
+    last_used_at timestamp                                                                           not null
 );
 
 create table if not exists prod.company
@@ -21,7 +29,7 @@ create table if not exists prod.company
 create table if not exists prod.personal_trainer
 (
     id      uuid primary key references prod."user" (id) on delete cascade,
-    gender    char check (gender in ('M', 'F', 'O', 'U')) default 'U' not null,
+    gender  char check (gender in ('M', 'F', 'O', 'U')) not null,
     contact varchar(20) check ( contact ~ '^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$' )
 );
 
@@ -35,8 +43,8 @@ create table if not exists prod.company_pt
 create table if not exists prod.trainee
 (
     id        uuid primary key references prod."user" (id) on delete cascade,
-    gender    char check (gender in ('M', 'F', 'O', 'U')) default 'U' not null,
-    birthdate date                                                    not null,
+    gender    char check (gender in ('M', 'F', 'O', 'U')) not null,
+    birthdate date                                        not null,
     contact   varchar(20) check ( contact ~ '^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$' )
 );
 
@@ -50,8 +58,8 @@ create table if not exists prod.pt_trainee
 create table if not exists prod.trainee_data
 (
     trainee_id uuid references prod.trainee (id) on delete cascade,
-    body_data  jsonb not null,
     date       date  not null,
+    body_data  jsonb not null,
     primary key (trainee_id, date)
 );
 
@@ -59,9 +67,9 @@ create table if not exists prod.report
 (
     trainee_id uuid references prod.trainee (id) on delete cascade,
     pt_id      uuid references prod.personal_trainer (id) on delete cascade,
-    report     text                  not null, -- check type later
-    visibility boolean default false not null,
     date       date                  not null,
+    report     text                  not null,
+    visibility boolean default false not null,
     primary key (trainee_id, pt_id, date)
 );
 
@@ -69,9 +77,9 @@ create table if not exists prod.session
 (
     trainee_id uuid references prod.trainee (id) on delete cascade,
     pt_id      uuid references prod.personal_trainer (id) on delete cascade,
+    date       date                                not null,
     category   char check (category in ('P', 'A')) not null,
     notes      text,
-    date       date                                not null,
     primary key (trainee_id, pt_id, date)
 );
 
@@ -84,6 +92,26 @@ create table if not exists prod.exercise
     url         varchar(256)
 );
 
+create table if not exists prod.category
+(
+    id   uuid default uuid_generate_v4() primary key,
+    name varchar(50) not null
+);
+
+create table if not exists prod.exercise_category
+(
+    exercise_id uuid references prod.exercise (id) on delete cascade,
+    category_id uuid references prod.category (id) on delete cascade,
+    primary key (exercise_id, category_id)
+);
+
+create table if not exists prod.trainer_favorite_exercise
+(
+    pt_id       uuid references prod.personal_trainer (id) on delete cascade,
+    exercise_id uuid references prod.exercise (id) on delete cascade,
+    primary key (pt_id, exercise_id)
+);
+
 create table if not exists prod.session_exercise
 (
     session_trainee_id uuid,
@@ -94,7 +122,8 @@ create table if not exists prod.session_exercise
     reps               integer check ( reps > 0 )   not null,
     weight             integer check ( weight > 0 ) not null,
     primary key (session_trainee_id, session_pt_id, session_date, exercise_id),
-    foreign key (session_trainee_id, session_pt_id, session_date) references prod.session (trainee_id, pt_id, date) on delete cascade
+    foreign key (session_trainee_id, session_pt_id, session_date)
+        references prod.session (trainee_id, pt_id, date) on delete cascade
 );
 
 create table if not exists prod.feedback

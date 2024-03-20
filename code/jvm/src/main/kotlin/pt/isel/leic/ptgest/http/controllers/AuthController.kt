@@ -6,14 +6,12 @@ import org.springframework.web.bind.annotation.*
 import pt.isel.leic.ptgest.domain.auth.AuthenticatedUser
 import pt.isel.leic.ptgest.http.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.model.request.SignupRequest
-import pt.isel.leic.ptgest.http.model.request.*
 import pt.isel.leic.ptgest.http.utils.Uris
-import pt.isel.leic.ptgest.services.AuthServices
-import java.net.http.HttpResponse
+import pt.isel.leic.ptgest.services.AuthService
 
 @RestController
 @RequestMapping(Uris.AUTH_PREFIX)
-class AuthController (private val services: AuthServices) {
+class AuthController(private val services: AuthService) {
 
     @PostMapping(Uris.Auth.SIGNUP)
     fun signup(
@@ -21,29 +19,41 @@ class AuthController (private val services: AuthServices) {
         userInfo: SignupRequest
     ): ResponseEntity<String> {
         return when (userInfo) {
-            is SignupRequest.Company ->{
-                services.signUp(userInfo.name, userInfo.password)
-                ResponseEntity.ok(
-                    "Company: ${userInfo.name}, ${userInfo.email}, ${userInfo.password}")
+            is SignupRequest.Company -> {
+                services.signUpCompany(userInfo.name, userInfo.email, userInfo.password)
+                ResponseEntity.ok("Company")
             }
 
             is SignupRequest.IndependentTrainer -> {
-                services.signUp(userInfo.name, userInfo.password)
-                ResponseEntity.ok(
-                    "Independent Trainer: ${userInfo.name}, ${userInfo.email}, ${userInfo.password}, ${userInfo.gender}, ${userInfo.phoneNumber}"
+                services.signUpIndependentTrainer(
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.password,
+                    userInfo.gender,
+                    userInfo.phoneNumber
                 )
+                ResponseEntity.ok("Independent Trainer")
             }
+
             is SignupRequest.HiredTrainer -> {
-                //ver depois
-                ResponseEntity.ok(
-                    "Hired Trainer: ${userInfo.name}, ${userInfo.email}, ${userInfo.gender}, ${userInfo.phoneNumber}"
+                services.signUpHiredTrainer(
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.gender,
+                    userInfo.phoneNumber
                 )
+                ResponseEntity.ok("Hired Trainer")
             }
+
             is SignupRequest.Trainee -> {
-                //ver depois
-                ResponseEntity.ok(
-                    "Trainee: ${userInfo.name}, ${userInfo.email}, ${userInfo.birthdate}, ${userInfo.gender}, ${userInfo.phoneNumber}"
+                services.signUpTrainee(
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.birthdate,
+                    userInfo.gender,
+                    userInfo.phoneNumber
                 )
+                ResponseEntity.ok("Trainee")
             }
         }
     }
@@ -52,8 +62,8 @@ class AuthController (private val services: AuthServices) {
     fun login(
         @RequestBody
         userInfo: LoginRequest
-    ) : ResponseEntity<*> {
-        val info = services.login(userInfo.email,userInfo.password)
+    ): ResponseEntity<*> {
+        val info = services.login(userInfo.email, userInfo.password)
 
         return ResponseEntity
             .ok(
