@@ -1,0 +1,102 @@
+
+
+<template>
+
+  <div class="dropdown-menu-container">
+    <div :class="[gender === 'Gender' ? 'placeholder' : 'option' ]">{{gender}}</div>
+    <font-awesome-icon :icon="faChevronDown" @click="toggleOpen" :class="[is_open ? 'drop-icon-open' : 'drop-icon']"></font-awesome-icon>
+    <div v-if="is_open" class="dropdown">
+
+      <div  @click="optionChange('Male')" class="drop-option"> Male </div>
+
+      <div @click="optionChange('Female')" class="drop-option" > Female </div>
+
+      <div @click="optionChange('Undefined')" class="drop-option" > Undefined </div>
+
+      <div @click="optionChange('Other')" class="drop-option" > Other </div>
+
+    </div>
+
+  </div>
+
+</template>
+
+<script setup lang="ts">
+
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faChevronDown} from "@fortawesome/free-solid-svg-icons";
+import {ref} from 'vue'
+
+let is_open = ref(false)
+const toggleOpen = () => {
+  is_open.value = !is_open.value
+}
+
+let gender = ref("Gender")
+let optionChange = (option : string) => {
+  gender.value = option
+  toggleOpen()
+}
+
+</script>
+
+<style scoped>
+  .dropdown-menu-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    background-color: var(--secundary-color);
+    width: 18.5em;
+    height: 2em;
+    border-radius: 5px;
+  }
+
+  .dropdown{
+    position: relative;
+    top: 6.5em;
+    left: -5em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    background-color: var(--secundary-color);
+    z-index: 998;
+  }
+
+  .drop-option{
+    width: 18.5em;
+    list-style-type: none;
+    padding: 0.5em 0 0.5em 0;
+    transition: 0.1s ease-in;
+  }
+  .drop-option:hover{
+    cursor: pointer;
+    background-color: var(--tertiary-color);
+    transition: 0.1s ease-out;
+  }
+
+  .drop-icon,.drop-icon-open{
+    position: relative;
+    right: -13.5em;
+    padding: 1em;
+    cursor: pointer;
+  }
+
+  .drop-icon-open{
+    transform: rotateZ(-180deg);
+  }
+  .option, .placeholder{
+    max-width: 1em;
+    padding: 0.5em ;
+  }
+  .placeholder{
+    margin-left: 0.5em;
+    font-size: 0.8em;
+    color: #757575;
+  }
+
+
+</style>
