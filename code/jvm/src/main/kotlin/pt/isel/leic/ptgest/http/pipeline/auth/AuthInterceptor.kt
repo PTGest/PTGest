@@ -1,41 +1,55 @@
 package pt.isel.leic.ptgest.http.pipeline.auth
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Component
-import pt.isel.leic.ptgest.domain.auth.AuthenticatedUser
+import org.springframework.web.method.HandlerMethod
+import org.springframework.web.servlet.HandlerInterceptor
+import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.services.AuthService
+import pt.isel.leic.ptgest.services.errors.AuthError
 
 @Component
-class AuthInterceptor(val authService: AuthService) {
-    fun processAuthorizationHeaderValue(authorizationValue: String?): AuthenticatedUser? {
-//        return if (authorizationValue == null) {
-//            null
-//        } else {
-//            val parts = authorizationValue.trim().split(" ")
-//            if (parts.size != 2 || parts[0].lowercase() != BEARER_SCHEME) {
-//                return null
-//            }
-//            val token = parts[1]
-//            return authService.getUserIdByToken(token)?.let {
-//                val expirationTime = authService.updateLastUsedAt(token)
-//                AuthenticatedUser(it, token, expirationTime)
-//            }
-//        }
-        throw NotImplementedError()
+class AuthInterceptor(private val authService: AuthService) : HandlerInterceptor {
+
+    override fun preHandle(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        handler: Any
+    ): Boolean {
+        if (handler is HandlerMethod && handler.methodParameters
+                .any { it.parameterType == AuthenticatedUser::class.java }
+        ) {
+            val sessionCookie = request.cookies?.firstOrNull { it.name == "access_token" }?.value
+
+            val token = sessionCookie ?: request.getHeader("Authorization")
+            ?: throw AuthError.UserAuthenticationError.TokenNotProvided
+
+            authService.validateToken(token)
+
+            val user =
+                if (token.startsWith("Bearer")) {
+                    processAuthorizationHeaderValue(token)
+                } else {
+                    processCookieValue(token)
+                }
+
+            AuthenticatedUserResolver.addUserTo(user, request)
+        }
+        return true
     }
 
-    fun processCookieValue(cookieValue: String?): AuthenticatedUser? {
-//        return if (cookieValue == null) {
-//            null
-//        } else {
-//            authService.getUserIdByToken(cookieValue)?.let {
-//                val expirationTime = authService.updateLastUsedAt(cookieValue)
-//                AuthenticatedUser(it, cookieValue, expirationTime)
-//            }
-//        }
-        throw NotImplementedError()
+    private fun processAuthorizationHeaderValue(authorizationValue: String): AuthenticatedUser {
+        val headerParts = authorizationValue.trim().split(" ")
+        if (headerParts.size != 2) {
+            throw BadCredentialsException("Invalid Authorization header")
+        }
+
+        return authService.getUserIdByToken(headerParts[1])
     }
 
-    companion object {
-        const val BEARER_SCHEME = "Bearer"
-    }
+    private fun processCookieValue(cookieValue: String): AuthenticatedUser =
+        authService.getUserIdByToken(cookieValue)
+
 }

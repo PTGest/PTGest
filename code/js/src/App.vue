@@ -1,4 +1,3 @@
-
 <template>
   <Navbar/>
   <router-view/>
@@ -7,5 +6,4 @@
 
 <script setup>
 import Navbar from "@/components/SideBar.vue";
-
 </script>

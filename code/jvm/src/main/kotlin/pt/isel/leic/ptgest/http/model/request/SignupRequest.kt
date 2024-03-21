@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import pt.isel.leic.ptgest.domain.common.Gender
-import java.util.*
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -18,8 +17,6 @@ import java.util.*
 @JsonSubTypes(
     Type(value = SignupRequest.Company::class, name = "company"),
     Type(value = SignupRequest.IndependentTrainer::class, name = "independent_trainer"),
-    Type(value = SignupRequest.HiredTrainer::class, name = "hired_trainer"),
-    Type(value = SignupRequest.Trainee::class, name = "trainee")
 )
 sealed class SignupRequest {
 
@@ -47,38 +44,6 @@ sealed class SignupRequest {
 
         @field:Size(min = 8)
         val password: String,
-
-        val gender: Gender,
-
-        @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
-        val phoneNumber: String?
-    ) : SignupRequest()
-
-    @JsonTypeName("hired_trainer")
-    data class HiredTrainer(
-        @NotEmpty
-        val name: String,
-
-        @NotEmpty
-        @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
-        val email: String,
-
-        val gender: Gender,
-
-        @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
-        val phoneNumber: String?
-    ) : SignupRequest()
-
-    @JsonTypeName("trainee")
-    data class Trainee(
-        @NotEmpty
-        val name: String,
-
-        @NotEmpty
-        @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
-        val email: String,
-
-        val birthdate: Date,
 
         val gender: Gender,
 

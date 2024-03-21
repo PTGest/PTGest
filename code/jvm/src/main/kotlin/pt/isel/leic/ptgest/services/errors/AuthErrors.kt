@@ -9,17 +9,23 @@ import pt.isel.leic.ptgest.domain.utils.BaseError
 sealed class AuthError : BaseError() {
 
     sealed class TokenError : AuthError() {
-        object TokenNotFound : TokenError() {
+        data object TokenNotFound : TokenError() {
             private fun readResolve(): Any = TokenNotFound
             override val message: String get() = "Token not found."
         }
 
-        object TokenInactive : TokenError() {
+        data object TokenExpired : TokenError() {
+            private fun readResolve(): Any = TokenExpired
+            override val message: String get() = "Token has expired."
+        }
+
+
+        data object TokenInactive : TokenError() {
             private fun readResolve(): Any = TokenInactive
             override val message: String get() = "Token is not active. It may have been expired or revoked."
         }
 
-        object TokenOwnershipError : TokenError() {
+        data object TokenOwnershipError : TokenError() {
             private fun readResolve(): Any = TokenOwnershipError
             override val message: String get() = "Token not owned by user."
         }
@@ -29,7 +35,7 @@ sealed class AuthError : BaseError() {
      * Base class for user registration errors.
      */
     sealed class UserRegistrationError : AuthError() {
-        object UserAlreadyExists : UserRegistrationError() {
+        data object UserAlreadyExists : UserRegistrationError() {
             private fun readResolve(): Any = UserAlreadyExists
             override val message: String get() = "User already exists."
         }
@@ -40,17 +46,17 @@ sealed class AuthError : BaseError() {
      */
     sealed class UserAuthenticationError : AuthError() {
 
-        object UserNotFound : UserAuthenticationError() {
+        data object UserNotFound : UserAuthenticationError() {
             private fun readResolve(): Any = UserNotFound
             override val message: String get() = "User not found."
         }
 
-        object InvalidPassword : UserAuthenticationError() {
+        data object InvalidPassword : UserAuthenticationError() {
             private fun readResolve(): Any = InvalidPassword
             override val message: String get() = "Invalid password for user."
         }
 
-        object TokenNotProvided : UserAuthenticationError() {
+        data object TokenNotProvided : UserAuthenticationError() {
             private fun readResolve(): Any = TokenNotProvided
             override val message: String get() = "Token not provided."
         }

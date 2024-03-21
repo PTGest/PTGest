@@ -5,8 +5,6 @@ truncate
     prod.pt_trainee,
     prod.trainee_data,
     prod.report,
-    prod.exercise_category,
-    prod.category,
     prod.trainer_favorite_exercise,
     prod.session_feedback,
     prod.session_exercise_feedback,

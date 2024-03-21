@@ -1,10 +1,10 @@
-package pt.isel.leic.ptgest.domain.auth
+package pt.isel.leic.ptgest.domain.auth.model
 
 import pt.isel.leic.ptgest.domain.common.Role
+import java.util.*
 
 //check token expiration
 data class AuthenticatedUser(
-    val id: String,
-    val token: String,
+    val id: UUID,
     val role: Role
 )

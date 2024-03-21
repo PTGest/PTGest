@@ -4,7 +4,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
 import java.util.*
-import kotlin.time.Duration
 
 @Component
 class AuthDomain(
@@ -13,8 +12,8 @@ class AuthDomain(
     private val config: AuthDomainConfig
 ) {
 
-    val tokenTtl: Duration = config.tokenTTL
-    val rollingTtl: Duration = config.tokenRollingTTL
+    val tokenTtl = config.tokenTTL
+    val rollingTtl = config.tokenRollingTTL
 
     fun hashPassword(password: String): String = passwordEncoder.encode(password)
 

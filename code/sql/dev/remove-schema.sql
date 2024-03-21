@@ -1,5 +1,7 @@
 begin;
 
+drop table if exists dev.token cascade;
+
 drop table if exists dev.company_pt cascade;
 
 drop table if exists dev.company cascade;
@@ -9,10 +11,6 @@ drop table if exists dev.pt_trainee cascade;
 drop table if exists dev.trainee_data cascade;
 
 drop table if exists dev.report cascade;
-
-drop table if exists dev.exercise_category cascade;
-
-drop table if exists dev.category cascade;
 
 drop table if exists dev.trainer_favorite_exercise cascade;
 

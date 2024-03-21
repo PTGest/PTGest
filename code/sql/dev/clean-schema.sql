@@ -5,8 +5,6 @@ truncate
     dev.pt_trainee,
     dev.trainee_data,
     dev.report,
-    dev.exercise_category,
-    dev.category,
     dev.trainer_favorite_exercise,
     dev.session_feedback,
     dev.session_exercise_feedback,

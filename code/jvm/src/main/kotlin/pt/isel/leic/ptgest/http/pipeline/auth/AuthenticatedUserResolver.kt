@@ -1,11 +1,12 @@
 package pt.isel.leic.ptgest.http.pipeline.auth
 
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.core.MethodParameter
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
-import pt.isel.leic.ptgest.domain.auth.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 
 class AuthenticatedUserResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
@@ -17,7 +18,23 @@ class AuthenticatedUserResolver : HandlerMethodArgumentResolver {
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
-    ): Any? {
-        TODO("Not yet implemented")
+    ): Any {
+        val request = webRequest.getNativeRequest(HttpServletRequest::class.java)
+            ?: throw IllegalStateException("No request was found in webRequest")
+        return getUserFrom(request) ?: throw IllegalStateException("No user was found in request")
+    }
+
+    companion object {
+        private const val KEY = "AuthenticatedUserArgumentResolver"
+
+        fun addUserTo(user: AuthenticatedUser, request: HttpServletRequest) {
+            return request.setAttribute(KEY, user)
+        }
+
+        private fun getUserFrom(request: HttpServletRequest): AuthenticatedUser? {
+            return request.getAttribute(KEY)?.let {
+                it as? AuthenticatedUser
+            }
+        }
     }
 }

@@ -3,9 +3,11 @@ package pt.isel.leic.ptgest.http.controllers
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import pt.isel.leic.ptgest.domain.auth.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.model.request.SignupRequest
+import pt.isel.leic.ptgest.http.model.response.HttpResponse
+import pt.isel.leic.ptgest.http.model.response.SignupResponse
 import pt.isel.leic.ptgest.http.utils.Uris
 import pt.isel.leic.ptgest.services.AuthService
 
@@ -17,43 +19,32 @@ class AuthController(private val services: AuthService) {
     fun signup(
         @Valid @RequestBody
         userInfo: SignupRequest
-    ): ResponseEntity<String> {
+    ): ResponseEntity<*> {
         return when (userInfo) {
             is SignupRequest.Company -> {
-                services.signUpCompany(userInfo.name, userInfo.email, userInfo.password)
-                ResponseEntity.ok("Company")
+                HttpResponse.created(
+                    message = "Company registered successfully.",
+                    details = SignupResponse(
+                        username = userInfo.name,
+                        id = services.signUpCompany(userInfo.name, userInfo.email, userInfo.password)
+                    )
+                )
             }
 
             is SignupRequest.IndependentTrainer -> {
-                services.signUpIndependentTrainer(
-                    userInfo.name,
-                    userInfo.email,
-                    userInfo.password,
-                    userInfo.gender,
-                    userInfo.phoneNumber
+                HttpResponse.created(
+                    message = "Independent trainer registered successfully.",
+                    details = SignupResponse(
+                        username = userInfo.name,
+                        id = services.signUpIndependentTrainer(
+                            userInfo.name,
+                            userInfo.email,
+                            userInfo.password,
+                            userInfo.gender,
+                            userInfo.phoneNumber
+                        )
+                    )
                 )
-                ResponseEntity.ok("Independent Trainer")
-            }
-
-            is SignupRequest.HiredTrainer -> {
-                services.signUpHiredTrainer(
-                    userInfo.name,
-                    userInfo.email,
-                    userInfo.gender,
-                    userInfo.phoneNumber
-                )
-                ResponseEntity.ok("Hired Trainer")
-            }
-
-            is SignupRequest.Trainee -> {
-                services.signUpTrainee(
-                    userInfo.name,
-                    userInfo.email,
-                    userInfo.birthdate,
-                    userInfo.gender,
-                    userInfo.phoneNumber
-                )
-                ResponseEntity.ok("Trainee")
             }
         }
     }
