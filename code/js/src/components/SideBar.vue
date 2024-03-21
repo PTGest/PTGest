@@ -98,7 +98,7 @@ const open = () => {
     padding: 1em;
   }
   .nav-link{
-    color: var(--tertiary-color);
+    color: white;
   }
   .nav-link:hover{
     color: white;

@@ -23,27 +23,31 @@
           </div>
         </div>
 
-        <div class="signup-input-container">
+        <div v-if="null" class="signup-input-container">
           <div class="signup-input-text">Birthdate</div>
           <input v-model="birthdate" @change="updateBirthdate(birthdate)" type="date"
                  :class="[birthdate.length === 0 ? 'signup-birth-input-placeholder signup-input-base' :
                   'signup-birth-input signup-input-base']"/>
         </div>
 
-
-
-        <div class="signup-input-container ">
+        <div v-if="toggle" class="signup-input-container ">
           <div class="signup-input-text">Gender</div>
           <DropdownMenu></DropdownMenu>
         </div>
 
-        <div class="signup-input-container">
+        <div v-if="toggle" class="signup-input-container">
           <div class="phone-text">Phone Number</div>
           <div class="phone-container">
             <font-awesome-icon class="plus-icon" :icon="faPlus"></font-awesome-icon>
             <input :maxlength="3" class="signup-phone-country-input signup-input-base"/>
             <input  placeholder="Phone Number" :maxlength="9" class="signup-phone-input signup-input-base"/>
           </div>
+        </div>
+
+        <div class="signup-switch-button">
+          <font-awesome-icon class="switch-icon-pt" :icon="faPerson" @click="toggleSwitch(true)"></font-awesome-icon>
+          <div :class="[toggle ?'switch-toggle-pt': 'switch-toggle-c' ]" ></div>
+          <font-awesome-icon class="switch-icon-c" :icon="faBuilding" @click="toggleSwitch(false)" ></font-awesome-icon>
         </div>
 
       </div>
@@ -55,12 +59,13 @@
 <script setup>
 import {ref} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faEye, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faEye, faPlus, faPerson, faBuilding} from "@fortawesome/free-solid-svg-icons";
 import DropdownMenu from "@/components/DropdownMenu.vue";
 
 let password = ref("")
 let birthdate = ref('')
 let is_visible = ref("password")
+let toggle = ref(true)
 console.log(birthdate)
 const updateVisibility = () => {
   if (is_visible.value ===  ""){
@@ -77,6 +82,10 @@ const updatePassword = (input) => {
 const updateBirthdate = (newBirthdate) => {
   birthdate.value = newBirthdate
   console.log(birthdate)
+}
+
+const toggleSwitch = (value) => {
+  toggle.value = value
 }
 
 
@@ -167,6 +176,38 @@ const updateBirthdate = (newBirthdate) => {
 
   .signup-birth-input-placeholder{
     color: #757575;
+  }
+
+  .signup-switch-button{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 7em;
+    height: 3.5em;
+    background-color: var(--secundary-color);
+    border-radius: 30px;
+  }
+
+  .switch-toggle-pt, .switch-toggle-c{
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    background-color: #535bf2;
+    position: relative;
+    right: 1.8em;
+    transition: 0.2s ease-out;
+  }
+
+  .switch-toggle-c{
+    position: relative;
+    right: -1.9em;
+    transition: 0.2s ease-out;
+  }
+
+  .switch-icon-pt,.switch-icon-c{
+    z-index: 10;
+    cursor: pointer;
   }
 
 
