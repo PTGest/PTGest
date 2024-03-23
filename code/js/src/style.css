@@ -1,6 +1,4 @@
-:root {
-
-
+:root{
     --navbar-color: #1b1c1e;
     --primary-color: #25262a;
     --secundary-color: #44494f;
@@ -12,7 +10,7 @@
     font-weight: 400;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
+    color:white;
     background-color: #242424;
 
     font-synthesis: none;
@@ -74,19 +72,4 @@ button:focus-visible {
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
-
-    a:hover {
-        color: #747bff;
-    }
-
-    button {
-        background-color: #f9f9f9;
-    }
 }

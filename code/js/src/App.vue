@@ -1,9 +1,11 @@
 <template>
-  <Navbar/>
+  <Sidebar/>
   <router-view/>
 </template>
 
 
 <script setup>
-import Navbar from "@/components/SideBar.vue";
+import Sidebar from "@/components/SideBar.vue";
 </script>
+
+<style scoped> </style>

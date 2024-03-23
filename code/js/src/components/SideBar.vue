@@ -2,22 +2,22 @@
   <div :class="[is_open ? 'side-bar-container-open' : 'side-bar-container']">
     <div class="side-icon">Icon</div>
     <div :class="[is_open ? 'side-bar-icon-open' : 'side-bar-icon']">
-      <font-awesome-icon :icon=faBars/ @click="open">
+      <font-awesome-icon :icon=faBars @click="open"></font-awesome-icon>
     </div>
     <div class="menu">
       <div :class="[is_open ? 'navbar-items-open' : 'navbar-items']">
         <div class="navbar-item">
           <font-awesome-icon v-if="is_open" :icon=faHouse></font-awesome-icon>
-          <div>
-            <router-link :to="{ name : 'home' }" class="nav-link" link> Home</router-link>
-          </div>
+          <router-link :to="{ name : 'home' }" class="nav-link" link> Home</router-link>
         </div>
 
         <div class="navbar-item">
+          <font-awesome-icon v-if="is_open" :icon=faAddressCard></font-awesome-icon>
           <router-link :to="{ name : 'about' }" class="nav-link" link> About</router-link>
         </div>
         <div class="navbar-item">
-          <router-link :to="{ name : 'login' }" class="nav-link" link> Login</router-link>
+          <font-awesome-icon v-if="is_open" :icon=faRightToBracket></font-awesome-icon>
+          <router-link :to="{ name : 'signup' }" class="nav-link" link> Signup</router-link>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faBars, faHouse} from "@fortawesome/free-solid-svg-icons";
+import {faBars, faHouse, faRightToBracket, faAddressCard} from "@fortawesome/free-solid-svg-icons";
 import {ref} from 'vue';
 
 
@@ -39,7 +39,7 @@ const open = () => {
 }
 </script>
 
-<style>
+<style scoped>
 
 .side-bar-container, .side-bar-container-open {
   background-color: var(--primary-color);
@@ -50,7 +50,7 @@ const open = () => {
   position: absolute;
   top: 0;
   left: 0;
-  width: 5em;
+  width: 7em;
   height: 100vh;
   gap: 1em;
   transition: 0.2s ease-out;
@@ -118,7 +118,14 @@ const open = () => {
 }
 
 @media (max-width: 699px) {
+  .side-bar-container, .side-bar-container-open {
+    width: 3em;
+    transition: 0.2s ease-out;
+  }
 
+  .nav-link{
+    visibility: collapse;
+  }
 
 }
 

@@ -5,20 +5,19 @@
 
       <div class="signup-input-container">
         <div class="signup-input-text">Name</div>
-        <input class="signup-name-input signup-input-base" placeholder="Enter your name"/>
+        <input v-model="name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
       </div>
 
       <div class="signup-input-container">
         <div class="signup-input-text">Email</div>
-        <input class="signup-email-input signup-input-base" placeholder="Enter your email"/>
+        <input v-model="email" class="signup-email-input signup-input-base" placeholder="Enter your email"/>
       </div>
 
       <div class="signup-input-container">
         <div class="signup-input-text">Password</div>
         <div class="password-container">
           <input v-model="password" :type='is_visible' class="signup-password-input signup-input-base"
-                 placeholder="Enter your password" @change="updatePassword(password)"/>
-
+                 placeholder="Enter your password" />
           <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
         </div>
       </div>
@@ -26,11 +25,10 @@
       <div v-if="null" class="signup-input-container">
         <div class="signup-input-text">Birthdate</div>
         <input v-model="birthdate" :class="[birthdate.length === 0 ? 'signup-birth-input-placeholder signup-input-base' :
-                  'signup-birth-input signup-input-base']" type="date"
-               @change="updateBirthdate(birthdate)"/>
+                  'signup-birth-input signup-input-base']" type="date"/>
       </div>
 
-      <div v-if="toggle" class="signup-input-container ">
+      <div v-if="toggle" class="signup-input-container" >
         <div class="signup-input-text">Gender</div>
         <DropdownMenu></DropdownMenu>
       </div>
@@ -39,8 +37,8 @@
         <div class="phone-text">Phone Number</div>
         <div class="phone-container">
           <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
-          <input :maxlength="3" class="signup-phone-country-input signup-input-base"/>
-          <input :maxlength="9" class="signup-phone-input signup-input-base" placeholder="Phone Number"/>
+          <input @change="onlyNumbers(countryNumber)" v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"/>
+          <input v-model="phoneNumber" :maxlength="9" class="signup-phone-input signup-input-base" placeholder="Phone Number"/>
         </div>
       </div>
 
@@ -49,6 +47,8 @@
         <div :class="[toggle ?'switch-toggle-pt': 'switch-toggle-c' ]"></div>
         <font-awesome-icon :icon="faBuilding" class="switch-icon-c" @click="toggleSwitch(false)"></font-awesome-icon>
       </div>
+
+      <button @click="signup" class="signup-button">Sign up</button>
 
     </div>
 
@@ -61,12 +61,18 @@ import {ref} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
 import DropdownMenu from "@/components/DropdownMenu.vue";
+import SignupPT from "@/models/SignupPT";
 
+let gender = ref("")
 let password = ref("")
-let birthdate = ref('')
+let name = ref("")
+let email = ref("")
+let countryNumber = ref("")
+let phoneNumber = ref("")
+let birthdate = ref("")
 let is_visible = ref("password")
 let toggle = ref(true)
-console.log(birthdate)
+
 const updateVisibility = () => {
   if (is_visible.value === "") {
     is_visible.value = "password"
@@ -74,24 +80,28 @@ const updateVisibility = () => {
     is_visible.value = ""
   }
 }
-const updatePassword = (input) => {
-  password.value = input
-  console.log(password)
-}
-
-const updateBirthdate = (newBirthdate) => {
-  birthdate.value = newBirthdate
-  console.log(birthdate)
-}
-
 const toggleSwitch = (value) => {
   toggle.value = value
 }
 
 
+
+const signup= () => {
+  let pt = new SignupPT(
+      name.value,
+      email.value,
+      password.value,
+      "PT",
+      countryNumber + phoneNumber.value,
+  )
+  console.log(pt)
+  return pt
+
+}
+
 </script>
 
-<style>
+<style scoped>
 
 .signup-container {
   display: flex;
@@ -131,6 +141,7 @@ const toggleSwitch = (value) => {
   border-radius: 5px;
   border: 0;
   padding: 0 1em 0 1em;
+  color: white;
   background-color: var(--secundary-color);
 }
 
@@ -212,6 +223,14 @@ const toggleSwitch = (value) => {
   z-index: 10;
   cursor: pointer;
 }
-
-
+.signup-button {
+  margin-top: 1em;
+  width: 20em;
+  height: 3em;
+  border-radius: 5px;
+  background-color: #535bf2;
+  color: white;
+  border: 0;
+  cursor: pointer;
+}
 </style>
