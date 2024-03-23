@@ -1,18 +1,21 @@
-package pt.isel.leic.ptgest.http.controllers
+package pt.isel.leic.ptgest.http.controllers.auth.model
 
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.http.model.request.LoginRequest
-import pt.isel.leic.ptgest.http.model.request.SignupRequest
-import pt.isel.leic.ptgest.http.model.response.HttpResponse
-import pt.isel.leic.ptgest.http.model.response.SignupResponse
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.SignupRequest
+import pt.isel.leic.ptgest.http.controllers.auth.model.response.HttpResponse
+import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
+import pt.isel.leic.ptgest.http.controllers.auth.model.response.SignupResponse
 import pt.isel.leic.ptgest.http.utils.Uris
-import pt.isel.leic.ptgest.services.AuthService
+import pt.isel.leic.ptgest.http.utils.setCookie
+import pt.isel.leic.ptgest.services.auth.AuthService
 
 @RestController
-@RequestMapping(Uris.AUTH_PREFIX)
+@RequestMapping(Uris.PREFIX)
 class AuthController(private val services: AuthService) {
 
     @PostMapping(Uris.Auth.SIGNUP)
@@ -49,17 +52,41 @@ class AuthController(private val services: AuthService) {
         }
     }
 
+    @PostMapping(Uris.Auth.AUTHENTICATED_SIGNUP)
+    fun authenticatedSignup(
+        authenticatedUser: AuthenticatedUser,
+        @Valid @RequestBody
+        userInfo: SignupRequest
+    ): ResponseEntity<*> {
+        throw NotImplementedError("Not implemented")
+    }
+
     @PostMapping(Uris.Auth.LOGIN)
     fun login(
-        @RequestBody
-        userInfo: LoginRequest
+        @Valid @RequestBody
+        userInfo: LoginRequest,
+        response: HttpServletResponse
     ): ResponseEntity<*> {
-        val info = services.login(userInfo.email, userInfo.password)
+        val tokenDetails = services.login(
+            userInfo.email,
+            userInfo.password
+        )
 
-        return ResponseEntity
-            .ok(
-                "User logged with success"
+        setCookie(
+            "access_token",
+            tokenDetails.token,
+            tokenDetails.expirationDate,
+            true,
+            response
+        )
+
+        return HttpResponse.ok(
+            message = "User logged in successfully.",
+            details = LoginResponse(
+                token = tokenDetails.token,
+                expirationDate = tokenDetails.expirationDate
             )
+        )
     }
 
     @DeleteMapping(Uris.Auth.LOGOUT)
@@ -67,11 +94,4 @@ class AuthController(private val services: AuthService) {
         authenticatedUser: AuthenticatedUser
     ) {
     }
-
-    @GetMapping(Uris.Auth.VALIDATE_TOKEN)
-    fun validateToken(
-        authenticatedUser: AuthenticatedUser
-    ) {
-    }
-
 }

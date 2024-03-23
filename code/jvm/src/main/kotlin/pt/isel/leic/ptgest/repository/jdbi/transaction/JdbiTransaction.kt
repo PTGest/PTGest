@@ -2,7 +2,7 @@ package pt.isel.leic.ptgest.repository.jdbi.transaction
 
 import org.jdbi.v3.core.Handle
 import pt.isel.leic.ptgest.repository.AuthRepo
-import pt.isel.leic.ptgest.repository.jdbi.JdbiAuthRepo
+import pt.isel.leic.ptgest.repository.jdbi.auth.JdbiAuthRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 
 class JdbiTransaction(

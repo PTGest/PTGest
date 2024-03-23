@@ -7,12 +7,13 @@ import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.services.AuthService
-import pt.isel.leic.ptgest.services.errors.AuthError
+import pt.isel.leic.ptgest.services.auth.AuthError
+import pt.isel.leic.ptgest.services.auth.AuthService
 
 @Component
 class AuthInterceptor(private val authService: AuthService) : HandlerInterceptor {
 
+    //  TODO: Update cookie expiration date
     override fun preHandle(
         request: HttpServletRequest,
         response: HttpServletResponse,

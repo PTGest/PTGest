@@ -1,13 +1,13 @@
-package pt.isel.leic.ptgest.services
+package pt.isel.leic.ptgest.services.auth
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
+import pt.isel.leic.ptgest.domain.auth.model.Token
 import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.http.utils.validateStrings
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import pt.isel.leic.ptgest.services.errors.AuthError
 import java.time.LocalDate
 import java.util.*
 
@@ -26,7 +26,7 @@ class AuthService(
             val authRepo = it.authRepo
             val passwordHash = authDomain.hashPassword(password)
 
-            val userId = authRepo.createUser(name, email, passwordHash)
+            val userId = authRepo.createUser(name, email, passwordHash, Role.COMPANY)
 
             authRepo.createCompany(userId)
 
@@ -45,7 +45,7 @@ class AuthService(
             val authRepo = it.authRepo
             val passwordHash = authDomain.hashPassword(password)
 
-            val userId = authRepo.createUser(name, email, passwordHash)
+            val userId = authRepo.createUser(name, email, passwordHash, Role.INDEPENDENT_TRAINER)
 
             authRepo.createIndependentTrainer(
                 userId,
@@ -56,36 +56,34 @@ class AuthService(
             return@run userId
         }
 
-    fun login(email: String, password: String): TokenDetails {
-//        validateStrings(email, password)
-//        val user = User(1, "Pedro Macedo", "123456jjjjaaaaaaa") // depois ir buscar os dados a base de dados
-//
-//        if (!authDomain.validatePassword(password, user.passwordHash)) {
-//            throw AuthError.UserAuthenticationError.InvalidPassword
-//        }
-//
-//        val tokenValue = authDomain.generateTokenValue()
-//
-////        val now =
-//
-//        val token = HashedToken(
-//            hash = authDomain.hashToken(tokenValue),
-//            userId = user.id,
-//            createdAt = now.epochSeconds,
-//            lastUsedAt = now.epochSeconds
-//        )
-//
-//        val expirationAge = authDomain.rollingTtl.inWholeSeconds + authDomain.tokenTtl.inWholeSeconds
-//
-//        return TokenDetails(
-//            tokenValue,
-//            user.id,
-//            expirationAge,
-//            now.epochSeconds,
-//            now.epochSeconds
-//        )
-        throw NotImplementedError()
-    }
+    //  TODO: Verify the quantity of tokens that a user can have
+    fun login(email: String, password: String): Token =
+        transactionManager.run {
+            val authRepo = it.authRepo
+            val user = authRepo.getUserDetails(email)
+                ?: throw AuthError.UserAuthenticationError.UserNotFound
+
+            if (!authDomain.validatePassword(password, user.passwordHash)) {
+                throw AuthError.UserAuthenticationError.InvalidPassword
+            }
+
+            val tokenValue = authDomain.generateTokenValue()
+            val now = LocalDate.now()
+            val expirationDate = now.plusDays(authDomain.rollingTtl)
+
+            authRepo.createToken(
+                user.id,
+                authDomain.hashToken(tokenValue),
+                now,
+                expirationDate
+            )
+
+            return@run Token(
+                token = tokenValue,
+                expirationDate = expirationDate
+            )
+        }
+
 
     fun logout() {
         throw NotImplementedError()

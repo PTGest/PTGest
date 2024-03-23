@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.errors
+package pt.isel.leic.ptgest.services.auth
 
 import pt.isel.leic.ptgest.domain.utils.BaseError
 

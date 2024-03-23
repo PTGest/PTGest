@@ -1,26 +1,34 @@
-package pt.isel.leic.ptgest.repository.jdbi
+package pt.isel.leic.ptgest.repository.jdbi.auth
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
+import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.AuthRepo
 import java.time.LocalDate
 import java.util.*
 
 class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
-    override fun createUser(name: String, email: String, passwordHash: String): UUID {
+    override fun createUser(
+        name: String,
+        email: String,
+        passwordHash: String,
+        role: Role
+    ): UUID {
         return handle.createUpdate(
             """
-                insert into "user" (name, email, password_hash)
-                values (:name, :email, :passwordHash)
+                insert into "user" (name, email, password_hash, role)
+                values (:name, :email, :passwordHash, :role)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "name" to name,
                     "email" to email,
-                    "passwordHash" to passwordHash
+                    "passwordHash" to passwordHash,
+                    "role" to role.name
                 )
             )
             .executeAndReturnGeneratedKeys("id")
@@ -56,12 +64,48 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             .execute()
     }
 
+    override fun getUserDetails(email: String): UserDetails? =
+        handle.createQuery(
+            """
+                select id, name, email, password_hash  from "user"
+                where email = :email
+            """.trimIndent()
+        )
+            .bind("email", email)
+            .mapTo<UserDetails>()
+            .firstOrNull()
+
+
+    override fun createToken(
+        userId: UUID,
+        tokenHash: String,
+        creationDate: LocalDate,
+        expirationDate: LocalDate
+    ) {
+        handle.createUpdate(
+            """
+                insert into token (token_hash, user_id, creation_date, expiration_date)
+                values (:tokenHash, :userId, :creationDate, :expirationDate)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "tokenHash" to tokenHash,
+                    "userId" to userId,
+                    "creationDate" to creationDate,
+                    "expirationDate" to expirationDate
+                )
+            )
+            .execute()
+    }
+
 
     override fun getToken(tokenHash: String): TokenDetails? =
         handle.createQuery(
             """
-                select * from token
-                where hash = :tokenHash
+                select token_hash, user_id, creation_date, expiration_date, role
+                from token join dev."user" u on u.id = token.user_id
+                where token_hash = :tokenHash
             """.trimIndent()
         )
             .bind("tokenHash", tokenHash)
@@ -87,8 +131,12 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
                 where hash = :tokenHash
             """.trimIndent()
         )
-            .bind("tokenHash", tokenHash)
-            .bind("expirationDate", expirationDate)
+            .bindMap(
+                mapOf(
+                    "tokenHash" to tokenHash,
+                    "expirationDate" to expirationDate
+                )
+            )
             .execute()
     }
 }
