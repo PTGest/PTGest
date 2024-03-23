@@ -17,6 +17,8 @@ interface AuthRepo {
 
     fun getUserDetails(email: String): UserDetails?
 
+    fun getUserTokens(userId: UUID): List<TokenDetails>
+
     fun createToken(userId: UUID, tokenHash: String, creationDate: LocalDate, expirationDate: LocalDate)
 
     fun getToken(tokenHash: String): TokenDetails?

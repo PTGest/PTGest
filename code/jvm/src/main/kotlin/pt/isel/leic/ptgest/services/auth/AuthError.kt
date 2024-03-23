@@ -19,12 +19,6 @@ sealed class AuthError : BaseError() {
             override val message: String get() = "Token has expired."
         }
 
-
-        data object TokenInactive : TokenError() {
-            private fun readResolve(): Any = TokenInactive
-            override val message: String get() = "Token is not active. It may have been expired or revoked."
-        }
-
         data object TokenOwnershipError : TokenError() {
             private fun readResolve(): Any = TokenOwnershipError
             override val message: String get() = "Token not owned by user."

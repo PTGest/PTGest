@@ -4,9 +4,11 @@ import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.auth.model.Token
+import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.http.utils.validateStrings
+import pt.isel.leic.ptgest.repository.AuthRepo
+import pt.isel.leic.ptgest.services.utils.validateStrings
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.time.LocalDate
 import java.util.*
@@ -56,7 +58,7 @@ class AuthService(
             return@run userId
         }
 
-    //  TODO: Verify the quantity of tokens that a user can have
+    //  TODO: Check if we are doing the right way
     fun login(email: String, password: String): Token =
         transactionManager.run {
             val authRepo = it.authRepo
@@ -71,6 +73,8 @@ class AuthService(
             val now = LocalDate.now()
             val expirationDate = now.plusDays(authDomain.rollingTtl)
 
+            checkUserTokensLimit(authRepo, user)
+
             authRepo.createToken(
                 user.id,
                 authDomain.hashToken(tokenValue),
@@ -84,12 +88,33 @@ class AuthService(
             )
         }
 
+    private fun checkUserTokensLimit(authRepo: AuthRepo, user: UserDetails) {
+        val userTokens = authRepo.getUserTokens(user.id).sortedBy { tokenDetails ->
+            tokenDetails.expirationDate
+        }
 
-    fun logout() {
-        throw NotImplementedError()
+        if (userTokens.size >= authDomain.tokensPerUser) {
+            authRepo.revokeToken(userTokens.first().tokenHash)
+        }
     }
 
-    fun validateToken(token: String) {
+    fun logout(userId: UUID, token: String) {
+        transactionManager.run {
+            val authRepo = it.authRepo
+            val tokenHash = authDomain.hashToken(token)
+
+            val tokenDetails = authRepo.getToken(tokenHash)
+                ?: throw AuthError.TokenError.TokenNotFound
+
+            if (tokenDetails.userId != userId) {
+                throw AuthError.TokenError.TokenOwnershipError
+            }
+
+            authRepo.revokeToken(tokenHash)
+        }
+    }
+
+    fun validateToken(token: String): LocalDate =
         transactionManager.run {
             validateStrings(token)
 
@@ -99,22 +124,23 @@ class AuthService(
             val tokenDetails = authRepo.getToken(tokenHash)
                 ?: throw AuthError.TokenError.TokenNotFound
 
-            if (tokenDetails.creationDate.plusDays(authDomain.tokenTtl).isBefore(LocalDate.now())) {
+            if (
+                tokenDetails.creationDate.plusDays(authDomain.tokenTtl).isBefore(LocalDate.now()) ||
+                tokenDetails.expirationDate.isBefore(LocalDate.now())
+                ) {
                 authRepo.revokeToken(tokenHash)
                 throw AuthError.TokenError.TokenExpired
             } else {
-                if (tokenDetails.expirationDate.isBefore(LocalDate.now())) {
-                    authRepo.revokeToken(tokenHash)
-                    throw AuthError.TokenError.TokenExpired
-                } else {
-                    authRepo.updateExpirationDate(
-                        tokenHash,
-                        LocalDate.now().plusDays(authDomain.rollingTtl)
-                    )
-                }
+                val updatedExpirationDate = LocalDate.now().plusDays(authDomain.rollingTtl)
+                authRepo.updateExpirationDate(
+                    tokenHash,
+                    updatedExpirationDate
+                )
+
+                return@run updatedExpirationDate
             }
         }
-    }
+
 
     fun getUserIdByToken(token: String): AuthenticatedUser =
         transactionManager.run {
@@ -128,6 +154,7 @@ class AuthService(
 
             return@run AuthenticatedUser(
                 tokenDetails.userId,
+                token,
                 tokenDetails.role
             )
         }

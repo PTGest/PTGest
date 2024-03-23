@@ -18,7 +18,7 @@ fun setCookie(
     response.addCookie(cookie)
 }
 
-fun removeCookie(name: String, httpOnly: Boolean, response: HttpServletResponse) {
+fun revokeCookie(name: String, httpOnly: Boolean, response: HttpServletResponse) {
     val cookie = Cookie(name, null)
     cookie.maxAge = 0
     cookie.isHttpOnly = httpOnly

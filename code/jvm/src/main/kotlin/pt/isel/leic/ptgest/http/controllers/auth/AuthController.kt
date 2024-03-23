@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.auth.model
+package pt.isel.leic.ptgest.http.controllers.auth
 
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -11,6 +11,7 @@ import pt.isel.leic.ptgest.http.controllers.auth.model.response.HttpResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.SignupResponse
 import pt.isel.leic.ptgest.http.utils.Uris
+import pt.isel.leic.ptgest.http.utils.revokeCookie
 import pt.isel.leic.ptgest.http.utils.setCookie
 import pt.isel.leic.ptgest.services.auth.AuthService
 
@@ -91,7 +92,26 @@ class AuthController(private val services: AuthService) {
 
     @DeleteMapping(Uris.Auth.LOGOUT)
     fun logout(
-        authenticatedUser: AuthenticatedUser
+        authenticatedUser: AuthenticatedUser,
+        response: HttpServletResponse
     ) {
+        revokeCookie(
+            "access_token",
+            true,
+            response
+        )
+
+        services.logout(
+            authenticatedUser.id,
+            authenticatedUser.token
+        )
+
+        HttpResponse.ok(
+            message = "User logged out successfully.",
+            details = null
+        )
+
     }
+
+
 }

@@ -75,6 +75,17 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             .mapTo<UserDetails>()
             .firstOrNull()
 
+    override fun getUserTokens(userId: UUID): List<TokenDetails> =
+        handle.createQuery(
+            """
+                select token_hash, creation_date, expiration_date, role
+                from token join dev."user" u on u.id = token.user_id
+                where user_id = :userId
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .mapTo<TokenDetails>()
+            .list()
 
     override fun createToken(
         userId: UUID,
