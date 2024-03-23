@@ -8,8 +8,8 @@ import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.AuthRepo
-import pt.isel.leic.ptgest.services.utils.validateStrings
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.utils.validateStrings
 import java.time.LocalDate
 import java.util.*
 
@@ -127,7 +127,7 @@ class AuthService(
             if (
                 tokenDetails.creationDate.plusDays(authDomain.tokenTtl).isBefore(LocalDate.now()) ||
                 tokenDetails.expirationDate.isBefore(LocalDate.now())
-                ) {
+            ) {
                 authRepo.revokeToken(tokenHash)
                 throw AuthError.TokenError.TokenExpired
             } else {

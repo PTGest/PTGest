@@ -3,7 +3,6 @@ package pt.isel.leic.ptgest.http.controllers.auth.model.request
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
-import pt.isel.leic.ptgest.domain.common.Role
 
 data class LoginRequest(
     @NotEmpty
@@ -12,6 +11,4 @@ data class LoginRequest(
 
     @field:Size(min = 8)
     val password: String,
-
-    val role: Role
 )

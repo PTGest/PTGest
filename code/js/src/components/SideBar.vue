@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faBars, faHouse, faRightToBracket, faAddressCard} from "@fortawesome/free-solid-svg-icons";
+import {faAddressCard, faBars, faHouse, faRightToBracket} from "@fortawesome/free-solid-svg-icons";
 import {ref} from 'vue';
 
 
@@ -123,7 +123,7 @@ const open = () => {
     transition: 0.2s ease-out;
   }
 
-  .nav-link{
+  .nav-link {
     visibility: collapse;
   }
 

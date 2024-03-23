@@ -17,7 +17,7 @@
         <div class="signup-input-text">Password</div>
         <div class="password-container">
           <input v-model="password" :type='is_visible' class="signup-password-input signup-input-base"
-                 placeholder="Enter your password" />
+                 placeholder="Enter your password"/>
           <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
         </div>
       </div>
@@ -28,7 +28,7 @@
                   'signup-birth-input signup-input-base']" type="date"/>
       </div>
 
-      <div v-if="toggle" class="signup-input-container" >
+      <div v-if="toggle" class="signup-input-container">
         <div class="signup-input-text">Gender</div>
         <DropdownMenu></DropdownMenu>
       </div>
@@ -37,8 +37,10 @@
         <div class="phone-text">Phone Number</div>
         <div class="phone-container">
           <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
-          <input @change="onlyNumbers(countryNumber)" v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"/>
-          <input v-model="phoneNumber" :maxlength="9" class="signup-phone-input signup-input-base" placeholder="Phone Number"/>
+          <input v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"
+                 @change="onlyNumbers(countryNumber)"/>
+          <input v-model="phoneNumber" :maxlength="9" class="signup-phone-input signup-input-base"
+                 placeholder="Phone Number"/>
         </div>
       </div>
 
@@ -48,7 +50,7 @@
         <font-awesome-icon :icon="faBuilding" class="switch-icon-c" @click="toggleSwitch(false)"></font-awesome-icon>
       </div>
 
-      <button @click="signup" class="signup-button">Sign up</button>
+      <button class="signup-button" @click="signup">Sign up</button>
 
     </div>
 
@@ -85,8 +87,7 @@ const toggleSwitch = (value) => {
 }
 
 
-
-const signup= () => {
+const signup = () => {
   let pt = new SignupPT(
       name.value,
       email.value,
@@ -223,6 +224,7 @@ const signup= () => {
   z-index: 10;
   cursor: pointer;
 }
+
 .signup-button {
   margin-top: 1em;
   width: 20em;
