@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.repository.jdbi.mappers
+package pt.isel.leic.ptgest.repository.jdbi.auth.mappers
 
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext

@@ -7,19 +7,20 @@ create extension if not exists "uuid-ossp";
 create table if not exists prod."user"
 (
     id            uuid default uuid_generate_v4() primary key,
-    name          varchar(15)                                                       not null,
+    name          varchar(15)                                                          not null,
     email         varchar(50)
-        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
-    password_hash varchar(256)                                                      not null
+        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique    not null,
+    password_hash varchar(256)                                                         not null,
+    role          varchar(20)
+        check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
 );
 
 create table if not exists prod.token
 (
-    token_hash      varchar(256) primary key                                                                   not null,
-    user_id         uuid references prod."user" (id) on delete cascade                                         not null,
-    role            varchar(20) check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null,
-    creation_date   date                                                                                       not null,
-    expiration_date date                                                                                       not null
+    token_hash      varchar(256) primary key                           not null,
+    user_id         uuid references prod."user" (id) on delete cascade not null,
+    creation_date   date                                               not null,
+    expiration_date date                                               not null
 );
 
 create table if not exists prod.company
@@ -87,7 +88,7 @@ create table if not exists prod.session
 create table if not exists prod.exercise
 (
     id          uuid default uuid_generate_v4() primary key,
-    pt_id       uuid references dev.personal_trainer (id) on delete cascade,
+    pt_id       uuid references prod.personal_trainer (id) on delete cascade,
     name        varchar(50)                                                                 not null,
     description text,
     -- temporary to be changed

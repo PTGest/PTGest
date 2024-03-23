@@ -1,7 +1,4 @@
-package pt.isel.leic.ptgest.http.utils
-
-import pt.isel.leic.ptgest.services.errors.ValidationErrors
-
+package pt.isel.leic.ptgest.services.utils
 
 fun validateInts(vararg args: Int?) {
     for (i in args) {

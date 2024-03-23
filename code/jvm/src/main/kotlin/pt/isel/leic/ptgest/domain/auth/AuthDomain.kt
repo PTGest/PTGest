@@ -14,6 +14,7 @@ class AuthDomain(
 
     val tokenTtl = config.tokenTTL
     val rollingTtl = config.tokenRollingTTL
+    val tokensPerUser = config.tokenLimitPerUser
 
     fun hashPassword(password: String): String = passwordEncoder.encode(password)
 
@@ -27,6 +28,4 @@ class AuthDomain(
         }
 
     fun hashToken(token: String): String = tokenEncoder.hashToken(token)
-
-    val tokenLimitPerUser = config.tokenLimitPerUser
 }

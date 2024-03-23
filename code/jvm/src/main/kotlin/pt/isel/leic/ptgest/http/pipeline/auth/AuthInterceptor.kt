@@ -7,12 +7,15 @@ import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.services.AuthService
-import pt.isel.leic.ptgest.services.errors.AuthError
+import pt.isel.leic.ptgest.http.utils.setCookie
+import pt.isel.leic.ptgest.services.auth.AuthError
+import pt.isel.leic.ptgest.services.auth.AuthService
+import java.time.LocalDate
 
 @Component
 class AuthInterceptor(private val authService: AuthService) : HandlerInterceptor {
 
+    //  TODO: Check if the update of the expiration date is correct
     override fun preHandle(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -26,13 +29,13 @@ class AuthInterceptor(private val authService: AuthService) : HandlerInterceptor
             val token = sessionCookie ?: request.getHeader("Authorization")
             ?: throw AuthError.UserAuthenticationError.TokenNotProvided
 
-            authService.validateToken(token)
+            val updatedExpirationDate = authService.validateToken(token)
 
             val user =
                 if (token.startsWith("Bearer")) {
                     processAuthorizationHeaderValue(token)
                 } else {
-                    processCookieValue(token)
+                    processCookieValue(token, updatedExpirationDate, response)
                 }
 
             AuthenticatedUserResolver.addUserTo(user, request)
@@ -49,7 +52,20 @@ class AuthInterceptor(private val authService: AuthService) : HandlerInterceptor
         return authService.getUserIdByToken(headerParts[1])
     }
 
-    private fun processCookieValue(cookieValue: String): AuthenticatedUser =
-        authService.getUserIdByToken(cookieValue)
+    private fun processCookieValue(
+        cookieValue: String,
+        updatedExpirationDate: LocalDate,
+        response: HttpServletResponse
+    ): AuthenticatedUser {
+        setCookie(
+            "access_token",
+            cookieValue,
+            updatedExpirationDate,
+            true,
+            response
+        )
+
+        return authService.getUserIdByToken(cookieValue)
+    }
 
 }

@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.model.request
+package pt.isel.leic.ptgest.http.controllers.auth.model.request
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type

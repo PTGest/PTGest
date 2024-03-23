@@ -1,7 +1,6 @@
-package pt.isel.leic.ptgest.services.errors
+package pt.isel.leic.ptgest.services.utils
 
 import pt.isel.leic.ptgest.domain.utils.BaseError
-
 
 sealed class ValidationErrors : BaseError() {
     sealed class InvalidParameter : ValidationErrors() {

@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.errors
+package pt.isel.leic.ptgest.services.auth
 
 import pt.isel.leic.ptgest.domain.utils.BaseError
 
@@ -17,12 +17,6 @@ sealed class AuthError : BaseError() {
         data object TokenExpired : TokenError() {
             private fun readResolve(): Any = TokenExpired
             override val message: String get() = "Token has expired."
-        }
-
-
-        data object TokenInactive : TokenError() {
-            private fun readResolve(): Any = TokenInactive
-            override val message: String get() = "Token is not active. It may have been expired or revoked."
         }
 
         data object TokenOwnershipError : TokenError() {
