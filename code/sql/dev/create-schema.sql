@@ -15,14 +15,6 @@ create table if not exists dev."user"
         check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
 );
 
-create table if not exists dev.token
-(
-    token_hash      varchar(256) primary key                          not null,
-    user_id         uuid references dev."user" (id) on delete cascade not null,
-    creation_date   date                                              not null,
-    expiration_date date                                              not null
-);
-
 create table if not exists dev.company
 (
     id uuid primary key references dev."user" (id) on delete cascade

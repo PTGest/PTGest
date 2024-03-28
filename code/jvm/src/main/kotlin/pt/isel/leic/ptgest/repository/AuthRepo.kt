@@ -1,10 +1,8 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import java.time.LocalDate
 import java.util.*
 
 interface AuthRepo {
@@ -17,13 +15,6 @@ interface AuthRepo {
 
     fun getUserDetails(email: String): UserDetails?
 
-    fun getUserTokens(userId: UUID): List<TokenDetails>
+    fun getUserDetails(userId: UUID): UserDetails?
 
-    fun createToken(userId: UUID, tokenHash: String, creationDate: LocalDate, expirationDate: LocalDate)
-
-    fun getToken(tokenHash: String): TokenDetails?
-
-    fun revokeToken(tokenHash: String)
-
-    fun updateExpirationDate(tokenHash: String, expirationDate: LocalDate)
 }

@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.controllers.auth.model.response
 
-import java.time.LocalDate
+import java.util.*
 
 internal data class LoginResponse(
     val token: String,
-    val expirationDate: LocalDate
+    val expirationDate: Date
 )

@@ -14,9 +14,23 @@ sealed class AuthError : BaseError() {
             override val message: String get() = "Token not found."
         }
 
+        data object InvalidUserRoleException : TokenError() {
+            private fun readResolve(): Any = InvalidUserRoleException
+            override val message: String
+                get() =
+                    "User role does not match the role in the token."
+        }
+
         data object TokenExpired : TokenError() {
             private fun readResolve(): Any = TokenExpired
             override val message: String get() = "Token has expired."
+        }
+
+        data object TokenExpirationMismatchException : TokenError() {
+            private fun readResolve(): Any = TokenExpirationMismatchException
+            override val message: String
+                get() =
+                    "The expiration date of the JWT token does not match the cookie’s maxAge."
         }
 
         data object TokenOwnershipError : TokenError() {

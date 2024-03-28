@@ -2,30 +2,44 @@ package pt.isel.leic.ptgest.domain.auth
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
-import java.security.SecureRandom
 import java.util.*
 
 @Component
 class AuthDomain(
-    private val tokenEncoder: TokenEncoder,
     private val passwordEncoder: PasswordEncoder,
-    private val config: AuthDomainConfig
 ) {
 
-    val tokenTtl = config.tokenTTL
-    val rollingTtl = config.tokenRollingTTL
-    val tokensPerUser = config.tokenLimitPerUser
+    fun validateTokenTtl(tokenCreationDate: Date, currentDate: Date): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.time = tokenCreationDate
+        calendar.add(Calendar.YEAR, 1)
+
+        return currentDate.before(calendar.time)
+    }
+
+    fun updateTokenExpirationDate(
+        tokenCreationDate: Date,
+        currentDate: Date
+    ): Date {
+        val expirationDate = createTokenExpirationDate(currentDate)
+
+        val calendarTtl = Calendar.getInstance()
+        calendarTtl.time = tokenCreationDate
+        calendarTtl.add(Calendar.YEAR, 1)
+
+        return if (expirationDate.before(calendarTtl.time)) expirationDate
+        else calendarTtl.time
+    }
+
+    fun createTokenExpirationDate(currentDate: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = currentDate
+        calendar.add(Calendar.WEEK_OF_YEAR, 1)
+        return calendar.time
+    }
 
     fun hashPassword(password: String): String = passwordEncoder.encode(password)
 
     fun validatePassword(password: String, passwordHash: String) =
         passwordEncoder.matches(password, passwordHash)
-
-    fun generateTokenValue(): String =
-        ByteArray(config.tokenSizeInBytes).let { byteArray ->
-            SecureRandom.getInstanceStrong().nextBytes(byteArray)
-            Base64.getUrlEncoder().encodeToString(byteArray)
-        }
-
-    fun hashToken(token: String): String = tokenEncoder.hashToken(token)
 }

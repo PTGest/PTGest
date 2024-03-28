@@ -6,9 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import pt.isel.leic.ptgest.domain.auth.AuthConfig
-import pt.isel.leic.ptgest.domain.auth.AuthDomainConfig
-import pt.isel.leic.ptgest.domain.auth.Sha256TokenEncoder
 import pt.isel.leic.ptgest.repository.jdbi.configureWithAppRequirements
 
 @SpringBootApplication
@@ -23,17 +20,6 @@ class PtgestApplication {
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
-
-    @Bean
-    fun tokenEncoder() = Sha256TokenEncoder()
-
-    @Bean
-    fun authDomainConfig() = AuthDomainConfig(
-        tokenSizeInBytes = 32,
-        tokenTTL = AuthConfig.TOKEN_TTL,
-        tokenRollingTTL = AuthConfig.ROLLING_TTL,
-        tokenLimitPerUser = AuthConfig.USER_TOKEN_LIMIT
-    )
 }
 
 fun main(args: Array<String>) {

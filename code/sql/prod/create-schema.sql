@@ -15,14 +15,6 @@ create table if not exists prod."user"
         check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
 );
 
-create table if not exists prod.token
-(
-    token_hash      varchar(256) primary key                           not null,
-    user_id         uuid references prod."user" (id) on delete cascade not null,
-    creation_date   date                                               not null,
-    expiration_date date                                               not null
-);
-
 create table if not exists prod.company
 (
     id uuid primary key references prod."user" (id) on delete cascade

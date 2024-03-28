@@ -1,10 +1,12 @@
 package pt.isel.leic.ptgest.domain.auth.model
 
+import pt.isel.leic.ptgest.domain.common.Role
 import java.util.*
 
 data class UserDetails(
     val id: UUID,
     val name: String,
     val email: String,
-    val passwordHash: String
+    val passwordHash: String,
+    val role: Role
 )

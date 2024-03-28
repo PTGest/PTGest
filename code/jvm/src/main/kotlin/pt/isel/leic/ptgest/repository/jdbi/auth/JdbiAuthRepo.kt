@@ -2,12 +2,10 @@ package pt.isel.leic.ptgest.repository.jdbi.auth
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.AuthRepo
-import java.time.LocalDate
 import java.util.*
 
 class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
@@ -67,7 +65,7 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun getUserDetails(email: String): UserDetails? =
         handle.createQuery(
             """
-                select id, name, email, password_hash  from "user"
+                select *  from "user"
                 where email = :email
             """.trimIndent()
         )
@@ -75,79 +73,14 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             .mapTo<UserDetails>()
             .firstOrNull()
 
-    override fun getUserTokens(userId: UUID): List<TokenDetails> =
+    override fun getUserDetails(userId: UUID): UserDetails? =
         handle.createQuery(
             """
-                select token_hash, creation_date, expiration_date, role
-                from token join dev."user" u on u.id = token.user_id
-                where user_id = :userId
+                select *  from "user"
+                where id = :userId
             """.trimIndent()
         )
             .bind("userId", userId)
-            .mapTo<TokenDetails>()
-            .list()
-
-    override fun createToken(
-        userId: UUID,
-        tokenHash: String,
-        creationDate: LocalDate,
-        expirationDate: LocalDate
-    ) {
-        handle.createUpdate(
-            """
-                insert into token (token_hash, user_id, creation_date, expiration_date)
-                values (:tokenHash, :userId, :creationDate, :expirationDate)
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "tokenHash" to tokenHash,
-                    "userId" to userId,
-                    "creationDate" to creationDate,
-                    "expirationDate" to expirationDate
-                )
-            )
-            .execute()
-    }
-
-
-    override fun getToken(tokenHash: String): TokenDetails? =
-        handle.createQuery(
-            """
-                select token_hash, user_id, creation_date, expiration_date, role
-                from token join dev."user" u on u.id = token.user_id
-                where token_hash = :tokenHash
-            """.trimIndent()
-        )
-            .bind("tokenHash", tokenHash)
-            .mapTo<TokenDetails>()
+            .mapTo<UserDetails>()
             .firstOrNull()
-
-    override fun revokeToken(tokenHash: String) {
-        handle.createUpdate(
-            """
-                delete from token
-                where hash = :tokenHash
-            """.trimIndent()
-        )
-            .bind("tokenHash", tokenHash)
-            .execute()
-    }
-
-    override fun updateExpirationDate(tokenHash: String, expirationDate: LocalDate) {
-        handle.createUpdate(
-            """
-                update token
-                set expiration_date = :expirationDate
-                where hash = :tokenHash
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "tokenHash" to tokenHash,
-                    "expirationDate" to expirationDate
-                )
-            )
-            .execute()
-    }
 }

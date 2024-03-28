@@ -19,16 +19,12 @@ repositories {
 }
 
 dependencies {
-	implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-
-
-
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 	// for JDBI
 	implementation("org.jdbi:jdbi3-core:3.37.1")
@@ -36,11 +32,12 @@ dependencies {
 	implementation("org.jdbi:jdbi3-postgres:3.37.1")
 	implementation("org.postgresql:postgresql:42.7.2")
 
-
-	// To get password encode
-	implementation("org.springframework.security:spring-security-core:6.0.2")
+	// for Spring Security
+	implementation("org.springframework.security:spring-security-core:6.2.3")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("io.jsonwebtoken:jjwt:0.9.1")
 
+	// for testing
 	testImplementation("org.mockito:mockito-core:3.12.4")
 	testImplementation(kotlin("test"))
 	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
