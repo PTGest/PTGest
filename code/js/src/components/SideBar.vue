@@ -15,8 +15,14 @@
           <font-awesome-icon v-if="is_open" :icon=faAddressCard></font-awesome-icon>
           <router-link :to="{ name : 'about' }" class="nav-link" link> About</router-link>
         </div>
+
         <div class="navbar-item">
           <font-awesome-icon v-if="is_open" :icon=faRightToBracket></font-awesome-icon>
+          <router-link :to="{ name : 'login' }" class="nav-link" link> Login</router-link>
+        </div>
+
+        <div class="navbar-item">
+          <font-awesome-icon v-if="is_open" :icon=faUserPlus></font-awesome-icon>
           <router-link :to="{ name : 'signup' }" class="nav-link" link> Signup</router-link>
         </div>
       </div>
@@ -29,7 +35,7 @@
 
 <script lang="ts" setup>
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faAddressCard, faBars, faHouse, faRightToBracket} from "@fortawesome/free-solid-svg-icons";
+import {faBars, faHouse, faRightToBracket, faAddressCard, faUserPlus} from "@fortawesome/free-solid-svg-icons";
 import {ref} from 'vue';
 
 
