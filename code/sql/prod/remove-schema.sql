@@ -1,7 +1,5 @@
 begin;
 
-drop table if exists prod.token cascade;
-
 drop table if exists prod.company_pt cascade;
 
 drop table if exists prod.company cascade;
@@ -31,5 +29,7 @@ drop table if exists prod.personal_trainer cascade;
 drop table if exists prod."user" cascade;
 
 drop table if exists prod.feedback cascade;
+
+
 
 end;

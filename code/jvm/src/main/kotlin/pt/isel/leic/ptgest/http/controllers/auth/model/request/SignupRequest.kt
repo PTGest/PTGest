@@ -16,7 +16,7 @@ import pt.isel.leic.ptgest.domain.common.Gender
 )
 @JsonSubTypes(
     Type(value = SignupRequest.Company::class, name = "company"),
-    Type(value = SignupRequest.IndependentTrainer::class, name = "independent_trainer"),
+    Type(value = SignupRequest.IndependentTrainer::class, name = "independent_trainer")
 )
 sealed class SignupRequest {
 

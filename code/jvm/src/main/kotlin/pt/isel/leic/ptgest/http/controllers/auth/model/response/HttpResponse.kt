@@ -42,5 +42,4 @@ object HttpResponse {
             204 -> "No Content"
             else -> throw IllegalArgumentException("Invalid status code for a successful response ($code).")
         }
-
 }

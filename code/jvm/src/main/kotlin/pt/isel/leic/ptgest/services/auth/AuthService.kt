@@ -5,6 +5,7 @@ import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.Token
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*
 
@@ -12,7 +13,7 @@ import java.util.*
 class AuthService(
     private val jwtService: JwtService,
     private val transactionManager: TransactionManager,
-    private val authDomain: AuthDomain,
+    private val authDomain: AuthDomain
 ) {
 
     fun signUpCompany(
@@ -21,16 +22,14 @@ class AuthService(
         password: String
     ): UUID =
         transactionManager.run {
-            val authRepo = it.authRepo
-            val passwordHash = authDomain.hashPassword(password)
+            val userRepo = it.userRepo
 
-            val userId = authRepo.createUser(name, email, passwordHash, Role.COMPANY)
+            val userId = createUser(userRepo, name, email, password, Role.COMPANY)
 
-            authRepo.createCompany(userId)
+            userRepo.createCompany(userId)
 
             return@run userId
         }
-
 
     fun signUpIndependentTrainer(
         name: String,
@@ -40,12 +39,11 @@ class AuthService(
         phoneNumber: String?
     ): UUID =
         transactionManager.run {
-            val authRepo = it.authRepo
-            val passwordHash = authDomain.hashPassword(password)
+            val userRepo = it.userRepo
 
-            val userId = authRepo.createUser(name, email, passwordHash, Role.INDEPENDENT_TRAINER)
+            val userId = createUser(userRepo, name, email, password, Role.INDEPENDENT_TRAINER)
 
-            authRepo.createIndependentTrainer(
+            userRepo.createIndependentTrainer(
                 userId,
                 gender,
                 phoneNumber
@@ -56,8 +54,8 @@ class AuthService(
 
     fun login(email: String, password: String): Token {
         val userDetails = transactionManager.run {
-            val authRepo = it.authRepo
-            val user = authRepo.getUserDetails(email)
+            val userRepo = it.userRepo
+            val user = userRepo.getUserDetails(email)
                 ?: throw AuthError.UserAuthenticationError.UserNotFound
 
             if (!authDomain.validatePassword(password, user.passwordHash)) {
@@ -81,6 +79,21 @@ class AuthService(
             tokenValue,
             expirationDate
         )
+    }
 
+    private fun createUser(
+        userRepo: UserRepo,
+        name: String,
+        email: String,
+        password: String,
+        role: Role
+    ): UUID {
+        if (userRepo.getUserDetails(email) != null) {
+            throw AuthError.UserRegistrationError.UserAlreadyExists
+        }
+
+        val passwordHash = authDomain.hashPassword(password)
+
+        return userRepo.createUser(name, email, passwordHash, role)
     }
 }

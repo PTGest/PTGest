@@ -27,7 +27,7 @@ class AuthInterceptor(
         handler: Any
     ): Boolean {
         if (handler is HandlerMethod && handler.methodParameters
-                .any { it.parameterType == AuthenticatedUser::class.java }
+            .any { it.parameterType == AuthenticatedUser::class.java }
         ) {
             val sessionCookie = request.cookies?.firstOrNull { it.name == "access_token" }
 

@@ -5,10 +5,10 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.repository.AuthRepo
+import pt.isel.leic.ptgest.repository.UserRepo
 import java.util.*
 
-class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
+class JdbiUserRepo(private val handle: Handle) : UserRepo {
     override fun createUser(
         name: String,
         email: String,
@@ -50,7 +50,7 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             """
                 insert into personal_trainer (id, gender, contact)
                 values (:id, :gender, :phoneNumber)
-                """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(

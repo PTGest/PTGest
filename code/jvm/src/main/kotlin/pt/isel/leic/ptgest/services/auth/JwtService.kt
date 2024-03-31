@@ -2,7 +2,6 @@ package pt.isel.leic.ptgest.services.auth
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
@@ -15,9 +14,6 @@ class JwtService(
     private val transactionManager: TransactionManager,
     private val authDomain: AuthDomain
 ) {
-
-    @Value("\${jwt.secret}")
-    private lateinit var secret: String
 
     fun generateToken(
         userId: UUID,
@@ -51,7 +47,7 @@ class JwtService(
 
     private fun validateToken(tokenDetails: TokenDetails) {
         transactionManager.run {
-            val authRepo = it.authRepo
+            val authRepo = it.userRepo
 
             val userDetails =
                 authRepo.getUserDetails(tokenDetails.userId)
@@ -64,16 +60,15 @@ class JwtService(
 
         val currentDate = Date()
 
-        if (tokenDetails.expirationDate.before(currentDate)
-            || !authDomain.validateTokenTtl(tokenDetails.creationDate, currentDate)
+        if (tokenDetails.expirationDate.before(currentDate) ||
+            !authDomain.validateTokenTtl(tokenDetails.creationDate, currentDate)
         ) {
             throw AuthError.TokenError.TokenExpired
         }
     }
 
-    private fun getAllClaimsFromToken(token: String): Claims {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).body
-    }
+    private fun getAllClaimsFromToken(token: String): Claims =
+        Jwts.parser().setSigningKey(authDomain.secret).parseClaimsJws(token).body
 
     private fun createToken(
         claims: Map<String, Any>,
@@ -81,13 +76,11 @@ class JwtService(
         role: Role,
         expirationDate: Date,
         creationDate: Date
-    ): String {
-        val currentDate = Date()
-        return Jwts.builder().setClaims(claims)
+    ): String =
+        Jwts.builder().setClaims(claims)
             .setId(userId.toString())
             .setSubject(role.name)
             .setIssuedAt(creationDate)
             .setExpiration(expirationDate)
-            .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, secret).compact()
-    }
+            .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, authDomain.secret).compact()
 }

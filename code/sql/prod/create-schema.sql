@@ -7,10 +7,10 @@ create extension if not exists "uuid-ossp";
 create table if not exists prod."user"
 (
     id            uuid default uuid_generate_v4() primary key,
-    name          varchar(15)                                                          not null,
+    name          varchar(15) check ("user".name <> '')                                       not null,
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique    not null,
-    password_hash varchar(256)                                                         not null,
+    password_hash varchar(256) check ("user".password_hash <> '')                      not null,
     role          varchar(20)
         check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
 );
@@ -24,7 +24,7 @@ create table if not exists prod.personal_trainer
 (
     id      uuid primary key references prod."user" (id) on delete cascade,
     gender  char check (gender in ('M', 'F', 'O', 'U')) not null,
-    contact varchar(20) check ( contact ~ '^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$' )
+    contact varchar(20) check ( contact ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
 create table if not exists prod.company_pt
@@ -39,7 +39,7 @@ create table if not exists prod.trainee
     id        uuid primary key references prod."user" (id) on delete cascade,
     gender    char check (gender in ('M', 'F', 'O', 'U')) not null,
     birthdate date                                        not null,
-    contact   varchar(20) check ( contact ~ '^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$' )
+    contact   varchar(20) check ( contact ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
 create table if not exists prod.pt_trainee

@@ -5,16 +5,15 @@ import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import java.util.*
 
-interface AuthRepo {
+interface UserRepo {
 
     fun createUser(name: String, email: String, passwordHash: String, role: Role): UUID
 
     fun createCompany(id: UUID)
 
-    fun createIndependentTrainer(id: UUID, gender: Gender, phoneNumber: String?)
+    fun createIndependentTrainer(id: UUID, gender: Gender, phoneNumber: String? = null)
 
     fun getUserDetails(email: String): UserDetails?
 
     fun getUserDetails(userId: UUID): UserDetails?
-
 }

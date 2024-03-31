@@ -1,9 +1,9 @@
 package pt.isel.leic.ptgest.repository.transaction
 
-import pt.isel.leic.ptgest.repository.AuthRepo
+import pt.isel.leic.ptgest.repository.UserRepo
 
 interface Transaction {
-    val authRepo: AuthRepo
+    val userRepo: UserRepo
 
     /**
      * Explicitly commits the transaction.

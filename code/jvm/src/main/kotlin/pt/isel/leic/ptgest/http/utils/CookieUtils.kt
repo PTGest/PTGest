@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import java.util.*
 
-//check if we need or is recommended to use the secure attribute
+// check if we need or is recommended to use the secure attribute
 fun setCookie(
     name: String,
     value: String,

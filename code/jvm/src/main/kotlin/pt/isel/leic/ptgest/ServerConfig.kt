@@ -10,7 +10,7 @@ object ServerConfig {
 
     val developers = listOf(
         DevInfo("Daniel Sousa", "a48642@alunos.isel.pt"),
-        DevInfo("Pedro Macedo", "a49471@alunos.isel.pt"),
+        DevInfo("Pedro Macedo", "a49471@alunos.isel.pt")
     )
 
     val dbUrl: String

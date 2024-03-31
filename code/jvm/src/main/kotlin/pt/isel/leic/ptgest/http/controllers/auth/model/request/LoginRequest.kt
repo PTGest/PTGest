@@ -10,5 +10,5 @@ data class LoginRequest(
     val email: String,
 
     @field:Size(min = 8)
-    val password: String,
+    val password: String
 )

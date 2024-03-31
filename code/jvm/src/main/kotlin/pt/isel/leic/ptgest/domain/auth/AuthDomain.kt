@@ -6,8 +6,12 @@ import java.util.*
 
 @Component
 class AuthDomain(
-    private val passwordEncoder: PasswordEncoder,
+    private val passwordEncoder: PasswordEncoder
 ) {
+
+    val secret: String
+        get() = System.getenv("SECRET")
+            ?: throw IllegalStateException("Missing environment variable SECRET")
 
     fun validateTokenTtl(tokenCreationDate: Date, currentDate: Date): Boolean {
         val calendar = Calendar.getInstance()
@@ -27,8 +31,11 @@ class AuthDomain(
         calendarTtl.time = tokenCreationDate
         calendarTtl.add(Calendar.YEAR, 1)
 
-        return if (expirationDate.before(calendarTtl.time)) expirationDate
-        else calendarTtl.time
+        return if (expirationDate.before(calendarTtl.time)) {
+            expirationDate
+        } else {
+            calendarTtl.time
+        }
     }
 
     fun createTokenExpirationDate(currentDate: Date): Date {
