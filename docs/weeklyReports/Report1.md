@@ -71,7 +71,7 @@ The database was structured with the following tables:
 The structure was made according to the diagram below:
 
 
-![Database Diagram](./images/dbDiagrm.png)
+![Database Diagram](./images/dbDiagrm1.png)
 
 
 In the implementation of the database, two schemas were created, `prod` and `dev`, the first for production and the second for development (for testing the JDBI functions).
