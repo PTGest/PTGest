@@ -5,40 +5,34 @@
 
       <div class="signup-input-container">
         <div class="signup-input-text">Name</div>
-        <input v-model="name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
+        <input v-model="data.name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
       </div>
 
       <div class="signup-input-container">
         <div class="signup-input-text">Email</div>
-        <input v-model="email" class="signup-email-input signup-input-base" placeholder="Enter your email"/>
+        <input v-model="data.email" class="signup-email-input signup-input-base" placeholder="Enter your email"/>
       </div>
 
       <div class="signup-input-container">
         <div class="signup-input-text">Password</div>
         <div class="password-container">
-          <input v-model="password" :type='is_visible' class="signup-password-input signup-input-base"
+          <input v-model="data.password" :type='is_visible' class="signup-password-input signup-input-base"
                  placeholder="Enter your password"/>
           <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
         </div>
       </div>
 
-      <div v-if="null" class="signup-input-container">
-        <div class="signup-input-text">Birthdate</div>
-        <input v-model="birthdate" :class="[birthdate.length === 0 ? 'signup-birth-input-placeholder signup-input-base' :
-                  'signup-birth-input signup-input-base']" type="date"/>
-      </div>
 
       <div v-if="toggle" class="signup-input-container">
         <div class="signup-input-text">Gender</div>
-        <DropdownMenu></DropdownMenu>
+        <DropdownMenu @gender="updateGender"/>
       </div>
 
       <div v-if="toggle" class="signup-input-container">
         <div class="phone-text">Phone Number</div>
         <div class="phone-container">
           <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
-          <input v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"
-                 @change="onlyNumbers(countryNumber)"/>
+          <input v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"/>
           <input v-model="phoneNumber" :maxlength="9" class="signup-phone-input signup-input-base"
                  placeholder="Phone Number"/>
         </div>
@@ -50,7 +44,7 @@
         <font-awesome-icon :icon="faBuilding" class="switch-icon-c" @click="toggleSwitch(false)"></font-awesome-icon>
       </div>
 
-      <button class="signup-button" @click="signup">Sign up</button>
+      <button class="signup-button" @click="signUp">Sign up</button>
 
     </div>
 
@@ -58,22 +52,29 @@
 </template>
 
 
-<script setup>
-import {ref} from 'vue'
+<script setup lang="ts">
+import {Ref, ref} from 'vue'
+import {signupServices} from "../services/authServices/signupServices.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
-import DropdownMenu from "@/components/DropdownMenu.vue";
-import SignupPT from "@/models/SignupPT";
+import DropdownMenu from "../components/DropdownMenu.vue";
+import SignupPT from "../models/SignupPT";
 
-let gender = ref("")
-let password = ref("")
-let name = ref("")
-let email = ref("")
+
+
 let countryNumber = ref("")
 let phoneNumber = ref("")
-let birthdate = ref("")
 let is_visible = ref("password")
 let toggle = ref(true)
+let data: Ref<SignupPT> = ref({
+  name: "",
+  email: "",
+  gender: "",
+  password: "",
+  phoneNumber: "",
+  user_type: "PT"
+})
+
 
 const updateVisibility = () => {
   if (is_visible.value === "") {
@@ -82,22 +83,18 @@ const updateVisibility = () => {
     is_visible.value = ""
   }
 }
-const toggleSwitch = (value) => {
+const toggleSwitch = (value: boolean) => {
   toggle.value = value
+  data.value.user_type = value ? "pt" : "company"
 }
 
-
-const signup = () => {
-  let pt = new SignupPT(
-      name.value,
-      email.value,
-      password.value,
-      "PT",
-      countryNumber + phoneNumber.value,
-  )
-  console.log(pt)
-  return pt
-
+const updateGender = (value: string) => {
+  data.value.gender = value
+}
+const signUp = () => {
+  data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
+  signupServices(data.value)
+  console.log(data.value)
 }
 
 </script>

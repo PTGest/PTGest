@@ -1,23 +1,32 @@
 <template>
-
   <div class="dropdown-menu-container">
-    <div :class="[gender === 'Gender' ? 'placeholder' : 'option' ]">{{ gender }}</div>
+    <div :class="[gender === '' ? 'placeholder' : 'option' ]">{{ gender }}</div>
     <font-awesome-icon :class="[is_open ? 'drop-icon-open' : 'drop-icon']" :icon="faChevronDown"
                        @click="toggleOpen"></font-awesome-icon>
     <div v-if="is_open" class="dropdown">
 
-      <div class="drop-option" @click="optionChange('Male')"> Male</div>
+      <div class="drop-option" @click="() => {
+        $emit('gender', 'Male' )
+        optionChange('Male')
+      }"> Male</div>
 
-      <div class="drop-option" @click="optionChange('Female')"> Female</div>
+      <div class="drop-option" @click="() => {
+        $emit('gender', 'Female' )
+        optionChange('Female')
+      }"> Female</div>
 
-      <div class="drop-option" @click="optionChange('Undefined')"> Undefined</div>
+      <div class="drop-option" @click="() => {
+        $emit('gender', 'Undefined' )
+        optionChange('Undefined')
+      }"> Undefined</div>
 
-      <div class="drop-option" @click="optionChange('Other')"> Other</div>
+      <div class="drop-option" @click="() => {
+        $emit('gender', 'Other' )
+        optionChange('Other')
+      }"> Other</div>
 
     </div>
-
   </div>
-
 </template>
 
 <script lang="ts" setup>
