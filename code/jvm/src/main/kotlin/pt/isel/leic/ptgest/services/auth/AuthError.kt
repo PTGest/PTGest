@@ -22,13 +22,6 @@ sealed class AuthError : BaseError() {
      */
     sealed class TokenError : AuthError() {
 
-        data object InvalidUserRoleException : TokenError() {
-            private fun readResolve(): Any = InvalidUserRoleException
-            override val message: String
-                get() =
-                    "User role does not match the role in the token."
-        }
-
         data object TokenExpired : TokenError() {
             private fun readResolve(): Any = TokenExpired
             override val message: String get() = "Token has expired."
@@ -60,6 +53,13 @@ sealed class AuthError : BaseError() {
         data object TokenNotProvided : UserAuthenticationError() {
             private fun readResolve(): Any = TokenNotProvided
             override val message: String get() = "Token not provided."
+        }
+
+        data object InvalidUserRoleException : TokenError() {
+            private fun readResolve(): Any = InvalidUserRoleException
+            override val message: String
+                get() =
+                    "User role does not match the role in the token."
         }
     }
 }

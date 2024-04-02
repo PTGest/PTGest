@@ -25,6 +25,10 @@ class JwtService(
         creationDate: Date
     ): String {
         val claims = HashMap<String, Any>()
+
+        validateUser(userId, role)
+
+        require(creationDate.before(expirationDate)) { "Expiration date must be after creation date" }
         return createToken(claims, userId, role, expirationDate, creationDate)
     }
 
@@ -48,24 +52,26 @@ class JwtService(
         return tokenDetails
     }
 
-    private fun validateToken(tokenDetails: TokenDetails) {
+    private fun validateUser(userId: UUID, role: Role) {
         transactionManager.run {
             val authRepo = it.userRepo
 
             val userDetails =
-                authRepo.getUserDetails(tokenDetails.userId)
+                authRepo.getUserDetails(userId)
                     ?: throw AuthError.UserAuthenticationError.UserNotFound
 
-            if (userDetails.role != tokenDetails.role) {
-                throw AuthError.TokenError.InvalidUserRoleException
+            if (userDetails.role != role) {
+                throw AuthError.UserAuthenticationError.InvalidUserRoleException
             }
         }
+    }
+
+    private fun validateToken(tokenDetails: TokenDetails) {
+        validateUser(tokenDetails.userId, tokenDetails.role)
 
         val currentDate = Date()
 
-        if (tokenDetails.expirationDate.before(currentDate) ||
-            !authDomain.validateTokenTtl(tokenDetails.creationDate, currentDate)
-        ) {
+        if (!authDomain.validateTokenTtl(tokenDetails.creationDate, currentDate)) {
             throw AuthError.TokenError.TokenExpired
         }
     }

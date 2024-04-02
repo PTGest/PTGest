@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.http.pipeline
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpStatus
@@ -72,6 +73,7 @@ class ExceptionHandler {
             AuthError.UserAuthenticationError.InvalidPassword::class,
             AuthError.UserAuthenticationError.TokenNotProvided::class,
             AuthError.TokenError.TokenExpired::class,
+            ExpiredJwtException::class,
             AuthError.TokenError.TokenExpirationMismatchException::class,
             AuthError.TokenError.TokenExpirationMismatchException::class,
             AuthenticationException::class
