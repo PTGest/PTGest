@@ -2,19 +2,18 @@ package pt.isel.leic.ptgest.repository
 
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
-import pt.isel.leic.ptgest.PtgestApplication
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.jdbi.auth.JdbiUserRepo
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
-@SpringBootTest(classes = [PtgestApplication::class])
+@SpringBootTest
 class UserRepoTests {
 
     val jdbi = getDevJdbi()
@@ -56,7 +55,7 @@ class UserRepoTests {
                 userRepo.createUser(name, email, password, role)
             }
 
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(name, email, password, role)
@@ -68,7 +67,7 @@ class UserRepoTests {
 
         @Test
         fun `create user with invalid name`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(
@@ -85,7 +84,7 @@ class UserRepoTests {
 
         @Test
         fun `create user with invalid email`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(
@@ -102,7 +101,7 @@ class UserRepoTests {
 
         @Test
         fun `create user with empty name`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(
@@ -119,7 +118,7 @@ class UserRepoTests {
 
         @Test
         fun `create user with empty email`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(
@@ -136,7 +135,7 @@ class UserRepoTests {
 
         @Test
         fun `create user with empty password`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(
@@ -157,19 +156,17 @@ class UserRepoTests {
 
         @Test
         fun `create company Successfully`() {
-            assertDoesNotThrow {
-                asTransaction(jdbi) { handle ->
-                    val userRepo = JdbiUserRepo(handle)
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
 
-                    val userId = userRepo.createUser(
-                        "UserTest",
-                        "usertest@mail.com",
-                        "passwordTest",
-                        Role.COMPANY
-                    )
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.COMPANY
+                )
 
-                    userRepo.createCompany(userId)
-                }
+                userRepo.createCompany(userId)
             }
 
             asTransaction(jdbi) { it.cleanup() }
@@ -177,7 +174,7 @@ class UserRepoTests {
 
         @Test
         fun `create company with invalid user id`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createCompany(UUID.randomUUID())
@@ -193,18 +190,16 @@ class UserRepoTests {
 
         @Test
         fun `create independent trainer Successfully without contact`() {
-            assertDoesNotThrow {
-                asTransaction(jdbi) { handle ->
-                    val userRepo = JdbiUserRepo(handle)
-                    val userId = userRepo.createUser(
-                        "UserTest",
-                        "usertest@mail.com",
-                        "passwordTest",
-                        Role.INDEPENDENT_TRAINER
-                    )
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.INDEPENDENT_TRAINER
+                )
 
-                    userRepo.createIndependentTrainer(userId, Gender.MALE)
-                }
+                userRepo.createIndependentTrainer(userId, Gender.MALE)
             }
 
             asTransaction(jdbi) { it.cleanup() }
@@ -212,18 +207,16 @@ class UserRepoTests {
 
         @Test
         fun `create independent trainer Successfully with contact`() {
-            assertDoesNotThrow {
-                asTransaction(jdbi) { handle ->
-                    val userRepo = JdbiUserRepo(handle)
-                    val userId = userRepo.createUser(
-                        "UserTest",
-                        "usertest@mail.com",
-                        "passwordTest",
-                        Role.INDEPENDENT_TRAINER
-                    )
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.INDEPENDENT_TRAINER
+                )
 
-                    userRepo.createIndependentTrainer(userId, Gender.MALE, "+351962005244")
-                }
+                userRepo.createIndependentTrainer(userId, Gender.MALE, "+351962005244")
             }
 
             asTransaction(jdbi) { it.cleanup() }
@@ -231,7 +224,7 @@ class UserRepoTests {
 
         @Test
         fun `create independent trainer Unsuccessfully with wrong contact`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     val userId = userRepo.createUser(
@@ -250,7 +243,7 @@ class UserRepoTests {
 
         @Test
         fun `create independent trainer Unsuccessfully with empty contact`() {
-            assertThrows<UnableToExecuteStatementException> {
+            assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     val userId = userRepo.createUser(
@@ -270,13 +263,18 @@ class UserRepoTests {
 
     @Test
     fun `get user details by email Successfully`() {
+        val name = "UserTest"
+        val email = "usertest@mail.com"
+        val password = "passwordTest"
+        val role = Role.INDEPENDENT_TRAINER
+
         val user = asTransaction(jdbi) { handle ->
             val userRepo = JdbiUserRepo(handle)
             userRepo.createUser(
-                "UserTest",
-                "usertest@mail.com",
-                "passwordTest",
-                Role.INDEPENDENT_TRAINER
+                name,
+                email,
+                password,
+                role
             )
 
             userRepo.getUserDetails("usertest@mail.com")
@@ -284,7 +282,11 @@ class UserRepoTests {
 
         asTransaction(jdbi) { it.cleanup() }
 
-        assertTrue { user != null }
+        assertNotNull(user)
+        assertEquals(name, user.name)
+        assertEquals(email, user.email)
+        assertEquals(password, user.passwordHash)
+        assertEquals(role, user.role)
     }
 
     @Test
@@ -294,18 +296,23 @@ class UserRepoTests {
             userRepo.getUserDetails("usertest@mail.com")
         }
 
-        assertTrue { user == null }
+        assertNull(user)
     }
 
     @Test
     fun `get user details by id Successfully`() {
+        val name = "UserTest"
+        val email = "usertest@mail.com"
+        val password = "passwordTest"
+        val role = Role.INDEPENDENT_TRAINER
+
         val user = asTransaction(jdbi) { handle ->
             val userRepo = JdbiUserRepo(handle)
             val userId = userRepo.createUser(
-                "UserTest",
-                "usertest@mail.com",
-                "passwordTest",
-                Role.INDEPENDENT_TRAINER
+                name,
+                email,
+                password,
+                role
             )
 
             userRepo.getUserDetails(userId)
@@ -313,7 +320,11 @@ class UserRepoTests {
 
         asTransaction(jdbi) { it.cleanup() }
 
-        assertTrue { user != null }
+        assertNotNull(user)
+        assertEquals(name, user.name)
+        assertEquals(email, user.email)
+        assertEquals(password, user.passwordHash)
+        assertEquals(role, user.role)
     }
 
     @Test
@@ -323,6 +334,6 @@ class UserRepoTests {
             userRepo.getUserDetails(UUID.randomUUID())
         }
 
-        assertTrue { user == null }
+        assertNull(user)
     }
 }

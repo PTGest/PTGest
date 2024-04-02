@@ -16,4 +16,8 @@ object ServerConfig {
     val dbUrl: String
         get() = System.getenv(KEY_DB_URL)
             ?: throw IllegalStateException("Missing environment variable $KEY_DB_URL")
+
+    val secret: String
+        get() = System.getenv("SECRET")
+            ?: throw IllegalStateException("Missing environment variable SECRET")
 }

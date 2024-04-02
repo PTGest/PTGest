@@ -12,8 +12,8 @@ import java.util.*
 @Service
 class AuthService(
     private val jwtService: JwtService,
-    private val transactionManager: TransactionManager,
-    private val authDomain: AuthDomain
+    private val authDomain: AuthDomain,
+    private val transactionManager: TransactionManager
 ) {
 
     fun signUpCompany(

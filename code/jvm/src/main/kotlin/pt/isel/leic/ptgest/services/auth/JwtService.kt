@@ -2,8 +2,10 @@ package pt.isel.leic.ptgest.services.auth
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
@@ -11,8 +13,9 @@ import java.util.*
 
 @Service
 class JwtService(
-    private val transactionManager: TransactionManager,
-    private val authDomain: AuthDomain
+    private val authDomain: AuthDomain,
+    private val secret: JWTSecret,
+    private val transactionManager: TransactionManager
 ) {
 
     fun generateToken(
@@ -68,7 +71,7 @@ class JwtService(
     }
 
     private fun getAllClaimsFromToken(token: String): Claims =
-        Jwts.parser().setSigningKey(authDomain.secret).parseClaimsJws(token).body
+        Jwts.parser().setSigningKey(secret.value).parseClaimsJws(token).body
 
     private fun createToken(
         claims: Map<String, Any>,
@@ -82,5 +85,5 @@ class JwtService(
             .setSubject(role.name)
             .setIssuedAt(creationDate)
             .setExpiration(expirationDate)
-            .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, authDomain.secret).compact()
+            .signWith(SignatureAlgorithm.HS256, secret.value).compact()
 }

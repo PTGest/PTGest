@@ -38,6 +38,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.jsonwebtoken:jjwt:0.9.1")
 
+    // JAXB dependencies
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
+
     // for testing
     testImplementation("org.mockito:mockito-core:3.12.4")
     testImplementation(kotlin("test"))
