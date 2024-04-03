@@ -180,7 +180,7 @@ class JwtServiceTests {
         @BeforeAll
         fun setUp(@Autowired authDomain: AuthDomain, @Autowired secret: JWTSecret) {
             mockAuthDomain = spy(authDomain)
-            mockJwtService = buildMockJwtService(authDomain, secret)
+            mockJwtService = buildMockJwtService(secret)
         }
     }
 }

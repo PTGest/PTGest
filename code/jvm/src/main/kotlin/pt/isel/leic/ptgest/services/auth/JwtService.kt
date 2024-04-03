@@ -13,7 +13,6 @@ import java.util.*
 
 @Service
 class JwtService(
-    private val authDomain: AuthDomain,
     private val secret: JWTSecret,
     private val transactionManager: TransactionManager
 ) {
@@ -47,7 +46,7 @@ class JwtService(
             expirationDate = Date(expirationDate.time)
         )
 
-        validateToken(tokenDetails)
+        validateUser(tokenDetails.userId, tokenDetails.role)
 
         return tokenDetails
     }
@@ -63,16 +62,6 @@ class JwtService(
             if (userDetails.role != role) {
                 throw AuthError.UserAuthenticationError.InvalidUserRoleException
             }
-        }
-    }
-
-    private fun validateToken(tokenDetails: TokenDetails) {
-        validateUser(tokenDetails.userId, tokenDetails.role)
-
-        val currentDate = Date()
-
-        if (!authDomain.validateTokenTtl(tokenDetails.creationDate, currentDate)) {
-            throw AuthError.TokenError.TokenExpired
         }
     }
 

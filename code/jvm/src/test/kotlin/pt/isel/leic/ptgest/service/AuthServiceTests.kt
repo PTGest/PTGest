@@ -190,14 +190,14 @@ class AuthServiceTests {
 
     companion object {
         lateinit var mockAuthService: AuthService
-        lateinit var mockJwtService: JwtService
+        private lateinit var mockJwtService: JwtService
         lateinit var mockAuthDomain: AuthDomain
 
         @JvmStatic
         @BeforeAll
         fun setUp(@Autowired authDomain: AuthDomain, @Autowired jwtSecret: JWTSecret) {
             mockAuthDomain = spy(authDomain)
-            mockJwtService = buildMockJwtService(authDomain, jwtSecret)
+            mockJwtService = buildMockJwtService(jwtSecret)
             mockAuthService = buildMockAuthServices(mockJwtService, mockAuthDomain)
         }
     }
