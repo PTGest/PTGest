@@ -9,10 +9,12 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.service.MockServices.buildMockAuthServices
+import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
 import pt.isel.leic.ptgest.services.auth.JwtService
@@ -145,6 +147,9 @@ class AuthServiceTests {
             `when`(mockUserRepo.getUserDetails(email))
                 .then { UserDetails(uuid, name, email, passwordHash, role) }
 
+            `when`(mockUserRepo.getUserDetails(uuid))
+                .then { UserDetails(uuid, name, email, passwordHash, role) }
+
             val token = mockAuthService.login(email, password)
 
             assertTrue(token.token.isNotEmpty())
@@ -185,13 +190,15 @@ class AuthServiceTests {
 
     companion object {
         lateinit var mockAuthService: AuthService
+        private lateinit var mockJwtService: JwtService
         lateinit var mockAuthDomain: AuthDomain
 
         @JvmStatic
         @BeforeAll
-        fun setUp(@Autowired authDomain: AuthDomain, @Autowired jwtService: JwtService) {
+        fun setUp(@Autowired authDomain: AuthDomain, @Autowired jwtSecret: JWTSecret) {
             mockAuthDomain = spy(authDomain)
-            mockAuthService = buildMockAuthServices(jwtService, mockAuthDomain)
+            mockJwtService = buildMockJwtService(jwtSecret)
+            mockAuthService = buildMockAuthServices(mockJwtService, mockAuthDomain)
         }
     }
 }

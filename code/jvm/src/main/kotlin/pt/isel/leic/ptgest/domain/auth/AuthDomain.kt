@@ -8,14 +8,6 @@ import java.util.*
 class AuthDomain(
     private val passwordEncoder: PasswordEncoder
 ) {
-    fun validateTokenTtl(tokenCreationDate: Date, currentDate: Date): Boolean {
-        val calendar = Calendar.getInstance()
-        calendar.time = tokenCreationDate
-        calendar.add(Calendar.YEAR, 1)
-
-        return currentDate.before(calendar.time)
-    }
-
     fun updateTokenExpirationDate(
         tokenCreationDate: Date,
         currentDate: Date

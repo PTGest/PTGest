@@ -31,10 +31,9 @@ object MockServices {
             (mockTransaction).let(block)
     }
 
-    fun buildMockJwtService(authDomain: AuthDomain): JwtService =
+    fun buildMockJwtService(jwtSecret: JWTSecret): JwtService =
         JwtService(
-            authDomain,
-            JWTSecret("testSecret"),
+            jwtSecret,
             mockTransactionManager
         )
 
