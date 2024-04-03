@@ -5,18 +5,18 @@
 
       <div class="signup-input-container">
         <div class="signup-input-text">Name</div>
-        <input v-model="data.name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
+        <input v-model="signupUserData.name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
       </div>
 
       <div class="signup-input-container">
         <div class="signup-input-text">Email</div>
-        <input v-model="data.email" class="signup-email-input signup-input-base" placeholder="Enter your email"/>
+        <input v-model="signupUserData.email" class="signup-email-input signup-input-base" placeholder="Enter your email"/>
       </div>
 
       <div class="signup-input-container">
         <div class="signup-input-text">Password</div>
         <div class="password-container">
-          <input v-model="data.password" :type='is_visible' class="signup-password-input signup-input-base"
+          <input v-model="signupUserData.password" :type='is_visible' class="signup-password-input signup-input-base"
                  placeholder="Enter your password"/>
           <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
         </div>
@@ -54,11 +54,11 @@
 
 <script setup lang="ts">
 import {Ref, ref} from 'vue'
-import {signupServices} from "../services/authServices/signupServices.ts";
+import {signupUserServices} from "../services/authServices/signupServices.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
 import DropdownMenu from "../components/DropdownMenu.vue";
-import SignupPT from "../models/SignupPT";
+import SignupPTData from "../models/authModels/SignupPTData.ts";
 
 
 
@@ -66,13 +66,13 @@ let countryNumber = ref("")
 let phoneNumber = ref("")
 let is_visible = ref("password")
 let toggle = ref(true)
-let data: Ref<SignupPT> = ref({
+let signupUserData: Ref<SignupPTData> = ref({
   name: "",
   email: "",
   gender: "",
   password: "",
   phoneNumber: "",
-  user_type: "PT"
+  user_type: "independent_trainer"
 })
 
 
@@ -85,16 +85,16 @@ const updateVisibility = () => {
 }
 const toggleSwitch = (value: boolean) => {
   toggle.value = value
-  data.value.user_type = value ? "pt" : "company"
+  signupUserData.value.user_type = value ? "independent_trainer" : "company"
 }
 
 const updateGender = (value: string) => {
-  data.value.gender = value
+  signupUserData.value.gender = value.toUpperCase()
 }
 const signUp = () => {
-  data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
-  signupServices(data.value)
-  console.log(data.value)
+  signupUserData.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
+  signupUserServices(signupUserData.value)
+  console.log(signupUserData.value)
 }
 
 </script>

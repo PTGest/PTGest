@@ -1,7 +1,7 @@
-import SignupPT from "../../models/SignupPT.ts";
+import SignupPTData from "../../models/authModels/SignupPTData.ts";
 
 
-export async function signupServices(userData: SignupPT) : Promise<void> {
+export async function signupUserServices(userData: SignupPTData) : Promise<void> {
     // Logic to sign up
     fetch('http://localhost:8080/api/signup', {
         method: 'POST',

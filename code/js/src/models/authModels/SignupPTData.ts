@@ -1,4 +1,4 @@
-class SignupPT {
+class SignupPTData {
     name: string;
     email: string;
     password: string;
@@ -16,4 +16,4 @@ class SignupPT {
     }
 }
 
-export default SignupPT;
+export default SignupPTData;

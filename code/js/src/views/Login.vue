@@ -4,14 +4,14 @@
   <div class="login-inputs-container">
 
     <div class="login-input-container">
-      <div class="login-input-text">Name</div>
-      <input v-model="name" class="login-name-input login-input-base" placeholder="Enter your name"/>
+      <div class="login-input-text">Email</div>
+      <input v-model="loginUserData.email" class="login-name-input login-input-base" placeholder="Enter your email"/>
     </div>
 
     <div class="login-input-container">
       <div class="login-input-text">Password</div>
       <div class="password-container">
-        <input v-model="password" :type='is_visible' class="login-password-input login-input-base"
+        <input v-model="loginUserData.password" :type='is_visible' class="login-password-input login-input-base"
                placeholder="Enter your password" />
         <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
       </div>
@@ -26,9 +26,15 @@
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {ref} from 'vue';
+import {loginUserServices} from "@/services/authServices/loginServices.ts";
+import {Ref} from "vue/dist/vue";
+import SignupPTData from "@/models/authModels/SignupPTData.ts";
+import LoginUserData from "@/models/authModels/LoginUserData.ts";
 
-let name = ref("")
-let password = ref("")
+let loginUserData : Ref<LoginUserData> = ref({
+  email: "",
+  password: "",
+})
 let is_visible = ref("password")
 const updateVisibility = () => {
   if (is_visible.value === "") {
@@ -38,7 +44,8 @@ const updateVisibility = () => {
   }
 }
 const login= () => {
-  console.log("Logged In")
+  console.log(loginUserData.value.email)
+  loginUserServices(loginUserData.value)
 }
 </script>
 
