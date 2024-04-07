@@ -1,8 +1,8 @@
 <template>
   <div class="signup-container">
-    <h1>Sign up</h1>
+    <img class="signup-img" src=".././assets/signup.png" alt="Signup image">
     <div class="signup-inputs-container">
-
+      <h1>Sign up</h1>
       <div class="signup-input-container">
         <div class="signup-input-text">Name</div>
         <input v-model="signupUserData.name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
@@ -33,7 +33,7 @@
         <div class="phone-container">
           <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
           <input v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"/>
-          <input v-model="phoneNumber" :maxlength="9" class="signup-phone-input signup-input-base"
+          <input v-model="phoneNumber" pattern="[0-9]" :maxlength="9" class="signup-phone-input signup-input-base"
                  placeholder="Phone Number"/>
         </div>
       </div>
@@ -48,6 +48,7 @@
 
     </div>
 
+
   </div>
 </template>
 
@@ -59,8 +60,6 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
 import DropdownMenu from "../components/DropdownMenu.vue";
 import SignupPTData from "../models/authModels/SignupPTData.ts";
-
-
 
 let countryNumber = ref("")
 let phoneNumber = ref("")
@@ -101,14 +100,20 @@ const signUp = () => {
 
 <style scoped>
 
+.signup-img{
+  width: 40em;
+  height: 40em;
+  margin-right: 3em;
+}
+
 .signup-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 25em;
+  width: 70em;
   border-radius: 20px;
-  background-color: var(--primary-color);
+  background-color: var(--light-blue);
 }
 
 .signup-inputs-container {
@@ -139,8 +144,8 @@ const signUp = () => {
   border-radius: 5px;
   border: 0;
   padding: 0 1em 0 1em;
-  color: white;
-  background-color: var(--secundary-color);
+  color: var(--primary-color);
+  background-color: whitesmoke;
 }
 
 .password-container {
@@ -155,6 +160,7 @@ const signUp = () => {
   position: absolute;
   right: 0.8em;
   cursor: pointer;
+  color: var(--sign-up-black);
 }
 
 .phone-container {
@@ -197,7 +203,7 @@ const signUp = () => {
   align-items: center;
   width: 7em;
   height: 3.5em;
-  background-color: var(--secundary-color);
+  background-color: whitesmoke;
   border-radius: 30px;
 }
 
@@ -205,7 +211,7 @@ const signUp = () => {
   width: 3em;
   height: 3em;
   border-radius: 50%;
-  background-color: #535bf2;
+  background-color: var(--sign-up-blue);
   position: relative;
   right: 1.8em;
   transition: 0.2s ease-out;
@@ -220,6 +226,7 @@ const signUp = () => {
 .switch-icon-pt, .switch-icon-c {
   z-index: 10;
   cursor: pointer;
+  color : var(--sign-up-black);
 }
 
 .signup-button {
@@ -227,8 +234,8 @@ const signUp = () => {
   width: 20em;
   height: 3em;
   border-radius: 5px;
-  background-color: #535bf2;
-  color: white;
+  background-color: whitesmoke;
+  color: var(--sign-up-black);
   border: 0;
   cursor: pointer;
 }

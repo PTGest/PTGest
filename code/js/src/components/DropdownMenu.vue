@@ -54,7 +54,7 @@ let optionChange = (option: string) => {
   flex-direction: row;
   justify-content: start;
   align-items: center;
-  background-color: var(--secundary-color);
+  background-color: whitesmoke;
   width: 18.5em;
   height: 2em;
   border-radius: 5px;
@@ -70,7 +70,7 @@ let optionChange = (option: string) => {
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  background-color: var(--secundary-color);
+  background-color: whitesmoke;
   z-index: 998;
 }
 
@@ -79,11 +79,14 @@ let optionChange = (option: string) => {
   list-style-type: none;
   padding: 0.5em 0 0.5em 0;
   transition: 0.1s ease-in;
+  color: whitesmoke;
+  background-color: #263238;
 }
 
 .drop-option:hover {
   cursor: pointer;
-  background-color: var(--tertiary-color);
+  background-color: whitesmoke;
+  color: var(--black1a);
   transition: 0.1s ease-out;
 }
 
@@ -91,6 +94,7 @@ let optionChange = (option: string) => {
   position: relative;
   right: -13.5em;
   padding: 1em;
+  color: var(--sign-up-black);
   cursor: pointer;
 }
 
@@ -101,6 +105,7 @@ let optionChange = (option: string) => {
 .option, .placeholder {
   max-width: 1em;
   padding: 0.5em;
+  color: var(--black1a);
 }
 
 .placeholder {
