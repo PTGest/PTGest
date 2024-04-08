@@ -1,17 +1,16 @@
 package pt.isel.leic.ptgest.http.controllers.auth
 
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.RefreshTokenRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.SignupRequest
@@ -19,7 +18,8 @@ import pt.isel.leic.ptgest.http.controllers.auth.model.response.HttpResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.SignupResponse
 import pt.isel.leic.ptgest.http.utils.Uris
-import pt.isel.leic.ptgest.http.utils.setCookie
+import pt.isel.leic.ptgest.http.utils.revokeCookies
+import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
 
@@ -102,12 +102,7 @@ class AuthController(private val services: AuthService) {
 
         val tokens = when {
             sessionCookies != null -> {
-                val accessToken = sessionCookies.firstOrNull { it.name == "access_token" }?.value
-                val refreshToken = sessionCookies.firstOrNull { it.name == "refresh_token" }?.value
-
-                if (accessToken == null || refreshToken == null) {
-                    throw AuthError.UserAuthenticationError.TokenNotProvided
-                }
+                val (accessToken, refreshToken) = processCookies(sessionCookies)
 
                 val tokens = services.refreshToken(accessToken, refreshToken)
 
@@ -115,16 +110,13 @@ class AuthController(private val services: AuthService) {
 
                 tokens
             }
+
             refreshTokenBody != null -> {
-                val accessTokenParts = request.getHeader("Authorization")?.split(" ")
-                    ?: throw AuthError.UserAuthenticationError.TokenNotProvided
+                val accessToken = processHeader(request)
 
-                if (accessTokenParts.size != 2) {
-                    throw BadCredentialsException("Invalid Authorization header")
-                }
-
-                services.refreshToken(accessTokenParts[1], refreshTokenBody.refreshToken)
+                services.refreshToken(accessToken, refreshTokenBody.refreshToken)
             }
+
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
             }
@@ -139,24 +131,59 @@ class AuthController(private val services: AuthService) {
         )
     }
 
-    @DeleteMapping(Uris.Auth.LOGOUT)
-    fun logout(response: HttpServletResponse): ResponseEntity<*> {
-        throw NotImplementedError("Not implemented")
+    @PostMapping(Uris.Auth.LOGOUT)
+    fun logout(
+        @RequestBody(required = false) refreshTokenBody: RefreshTokenRequest?,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<*> {
+        val sessionCookies = request.cookies
+
+        when {
+            sessionCookies != null -> {
+                val (accessToken, refreshToken) = processCookies(sessionCookies)
+
+                services.logout(accessToken, refreshToken)
+
+                revokeCookies(response)
+            }
+
+            refreshTokenBody != null -> {
+                val accessToken = processHeader(request)
+
+                services.logout(accessToken, refreshTokenBody.refreshToken)
+            }
+
+            else -> {
+                throw AuthError.UserAuthenticationError.TokenNotProvided
+            }
+        }
+
+        return HttpResponse.ok(
+            message = "User logged out successfully.",
+            details = null
+        )
     }
 
-    private fun setCookies(response: HttpServletResponse, tokens: TokenPair) {
-        setCookie(
-            "access_token",
-            tokens.accessToken.token,
-            tokens.accessToken.expirationDate,
-            response
-        )
+    private fun processCookies(sessionCookies: Array<Cookie>): Pair<String, String> {
+        val accessToken = sessionCookies.firstOrNull { it.name == "access_token" }?.value
+        val refreshToken = sessionCookies.firstOrNull { it.name == "refresh_token" }?.value
 
-        setCookie(
-            "refresh_token",
-            tokens.refreshToken.token,
-            tokens.refreshToken.expirationDate,
-            response
-        )
+        if (accessToken == null || refreshToken == null) {
+            throw AuthError.UserAuthenticationError.TokenNotProvided
+        }
+
+        return Pair(accessToken, refreshToken)
+    }
+
+    private fun processHeader(request: HttpServletRequest): String {
+        val accessTokenParts = request.getHeader("Authorization")?.split(" ")
+            ?: throw AuthError.UserAuthenticationError.TokenNotProvided
+
+        if (accessTokenParts.size != 2) {
+            throw BadCredentialsException("Invalid Authorization header")
+        }
+
+        return accessTokenParts[1]
     }
 }

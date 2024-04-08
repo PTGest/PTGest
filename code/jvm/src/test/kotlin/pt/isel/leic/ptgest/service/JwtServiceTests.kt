@@ -57,7 +57,20 @@ class JwtServiceTests {
                 createInvalidToken()
             }
 
-            assertEquals("Expiration date must be after creation date", exception.message)
+            assertEquals("Expiration date must be after or equal to creation date", exception.message)
+        }
+
+        @Test
+        fun `generate token with expiration date same as current date`() {
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
+                .then { userDetails }
+
+            mockJwtService.generateToken(
+                accessTokenDetails.userId,
+                accessTokenDetails.role,
+                currentDate,
+                currentDate
+            )
         }
 
         @Test

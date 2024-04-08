@@ -111,6 +111,13 @@ class AuthService(
         return tokens
     }
 
+    fun logout(accessToken: String, refreshToken: String) {
+        transactionManager.run {
+            val userRepo = it.userRepo
+            userRepo.removeRefreshToken(authDomain.hashToken(refreshToken))
+        }
+    }
+
     private fun createUser(
         userRepo: UserRepo,
         name: String,

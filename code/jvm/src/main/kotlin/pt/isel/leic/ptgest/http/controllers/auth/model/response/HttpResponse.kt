@@ -19,9 +19,6 @@ object HttpResponse {
         headers: HttpHeaders = HttpHeaders()
     ) = httpResponse(message, details, headers, HttpStatus.CREATED)
 
-    fun noContent(headers: HttpHeaders = HttpHeaders()) =
-        ResponseEntity<Nothing>(headers, HttpStatus.NO_CONTENT)
-
     private fun <T> httpResponse(
         message: String? = null,
         details: T? = null,
@@ -29,7 +26,7 @@ object HttpResponse {
         code: HttpStatusCode
     ) =
         hashMapOf<String, Any?>().apply {
-            put("details", details)
+            if (details != null) put("details", details)
             put("message", message ?: getDefaultMessage(code))
         }.let {
             ResponseEntity(it, headers, code)
