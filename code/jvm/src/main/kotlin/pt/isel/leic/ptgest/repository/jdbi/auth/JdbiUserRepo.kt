@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.repository.jdbi.auth
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.auth.model.RefreshTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
@@ -9,6 +10,7 @@ import pt.isel.leic.ptgest.repository.UserRepo
 import java.util.*
 
 class JdbiUserRepo(private val handle: Handle) : UserRepo {
+
     override fun createUser(
         name: String,
         email: String,
@@ -59,6 +61,46 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
                     "phoneNumber" to phoneNumber
                 )
             )
+            .execute()
+    }
+
+    override fun createRefreshToken(userId: UUID, tokenHash: String, expirationDate: Date) {
+        handle.createUpdate(
+            """
+                insert into refresh_token (token, user_id, expiration)
+                values (:tokenHash, :userId, :expirationDate)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "tokenHash" to tokenHash,
+                    "userId" to userId,
+                    "expirationDate" to expirationDate
+                )
+            )
+            .execute()
+    }
+
+    override fun getRefreshTokenDetails(tokenHash: String): RefreshTokenDetails? {
+        return handle.createQuery(
+            """
+                select user_id, expiration from refresh_token
+                where token = :token
+            """.trimIndent()
+        )
+            .bind("token", tokenHash)
+            .mapTo<RefreshTokenDetails>()
+            .firstOrNull()
+    }
+
+    override fun removeRefreshToken(tokenHash: String) {
+        handle.createUpdate(
+            """
+                delete from refresh_token
+                where token = :token
+            """.trimIndent()
+        )
+            .bind("token", tokenHash)
             .execute()
     }
 

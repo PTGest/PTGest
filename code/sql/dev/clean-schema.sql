@@ -14,5 +14,6 @@ truncate
     dev.exercise,
     dev.personal_trainer,
     dev."user",
-    dev.feedback;
+    dev.refresh_token,
+    dev.feedback cascade;
 end work;

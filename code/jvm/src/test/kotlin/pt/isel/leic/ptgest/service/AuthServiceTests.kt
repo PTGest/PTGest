@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
+import pt.isel.leic.ptgest.domain.auth.model.RefreshTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
@@ -18,6 +19,7 @@ import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
 import pt.isel.leic.ptgest.services.auth.JwtService
+import java.util.Calendar
 import java.util.Date
 import java.util.UUID
 import kotlin.test.Test
@@ -150,10 +152,10 @@ class AuthServiceTests {
             `when`(mockUserRepo.getUserDetails(uuid))
                 .then { UserDetails(uuid, name, email, passwordHash, role) }
 
-            val token = mockAuthService.login(email, password)
+            val tokens = mockAuthService.login(email, password)
 
-            assertTrue(token.token.isNotEmpty())
-            assertTrue(token.expirationDate.after(Date()))
+            assertTrue(tokens.accessToken.token.isNotEmpty())
+            assertTrue(tokens.refreshToken.token.isNotEmpty())
         }
 
         @Test
@@ -180,6 +182,142 @@ class AuthServiceTests {
             }
 
             assertEquals("User not found.", exception.message)
+        }
+    }
+
+    @Nested
+    inner class RefreshTokenTests {
+        private val uuid = UUID.randomUUID()
+        private val name = "UserTest"
+        private val email = "usertest@mai.com"
+        private val password = "password1234"
+        private val role = Role.COMPANY
+
+        @Test
+        fun `refresh token Successfully`() {
+            val currentDate = Date()
+
+            val accessTokenExpirationDate = mockAuthDomain.createAccessTokenExpirationDate(currentDate)
+
+            `when`(mockUserRepo.getUserDetails(uuid))
+                .then { UserDetails(uuid, name, email, password, role) }
+
+            val accessToken = mockJwtService.generateToken(
+                uuid,
+                role,
+                accessTokenExpirationDate,
+                currentDate
+            )
+
+            val refreshToken = mockAuthDomain.generateTokenValue()
+            val refreshTokenHash = mockAuthDomain.hashToken(refreshToken)
+            val refreshTokenExpirationDate = mockAuthDomain.createRefreshTokenExpirationDate(currentDate)
+
+            `when`(mockAuthDomain.hashToken(refreshToken))
+                .then { refreshTokenHash }
+
+            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+                .then { RefreshTokenDetails(uuid, refreshTokenExpirationDate) }
+
+            val tokens = mockAuthService.refreshToken(accessToken, refreshToken)
+
+            assertTrue(tokens.accessToken.token.isNotEmpty())
+            assertTrue(tokens.refreshToken.token.isNotEmpty())
+        }
+
+        @Test
+        fun `refresh token with expired refresh token`() {
+            val currentDate = Date()
+
+            val accessTokenExpirationDate = mockAuthDomain.createAccessTokenExpirationDate(currentDate)
+
+            `when`(mockUserRepo.getUserDetails(uuid))
+                .then { UserDetails(uuid, name, email, password, role) }
+
+            val accessToken = mockJwtService.generateToken(
+                uuid,
+                role,
+                accessTokenExpirationDate,
+                currentDate
+            )
+
+            val refreshToken = mockAuthDomain.generateTokenValue()
+            val refreshTokenHash = mockAuthDomain.hashToken(refreshToken)
+            val refreshTokenExpirationDate = Calendar.getInstance().apply {
+                time = currentDate
+                add(Calendar.HOUR, -1)
+            }.time
+
+            `when`(mockAuthDomain.hashToken(refreshToken))
+                .then { refreshTokenHash }
+
+            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+                .then { RefreshTokenDetails(uuid, refreshTokenExpirationDate) }
+
+            assertFailsWith<AuthError.TokenError.TokenExpired> {
+                mockAuthService.refreshToken(accessToken, refreshToken)
+            }
+        }
+
+        @Test
+        fun `refresh token with invalid refresh token`() {
+            val currentDate = Date()
+
+            val accessTokenExpirationDate = mockAuthDomain.createAccessTokenExpirationDate(currentDate)
+
+            `when`(mockUserRepo.getUserDetails(uuid))
+                .then { UserDetails(uuid, name, email, password, role) }
+
+            val accessToken = mockJwtService.generateToken(
+                uuid,
+                role,
+                accessTokenExpirationDate,
+                currentDate
+            )
+
+            val refreshToken = mockAuthDomain.generateTokenValue()
+            val refreshTokenHash = mockAuthDomain.hashToken(refreshToken)
+
+            `when`(mockAuthDomain.hashToken(refreshToken))
+                .then { refreshTokenHash }
+
+            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+                .then { null }
+
+            assertFailsWith<AuthError.TokenError.InvalidRefreshToken> {
+                mockAuthService.refreshToken(accessToken, refreshToken)
+            }
+        }
+
+        @Test
+        fun `refresh token with userId mismatch`() {
+            val currentDate = Date()
+
+            val accessTokenExpirationDate = mockAuthDomain.createAccessTokenExpirationDate(currentDate)
+
+            `when`(mockUserRepo.getUserDetails(uuid))
+                .then { UserDetails(uuid, name, email, password, role) }
+
+            val accessToken = mockJwtService.generateToken(
+                uuid,
+                role,
+                accessTokenExpirationDate,
+                currentDate
+            )
+
+            val refreshToken = mockAuthDomain.generateTokenValue()
+            val refreshTokenHash = mockAuthDomain.hashToken(refreshToken)
+            val refreshTokenExpirationDate = mockAuthDomain.createRefreshTokenExpirationDate(currentDate)
+
+            `when`(mockAuthDomain.hashToken(refreshToken))
+                .then { refreshTokenHash }
+
+            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+                .then { RefreshTokenDetails(UUID.randomUUID(), refreshTokenExpirationDate) }
+
+            assertFailsWith<AuthError.TokenError.UserIdMismatch> {
+                mockAuthService.refreshToken(accessToken, refreshToken)
+            }
         }
     }
 

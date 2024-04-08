@@ -38,7 +38,8 @@ fun Handle.cleanup() {
             dev.exercise,
             dev.personal_trainer,
             dev."user",
-            dev.feedback;
+            dev.refresh_token,
+            dev.feedback cascade;
         """.trimIndent()
     ).execute()
 }

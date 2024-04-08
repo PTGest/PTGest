@@ -11,6 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import pt.isel.leic.ptgest.domain.auth.Sha256TokenEncoder
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.http.pipeline.auth.AuthInterceptor
 import pt.isel.leic.ptgest.http.pipeline.auth.AuthenticatedUserResolver
@@ -28,6 +29,9 @@ class PtgestApplication {
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
+
+    @Bean
+    fun tokenEncoder() = Sha256TokenEncoder()
 
     @Bean
     fun jwtSecret() = JWTSecret(ServerConfig.secret)

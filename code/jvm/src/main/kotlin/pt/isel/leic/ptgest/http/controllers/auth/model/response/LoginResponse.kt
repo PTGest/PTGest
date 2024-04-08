@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.controllers.auth.model.response
 
-import java.util.*
+import pt.isel.leic.ptgest.domain.auth.model.Token
 
 internal data class LoginResponse(
-    val token: String,
-    val expirationDate: Date
+    val accessToken: Token,
+    val refreshToken: Token
 )

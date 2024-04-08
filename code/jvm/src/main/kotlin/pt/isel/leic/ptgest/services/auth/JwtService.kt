@@ -4,9 +4,8 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
-import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*
@@ -21,34 +20,32 @@ class JwtService(
         userId: UUID,
         role: Role,
         expirationDate: Date,
-        creationDate: Date
+        currentDate: Date
     ): String {
         val claims = HashMap<String, Any>()
 
         validateUser(userId, role)
 
-        require(creationDate.before(expirationDate)) { "Expiration date must be after creation date" }
-        return createToken(claims, userId, role, expirationDate, creationDate)
+        require(currentDate.before(expirationDate)) { "Expiration date must be after creation date" }
+        return createToken(claims, userId, role, expirationDate)
     }
 
-    fun extractToken(token: String): TokenDetails {
+    fun extractToken(token: String): AccessTokenDetails {
         val claims = getAllClaimsFromToken(token)
 
         val userId = claims.id
         val role = claims.subject
-        val creationDate = claims.issuedAt
         val expirationDate = claims.expiration
 
-        val tokenDetails = TokenDetails(
+        val accessTokenDetails = AccessTokenDetails(
             userId = UUID.fromString(userId),
             role = Role.valueOf(role),
-            creationDate = Date(creationDate.time),
             expirationDate = Date(expirationDate.time)
         )
 
-        validateUser(tokenDetails.userId, tokenDetails.role)
+        validateUser(accessTokenDetails.userId, accessTokenDetails.role)
 
-        return tokenDetails
+        return accessTokenDetails
     }
 
     private fun validateUser(userId: UUID, role: Role) {
@@ -72,13 +69,11 @@ class JwtService(
         claims: Map<String, Any>,
         userId: UUID,
         role: Role,
-        expirationDate: Date,
-        creationDate: Date
+        expirationDate: Date
     ): String =
         Jwts.builder().setClaims(claims)
             .setId(userId.toString())
             .setSubject(role.name)
-            .setIssuedAt(creationDate)
             .setExpiration(expirationDate)
             .signWith(SignatureAlgorithm.HS256, secret.value).compact()
 }

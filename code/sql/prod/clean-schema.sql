@@ -14,5 +14,6 @@ truncate
     prod.exercise,
     prod.personal_trainer,
     prod."user",
-    prod.feedback;
+    prod.refresh_token,
+    prod.feedback cascade;
 end work;

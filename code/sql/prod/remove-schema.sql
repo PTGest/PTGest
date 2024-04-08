@@ -28,6 +28,8 @@ drop table if exists prod.personal_trainer cascade;
 
 drop table if exists prod."user" cascade;
 
+drop table if exists prod.refresh_token cascade;
+
 drop table if exists prod.feedback cascade;
 
 

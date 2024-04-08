@@ -7,12 +7,19 @@ create extension if not exists "uuid-ossp";
 create table if not exists dev."user"
 (
     id            uuid default uuid_generate_v4() primary key,
-    name          varchar(15) check ("user".name <> '')                                       not null,
+    name          varchar(40) check ("user".name <> '')                                       not null,
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique    not null,
     password_hash varchar(256) check ("user".password_hash <> '')                      not null,
     role          varchar(20)
         check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
+);
+
+create table if not exists dev.refresh_token
+(
+    token       varchar(256) primary key,
+    user_id     uuid references dev."user" (id) on delete cascade,
+    expiration  timestamp check ( expiration > now() ) not null
 );
 
 create table if not exists dev.company

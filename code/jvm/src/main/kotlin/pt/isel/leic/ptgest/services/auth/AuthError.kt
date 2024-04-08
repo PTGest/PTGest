@@ -33,6 +33,16 @@ sealed class AuthError : BaseError() {
                 get() =
                     "The expiration date of the JWT token does not match the cookie’s maxAge."
         }
+
+        data object InvalidRefreshToken : TokenError() {
+            private fun readResolve(): Any = InvalidRefreshToken
+            override val message: String get() = "Invalid refresh token."
+        }
+
+        data object UserIdMismatch : TokenError() {
+            private fun readResolve(): Any = UserIdMismatch
+            override val message: String get() = "User ID in refresh token does not match the ID in the access token."
+        }
     }
 
     /**

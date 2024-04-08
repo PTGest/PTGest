@@ -9,18 +9,19 @@ fun setCookie(
     name: String,
     value: String,
     expirationDate: Date,
-    httpOnly: Boolean,
     response: HttpServletResponse
 ) {
     val cookie = Cookie(name, value)
     cookie.maxAge = expirationDate.toInstant().epochSecond.toInt()
-    cookie.isHttpOnly = httpOnly
+    cookie.isHttpOnly = true
+    cookie.secure = true
     response.addCookie(cookie)
 }
 
-fun revokeCookie(name: String, httpOnly: Boolean, response: HttpServletResponse) {
+fun revokeCookie(name: String, response: HttpServletResponse) {
     val cookie = Cookie(name, null)
     cookie.maxAge = 0
-    cookie.isHttpOnly = httpOnly
+    cookie.isHttpOnly = true
+    cookie.secure = true
     response.addCookie(cookie)
 }

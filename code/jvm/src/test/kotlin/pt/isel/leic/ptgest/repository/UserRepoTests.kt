@@ -6,7 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.jdbi.auth.JdbiUserRepo
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -261,6 +263,139 @@ class UserRepoTests {
         }
     }
 
+    @Nested
+    inner class RefreshTokenCreationTests {
+
+        @Test
+        fun `create refresh token Successfully`() {
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.COMPANY
+                )
+                val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
+                userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
+            }
+
+            asTransaction(jdbi) { it.cleanup() }
+        }
+
+        @Test
+        fun `create refresh token with invalid user id`() {
+            assertFailsWith<UnableToExecuteStatementException> {
+                asTransaction(jdbi) { handle ->
+                    val userRepo = JdbiUserRepo(handle)
+                    val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
+                    userRepo.createRefreshToken(UUID.randomUUID(), "tokenHash", expirationDate)
+                }
+            }
+
+            asTransaction(jdbi) { it.cleanup() }
+        }
+
+        @Test
+        fun `create refresh token with invalid expiration date`() {
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.COMPANY
+                )
+
+                assertFailsWith<UnableToExecuteStatementException> {
+                    userRepo.createRefreshToken(userId, "tokenHash", Date(0))
+                }
+            }
+
+            asTransaction(jdbi) { it.cleanup() }
+        }
+    }
+
+    @Nested
+    inner class RefreshTokenDetailsTests {
+
+        @Test
+        fun `get refresh token details Successfully`() {
+            val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
+            val userId = asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.COMPANY
+                )
+
+                userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
+
+                userId
+            }
+
+            val refreshTokenDetails = asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                userRepo.getRefreshTokenDetails("tokenHash")
+            }
+
+            assertNotNull(refreshTokenDetails)
+            assertEquals(userId, refreshTokenDetails.userId)
+            assertEquals(expirationDate, refreshTokenDetails.expiration)
+
+            asTransaction(jdbi) { it.cleanup() }
+        }
+
+        @Test
+        fun `get refresh token details without refresh token in data base`() {
+            val refreshTokenDetails = asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                userRepo.getRefreshTokenDetails("tokenHash")
+            }
+
+            assertNull(refreshTokenDetails)
+
+            asTransaction(jdbi) { it.cleanup() }
+        }
+    }
+
+    @Nested
+    inner class RefreshTokenRemovalTests {
+
+        @Test
+        fun `get refresh token details Successfully`() {
+            val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                val userId = userRepo.createUser(
+                    "UserTest",
+                    "usertest@mail.com",
+                    "passwordTest",
+                    Role.COMPANY
+                )
+
+                userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
+            }
+
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                userRepo.removeRefreshToken("tokenHash")
+            }
+
+            asTransaction(jdbi) { it.cleanup() }
+        }
+
+        @Test
+        fun `remove refresh token without refresh token in data base`() {
+            asTransaction(jdbi) { handle ->
+                val userRepo = JdbiUserRepo(handle)
+                userRepo.removeRefreshToken("tokenHash")
+            }
+        }
+    }
+
     @Test
     fun `get user details by email Successfully`() {
         val name = "UserTest"
@@ -335,5 +470,12 @@ class UserRepoTests {
         }
 
         assertNull(user)
+    }
+
+    private fun createExpirationDate(currentDate: Date, units: Int, amount: Int): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = currentDate
+        calendar.add(units, amount)
+        return calendar.time
     }
 }

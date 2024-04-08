@@ -10,8 +10,8 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
-import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
@@ -29,9 +29,10 @@ class JwtServiceTests {
 
     @Nested
     inner class GenerateTokenTests {
+
         @Test
-        fun `generate token with no exemptions`() {
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+        fun `generate token with success`() {
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { userDetails }
 
             val token = createToken()
@@ -41,15 +42,15 @@ class JwtServiceTests {
 
         @Test
         fun `generate token without any user details`() {
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { null }
 
             assertFailsWith<AuthError.UserAuthenticationError.UserNotFound> { createToken() }
         }
 
         @Test
-        fun `generate token with expiration date before creation date`() {
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+        fun `generate token with expiration date before current date`() {
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { userDetails }
 
             val exception = assertFailsWith<IllegalArgumentException> {
@@ -58,6 +59,16 @@ class JwtServiceTests {
 
             assertEquals("Expiration date must be after creation date", exception.message)
         }
+
+        @Test
+        fun `generate token with invalid user role`() {
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
+                .then { userDetails.copy(role = Role.INDEPENDENT_TRAINER) }
+
+            assertFailsWith<AuthError.UserAuthenticationError.InvalidUserRoleException> {
+                createToken()
+            }
+        }
     }
 
     @Nested
@@ -65,33 +76,29 @@ class JwtServiceTests {
 
         @Test
         fun `generate token and extract it successfully`() {
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { userDetails }
 
             val token = createToken()
             val extractedToken = mockJwtService.extractToken(token)
 
-            assertEquals(tokenDetails.userId, extractedToken.userId)
-            assertEquals(tokenDetails.role, extractedToken.role)
+            assertEquals(accessTokenDetails.userId, extractedToken.userId)
+            assertEquals(accessTokenDetails.role, extractedToken.role)
 
             assertEquals(
-                generateDateToCompare(tokenDetails.creationDate),
-                generateDateToCompare(extractedToken.creationDate)
-            )
-            assertEquals(
-                generateDateToCompare(tokenDetails.expirationDate),
+                generateDateToCompare(accessTokenDetails.expirationDate),
                 generateDateToCompare(extractedToken.expirationDate)
             )
         }
 
         @Test
         fun `generate token and extract it with miss match role`() {
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { userDetails }
 
             val token = createToken()
 
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { userDetails.copy(role = Role.INDEPENDENT_TRAINER) }
 
             assertFailsWith<AuthError.UserAuthenticationError.InvalidUserRoleException> {
@@ -101,7 +108,7 @@ class JwtServiceTests {
 
         @Test
         fun `generate token and extract it when token is expired with expiration date`() {
-            `when`(mockUserRepo.getUserDetails(tokenDetails.userId))
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
                 .then { userDetails }
 
             val creationDate = Calendar.getInstance()
@@ -113,13 +120,28 @@ class JwtServiceTests {
             println(expirationDate)
 
             val token = mockJwtService.generateToken(
-                tokenDetails.userId,
-                tokenDetails.role,
+                accessTokenDetails.userId,
+                accessTokenDetails.role,
                 expirationDate,
                 creationDate
             )
 
             assertFailsWith<ExpiredJwtException> {
+                mockJwtService.extractToken(token)
+            }
+        }
+
+        @Test
+        fun `generate token and extract it when there are no user details`() {
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
+                .then { userDetails }
+
+            val token = createToken()
+
+            `when`(mockUserRepo.getUserDetails(accessTokenDetails.userId))
+                .then { null }
+
+            assertFailsWith<AuthError.UserAuthenticationError.UserNotFound> {
                 mockJwtService.extractToken(token)
             }
         }
@@ -142,11 +164,10 @@ class JwtServiceTests {
         role = Role.COMPANY
     )
 
-    private val tokenDetails = TokenDetails(
+    private val accessTokenDetails = AccessTokenDetails(
         userId = UUID.randomUUID(),
         role = Role.COMPANY,
-        creationDate = currentDate,
-        expirationDate = mockAuthDomain.createTokenExpirationDate(currentDate)
+        expirationDate = mockAuthDomain.createAccessTokenExpirationDate(currentDate)
     )
 
     private val mockUserRepo = MockRepos.mockUserRepo
@@ -156,19 +177,19 @@ class JwtServiceTests {
 
     private fun createToken(): String {
         return mockJwtService.generateToken(
-            tokenDetails.userId,
-            tokenDetails.role,
-            tokenDetails.expirationDate,
-            tokenDetails.creationDate
+            accessTokenDetails.userId,
+            accessTokenDetails.role,
+            accessTokenDetails.expirationDate,
+            currentDate
         )
     }
 
     private fun createInvalidToken(): String {
         return mockJwtService.generateToken(
-            tokenDetails.userId,
-            tokenDetails.role,
-            tokenDetails.creationDate,
-            tokenDetails.expirationDate
+            accessTokenDetails.userId,
+            accessTokenDetails.role,
+            Calendar.getInstance().apply { time = currentDate; add(Calendar.MONTH, -1) }.time,
+            currentDate
         )
     }
 
