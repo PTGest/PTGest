@@ -7,6 +7,7 @@ import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.MailService
 import pt.isel.leic.ptgest.services.auth.AuthService
 import pt.isel.leic.ptgest.services.auth.JwtService
 
@@ -37,10 +38,15 @@ object MockServices {
             mockTransactionManager
         )
 
-    fun buildMockAuthServices(jwtService: JwtService, authDomain: AuthDomain): AuthService =
+    fun buildMockAuthServices(
+        authDomain: AuthDomain,
+        jwtService: JwtService,
+        mailService: MailService
+    ): AuthService =
         AuthService(
-            jwtService,
             authDomain,
+            jwtService,
+            mailService,
             mockTransactionManager
         )
 }

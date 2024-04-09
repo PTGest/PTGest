@@ -7,16 +7,20 @@ import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.ForgetRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.RefreshTokenRequest
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.ResetPasswordRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.SignupRequest
-import pt.isel.leic.ptgest.http.controllers.auth.model.response.HttpResponse
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.ValidatePasswordResetTokenRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.SignupResponse
+import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.utils.Uris
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
@@ -68,6 +72,45 @@ class AuthController(private val services: AuthService) {
         userInfo: SignupRequest
     ): ResponseEntity<*> {
         throw NotImplementedError("Not implemented")
+    }
+
+    @PostMapping(Uris.Auth.FORGET_PASSWORD)
+    fun forgetPassword(
+        @Valid @RequestBody
+        forgetInfo: ForgetRequest
+    ): ResponseEntity<*> {
+        services.forgetPassword(forgetInfo.email)
+
+        return HttpResponse.ok(
+            message = "Password reset email sent successfully.",
+            details = null
+        )
+    }
+
+    @PostMapping(Uris.Auth.VALIDATE_PASSWORD_RESET_TOKEN)
+    fun validatePasswordResetToken(
+        @Valid @RequestBody
+        tokenRequest: ValidatePasswordResetTokenRequest
+    ): ResponseEntity<*> {
+        services.validatePasswordResetToken(tokenRequest.token)
+
+        return HttpResponse.ok(
+            message = "Password reset token validated successfully.",
+            details = null
+        )
+    }
+
+    @PutMapping(Uris.Auth.RESET_PASSWORD)
+    fun resetPassword(
+        @Valid @RequestBody
+        resetInfo: ResetPasswordRequest
+    ): ResponseEntity<*> {
+        services.resetPassword(resetInfo.token, resetInfo.password)
+
+        return HttpResponse.ok(
+            message = "Password reset successfully.",
+            details = null
+        )
     }
 
     @PostMapping(Uris.Auth.LOGIN)

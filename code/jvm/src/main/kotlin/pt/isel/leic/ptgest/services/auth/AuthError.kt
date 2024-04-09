@@ -39,6 +39,11 @@ sealed class AuthError : BaseError() {
             override val message: String get() = "Invalid refresh token."
         }
 
+        data object InvalidPasswordResetToken : TokenError() {
+            private fun readResolve(): Any = InvalidRefreshToken
+            override val message: String get() = "Invalid password reset token."
+        }
+
         data object UserIdMismatch : TokenError() {
             private fun readResolve(): Any = UserIdMismatch
             override val message: String get() = "User ID in refresh token does not match the ID in the access token."

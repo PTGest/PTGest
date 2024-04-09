@@ -16,6 +16,9 @@ class AuthDomain(
     fun createRefreshTokenExpirationDate(currentDate: Date): Date =
         createExpirationDate(currentDate, Calendar.WEEK_OF_YEAR, 1)
 
+    fun createPasswordResetTokenExpirationDate(currentDate: Date): Date =
+        createExpirationDate(currentDate, Calendar.MINUTE, 30)
+
     private fun createExpirationDate(currentDate: Date, units: Int, amount: Int): Date {
         val calendar = Calendar.getInstance()
         calendar.time = currentDate

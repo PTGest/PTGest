@@ -10,18 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
-import pt.isel.leic.ptgest.domain.auth.model.RefreshTokenDetails
+import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.service.MockServices.buildMockAuthServices
 import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
+import pt.isel.leic.ptgest.services.MailService
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
 import pt.isel.leic.ptgest.services.auth.JwtService
-import java.util.Calendar
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -217,7 +216,7 @@ class AuthServiceTests {
                 .then { refreshTokenHash }
 
             `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
-                .then { RefreshTokenDetails(uuid, refreshTokenExpirationDate) }
+                .then { TokenDetails(uuid, refreshTokenExpirationDate) }
 
             val tokens = mockAuthService.refreshToken(accessToken, refreshToken)
 
@@ -252,7 +251,7 @@ class AuthServiceTests {
                 .then { refreshTokenHash }
 
             `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
-                .then { RefreshTokenDetails(uuid, refreshTokenExpirationDate) }
+                .then { TokenDetails(uuid, refreshTokenExpirationDate) }
 
             assertFailsWith<AuthError.TokenError.TokenExpired> {
                 mockAuthService.refreshToken(accessToken, refreshToken)
@@ -313,7 +312,7 @@ class AuthServiceTests {
                 .then { refreshTokenHash }
 
             `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
-                .then { RefreshTokenDetails(UUID.randomUUID(), refreshTokenExpirationDate) }
+                .then { TokenDetails(UUID.randomUUID(), refreshTokenExpirationDate) }
 
             assertFailsWith<AuthError.TokenError.UserIdMismatch> {
                 mockAuthService.refreshToken(accessToken, refreshToken)
@@ -333,10 +332,14 @@ class AuthServiceTests {
 
         @JvmStatic
         @BeforeAll
-        fun setUp(@Autowired authDomain: AuthDomain, @Autowired jwtSecret: JWTSecret) {
+        fun setUp(
+            @Autowired authDomain: AuthDomain,
+            @Autowired jwtSecret: JWTSecret,
+            @Autowired mailService: MailService
+        ) {
             mockAuthDomain = spy(authDomain)
             mockJwtService = buildMockJwtService(jwtSecret)
-            mockAuthService = buildMockAuthServices(mockJwtService, mockAuthDomain)
+            mockAuthService = buildMockAuthServices(mockAuthDomain, mockJwtService, mailService)
         }
     }
 }

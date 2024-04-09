@@ -2,19 +2,21 @@ package pt.isel.leic.ptgest.services.auth
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
-import pt.isel.leic.ptgest.domain.auth.model.RefreshTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.Token
+import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.MailService
 import java.util.*
 
 @Service
 class AuthService(
-    private val jwtService: JwtService,
     private val authDomain: AuthDomain,
+    private val jwtService: JwtService,
+    private val mailService: MailService,
     private val transactionManager: TransactionManager
 ) {
 
@@ -54,6 +56,77 @@ class AuthService(
             return@run userId
         }
 
+    fun forgetPassword(email: String) {
+        val userDetails = transactionManager.run {
+            val userRepo = it.userRepo
+            return@run userRepo.getUserDetails(email)
+                ?: throw AuthError.UserAuthenticationError.UserNotFound
+        }
+
+        val token = authDomain.generateTokenValue()
+        val tokenHash = authDomain.hashToken(token)
+        val tokenExpiration = authDomain.createPasswordResetTokenExpirationDate(Date())
+
+        transactionManager.run {
+            it.userRepo.createPasswordResetToken(
+                userDetails.id,
+                tokenHash,
+                tokenExpiration
+            )
+        }
+
+        mailService.sendMail(
+            email,
+            "PTGest - Password reset",
+            "Click the following link to reset your password:\n" +
+                "http://localhost:8080/auth/resetPassword/$token"
+        )
+    }
+
+    fun validatePasswordResetToken(token: String) {
+        val tokenHash = authDomain.hashToken(token)
+
+        transactionManager.run {
+            val resetToken = it.userRepo.getPasswordResetToken(tokenHash)
+                ?: throw AuthError.TokenError.InvalidPasswordResetToken
+
+            if (resetToken.expiration.before(Date())) {
+                throw AuthError.TokenError.TokenExpired
+            }
+        }
+    }
+
+    fun resetPassword(token: String, password: String) {
+        val currentDate = Date()
+        val tokenHash = authDomain.hashToken(token)
+
+        val userDetails = transactionManager.run {
+            val userRepo = it.userRepo
+
+            val resetToken = userRepo.getPasswordResetToken(tokenHash)
+                ?: throw AuthError.TokenError.InvalidPasswordResetToken
+
+            val userDetails = userRepo.getUserDetails(resetToken.userId)
+                ?: throw AuthError.UserAuthenticationError.UserNotFound
+
+            if (resetToken.expiration.before(Date())) {
+                throw AuthError.TokenError.TokenExpired
+            }
+
+            val passwordHash = authDomain.hashPassword(password)
+
+            userRepo.resetPassword(resetToken.userId, passwordHash)
+
+            return@run userDetails
+        }
+
+        mailService.sendMail(
+            userDetails.email,
+            "PTGest - Password reset successful",
+            "Your password has been reset at $currentDate."
+        )
+    }
+
     fun login(email: String, password: String): TokenPair {
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
@@ -84,9 +157,11 @@ class AuthService(
     fun refreshToken(accessToken: String, refreshToken: String): TokenPair {
         val currentDate = Date()
 
+        val refreshTokenHash = authDomain.hashToken(refreshToken)
+
         val accessTokenDetails = jwtService.extractToken(accessToken)
         val refreshTokenDetails = getRefreshTokenDetails(
-            authDomain.hashToken(refreshToken),
+            refreshTokenHash,
             accessTokenDetails.userId
         )
 
@@ -99,7 +174,7 @@ class AuthService(
 
         transactionManager.run {
             val userRepo = it.userRepo
-            userRepo.removeRefreshToken(refreshToken)
+            userRepo.removeRefreshToken(refreshTokenHash)
 
             userRepo.createRefreshToken(
                 accessTokenDetails.userId,
@@ -159,7 +234,7 @@ class AuthService(
         )
     }
 
-    private fun getRefreshTokenDetails(tokenHash: String, userId: UUID): RefreshTokenDetails =
+    private fun getRefreshTokenDetails(tokenHash: String, userId: UUID): TokenDetails =
         transactionManager.run {
             val userRepo = it.userRepo
             val refreshToken = userRepo.getRefreshTokenDetails(tokenHash)

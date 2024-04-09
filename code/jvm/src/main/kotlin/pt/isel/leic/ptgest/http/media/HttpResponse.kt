@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.auth.model.response
+package pt.isel.leic.ptgest.http.media
 
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

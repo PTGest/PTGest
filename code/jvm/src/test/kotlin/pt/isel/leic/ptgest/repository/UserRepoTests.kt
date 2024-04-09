@@ -1,11 +1,12 @@
 package pt.isel.leic.ptgest.repository
 
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.repository.jdbi.auth.JdbiUserRepo
+import pt.isel.leic.ptgest.repository.jdbi.user.JdbiUserRepo
 import java.util.Calendar
 import java.util.Date
 import java.util.UUID
@@ -63,8 +64,6 @@ class UserRepoTests {
                     userRepo.createUser(name, email, password, role)
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -73,15 +72,13 @@ class UserRepoTests {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     userRepo.createUser(
-                        "UserTestsUserTestsUserTestsUserTests",
+                        "UserTestsUserTestsUserTestsUserTestsUserTestsUserTestsUserTestsUserTestsUserTestsUserTestsUserTestsUserTests",
                         "usertest@mail.com",
                         "passwordTest",
                         Role.COMPANY
                     )
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -97,8 +94,6 @@ class UserRepoTests {
                     )
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -113,8 +108,6 @@ class UserRepoTests {
                         Role.COMPANY
                     )
                 }
-
-                asTransaction(jdbi) { it.cleanup() }
             }
         }
 
@@ -130,8 +123,6 @@ class UserRepoTests {
                         Role.COMPANY
                     )
                 }
-
-                asTransaction(jdbi) { it.cleanup() }
             }
         }
 
@@ -147,8 +138,6 @@ class UserRepoTests {
                         Role.COMPANY
                     )
                 }
-
-                asTransaction(jdbi) { it.cleanup() }
             }
         }
     }
@@ -170,8 +159,6 @@ class UserRepoTests {
 
                 userRepo.createCompany(userId)
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -182,8 +169,6 @@ class UserRepoTests {
                     userRepo.createCompany(UUID.randomUUID())
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
     }
 
@@ -203,8 +188,6 @@ class UserRepoTests {
 
                 userRepo.createIndependentTrainer(userId, Gender.MALE)
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -220,8 +203,6 @@ class UserRepoTests {
 
                 userRepo.createIndependentTrainer(userId, Gender.MALE, "+351962005244")
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -239,8 +220,6 @@ class UserRepoTests {
                     userRepo.createIndependentTrainer(userId, Gender.MALE, "111")
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -258,8 +237,6 @@ class UserRepoTests {
                     userRepo.createIndependentTrainer(userId, Gender.MALE, "")
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
     }
 
@@ -279,8 +256,6 @@ class UserRepoTests {
                 val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
                 userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -292,8 +267,6 @@ class UserRepoTests {
                     userRepo.createRefreshToken(UUID.randomUUID(), "tokenHash", expirationDate)
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -311,13 +284,11 @@ class UserRepoTests {
                     userRepo.createRefreshToken(userId, "tokenHash", Date(0))
                 }
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
     }
 
     @Nested
-    inner class RefreshTokenDetailsTests {
+    inner class TokenDetailsTests {
 
         @Test
         fun `get refresh token details Successfully`() {
@@ -344,8 +315,6 @@ class UserRepoTests {
             assertNotNull(refreshTokenDetails)
             assertEquals(userId, refreshTokenDetails.userId)
             assertEquals(expirationDate, refreshTokenDetails.expiration)
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -356,8 +325,6 @@ class UserRepoTests {
             }
 
             assertNull(refreshTokenDetails)
-
-            asTransaction(jdbi) { it.cleanup() }
         }
     }
 
@@ -383,8 +350,6 @@ class UserRepoTests {
                 val userRepo = JdbiUserRepo(handle)
                 userRepo.removeRefreshToken("tokenHash")
             }
-
-            asTransaction(jdbi) { it.cleanup() }
         }
 
         @Test
@@ -414,8 +379,6 @@ class UserRepoTests {
 
             userRepo.getUserDetails("usertest@mail.com")
         }
-
-        asTransaction(jdbi) { it.cleanup() }
 
         assertNotNull(user)
         assertEquals(name, user.name)
@@ -453,8 +416,6 @@ class UserRepoTests {
             userRepo.getUserDetails(userId)
         }
 
-        asTransaction(jdbi) { it.cleanup() }
-
         assertNotNull(user)
         assertEquals(name, user.name)
         assertEquals(email, user.email)
@@ -470,6 +431,13 @@ class UserRepoTests {
         }
 
         assertNull(user)
+    }
+
+    @AfterEach
+    fun cleanup() {
+        asTransaction(jdbi) {
+            it.cleanup()
+        }
     }
 
     private fun createExpirationDate(currentDate: Date, units: Int, amount: Int): Date {

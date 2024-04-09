@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
@@ -35,6 +36,16 @@ class PtgestApplication {
 
     @Bean
     fun jwtSecret() = JWTSecret(ServerConfig.secret)
+
+    @Bean
+    fun javaMailSender() = JavaMailSenderImpl().apply {
+        host = "smtp.gmail.com"
+        port = 587
+        username = ServerConfig.mailUsername
+        password = ServerConfig.mailPassword
+        javaMailProperties["mail.smtp.auth"] = "true"
+        javaMailProperties["mail.smtp.starttls.enable"] = "true"
+    }
 }
 
 @Configuration

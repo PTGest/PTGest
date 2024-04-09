@@ -1,8 +1,8 @@
-package pt.isel.leic.ptgest.repository.jdbi.auth
+package pt.isel.leic.ptgest.repository.jdbi.user
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.auth.model.RefreshTokenDetails
+import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
@@ -64,10 +64,10 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
-    override fun createRefreshToken(userId: UUID, tokenHash: String, expirationDate: Date) {
+    override fun createPasswordResetToken(userId: UUID, tokenHash: String, expirationDate: Date) {
         handle.createUpdate(
             """
-                insert into refresh_token (token, user_id, expiration)
+                insert into password_reset_token (token_hash, user_id, expiration)
                 values (:tokenHash, :userId, :expirationDate)
             """.trimIndent()
         )
@@ -81,15 +81,60 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
-    override fun getRefreshTokenDetails(tokenHash: String): RefreshTokenDetails? {
-        return handle.createQuery(
+    override fun getPasswordResetToken(tokenHash: String) =
+        handle.createQuery(
             """
-                select user_id, expiration from refresh_token
-                where token = :token
+                select user_id, expiration from password_reset_token
+                where token_hash = :token
             """.trimIndent()
         )
             .bind("token", tokenHash)
-            .mapTo<RefreshTokenDetails>()
+            .mapTo<TokenDetails>()
+            .firstOrNull()
+
+    override fun resetPassword(userId: UUID, newPasswordHash: String) {
+        handle.createUpdate(
+            """
+                update "user"
+                set password_hash = :newPasswordHash
+                where id = :userId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "newPasswordHash" to newPasswordHash,
+                    "userId" to userId
+                )
+            )
+            .execute()
+    }
+
+    override fun createRefreshToken(userId: UUID, tokenHash: String, expirationDate: Date) {
+        handle.createUpdate(
+            """
+                insert into refresh_token (token_hash, user_id, expiration)
+                values (:tokenHash, :userId, :expirationDate)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "tokenHash" to tokenHash,
+                    "userId" to userId,
+                    "expirationDate" to expirationDate
+                )
+            )
+            .execute()
+    }
+
+    override fun getRefreshTokenDetails(tokenHash: String): TokenDetails? {
+        return handle.createQuery(
+            """
+                select user_id, expiration from refresh_token
+                where token_hash = :token
+            """.trimIndent()
+        )
+            .bind("token", tokenHash)
+            .mapTo<TokenDetails>()
             .firstOrNull()
     }
 
@@ -97,7 +142,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
         handle.createUpdate(
             """
                 delete from refresh_token
-                where token = :token
+                where token_hash = :token
             """.trimIndent()
         )
             .bind("token", tokenHash)

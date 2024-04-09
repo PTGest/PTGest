@@ -15,9 +15,16 @@ create table if not exists prod."user"
         check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
 );
 
+create table if not exists prod.password_reset_token
+(
+    token_hash  varchar(256) primary key,
+    user_id     uuid references dev."user" (id) on delete cascade,
+    expiration  timestamp check ( expiration > now() ) not null
+);
+
 create table if not exists prod.refresh_token
 (
-    token       varchar(256) primary key,
+    token_hash       varchar(256) primary key,
     user_id     uuid references dev."user" (id) on delete cascade,
     expiration  timestamp check ( expiration > now() ) not null
 );
