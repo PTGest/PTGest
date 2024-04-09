@@ -19,7 +19,7 @@
         </router-link>
 
 
-        <router-link :to="{ name : 'login' }" class="nav-link" link>
+        <router-link v-if="is_signed_in" :to="{ name : 'login' }" class="nav-link" link>
           <font-awesome-icon v-if="is_open || is_mobile_view" :icon=faRightToBracket></font-awesome-icon>
           <div v-if="!is_mobile_view || is_mobile_view && is_open" class="navbar-item">Login</div>
         </router-link>
@@ -44,6 +44,7 @@ import {ref} from 'vue';
 
 let is_mobile_view = ref(false)
 let is_open = ref(false)
+let is_signed_in = ref(false)
 const open = () => {
   is_open.value = !is_open.value
 }
@@ -53,8 +54,9 @@ const handleResize = () => {
   console.log("This is in Mobile View", is_mobile_view.value)
 }
 
-window.addEventListener('resize', handleResize)
 
+
+window.addEventListener('resize', handleResize)
 
 </script>
 

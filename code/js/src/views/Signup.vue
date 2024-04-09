@@ -32,9 +32,8 @@
         <div class="phone-text">Phone Number</div>
         <div class="phone-container">
           <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
-          <input v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base"/>
-          <input v-model="phoneNumber" pattern="[0-9]" :maxlength="9" class="signup-phone-input signup-input-base"
-                 placeholder="Phone Number"/>
+          <input v-model="countryNumber" :maxlength="3" class="signup-phone-country-input signup-input-base" />
+          <input v-model="phoneNumber" pattern="[0-9]" :maxlength="9" class="signup-phone-input signup-input-base" placeholder="Phone Number"/>
         </div>
       </div>
 
@@ -44,7 +43,7 @@
         <font-awesome-icon :icon="faBuilding" class="switch-icon-c" @click="toggleSwitch(false)"></font-awesome-icon>
       </div>
 
-      <button class="signup-button" @click="signUp">Sign up</button>
+      <button class="signup-button" @click="signUp" :disabled="isSignUpDisabled">Sign up</button>
 
     </div>
 
@@ -54,7 +53,7 @@
 
 
 <script setup lang="ts">
-import {Ref, ref} from 'vue'
+import {computed, Ref, ref} from 'vue'
 import {signupUserServices} from "../services/authServices/signupServices.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
@@ -74,6 +73,15 @@ let signupUserData: Ref<SignupPTData> = ref({
   user_type: "independent_trainer"
 })
 
+function isFullOfData(data : SignupPTData) : boolean {
+  return data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== ""
+      && phoneNumber.value != "" && countryNumber.value != ""
+}
+
+const isSignUpDisabled = computed(() => {
+  return !isFullOfData(signupUserData.value);
+});
+
 
 const updateVisibility = () => {
   if (is_visible.value === "") {
@@ -82,6 +90,7 @@ const updateVisibility = () => {
     is_visible.value = ""
   }
 }
+
 const toggleSwitch = (value: boolean) => {
   toggle.value = value
   signupUserData.value.user_type = value ? "independent_trainer" : "company"
@@ -239,4 +248,11 @@ const signUp = () => {
   border: 0;
   cursor: pointer;
 }
+
+.signup-button:disabled {
+  background-color: #d3d3d3;
+  color: #a9a9a9;
+  cursor: not-allowed;
+}
+
 </style>

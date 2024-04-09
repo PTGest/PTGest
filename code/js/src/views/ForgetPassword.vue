@@ -3,10 +3,9 @@
   <div class="forget-password-container">
     <img class="image" src=".././assets/forgotPassword.png" alt="forgetPasswordImage"/>
     <div class="text-container">
-      <div class="forget-password-text">Forgot</div>
-      <div class="forget-password-text">Your Password ?</div>
+      <div class="forget-password-text">Forgot Your Password?</div>
       <input v-model="email" class="email-input" placeholder="Enter your email"/>
-      <button class="email-button" @onclick="forgetPassword">Send Email</button>
+      <button class="email-button" @onclick="forgetPassword" :disabled=" email=='' ">Send Email</button>
     </div>
 
   </div>
@@ -48,7 +47,7 @@ const forgetPassword = () => {
   align-items: start;
   margin-bottom: 20px;
   font-family: Inter, sans-serif;
-  font-size: 45px;
+  font-size: 38px;
   color: whitesmoke;
 }
 
@@ -89,5 +88,9 @@ const forgetPassword = () => {
   background-color: var(--primary-color);
 }
 
+.email-button:disabled{
+  background-color: var(--secundary-color);
+  cursor: not-allowed;
+}
 
 </style>

@@ -14,6 +14,7 @@ class SignupPTData {
         this.phoneNumber = phoneNumber
         this.user_type = user_type
     }
+
 }
 
 export default SignupPTData;

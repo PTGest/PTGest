@@ -8,15 +8,16 @@
       <input v-model="loginUserData.email" class="login-name-input login-input-base" placeholder="Enter your email"/>
     </div>
 
-    <div class="login-input-container">
+    <div class="login-input-container" id="login-inputs-containers">
       <div class="login-input-text">Password</div>
       <div class="password-container">
         <input v-model="loginUserData.password" :type='is_visible' class="login-password-input login-input-base"
                placeholder="Enter your password" />
         <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
       </div>
+      <div class="login-input-text"></div>
     </div>
-    <button @click="login" class="login-button">Login up</button>
+    <button @click="login" class="login-button" :disabled="isLoginDisabled">Login up</button>
   </div>
 
 </div>
@@ -25,7 +26,7 @@
 <script setup lang="ts">
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import {loginUserServices} from "@/services/authServices/loginServices.ts";
 import {Ref} from "vue/dist/vue";
 import SignupPTData from "@/models/authModels/SignupPTData.ts";
@@ -47,6 +48,16 @@ const login= () => {
   console.log(loginUserData.value.email)
   loginUserServices(loginUserData.value)
 }
+
+function isFullOfData(data : LoginUserData) : boolean {
+  return data.email !== "" && data.password !== ""
+}
+
+const isLoginDisabled = computed(() => {
+  return !isFullOfData(loginUserData.value);
+});
+
+
 </script>
 
 <style scoped>
@@ -118,5 +129,10 @@ const login= () => {
   cursor: pointer;
 }
 
+.login-button:disabled {
+  background-color: #d3d3d3;
+  color: #a9a9a9;
+  cursor: not-allowed;
+}
 
 </style>
