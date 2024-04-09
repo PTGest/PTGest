@@ -15,18 +15,21 @@ create table if not exists dev."user"
         check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
 );
 
-create table if not exists dev.password_reset_token
+create table if not exists dev.token
 (
     token_hash  varchar(256) primary key,
     user_id     uuid references dev."user" (id) on delete cascade,
     expiration  timestamp check ( expiration > now() ) not null
 );
 
+create table if not exists dev.password_reset_token
+(
+    token_hash  varchar(256) references dev.token(token_hash) primary key
+);
+
 create table if not exists dev.refresh_token
 (
-    token_hash       varchar(256) primary key,
-    user_id     uuid references dev."user" (id) on delete cascade,
-    expiration  timestamp check ( expiration > now() ) not null
+    token_hash  varchar(256) references dev.token(token_hash) primary key
 );
 
 create table if not exists dev.company

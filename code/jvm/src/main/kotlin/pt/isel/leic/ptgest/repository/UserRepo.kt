@@ -14,17 +14,19 @@ interface UserRepo {
 
     fun createIndependentTrainer(id: UUID, gender: Gender, phoneNumber: String? = null)
 
-    fun createPasswordResetToken(userId: UUID, tokenHash: String, expirationDate: Date)
-
-    fun getPasswordResetToken(tokenHash: String): TokenDetails?
-
     fun resetPassword(userId: UUID, newPasswordHash: String)
 
-    fun createRefreshToken(userId: UUID, tokenHash: String, expirationDate: Date)
+    fun createToken(tokenHash: String, userId: UUID, expirationDate: Date)
+
+    fun removeToken(tokenHash: String)
+
+    fun createRefreshToken(tokenHash: String)
 
     fun getRefreshTokenDetails(tokenHash: String): TokenDetails?
 
-    fun removeRefreshToken(tokenHash: String)
+    fun createPasswordResetToken(tokenHash: String)
+
+    fun getPasswordResetToken(tokenHash: String): TokenDetails?
 
     fun getUserDetails(email: String): UserDetails?
 

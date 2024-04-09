@@ -68,10 +68,15 @@ class AuthService(
         val tokenExpiration = authDomain.createPasswordResetTokenExpirationDate(Date())
 
         transactionManager.run {
-            it.userRepo.createPasswordResetToken(
-                userDetails.id,
+            val userRepo = it.userRepo
+
+            userRepo.createToken(
                 tokenHash,
+                userDetails.id,
                 tokenExpiration
+            )
+            userRepo.createPasswordResetToken(
+                tokenHash
             )
         }
 
@@ -145,10 +150,15 @@ class AuthService(
         val refreshTokenHash = authDomain.hashToken(tokens.refreshToken.token)
 
         transactionManager.run {
-            it.userRepo.createRefreshToken(
-                userDetails.id,
+            val userRepo = it.userRepo
+
+            userRepo.createToken(
                 refreshTokenHash,
+                userDetails.id,
                 tokens.refreshToken.expirationDate
+            )
+            userRepo.createRefreshToken(
+                refreshTokenHash
             )
         }
         return tokens
@@ -174,12 +184,15 @@ class AuthService(
 
         transactionManager.run {
             val userRepo = it.userRepo
-            userRepo.removeRefreshToken(refreshTokenHash)
+            userRepo.removeToken(refreshTokenHash)
 
-            userRepo.createRefreshToken(
-                accessTokenDetails.userId,
+            userRepo.createToken(
                 newRefreshTokenHash,
+                accessTokenDetails.userId,
                 tokens.refreshToken.expirationDate
+            )
+            userRepo.createRefreshToken(
+                newRefreshTokenHash
             )
         }
 
@@ -189,7 +202,7 @@ class AuthService(
     fun logout(accessToken: String, refreshToken: String) {
         transactionManager.run {
             val userRepo = it.userRepo
-            userRepo.removeRefreshToken(authDomain.hashToken(refreshToken))
+            userRepo.removeToken(authDomain.hashToken(refreshToken))
         }
     }
 

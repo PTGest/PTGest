@@ -254,7 +254,9 @@ class UserRepoTests {
                     Role.COMPANY
                 )
                 val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
-                userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
+
+                userRepo.createToken("tokenHash", userId, expirationDate)
+                userRepo.createRefreshToken("tokenHash")
             }
         }
 
@@ -264,7 +266,8 @@ class UserRepoTests {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
                     val expirationDate = createExpirationDate(Date(), Calendar.DAY_OF_MONTH, 1)
-                    userRepo.createRefreshToken(UUID.randomUUID(), "tokenHash", expirationDate)
+                    userRepo.createToken("tokenHash", UUID.randomUUID(), expirationDate)
+                    userRepo.createRefreshToken("tokenHash")
                 }
             }
         }
@@ -281,7 +284,8 @@ class UserRepoTests {
                 )
 
                 assertFailsWith<UnableToExecuteStatementException> {
-                    userRepo.createRefreshToken(userId, "tokenHash", Date(0))
+                    userRepo.createToken("tokenHash", userId, Date(0))
+                    userRepo.createRefreshToken("tokenHash")
                 }
             }
         }
@@ -302,7 +306,8 @@ class UserRepoTests {
                     Role.COMPANY
                 )
 
-                userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
+                userRepo.createToken("tokenHash", userId, expirationDate)
+                userRepo.createRefreshToken("tokenHash")
 
                 userId
             }
@@ -343,12 +348,8 @@ class UserRepoTests {
                     Role.COMPANY
                 )
 
-                userRepo.createRefreshToken(userId, "tokenHash", expirationDate)
-            }
-
-            asTransaction(jdbi) { handle ->
-                val userRepo = JdbiUserRepo(handle)
-                userRepo.removeRefreshToken("tokenHash")
+                userRepo.createToken("tokenHash", userId, expirationDate)
+                userRepo.createRefreshToken("tokenHash")
             }
         }
 
@@ -356,7 +357,7 @@ class UserRepoTests {
         fun `remove refresh token without refresh token in data base`() {
             asTransaction(jdbi) { handle ->
                 val userRepo = JdbiUserRepo(handle)
-                userRepo.removeRefreshToken("tokenHash")
+                userRepo.removeToken("tokenHash")
             }
         }
     }

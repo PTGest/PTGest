@@ -64,34 +64,6 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
-    override fun createPasswordResetToken(userId: UUID, tokenHash: String, expirationDate: Date) {
-        handle.createUpdate(
-            """
-                insert into password_reset_token (token_hash, user_id, expiration)
-                values (:tokenHash, :userId, :expirationDate)
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "tokenHash" to tokenHash,
-                    "userId" to userId,
-                    "expirationDate" to expirationDate
-                )
-            )
-            .execute()
-    }
-
-    override fun getPasswordResetToken(tokenHash: String) =
-        handle.createQuery(
-            """
-                select user_id, expiration from password_reset_token
-                where token_hash = :token
-            """.trimIndent()
-        )
-            .bind("token", tokenHash)
-            .mapTo<TokenDetails>()
-            .firstOrNull()
-
     override fun resetPassword(userId: UUID, newPasswordHash: String) {
         handle.createUpdate(
             """
@@ -109,45 +81,80 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
-    override fun createRefreshToken(userId: UUID, tokenHash: String, expirationDate: Date) {
+    override fun createToken(tokenHash: String, userId: UUID, expirationDate: Date) {
         handle.createUpdate(
             """
-                insert into refresh_token (token_hash, user_id, expiration)
-                values (:tokenHash, :userId, :expirationDate)
+                insert into token (token_hash, user_id, expiration)
+                values (:tokenHash, :userId, :expiration)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "tokenHash" to tokenHash,
                     "userId" to userId,
-                    "expirationDate" to expirationDate
+                    "tokenHash" to tokenHash,
+                    "expiration" to expirationDate
                 )
             )
+            .execute()
+    }
+
+    override fun removeToken(tokenHash: String) {
+        handle.createUpdate(
+            """
+                delete from token
+                where token_hash = :token
+            """.trimIndent()
+        )
+            .bind("token", tokenHash)
+            .execute()
+    }
+
+    override fun createRefreshToken(tokenHash: String) {
+        handle.createUpdate(
+            """
+                insert into refresh_token (token_hash)
+                values (:token)
+            """.trimIndent()
+        )
+            .bind("token", tokenHash)
             .execute()
     }
 
     override fun getRefreshTokenDetails(tokenHash: String): TokenDetails? {
         return handle.createQuery(
             """
-                select user_id, expiration from refresh_token
-                where token_hash = :token
+                select rt.token_hash, user_id, expiration
+                from refresh_token rt join token t on rt.token_hash = t.token_hash
+                where rt.token_hash = :token_hash
             """.trimIndent()
         )
-            .bind("token", tokenHash)
+            .bind("token_hash", tokenHash)
             .mapTo<TokenDetails>()
             .firstOrNull()
     }
 
-    override fun removeRefreshToken(tokenHash: String) {
+    override fun createPasswordResetToken(tokenHash: String) {
         handle.createUpdate(
             """
-                delete from refresh_token
-                where token_hash = :token
+                insert into password_reset_token (token_hash)
+                values (:token)
             """.trimIndent()
         )
             .bind("token", tokenHash)
             .execute()
     }
+
+    override fun getPasswordResetToken(tokenHash: String) =
+        handle.createQuery(
+            """
+                select prt.token_hash, user_id, expiration
+                from password_reset_token prt join token t on prt.token_hash = t.token_hash
+                where prt.token_hash = :token_hash
+            """.trimIndent()
+        )
+            .bind("token", tokenHash)
+            .mapTo<TokenDetails>()
+            .firstOrNull()
 
     override fun getUserDetails(email: String): UserDetails? =
         handle.createQuery(
