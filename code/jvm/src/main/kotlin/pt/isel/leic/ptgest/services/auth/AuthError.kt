@@ -11,7 +11,7 @@ sealed class AuthError : BaseError() {
      * Base class for user registration errors.
      */
     sealed class UserRegistrationError : AuthError() {
-        object UserAlreadyExists : UserRegistrationError() {
+        data object UserAlreadyExists : UserRegistrationError() {
             private fun readResolve(): Any = UserAlreadyExists
             override val message: String get() = "User already exists."
         }
@@ -68,6 +68,11 @@ sealed class AuthError : BaseError() {
         data object TokenNotProvided : UserAuthenticationError() {
             private fun readResolve(): Any = TokenNotProvided
             override val message: String get() = "Token not provided."
+        }
+
+        data object UnauthorizedRole : UserAuthenticationError() {
+            private fun readResolve(): Any = UnauthorizedRole
+            override val message: String get() = "User does not have the required role."
         }
 
         data object InvalidUserRoleException : TokenError() {

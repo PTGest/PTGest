@@ -186,7 +186,7 @@ class UserRepoTests {
                     Role.INDEPENDENT_TRAINER
                 )
 
-                userRepo.createIndependentTrainer(userId, Gender.MALE)
+                userRepo.createTrainer(userId, Gender.MALE)
             }
         }
 
@@ -201,7 +201,7 @@ class UserRepoTests {
                     Role.INDEPENDENT_TRAINER
                 )
 
-                userRepo.createIndependentTrainer(userId, Gender.MALE, "+351962005244")
+                userRepo.createTrainer(userId, Gender.MALE, "+351962005244")
             }
         }
 
@@ -217,7 +217,7 @@ class UserRepoTests {
                         Role.INDEPENDENT_TRAINER
                     )
 
-                    userRepo.createIndependentTrainer(userId, Gender.MALE, "111")
+                    userRepo.createTrainer(userId, Gender.MALE, "111")
                 }
             }
         }
@@ -234,7 +234,7 @@ class UserRepoTests {
                         Role.INDEPENDENT_TRAINER
                     )
 
-                    userRepo.createIndependentTrainer(userId, Gender.MALE, "")
+                    userRepo.createTrainer(userId, Gender.MALE, "")
                 }
             }
         }
