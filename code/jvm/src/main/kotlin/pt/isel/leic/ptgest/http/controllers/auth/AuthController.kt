@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.AuthenticatedSignupRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.ForgetRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.RefreshTokenRequest
@@ -26,6 +28,7 @@ import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
+import java.util.*
 
 @RestController
 @RequestMapping(Uris.PREFIX)
@@ -69,9 +72,22 @@ class AuthController(private val services: AuthService) {
     fun authenticatedSignup(
         authenticatedUser: AuthenticatedUser,
         @Valid @RequestBody
-        userInfo: SignupRequest
+        userInfo: AuthenticatedSignupRequest
     ): ResponseEntity<*> {
-        throw NotImplementedError("Not implemented")
+        when (authenticatedUser.role) {
+            Role.COMPANY -> {
+                processCompanyRequest(authenticatedUser.id, userInfo)
+            }
+            Role.INDEPENDENT_TRAINER -> {
+                processIndependentTrainerRequest(userInfo)
+            }
+            else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
+        }
+
+        return HttpResponse.created(
+            message = "User registered successfully.",
+            details = null
+        )
     }
 
     @PostMapping(Uris.Auth.FORGET_PASSWORD)
@@ -184,19 +200,15 @@ class AuthController(private val services: AuthService) {
 
         when {
             sessionCookies != null -> {
-                val (accessToken, refreshToken) = processCookies(sessionCookies)
+                val refreshToken = processCookies(sessionCookies).second
 
-                services.logout(accessToken, refreshToken)
+                services.logout(refreshToken)
 
                 revokeCookies(response)
             }
-
             refreshTokenBody != null -> {
-                val accessToken = processHeader(request)
-
-                services.logout(accessToken, refreshTokenBody.refreshToken)
+                services.logout(refreshTokenBody.refreshToken)
             }
-
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
             }
@@ -228,5 +240,42 @@ class AuthController(private val services: AuthService) {
         }
 
         return accessTokenParts[1]
+    }
+
+    private fun processCompanyRequest(authenticatedUserId: UUID, userInfo: AuthenticatedSignupRequest) {
+        when (userInfo) {
+            is AuthenticatedSignupRequest.HiredTrainer -> {
+                services.signUpHiredTrainer(
+                    authenticatedUserId,
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.gender,
+                    userInfo.phoneNumber
+                )
+            }
+            is AuthenticatedSignupRequest.Trainee -> {
+                services.signUpTrainee(
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.birthdate,
+                    userInfo.gender,
+                    userInfo.phoneNumber
+                )
+            }
+        }
+    }
+
+    private fun processIndependentTrainerRequest(userInfo: AuthenticatedSignupRequest) {
+        if (userInfo is AuthenticatedSignupRequest.Trainee) {
+            services.signUpTrainee(
+                userInfo.name,
+                userInfo.email,
+                userInfo.birthdate,
+                userInfo.gender,
+                userInfo.phoneNumber
+            )
+        } else {
+            throw AuthError.UserAuthenticationError.UnauthorizedRole
+        }
     }
 }

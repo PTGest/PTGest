@@ -47,7 +47,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
-    override fun createIndependentTrainer(id: UUID, gender: Gender, phoneNumber: String?) {
+    override fun createTrainer(id: UUID, gender: Gender, phoneNumber: String?) {
         handle.createUpdate(
             """
                 insert into personal_trainer (id, gender, contact)
@@ -62,6 +62,44 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
                 )
             )
             .execute()
+    }
+
+    override fun createCompanyTrainer(companyId: UUID, trainerId: UUID) {
+        handle.createUpdate(
+            """
+                insert into company_pt (company_id, pt_id)
+                values (:companyId, :trainerId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "trainerId" to trainerId
+                )
+            )
+            .execute()
+    }
+
+    override fun createTrainee(
+        userId: UUID,
+        birthdate: Date,
+        gender: Gender,
+        phoneNumber: String?
+    ) {
+        handle.createUpdate(
+            """
+                insert into trainee (id, gender, birthdate, contact)
+                values (:id, :gender, :birthdate, :phoneNumber)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "id" to userId,
+                    "gender" to gender,
+                    "birthdate" to birthdate,
+                    "phoneNumber" to phoneNumber
+                )
+            )
     }
 
     override fun resetPassword(userId: UUID, newPasswordHash: String) {
@@ -149,10 +187,10 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             """
                 select prt.token_hash, user_id, expiration
                 from password_reset_token prt join token t on prt.token_hash = t.token_hash
-                where prt.token_hash = :token_hash
+                where prt.token_hash = :tokenHash
             """.trimIndent()
         )
-            .bind("token", tokenHash)
+            .bind("tokenHash", tokenHash)
             .mapTo<TokenDetails>()
             .firstOrNull()
 

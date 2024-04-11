@@ -26,7 +26,6 @@ class JwtService(
 
         validateUser(userId, role)
 
-//      TODO: check if this comparation is correct
         require(
             currentDate.before(expirationDate) ||
                 currentDate == expirationDate
