@@ -1,31 +1,45 @@
 import LoginUserData from "../../models/authModels/LoginUserData.ts";
 import router from "../../plugins/router.ts";
-import {signedIn} from "../../components/SideBar.vue";
+import store from "../../store";
+//import {signedIn} from "../../components/SideBar.vue";
+
 export async function loginUserServices(userLoginData: LoginUserData): Promise<void> {
     try{
-        const response = await fetch('http://localhost:8080/api/login', {
+       await fetch('http://localhost:8080/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
             body: JSON.stringify(userLoginData),
-        });
-
-        if (response.ok) {
-            console.log('Login successful');
-            await router.push({name: 'home'});
-            signedIn()
-            return response.json();
-        }
-        if (response.status === 401) {
-            const element = document.createElement("div");
-            element.innerHTML = "Invalid email or password";
-            element.classList.add("error-message");
-            element.style.color = "red";
-            element.style.padding = "0.5em";
-            document.getElementById("login-inputs-containers") ?.appendChild(element);
-        }
+       }).then(response => {
+           switch (response.status) {
+               case 200 :
+                  response.json().then( (response) => {
+                   router.push({name: 'home'});
+                   store.commit('setUserData', {id: 1, token: response.token, refreshToken: response.refreshToken});
+                   return response;
+                  })
+                     break;
+               case 401 :
+                   const element = document.createElement("div");
+                   element.innerHTML = "Invalid email or password";
+                   element.classList.add("error-message");
+                   element.style.color = "red";
+                   element.style.padding = "0.5em";
+                   document.getElementById("login-inputs-containers") ?.appendChild(element);
+                   break;
+               default :
+                response.json().then( (response) => {
+                        console.log(response.type);
+                        console.log(response.title);
+                        store.commit('setErrorType', {errorType: response.type, message: response.title});
+                        router.push({ name: 'error'});
+                    }
+                );
+                break;
+           }
+       });
     }catch (error: any){
         await router.push({name: 'error',  params: { errorMessage: 'Failed to login' , message: "error.message"}});
     }

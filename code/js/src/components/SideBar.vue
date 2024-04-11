@@ -19,12 +19,12 @@
         </router-link>
 
 
-        <router-link v-if="is_signed_in" :to="{ name : 'login' }" class="nav-link" link>
+        <router-link v-if="!is_logged_in" :to="{ name : 'login' }" class="nav-link" link>
           <font-awesome-icon v-if="is_open || is_mobile_view" :icon=faRightToBracket></font-awesome-icon>
           <div v-if="!is_mobile_view || is_mobile_view && is_open" class="navbar-item">Login</div>
         </router-link>
 
-        <router-link :to="{ name : 'signup' }" class="nav-link" link>
+        <router-link v-if="!is_logged_in" :to="{ name : 'signup' }" class="nav-link" link>
           <font-awesome-icon v-if="is_open || is_mobile_view" :icon=faUserPlus></font-awesome-icon>
           <div v-if="!is_mobile_view || is_mobile_view && is_open" class="navbar-item">Signup</div>
         </router-link>
@@ -38,27 +38,37 @@
 
 
 <script lang="ts" setup>
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faBars, faHouse, faRightToBracket, faAddressCard, faUserPlus} from "@fortawesome/free-solid-svg-icons";
-import {ref} from 'vue';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faBars, faHouse, faRightToBracket, faAddressCard, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { ref, computed } from 'vue';
+import store from "../store";
 
-let is_mobile_view = ref(false)
-let is_open = ref(false)
-let is_signed_in = ref(false)
+// Define a computed property to track changes to userData
+const userData = computed(() => store.state.userData);
+
+// Define other reactive variables
+let is_mobile_view = ref(false);
+let is_open = ref(false);
+let is_logged_in = computed(() => userData.value.id !== undefined);
+
+console.log("This is the SideBar");
+console.log(store.state.userData);
+console.log(is_logged_in.value);
+
 const open = () => {
-  is_open.value = !is_open.value
+  is_open.value = !is_open.value;
 }
 
 const handleResize = () => {
   is_mobile_view.value = window.innerWidth <= 990;
-  console.log("This is in Mobile View", is_mobile_view.value)
+  store.state.is_mobile_view = is_mobile_view.value;
+  console.log("This is in Mobile View", is_mobile_view.value);
 }
 
 
-
-window.addEventListener('resize', handleResize)
-
+window.addEventListener('resize', handleResize);
 </script>
+
 
 <style scoped>
 
@@ -145,4 +155,32 @@ window.addEventListener('resize', handleResize)
   background-color: #535bf2;
   border-radius: 10%;
 }
+
+@media screen and (max-width: 990px){
+  .logo{
+    width: 2em;
+    height: 2em;
+    margin-top: 1em;
+    margin-bottom: 2em;
+    border-radius: 30%;
+  }
+
+  .side-bar-container, .side-bar-container-open {
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4.5em;
+    height: 100vh;
+    gap: 1em;
+    transition: 0.2s ease-out;
+    z-index: 999;
+  }
+}
+
+
 </style>

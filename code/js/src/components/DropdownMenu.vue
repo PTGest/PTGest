@@ -33,7 +33,13 @@
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faChevronDown} from "@fortawesome/free-solid-svg-icons";
-import {ref} from 'vue'
+import {defineProps, ref} from 'vue'
+
+const props = defineProps({
+  size : {type: String, required: false, default: '18.5em'},
+  arrow_right: {type: String, required: false, default: '-13.5em'},
+})
+
 
 let is_open = ref(false)
 const toggleOpen = () => {
@@ -55,7 +61,7 @@ let optionChange = (option: string) => {
   justify-content: start;
   align-items: center;
   background-color: whitesmoke;
-  width: 18.5em;
+  width: v-bind(size);
   height: 2em;
   border-radius: 5px;
 }
@@ -92,7 +98,7 @@ let optionChange = (option: string) => {
 
 .drop-icon, .drop-icon-open {
   position: relative;
-  right: -13.5em;
+  right: v-bind(arrow_right);
   padding: 1em;
   color: var(--sign-up-black);
   cursor: pointer;

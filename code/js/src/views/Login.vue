@@ -1,36 +1,38 @@
 <template>
 <div class="login-container">
-  <h1>Login</h1>
-  <div class="login-inputs-container">
-
-    <div class="login-input-container">
-      <div class="login-input-text">Email</div>
-      <input v-model="loginUserData.email" class="login-name-input login-input-base" placeholder="Enter your email"/>
-    </div>
-
-    <div class="login-input-container" id="login-inputs-containers">
-      <div class="login-input-text">Password</div>
-      <div class="password-container">
-        <input v-model="loginUserData.password" :type='is_visible' class="login-password-input login-input-base"
-               placeholder="Enter your password" />
-        <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
+  <img class="image" src="../assets/login.png"  alt="Login Image">
+  <div class="container">
+    <h1>Login</h1>
+    <div class="login-inputs-container">
+      <div class="login-input-container">
+        <div class="login-input-text">Email</div>
+        <input v-model="loginUserData.email" class="login-name-input login-input-base" placeholder="Enter your email"/>
       </div>
-      <div class="login-input-text"></div>
+
+      <div class="login-input-container" id="login-inputs-containers">
+        <div class="login-input-text">Password</div>
+        <div class="password-container">
+          <input v-model="loginUserData.password" :type='is_visible' class="login-password-input login-input-base"
+                 placeholder="Enter your password" />
+          <font-awesome-icon :icon=faEye class="visible-icon" @click="updateVisibility"></font-awesome-icon>
+        </div>
+        <a class="forget-text" href="/forgetPassword">Forgot you Password?</a>
+      </div>
+      <DefaultButton display-text="Login" :is-disabled="isLoginDisabled" :click-handler="login" />
     </div>
-    <button @click="login" class="login-button" :disabled="isLoginDisabled">Login up</button>
   </div>
 
 </div>
 </template>
 
 <script setup lang="ts">
-import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faAddressCard, faEye} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {computed, ref} from 'vue';
-import {loginUserServices} from "@/services/authServices/loginServices.ts";
+import {loginUserServices} from "../services/authServices/loginServices.ts";
 import {Ref} from "vue/dist/vue";
-import SignupPTData from "@/models/authModels/SignupPTData.ts";
-import LoginUserData from "@/models/authModels/LoginUserData.ts";
+import LoginUserData from "../models/authModels/LoginUserData.ts";
+import DefaultButton from "@/components/DefaultButton.vue";
 
 let loginUserData : Ref<LoginUserData> = ref({
   email: "",
@@ -61,14 +63,21 @@ const isLoginDisabled = computed(() => {
 </script>
 
 <style scoped>
+.image {
+  width: 40em;
+  height: 40em;
+  border-radius: 20px;
+  margin-right: 2em;
+}
+
 .login-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 25em;
+  width: 70em;
   border-radius: 20px;
-  background-color: var(--primary-color);
+  background-color: var(--light-blue);
 }
 
 .login-inputs-container {
@@ -100,8 +109,8 @@ const isLoginDisabled = computed(() => {
   border-radius: 5px;
   border: 0;
   padding: 0 1em 0 1em;
-  color: white;
-  background-color: var(--secundary-color);
+  color: var(--sign-up-black);
+  background-color: whitesmoke;
 }
 
 .password-container {
@@ -116,23 +125,20 @@ const isLoginDisabled = computed(() => {
   position: absolute;
   right: 0.8em;
   cursor: pointer;
+  color: var(--sign-up-black);
 }
 
-.login-button {
-  margin-top: 1em;
-  width: 20em;
-  height: 3em;
-  border-radius: 5px;
-  background-color: #535bf2;
-  color: white;
-  border: 0;
-  cursor: pointer;
+.forget-text{
+  position: relative;
+  right: -0.2em;
+  margin-top: 0.3em;
+  font-size: 0.8em;
+  font-family: Poppins, sans-serif;
+  font-weight: bold;
+  color: rgba(245, 245, 245, 0.6);
 }
-
-.login-button:disabled {
-  background-color: #d3d3d3;
-  color: #a9a9a9;
-  cursor: not-allowed;
+.forget-text:hover{
+  color: whitesmoke;
 }
 
 </style>

@@ -1,11 +1,15 @@
 <template>
 
   <div class="forget-password-container">
-    <img class="image" src=".././assets/forgotPassword.png" alt="forgetPasswordImage"/>
+    <img class="image" src="../assets/forgotPassword.png" alt="forgetPasswordImage"/>
     <div class="text-container">
-      <div class="forget-password-text">Forgot Your Password?</div>
-      <input v-model="email" class="email-input" placeholder="Enter your email"/>
-      <button class="email-button" @onclick="forgetPassword" :disabled=" email=='' ">Send Email</button>
+      <div class="forget-password-text">Forgot </div>
+      <div class="forget-password-text">Your Password?</div>
+      <InputBar padding="0.5em 1em 0.5em 1em" :is_-password="false" width="20em" text="Email" class-name="email-input"
+                placeholder="Enter your email" height="2.5em" @value="updateEmail"/>
+
+<!--      <input v-model="email" class="email-input" placeholder="Enter your email"/>-->
+      <DefaultButton class="button" display-text="Send Email" :click-handler="forgetPassword" :is-disabled="email==''" />
     </div>
 
   </div>
@@ -15,12 +19,18 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import forgetPasswordServices from "../services/authServices/forgetPassword.ts";
+import DefaultButton from "../components/DefaultButton.vue";
+import InputBar from "../components/InputBar.vue";
 
 let email = ref('')
 
 const forgetPassword = () => {
   forgetPasswordServices(email.value)
   console.log(email.value)
+}
+const updateEmail = (value: string) => {
+  console.log(value)
+  email.value = value
 }
 
 </script>
@@ -40,14 +50,17 @@ const forgetPassword = () => {
   background-position-y: 250%;
   box-shadow: whitesmoke 30px 30px 2px 0px;
 }
+.forget-password-text{
+  font-size: 40px;
+  font-weight: bold;
+  color: whitesmoke;
+}
 
 .text-container {
   display: flex;
   flex-direction: column;
   align-items: start;
   margin-bottom: 20px;
-  font-family: Inter, sans-serif;
-  font-size: 38px;
   color: whitesmoke;
 }
 
@@ -59,38 +72,9 @@ const forgetPassword = () => {
   padding: 2em 4em 2em 4em;
 }
 
-.email-input{
-  width: 25em;
-  height: 2em;
-  border-radius: 5px;
-  border: 1px solid var(--primary-color);
-  margin-top: 1em;
-  margin-right: 1em;
-  padding: 0.5em;
-  font-family: Inter, sans-serif;
-  font-size: 15px;
-  color: var(--primary-color);
-  background-color: whitesmoke;
+.button{
+  width: 22em;
 }
 
-.email-input:focus{
-  outline: 1px solid whitesmoke;
-}
-
-.email-button{
-  width: 26em;
-  border-radius: 5px;
-  margin-top: 1em;
-  padding: 1em;
-  font-family: Inter, sans-serif;
-  font-size: 15px;
-  color: whitesmoke;
-  background-color: var(--primary-color);
-}
-
-.email-button:disabled{
-  background-color: var(--secundary-color);
-  cursor: not-allowed;
-}
 
 </style>

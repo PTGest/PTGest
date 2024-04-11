@@ -1,13 +1,13 @@
 <template>
   <div class="signup-container">
-    <img class="signup-img" src=".././assets/signup.png" alt="Signup image">
+    <img v-if="!store.state.is_mobile_view" class="signup-img" src=".././assets/signup.png" alt="Signup image">
     <div class="signup-inputs-container">
       <h1>Sign up</h1>
       <div class="signup-input-container">
         <div class="signup-input-text">Name</div>
         <input v-model="signupUserData.name" class="signup-name-input signup-input-base" placeholder="Enter your name"/>
       </div>
-
+<!--      <input-bar class-name="signup-input-text" :user-data="signupUserData"/>-->
       <div class="signup-input-container">
         <div class="signup-input-text">Email</div>
         <input v-model="signupUserData.email" class="signup-email-input signup-input-base" placeholder="Enter your email"/>
@@ -59,6 +59,8 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
 import DropdownMenu from "../components/DropdownMenu.vue";
 import SignupPTData from "../models/authModels/SignupPTData.ts";
+import store from "@/store";
+import InputBar from "@/components/InputBar.vue";
 
 let countryNumber = ref("")
 let phoneNumber = ref("")
@@ -115,6 +117,26 @@ const signUp = () => {
   margin-right: 3em;
 }
 
+
+
+.signup-input-base, .signup-birth-input-placeholder {
+  height: 2.5em;
+  width: 20em;
+  border-radius: 5px;
+  border: 0;
+  padding: 0 1em 0 1em;
+  color: var(--primary-color);
+  background-color: whitesmoke;
+}
+
+.signup-input-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  margin-bottom: 1em;
+}
+
 .signup-container {
   display: flex;
   flex-direction: row;
@@ -133,13 +155,7 @@ const signUp = () => {
   margin-bottom: 2em;
 }
 
-.signup-input-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: start;
-  margin-bottom: 1em;
-}
+
 
 .signup-input-text {
   display: flex;
@@ -147,15 +163,7 @@ const signUp = () => {
   justify-content: start;
 }
 
-.signup-input-base, .signup-birth-input-placeholder {
-  height: 2.5em;
-  width: 20em;
-  border-radius: 5px;
-  border: 0;
-  padding: 0 1em 0 1em;
-  color: var(--primary-color);
-  background-color: whitesmoke;
-}
+
 
 .password-container {
   position: relative;
@@ -253,6 +261,56 @@ const signUp = () => {
   background-color: #d3d3d3;
   color: #a9a9a9;
   cursor: not-allowed;
+}
+
+@media screen and (max-width: 990px){
+  .signup-container{
+    position: relative;
+    left: 1.5em;
+    width: 15em;
+  }
+
+  .signup-inputs-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2em;
+  }
+
+
+  .signup-input-base{
+    width: 13em;
+  }
+  .dropdown-menu-container{
+    width: 12.5em;
+  }
+  .phone-text{
+    right: 1.5em;
+  }
+  .phone-container{
+    width: 8em;
+    position: relative;
+    right: 2.5em;
+  }
+  .signup-phone-country-input{
+    width: 1em;
+  }
+  .signup-phone-input{
+    width: 8em;
+  }
+
+  .signup-button{
+    width: 10em;
+  }
+  .switch-icon-pt, .switch-icon-c {
+    z-index: 10;
+    cursor: pointer;
+    color : var(--sign-up-black);
+  }
+  .drop-icon{
+    right: -13.5em;
+  }
 }
 
 </style>

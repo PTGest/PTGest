@@ -30,6 +30,7 @@ create table if not exists prod.password_reset_token
 create table if not exists prod.refresh_token
 (
     token_hash  varchar(256) references prod.token(token_hash) on delete cascade primary key
+
 );
 
 create table if not exists prod.company
