@@ -1,19 +1,18 @@
-
-export default async function forgetPasswordServices(email: string) : Promise<void> {
+export default async function forgetPasswordServices(email: string): Promise<void> {
     // Logic to sign up
-    fetch('http://localhost:8080/api/forget-password', {
-        method: 'POST',
+    fetch("http://localhost:8080/api/forget-password", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify(email),
-    }).then(response => {
+    }).then((response) => {
         if (response.ok) {
-            console.log('Deu Bom familia nao dei fumble da bag')
-            return response.json();
+            console.log("Deu Bom familia nao dei fumble da bag")
+            return response.json()
         } else {
-            throw new Error('Failed to send email');
+            throw new Error("Failed to send email")
         }
     })
-    return;
+    return
 }

@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.services.auth
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.model.AuthenticationDetails
 import pt.isel.leic.ptgest.domain.auth.model.Token
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
@@ -24,16 +25,13 @@ class AuthService(
         name: String,
         email: String,
         password: String
-    ): UUID =
+    ) {
         transactionManager.run {
             val userRepo = it.userRepo
-
             val userId = createUser(userRepo, name, email, password, Role.COMPANY)
-
             userRepo.createCompany(userId)
-
-            return@run userId
         }
+    }
 
     fun signUpIndependentTrainer(
         name: String,
@@ -41,15 +39,13 @@ class AuthService(
         password: String,
         gender: Gender,
         phoneNumber: String?
-    ): UUID =
+    ) {
         transactionManager.run {
             val userRepo = it.userRepo
-
             val userId = createUser(userRepo, name, email, password, Role.INDEPENDENT_TRAINER)
             userRepo.createTrainer(userId, gender, phoneNumber?.trim())
-
-            return@run userId
         }
+    }
 
     fun signUpHiredTrainer(
         companyId: UUID,
@@ -82,7 +78,8 @@ class AuthService(
         email: String,
         birthdate: Date,
         gender: Gender,
-        phoneNumber: String?
+        phoneNumber: String?,
+        trainerId: UUID? = null
     ) {
         transactionManager.run {
             val userRepo = it.userRepo
@@ -99,6 +96,9 @@ class AuthService(
             )
 
             userRepo.createTrainee(userId, birthdate, gender, phoneNumber?.trim())
+            if (trainerId != null) {
+                userRepo.associateTraineeToTrainer(userId, trainerId)
+            }
         }
     }
 
@@ -177,7 +177,7 @@ class AuthService(
         )
     }
 
-    fun login(email: String, password: String): TokenPair {
+    fun login(email: String, password: String): AuthenticationDetails {
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
             val user = userRepo.getUserDetails(email.trim())
@@ -190,7 +190,6 @@ class AuthService(
             return@run user
         }
         val currentDate = Date()
-
         val tokens = createTokens(currentDate, userDetails.id, userDetails.role)
         val refreshTokenHash = authDomain.hashToken(tokens.refreshToken.token)
 
@@ -203,14 +202,18 @@ class AuthService(
             )
             userRepo.createRefreshToken(refreshTokenHash)
         }
-        return tokens
+
+        return AuthenticationDetails(
+            userId = userDetails.id,
+            role = userDetails.role,
+            tokens = tokens
+        )
     }
 
     fun refreshToken(accessToken: String, refreshToken: String): TokenPair {
         val currentDate = Date()
 
         val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
-
         val accessTokenDetails = jwtService.extractToken(accessToken.trim())
         val refreshTokenDetails = getRefreshTokenDetails(
             refreshTokenHash,

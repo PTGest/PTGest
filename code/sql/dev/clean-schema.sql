@@ -1,19 +1,27 @@
 begin work;
 truncate
-    dev.company_pt,
     dev.company,
-    dev.pt_trainee,
-    dev.trainee_data,
-    dev.report,
-    dev.trainer_favorite_exercise,
-    dev.session_feedback,
-    dev.session_exercise_feedback,
-    dev.session_exercise,
-    dev.session,
-    dev.trainee,
+    dev.company_pt,
     dev.exercise,
+    dev.feedback,
+    dev.password_reset_token,
     dev.personal_trainer,
-    dev."user",
+    dev.pt_trainee,
     dev.refresh_token,
-    dev.feedback cascade;
+    dev.report,
+    dev.session,
+    dev.session_feedback,
+    dev.token,
+    dev.trainee,
+    dev.trainee_data,
+    dev.trainer_favorite_exercise,
+    dev.trainer_favorite_workout,
+    dev."user",
+    dev.workout_exercise_feedback,
+    dev.workout_plan,
+    dev.workout_plan_exercise;
+
+alter sequence dev.exercise_id_seq restart with 1;
+alter sequence dev.feedback_id_seq restart with 1;
+alter sequence dev.workout_plan_id_seq restart with 1;
 end work;

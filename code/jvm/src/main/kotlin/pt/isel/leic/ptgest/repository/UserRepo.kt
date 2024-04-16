@@ -18,6 +18,8 @@ interface UserRepo {
 
     fun createTrainee(userId: UUID, birthdate: Date, gender: Gender, phoneNumber: String?)
 
+    fun associateTraineeToTrainer(traineeId: UUID, trainerId: UUID)
+
     fun resetPassword(userId: UUID, newPasswordHash: String)
 
     fun createToken(tokenHash: String, userId: UUID, expirationDate: Date)

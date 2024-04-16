@@ -1,6 +1,8 @@
 package pt.isel.leic.ptgest.http.controllers.auth.model.request
 
+import jakarta.validation.constraints.Size
+
 data class ResetPasswordRequest(
-    val token: String,
+    @field:Size(min = 8)
     val password: String
 )

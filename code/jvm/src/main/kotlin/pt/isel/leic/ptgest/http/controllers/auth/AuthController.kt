@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -19,11 +21,10 @@ import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.RefreshTokenRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.ResetPasswordRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.SignupRequest
-import pt.isel.leic.ptgest.http.controllers.auth.model.request.ValidatePasswordResetTokenRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
-import pt.isel.leic.ptgest.http.controllers.auth.model.response.SignupResponse
+import pt.isel.leic.ptgest.http.controllers.auth.model.response.RefreshTokenResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
-import pt.isel.leic.ptgest.http.utils.Uris
+import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
@@ -32,7 +33,7 @@ import java.util.*
 
 @RestController
 @RequestMapping(Uris.PREFIX)
-class AuthController(private val services: AuthService) {
+class AuthController(private val service: AuthService) {
 
     @PostMapping(Uris.Auth.SIGNUP)
     fun signup(
@@ -41,28 +42,25 @@ class AuthController(private val services: AuthService) {
     ): ResponseEntity<*> {
         return when (userInfo) {
             is SignupRequest.Company -> {
+                service.signUpCompany(userInfo.name, userInfo.email, userInfo.password)
+
                 HttpResponse.created(
                     message = "Company registered successfully.",
-                    details = SignupResponse(
-                        username = userInfo.name,
-                        id = services.signUpCompany(userInfo.name, userInfo.email, userInfo.password)
-                    )
+                    details = null
                 )
             }
-
             is SignupRequest.IndependentTrainer -> {
+                service.signUpIndependentTrainer(
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.password,
+                    userInfo.gender,
+                    userInfo.phoneNumber
+                )
+
                 HttpResponse.created(
                     message = "Independent trainer registered successfully.",
-                    details = SignupResponse(
-                        username = userInfo.name,
-                        id = services.signUpIndependentTrainer(
-                            userInfo.name,
-                            userInfo.email,
-                            userInfo.password,
-                            userInfo.gender,
-                            userInfo.phoneNumber
-                        )
-                    )
+                    details = null
                 )
             }
         }
@@ -79,11 +77,10 @@ class AuthController(private val services: AuthService) {
                 processCompanyRequest(authenticatedUser.id, userInfo)
             }
             Role.INDEPENDENT_TRAINER -> {
-                processIndependentTrainerRequest(userInfo)
+                processIndependentTrainerRequest(userInfo, authenticatedUser.id)
             }
             else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
-
         return HttpResponse.created(
             message = "User registered successfully.",
             details = null
@@ -95,7 +92,7 @@ class AuthController(private val services: AuthService) {
         @Valid @RequestBody
         forgetInfo: ForgetRequest
     ): ResponseEntity<*> {
-        services.forgetPassword(forgetInfo.email)
+        service.forgetPassword(forgetInfo.email)
 
         return HttpResponse.ok(
             message = "Password reset email sent successfully.",
@@ -103,12 +100,11 @@ class AuthController(private val services: AuthService) {
         )
     }
 
-    @PostMapping(Uris.Auth.VALIDATE_PASSWORD_RESET_TOKEN)
+    @GetMapping(Uris.Auth.VALIDATE_PASSWORD_RESET_TOKEN)
     fun validatePasswordResetToken(
-        @Valid @RequestBody
-        tokenRequest: ValidatePasswordResetTokenRequest
+        @PathVariable token: String
     ): ResponseEntity<*> {
-        services.validatePasswordResetToken(tokenRequest.token)
+        service.validatePasswordResetToken(token)
 
         return HttpResponse.ok(
             message = "Password reset token validated successfully.",
@@ -118,10 +114,11 @@ class AuthController(private val services: AuthService) {
 
     @PutMapping(Uris.Auth.RESET_PASSWORD)
     fun resetPassword(
+        @PathVariable token: String,
         @Valid @RequestBody
         resetInfo: ResetPasswordRequest
     ): ResponseEntity<*> {
-        services.resetPassword(resetInfo.token, resetInfo.password)
+        service.resetPassword(token, resetInfo.password)
 
         return HttpResponse.ok(
             message = "Password reset successfully.",
@@ -135,18 +132,19 @@ class AuthController(private val services: AuthService) {
         userInfo: LoginRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {
-        val tokens = services.login(
+        val authenticationDetails = service.login(
             userInfo.email,
             userInfo.password
         )
 
-        setCookies(response, tokens)
+        setCookies(response, authenticationDetails.tokens)
 
         return HttpResponse.ok(
             message = "User logged in successfully.",
             details = LoginResponse(
-                accessToken = tokens.accessToken,
-                refreshToken = tokens.refreshToken
+                userId = authenticationDetails.userId,
+                role = authenticationDetails.role,
+                tokens = authenticationDetails.tokens
             )
         )
     }
@@ -162,20 +160,15 @@ class AuthController(private val services: AuthService) {
         val tokens = when {
             sessionCookies != null -> {
                 val (accessToken, refreshToken) = processCookies(sessionCookies)
-
-                val tokens = services.refreshToken(accessToken, refreshToken)
+                val tokens = service.refreshToken(accessToken, refreshToken)
 
                 setCookies(response, tokens)
-
                 tokens
             }
-
             refreshTokenBody != null -> {
                 val accessToken = processHeader(request)
-
-                services.refreshToken(accessToken, refreshTokenBody.refreshToken)
+                service.refreshToken(accessToken, refreshTokenBody.refreshToken)
             }
-
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
             }
@@ -183,11 +176,15 @@ class AuthController(private val services: AuthService) {
 
         return HttpResponse.ok(
             message = "Token refreshed successfully.",
-            details = LoginResponse(
+            details = RefreshTokenResponse(
                 accessToken = tokens.accessToken,
                 refreshToken = tokens.refreshToken
             )
         )
+    }
+
+    fun validateRefreshToken(refreshToken: String): Boolean {
+        throw NotImplementedError("Not implemented yet.")
     }
 
     @PostMapping(Uris.Auth.LOGOUT)
@@ -197,17 +194,16 @@ class AuthController(private val services: AuthService) {
         response: HttpServletResponse
     ): ResponseEntity<*> {
         val sessionCookies = request.cookies
-
         when {
             sessionCookies != null -> {
                 val refreshToken = processCookies(sessionCookies).second
 
-                services.logout(refreshToken)
+                service.logout(refreshToken)
 
                 revokeCookies(response)
             }
             refreshTokenBody != null -> {
-                services.logout(refreshTokenBody.refreshToken)
+                service.logout(refreshTokenBody.refreshToken)
             }
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
@@ -245,7 +241,7 @@ class AuthController(private val services: AuthService) {
     private fun processCompanyRequest(authenticatedUserId: UUID, userInfo: AuthenticatedSignupRequest) {
         when (userInfo) {
             is AuthenticatedSignupRequest.HiredTrainer -> {
-                services.signUpHiredTrainer(
+                service.signUpHiredTrainer(
                     authenticatedUserId,
                     userInfo.name,
                     userInfo.email,
@@ -254,7 +250,7 @@ class AuthController(private val services: AuthService) {
                 )
             }
             is AuthenticatedSignupRequest.Trainee -> {
-                services.signUpTrainee(
+                service.signUpTrainee(
                     userInfo.name,
                     userInfo.email,
                     userInfo.birthdate,
@@ -265,14 +261,15 @@ class AuthController(private val services: AuthService) {
         }
     }
 
-    private fun processIndependentTrainerRequest(userInfo: AuthenticatedSignupRequest) {
+    private fun processIndependentTrainerRequest(userInfo: AuthenticatedSignupRequest, authenticatedUserId: UUID) {
         if (userInfo is AuthenticatedSignupRequest.Trainee) {
-            services.signUpTrainee(
+            service.signUpTrainee(
                 userInfo.name,
                 userInfo.email,
                 userInfo.birthdate,
                 userInfo.gender,
-                userInfo.phoneNumber
+                userInfo.phoneNumber,
+                authenticatedUserId
             )
         } else {
             throw AuthError.UserAuthenticationError.UnauthorizedRole

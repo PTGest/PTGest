@@ -20,7 +20,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
         return handle.createUpdate(
             """
                 insert into "user" (name, email, password_hash, role)
-                values (:name, :email, :passwordHash, :role)
+                values (:name, :email, :passwordHash, :role::role)
             """.trimIndent()
         )
             .bindMap(
@@ -51,7 +51,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
         handle.createUpdate(
             """
                 insert into personal_trainer (id, gender, contact)
-                values (:id, :gender, :phoneNumber)
+                values (:id, :gender::gender, :phoneNumber)
             """.trimIndent()
         )
             .bindMap(
@@ -100,6 +100,22 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
                     "phoneNumber" to phoneNumber
                 )
             )
+    }
+
+    override fun associateTraineeToTrainer(traineeId: UUID, trainerId: UUID) {
+        handle.createUpdate(
+            """
+                insert into trainee_pt (pt_id, trainee_id)
+                values (:trainerId, :traineeId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "traineeId" to traineeId
+                )
+            )
+            .execute()
     }
 
     override fun resetPassword(userId: UUID, newPasswordHash: String) {

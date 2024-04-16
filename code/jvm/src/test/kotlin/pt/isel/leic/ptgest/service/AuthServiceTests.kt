@@ -52,9 +52,7 @@ class AuthServiceTests {
             `when`(mockUserRepo.createUser(name, email, passwordHash, role))
                 .then { uuid }
 
-            val result = mockAuthService.signUpCompany(name, email, password)
-
-            assertEquals(uuid, result)
+            mockAuthService.signUpCompany(name, email, password)
         }
 
         @Test
@@ -95,9 +93,7 @@ class AuthServiceTests {
             `when`(mockUserRepo.createUser(name, email, passwordHash, role))
                 .then { uuid }
 
-            val result = mockAuthService.signUpIndependentTrainer(name, email, password, gender, phoneNumber)
-
-            assertEquals(uuid, result)
+            mockAuthService.signUpIndependentTrainer(name, email, password, gender, phoneNumber)
         }
 
         @Test
@@ -113,9 +109,7 @@ class AuthServiceTests {
             `when`(mockUserRepo.createUser(name, email, passwordHash, role))
                 .then { uuid }
 
-            val result = mockAuthService.signUpIndependentTrainer(name, email, password, gender, null)
-
-            assertEquals(uuid, result)
+            mockAuthService.signUpIndependentTrainer(name, email, password, gender, null)
         }
 
         @Test
@@ -151,10 +145,12 @@ class AuthServiceTests {
             `when`(mockUserRepo.getUserDetails(uuid))
                 .then { UserDetails(uuid, name, email, passwordHash, role) }
 
-            val tokens = mockAuthService.login(email, password)
+            val authenticationDetails = mockAuthService.login(email, password)
 
-            assertTrue(tokens.accessToken.token.isNotEmpty())
-            assertTrue(tokens.refreshToken.token.isNotEmpty())
+            assertEquals(uuid, authenticationDetails.userId)
+            assertEquals(role, authenticationDetails.role)
+            assertTrue(authenticationDetails.tokens.accessToken.token.isNotEmpty())
+            assertTrue(authenticationDetails.tokens.refreshToken.token.isNotEmpty())
         }
 
         @Test

@@ -1,8 +1,8 @@
 class ErrorType {
-    type: string;
-    message: string;
+    type: string
+    message: string
     constructor(type: string, message: string) {
-        this.type = type;
-        this.message = message;
+        this.type = type
+        this.message = message
     }
 }
