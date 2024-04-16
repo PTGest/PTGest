@@ -1,6 +1,6 @@
 <template>
   <div class="reset-password-container">
-    <img class="image" src="../assets/resetPassword.png"  alt="ResetPasswordImage">
+    <img class="image" src="../../../assets/resetPassword.png" alt="ResetPasswordImage">
     <div class="reset-password-input-container">
       <div class="reset-text-container">
         <div class="reset-text">Reset</div>
@@ -22,9 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import InputBar from "../components/InputBar.vue";
+import InputBar from "../../../components/InputBar.vue";
 import {ref} from "vue";
-import DefaultButton from "../components/DefaultButton.vue";
+import DefaultButton from "../../../components/DefaultButton.vue";
 
 let password = ref('')
 let confirm_password = ref('')

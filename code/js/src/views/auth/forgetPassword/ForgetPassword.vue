@@ -1,7 +1,7 @@
 <template>
 
   <div class="forget-password-container">
-    <img class="image" src="../assets/forgotPassword.png" alt="forgetPasswordImage"/>
+    <img class="image" src="../../../assets/forgotPassword.png" alt="forgetPasswordImage"/>
     <div class="text-container">
       <div class="forget-password-text">Forgot </div>
       <div class="forget-password-text">Your Password?</div>
@@ -18,9 +18,9 @@
 
 <script setup lang="ts">
 import {ref} from 'vue'
-import forgetPasswordServices from "../services/authServices/forgetPassword.ts";
-import DefaultButton from "../components/DefaultButton.vue";
-import InputBar from "../components/InputBar.vue";
+import forgetPasswordServices from "../../../services/authServices/forgetPassword.ts";
+import DefaultButton from "../../../components/DefaultButton.vue";
+import InputBar from "../../../components/InputBar.vue";
 
 let email = ref('')
 
@@ -44,7 +44,7 @@ const updateEmail = (value: string) => {
   justify-content: center;
   border-radius: 10px;
   background-color: var(--light-blue);
-  background-image: url(.././assets/waves.svg);
+  background-image: url(../../../assets/waves.svg);
   background-size: 100% 80%;
   background-repeat: no-repeat no-repeat;
   background-position-y: 250%;

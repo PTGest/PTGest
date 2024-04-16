@@ -18,6 +18,14 @@ export async function signupUserServices(userData: SignupPTData) : Promise<void>
                 router.push({name: 'login'})
                 return response.json();
 
+            case 409 :
+                const element = document.createElement("div");
+                element.innerHTML = "User already exists";
+                element.classList.add("error-message");
+                element.style.color = "red";
+                element.style.padding = "0.5em";
+                document.getElementById("signup-container") ?.appendChild(element);
+                break;
             default :
                 response.json().then( (response) => {
                         store.commit('setErrorType', {type: response.type, message: response.title});
@@ -25,13 +33,6 @@ export async function signupUserServices(userData: SignupPTData) : Promise<void>
                     }
                 );
                 break;
-        }
-
-
-        if (response.ok) {
-
-        } else {
-            throw new Error('Failed to sign up');
         }
     })
     return;

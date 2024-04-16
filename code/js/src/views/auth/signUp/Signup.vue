@@ -1,7 +1,7 @@
 <template>
   <div class="signup-container">
-    <img v-if="!store.state.is_mobile_view" class="signup-img" src=".././assets/signup.png" alt="Signup image">
-    <div class="signup-inputs-container">
+    <img v-if="!store.state.is_mobile_view" class="signup-img" src="../../../assets/signup.png" alt="Signup image">
+    <div class="signup-inputs-container" id="signup-container">
       <h1>Sign up</h1>
       <div class="signup-input-container">
         <div class="signup-input-text">Name</div>
@@ -44,9 +44,8 @@
       </div>
 
       <button class="signup-button" @click="signUp" :disabled="isSignUpDisabled">Sign up</button>
-
+      <router-link class="login-text" :to="{ name : 'login' }">Already have an account?</router-link>
     </div>
-
 
   </div>
 </template>
@@ -54,13 +53,12 @@
 
 <script setup lang="ts">
 import {computed, Ref, ref} from 'vue'
-import {signupUserServices} from "../services/authServices/signupServices.ts";
+import {signupUserServices} from "../../../services/authServices/signupServices.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBuilding, faEye, faPerson, faPlus} from "@fortawesome/free-solid-svg-icons";
-import DropdownMenu from "../components/DropdownMenu.vue";
-import SignupPTData from "../models/authModels/SignupPTData.ts";
-import store from "@/store";
-import InputBar from "@/components/InputBar.vue";
+import DropdownMenu from "../../../components/DropdownMenu.vue";
+import SignupPTData from "../../../models/authModels/SignupPTData.ts";
+import store from "../../../store";
 
 let countryNumber = ref("")
 let phoneNumber = ref("")
@@ -115,6 +113,7 @@ const signUp = () => {
   width: 40em;
   height: 40em;
   margin-right: 3em;
+  z-index: 99;
 }
 
 
@@ -145,6 +144,7 @@ const signUp = () => {
   width: 70em;
   border-radius: 20px;
   background-color: var(--light-blue);
+  z-index: 99;
 }
 
 .signup-inputs-container {
@@ -263,6 +263,11 @@ const signUp = () => {
   cursor: not-allowed;
 }
 
+.login-text{
+  color: rgba(245, 245, 245, 0.9);
+  margin-top: 0.5em;
+}
+
 @media screen and (max-width: 990px){
   .signup-container{
     position: relative;
@@ -308,9 +313,8 @@ const signUp = () => {
     cursor: pointer;
     color : var(--sign-up-black);
   }
-  .drop-icon{
-    right: -13.5em;
-  }
+
+
 }
 
 </style>

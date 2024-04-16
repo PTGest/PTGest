@@ -7,3 +7,5 @@ class ResetPasswordData {
         this.token = token;
     }
 }
+
+export default ResetPasswordData;

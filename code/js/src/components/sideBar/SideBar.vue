@@ -1,6 +1,6 @@
 <template>
   <div :class="[is_open ? 'side-bar-container-open' : 'side-bar-container']">
-    <img  src="../assets/PTGest.png" alt="Logo" class="logo"/>
+    <img src="../../assets/PTGest.png" alt="Logo" class="logo"/>
     <div :class="[is_open ? 'side-bar-icon-open' : 'side-bar-icon']">
       <font-awesome-icon :icon=faBars @click="open"></font-awesome-icon>
     </div>
@@ -18,16 +18,20 @@
           <div v-if="!is_mobile_view || is_mobile_view && is_open" class="navbar-item">About</div>
         </router-link>
 
-
-        <router-link v-if="!is_logged_in" :to="{ name : 'login' }" class="nav-link" link>
-          <font-awesome-icon v-if="is_open || is_mobile_view" :icon=faRightToBracket></font-awesome-icon>
+      <template v-if="!userData">
+        <router-link :to="{ name : 'login' }" class="nav-link" link>
+          <font-awesome-icon v-if="is_open || is_mobile_view" :icon=faUser></font-awesome-icon>
           <div v-if="!is_mobile_view || is_mobile_view && is_open" class="navbar-item">Login</div>
         </router-link>
 
-        <router-link v-if="!is_logged_in" :to="{ name : 'signup' }" class="nav-link" link>
+        <router-link :to="{ name : 'signup' }" class="nav-link" link>
           <font-awesome-icon v-if="is_open || is_mobile_view" :icon=faUserPlus></font-awesome-icon>
           <div v-if="!is_mobile_view || is_mobile_view && is_open" class="navbar-item">Signup</div>
         </router-link>
+      </template>
+        <UserIcon :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view"/>
+        <LogoutButton :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view"/>
+
 
       </div>
     </div>
@@ -39,21 +43,23 @@
 
 <script lang="ts" setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faBars, faHouse, faRightToBracket, faAddressCard, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { ref, computed } from 'vue';
-import store from "../store";
+import { faBars, faHouse, faAddressCard, faUserPlus, faUser} from "@fortawesome/free-solid-svg-icons";
+import {computed, ref} from 'vue';
+import store from "../../store";
+import LogoutButton from "./components/LogoutButton.vue";
+import UserIcon from "@/components/sideBar/components/UserIcon.vue";
+
 
 // Define a computed property to track changes to userData
-const userData = computed(() => store.state.userData);
+let userData = computed(() => {
+  return (store.state.userData.id !== undefined);
+});
 
 // Define other reactive variables
-let is_mobile_view = ref(false);
+let is_mobile_view = store.getters.is_mobile_view === 'true' ? ref(true) : ref(false);
 let is_open = ref(false);
-let is_logged_in = computed(() => userData.value.id !== undefined);
 
-console.log("This is the SideBar");
-console.log(store.state.userData);
-console.log(is_logged_in.value);
+
 
 const open = () => {
   is_open.value = !is_open.value;
@@ -61,9 +67,9 @@ const open = () => {
 
 const handleResize = () => {
   is_mobile_view.value = window.innerWidth <= 990;
-  store.state.is_mobile_view = is_mobile_view.value;
-  console.log("This is in Mobile View", is_mobile_view.value);
+  store.dispatch('setMobile', is_mobile_view.value)
 }
+
 
 
 window.addEventListener('resize', handleResize);
@@ -180,7 +186,16 @@ window.addEventListener('resize', handleResize);
     transition: 0.2s ease-out;
     z-index: 999;
   }
+  .side-bar-container-open{
+    width: 8em;
+    transition: 0.2s ease-out;
+  }
+
 }
+
+
+
+
 
 
 </style>

@@ -1,6 +1,6 @@
 <template>
 <div class="login-container">
-  <img class="image" src="../assets/login.png"  alt="Login Image">
+  <img class="image" src="../../../assets/login.png" alt="Login Image">
   <div class="container">
     <h1>Login</h1>
     <div class="login-inputs-container">
@@ -19,6 +19,7 @@
         <a class="forget-text" href="/forgetPassword">Forgot you Password?</a>
       </div>
       <DefaultButton display-text="Login" :is-disabled="isLoginDisabled" :click-handler="login" />
+      <router-link class="sign-text" :to="{ name : 'signup' }"> Dont have an account?</router-link>
     </div>
   </div>
 
@@ -26,12 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import {faAddressCard, faEye} from "@fortawesome/free-solid-svg-icons";
+import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {computed, ref} from 'vue';
-import {loginUserServices} from "../services/authServices/loginServices.ts";
+import {loginUserServices} from "../../../services/authServices/loginServices.ts";
 import {Ref} from "vue/dist/vue";
-import LoginUserData from "../models/authModels/LoginUserData.ts";
+import LoginUserData from "../../../models/authModels/LoginUserData.ts";
 import DefaultButton from "@/components/DefaultButton.vue";
 
 let loginUserData : Ref<LoginUserData> = ref({
@@ -139,6 +140,10 @@ const isLoginDisabled = computed(() => {
 }
 .forget-text:hover{
   color: whitesmoke;
+}
+.sign-text{
+  color: whitesmoke;
+  margin-top: 0.5em;
 }
 
 </style>

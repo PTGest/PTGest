@@ -5,7 +5,7 @@
 
 
 <script setup>
-import Sidebar from "@/components/SideBar.vue";
+import Sidebar from "@/components/sideBar/SideBar.vue";
 </script>
 
 <style scoped>

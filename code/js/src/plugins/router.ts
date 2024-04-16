@@ -1,11 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import Login from '../views/Login.vue';
+import Login from '../views/auth/login/Login.vue';
 import About from '.././views/AboutPage.vue'
-import Home from '../views/HomePage.vue';
-import Signup from '../views/Signup.vue';
-import ForgetPassword from "../views/ForgetPassword.vue";
+import Home from '../views/home/HomePage.vue';
+import Signup from '../views/auth/signUp/Signup.vue';
+import ForgetPassword from "../views/auth/forgetPassword/ForgetPassword.vue";
 import Error from "../views/Error.vue";
-import ResetPassword from "../views/ResetPassword.vue";
+import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue";
 
 const routes = [
     {path: '/', name: 'home', component: Home},
