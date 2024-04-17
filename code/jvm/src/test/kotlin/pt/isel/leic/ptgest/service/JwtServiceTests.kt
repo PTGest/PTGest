@@ -4,7 +4,9 @@ import io.jsonwebtoken.ExpiredJwtException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Nested
-import org.mockito.Mockito.*
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
@@ -15,7 +17,9 @@ import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.JwtService
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

@@ -3,6 +3,8 @@ truncate
     dev.company,
     dev.company_pt,
     dev.exercise,
+    dev.exercise_company,
+    dev.exercise_pt,
     dev.feedback,
     dev.password_reset_token,
     dev.personal_trainer,

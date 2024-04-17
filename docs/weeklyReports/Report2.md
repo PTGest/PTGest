@@ -138,7 +138,7 @@ Since there was a change in the way the user is authenticated through the token 
 
 With changes the database was updated resulting in the followiing diagram:
 
-![Database Diagram](./images/dbDiagrm2.png)
+![Database Diagram](./images/dbDiagram2.png)
 
 ## Planning for Next Week
 

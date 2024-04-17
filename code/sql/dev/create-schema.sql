@@ -98,12 +98,24 @@ create type dev.exercise_category as enum ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H
 create table if not exists dev.exercise
 (
     id          serial primary key,
-    pt_id       uuid references dev.personal_trainer (id) on delete cascade,
     name        varchar(50)           not null,
     description text,
-    -- temporary to be changed
     category    dev.exercise_category not null,
     url         varchar(256)
+);
+
+create table if not exists dev.exercise_company
+(
+    company_id  uuid references dev.company (id) on delete cascade,
+    exercise_id int references dev.exercise (id) on delete cascade,
+    primary key (company_id, exercise_id)
+);
+
+create table if not exists dev.exercise_pt
+(
+    pt_id       uuid references dev.personal_trainer (id) on delete cascade,
+    exercise_id int references dev.exercise (id) on delete cascade,
+    primary key (pt_id, exercise_id)
 );
 
 create table if not exists dev.workout_plan_exercise
