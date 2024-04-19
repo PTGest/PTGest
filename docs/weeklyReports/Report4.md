@@ -16,7 +16,7 @@
     9. Implement the trainer and hire trainer signup page.
 - **Progress:**
     1. Missing only the controller tests for the authentication routes and some tests for some routes.
-    2. Refactored the authentication routes response to return a token object.
+    2. Refactored some authentication routes responses.
     3. Updated the authentication interceptor to handle to check if the user autehnticated has the necessary roles to access the route.
     4. Implemented the signup for trainee and hired trainer.
     5. Started implementing the user controller and company controller.

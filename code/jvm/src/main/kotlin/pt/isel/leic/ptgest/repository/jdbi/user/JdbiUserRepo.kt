@@ -6,6 +6,8 @@ import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.TraineeDetails
+import pt.isel.leic.ptgest.domain.user.TrainerDetails
 import pt.isel.leic.ptgest.repository.UserRepo
 import java.util.*
 
@@ -50,14 +52,14 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
     override fun createTrainer(id: UUID, gender: Gender, phoneNumber: String?) {
         handle.createUpdate(
             """
-                insert into personal_trainer (id, gender, contact)
+                insert into personal_trainer (id, gender, phone_number)
                 values (:id, :gender::gender, :phoneNumber)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "id" to id,
-                    "gender" to gender.identifier,
+                    "gender" to gender.name,
                     "phoneNumber" to phoneNumber
                 )
             )
@@ -88,7 +90,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
     ) {
         handle.createUpdate(
             """
-                insert into trainee (id, gender, birthdate, contact)
+                insert into trainee (id, gender, birthdate, phone_number)
                 values (:id, :gender, :birthdate, :phoneNumber)
             """.trimIndent()
         )
@@ -230,5 +232,29 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
         )
             .bind("userId", userId)
             .mapTo<UserDetails>()
+            .firstOrNull()
+
+    override fun getTraineeDetails(userId: UUID): TraineeDetails? =
+        handle.createQuery(
+            """
+                select name, email, gender, birthdate, phone_number
+                from trainee join "user" on trainee.id = "user".id
+                where id = :userId
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .mapTo<TraineeDetails>()
+            .firstOrNull()
+
+    override fun getTrainerDetails(userId: UUID): TrainerDetails? =
+        handle.createQuery(
+            """
+                select name, email, gender, phone_number
+                from personal_trainer join "user" on personal_trainer.id = "user".id
+                where id = :userId
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .mapTo<TrainerDetails>()
             .firstOrNull()
 }

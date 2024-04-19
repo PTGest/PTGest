@@ -4,6 +4,8 @@ import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.TraineeDetails
+import pt.isel.leic.ptgest.domain.user.TrainerDetails
 import java.util.*
 
 interface UserRepo {
@@ -37,4 +39,8 @@ interface UserRepo {
     fun getUserDetails(email: String): UserDetails?
 
     fun getUserDetails(userId: UUID): UserDetails?
+
+    fun getTraineeDetails(userId: UUID): TraineeDetails?
+
+    fun getTrainerDetails(userId: UUID): TrainerDetails?
 }

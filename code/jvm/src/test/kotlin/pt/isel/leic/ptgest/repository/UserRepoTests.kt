@@ -176,7 +176,7 @@ class UserRepoTests {
     inner class IndependentTrainerCreationTests {
 
         @Test
-        fun `create independent trainer Successfully without contact`() {
+        fun `create independent trainer Successfully without phone number`() {
             asTransaction(jdbi) { handle ->
                 val userRepo = JdbiUserRepo(handle)
                 val userId = userRepo.createUser(
@@ -191,7 +191,7 @@ class UserRepoTests {
         }
 
         @Test
-        fun `create independent trainer Successfully with contact`() {
+        fun `create independent trainer Successfully with phone number`() {
             asTransaction(jdbi) { handle ->
                 val userRepo = JdbiUserRepo(handle)
                 val userId = userRepo.createUser(
@@ -206,7 +206,7 @@ class UserRepoTests {
         }
 
         @Test
-        fun `create independent trainer Unsuccessfully with wrong contact`() {
+        fun `create independent trainer Unsuccessfully with wrong phone number`() {
             assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)
@@ -223,7 +223,7 @@ class UserRepoTests {
         }
 
         @Test
-        fun `create independent trainer Unsuccessfully with empty contact`() {
+        fun `create independent trainer Unsuccessfully with empty phone number`() {
             assertFailsWith<UnableToExecuteStatementException> {
                 asTransaction(jdbi) { handle ->
                     val userRepo = JdbiUserRepo(handle)

@@ -38,13 +38,13 @@ create table if not exists dev.company
     id uuid primary key references dev."user" (id) on delete cascade
 );
 
-create type dev.gender as enum ('M', 'F', 'O', 'U');
+create type dev.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
 
 create table if not exists dev.personal_trainer
 (
     id      uuid primary key references dev."user" (id) on delete cascade,
     gender  dev.gender not null,
-    contact varchar(20) check ( contact ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
+    phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
 create table if not exists dev.company_pt
@@ -59,7 +59,7 @@ create table if not exists dev.trainee
     id        uuid primary key references dev."user" (id) on delete cascade,
     gender    dev.gender not null,
     birthdate date       not null,
-    contact   varchar(20) check ( contact ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
+    phone_number   varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
 create table if not exists dev.pt_trainee
