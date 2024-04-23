@@ -1,19 +1,21 @@
 begin work;
-truncate
-    prod.company_pt,
-    prod.company,
-    prod.pt_trainee,
-    prod.trainee_data,
-    prod.report,
-    prod.trainer_favorite_exercise,
-    prod.session_feedback,
-    prod.session_exercise_feedback,
-    prod.session_exercise,
-    prod.session,
-    prod.trainee,
-    prod.exercise,
-    prod.personal_trainer,
-    prod."user",
-    prod.refresh_token,
-    prod.feedback cascade;
+
+do $$
+    declare
+        table_name text;
+        seq_name text;
+    begin
+        for table_name in (select tablename from pg_tables where schemaname = 'prod')
+            loop
+                execute 'truncate table prod.' || table_name || ' cascade';
+            end loop;
+
+        for seq_name in (SELECT sequencename FROM pg_sequences WHERE schemaname = 'prod')
+            loop
+                execute 'alter sequence prod.' || seq_name || ' restart with 1';
+                raise notice 'Sequence % rested to 1 successfully', seq_name;
+            end loop;
+    end;
+$$;
+
 end work;

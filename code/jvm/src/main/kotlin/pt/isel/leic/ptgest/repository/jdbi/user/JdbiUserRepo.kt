@@ -52,7 +52,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
     override fun createTrainer(id: UUID, gender: Gender, phoneNumber: String?) {
         handle.createUpdate(
             """
-                insert into personal_trainer (id, gender, phone_number)
+                insert into trainer (id, gender, phone_number)
                 values (:id, :gender::gender, :phoneNumber)
             """.trimIndent()
         )
@@ -66,17 +66,18 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
-    override fun createCompanyTrainer(companyId: UUID, trainerId: UUID) {
+    override fun createCompanyTrainer(companyId: UUID, trainerId: UUID, capacity: Int) {
         handle.createUpdate(
             """
-                insert into company_pt (company_id, pt_id)
-                values (:companyId, :trainerId)
+                insert into company_trainer (company_id, trainer_id, capacity)
+                values (:companyId, :trainerId, :capacity)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "companyId" to companyId,
-                    "trainerId" to trainerId
+                    "trainerId" to trainerId,
+                    "capacity" to capacity
                 )
             )
             .execute()
@@ -107,7 +108,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
     override fun associateTraineeToTrainer(traineeId: UUID, trainerId: UUID) {
         handle.createUpdate(
             """
-                insert into trainee_pt (pt_id, trainee_id)
+                insert into trainer_trainer (trainer_id, trainee_id)
                 values (:trainerId, :traineeId)
             """.trimIndent()
         )
@@ -250,7 +251,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
         handle.createQuery(
             """
                 select name, email, gender, phone_number
-                from personal_trainer join "user" on personal_trainer.id = "user".id
+                from trainer join "user" on trainer.id = "user".id
                 where id = :userId
             """.trimIndent()
         )

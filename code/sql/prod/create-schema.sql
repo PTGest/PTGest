@@ -4,33 +4,39 @@ create schema if not exists "prod";
 
 create extension if not exists "uuid-ossp";
 
+create type prod.role as enum ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE');
+create type prod.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
+create type prod.set_type as enum ('NORMAL', 'DROPSET', 'SUPERSET');
+-- TODO: to be changed
+create type prod.exercise_category as enum ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+create type prod.session_category as enum ('P', 'A');
+create type prod.source as enum ('T', 'P');
+
 create table if not exists prod."user"
 (
     id            uuid default uuid_generate_v4() primary key,
-    name          varchar(40) check ("user".name <> '')                                       not null,
+    name          varchar(40) check (name <> '')                                    not null,
     email         varchar(50)
-        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique    not null,
-    password_hash varchar(256) check ("user".password_hash <> '')                      not null,
-    role          varchar(20)
-        check (role in ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE')) not null
+        check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
+    password_hash varchar(256) check (password_hash <> '')                          not null,
+    role          prod.role                                                          not null
 );
 
 create table if not exists prod.token
 (
-    token_hash  varchar(256) primary key,
-    user_id     uuid references prod."user" (id) on delete cascade,
-    expiration  timestamp check ( expiration > now() ) not null
+    token_hash varchar(256) check (token_hash <> '') primary key,
+    user_id    uuid references prod."user" (id) on delete cascade,
+    expiration timestamp check ( expiration > now() ) not null
 );
 
 create table if not exists prod.password_reset_token
 (
-    token_hash  varchar(256) references prod.token(token_hash) on delete cascade primary key
+    token_hash varchar(256) primary key references prod.token (token_hash) on delete cascade
 );
 
 create table if not exists prod.refresh_token
 (
-    token_hash  varchar(256) references prod.token(token_hash) on delete cascade primary key
-
+    token_hash varchar(256) primary key references prod.token (token_hash) on delete cascade
 );
 
 create table if not exists prod.company
@@ -38,34 +44,37 @@ create table if not exists prod.company
     id uuid primary key references prod."user" (id) on delete cascade
 );
 
-create table if not exists prod.personal_trainer
+create table if not exists prod.trainer
 (
-    id      uuid primary key references prod."user" (id) on delete cascade,
-    gender  char check (gender in ('M', 'F', 'O', 'U')) not null,
-    contact varchar(20) check ( contact ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
+    id           uuid primary key references prod."user" (id) on delete cascade,
+    gender       prod.gender not null,
+    phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
-create table if not exists prod.company_pt
+create table if not exists prod.company_trainer
 (
     company_id uuid references prod.company (id) on delete cascade,
-    pt_id      uuid references prod.personal_trainer (id) on delete cascade,
-    primary key (company_id, pt_id)
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    capacity   int check ( capacity > 0 ) not null,
+    primary key (company_id, trainer_id)
 );
 
 create table if not exists prod.trainee
 (
-    id        uuid primary key references prod."user" (id) on delete cascade,
-    gender    char check (gender in ('M', 'F', 'O', 'U')) not null,
-    birthdate date                                        not null,
-    contact   varchar(20) check ( contact ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
+    id           uuid primary key references prod."user" (id) on delete cascade,
+    gender       prod.gender not null,
+    birthdate    date       not null,
+    phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
-create table if not exists prod.pt_trainee
+create table if not exists prod.trainer_trainee
 (
-    pt_id      uuid references prod.personal_trainer (id) on delete cascade,
+    trainer_id uuid references prod.trainer (id) on delete cascade,
     trainee_id uuid references prod.trainee (id) on delete cascade,
-    primary key (pt_id, trainee_id)
+    primary key (trainer_id, trainee_id)
 );
+
+-- TODO: to be checked
 
 create table if not exists prod.trainee_data
 (
@@ -78,83 +87,115 @@ create table if not exists prod.trainee_data
 create table if not exists prod.report
 (
     trainee_id uuid references prod.trainee (id) on delete cascade,
-    pt_id      uuid references prod.personal_trainer (id) on delete cascade,
+    trainer_id uuid references prod.trainer (id) on delete cascade,
     date       date                  not null,
     report     text                  not null,
     visibility boolean default false not null,
-    primary key (trainee_id, pt_id, date)
+    primary key (trainee_id, trainer_id, date)
+);
+
+-- Trainee's workout plan
+
+-- TODO: check how to store custom workouts (maybe add name to identify the workout in frontend)
+create table if not exists prod.workout
+(
+    id         serial primary key,
+    trainer_id uuid references prod.trainer (id) on delete cascade
+);
+
+create table if not exists prod.set
+(
+    id      serial primary key,
+    type    prod.set_type not null,
+    details jsonb        not null
+);
+
+create table if not exists prod.exercise
+(
+    id          serial primary key,
+    name        varchar(50)           not null,
+    description text,
+    category    prod.exercise_category not null,
+    url         varchar(256)
 );
 
 create table if not exists prod.session
 (
     trainee_id uuid references prod.trainee (id) on delete cascade,
-    pt_id      uuid references prod.personal_trainer (id) on delete cascade,
-    date       timestamp                           not null,
-    category   char check (category in ('P', 'A')) not null,
+    workout_id int references prod.workout (id) on delete cascade,
+    date       timestamp            not null,
+    category   prod.session_category not null,
     notes      text,
-    primary key (trainee_id, pt_id, date)
+    primary key (trainee_id, workout_id, date)
 );
 
-create table if not exists prod.exercise
+create table if not exists prod.exercise_company
 (
-    id          uuid default uuid_generate_v4() primary key,
-    pt_id       uuid references prod.personal_trainer (id) on delete cascade,
-    name        varchar(50)                                                                 not null,
-    description text,
-    -- temporary to be changed
-    category    char check (category in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J')) not null,
-    url         varchar(256)
+    company_id  uuid references prod.company (id) on delete cascade,
+    exercise_id int references prod.exercise (id) on delete cascade,
+    primary key (company_id, exercise_id)
+);
+
+create table if not exists prod.exercise_trainer
+(
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    exercise_id int references prod.exercise (id) on delete cascade,
+    primary key (trainer_id, exercise_id)
+);
+
+create table if not exists prod.workout_set
+(
+    workout_id int references prod.workout (id) on delete cascade,
+    set_id     int references prod.set (id) on delete cascade,
+    primary key (workout_id, set_id)
+);
+
+create table if not exists prod.set_exercise
+(
+    set_id      int references prod.set (id) on delete cascade,
+    exercise_id int references prod.exercise (id) on delete cascade,
+    primary key (set_id, exercise_id)
+);
+
+create table if not exists prod.trainer_favorite_workout
+(
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    workout_id int references prod.workout (id) on delete cascade,
+    primary key (trainer_id, workout_id)
+);
+
+create table if not exists prod.trainer_favorite_set
+(
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    set_id     int references prod.set (id) on delete cascade,
+    primary key (trainer_id, set_id)
 );
 
 create table if not exists prod.trainer_favorite_exercise
 (
-    pt_id       uuid references prod.personal_trainer (id) on delete cascade,
-    exercise_id uuid references prod.exercise (id) on delete cascade,
-    primary key (pt_id, exercise_id)
-);
-
-create table if not exists prod.session_exercise
-(
-    session_trainee_id uuid,
-    session_pt_id      uuid,
-    session_date       timestamp,
-    exercise_id        uuid references prod.exercise (id) on delete cascade,
-    sets               integer check ( sets > 0 )   not null,
-    reps               integer check ( reps > 0 )   not null,
-    weight             integer check ( weight > 0 ) not null,
-    primary key (session_trainee_id, session_pt_id, session_date, exercise_id),
-    foreign key (session_trainee_id, session_pt_id, session_date)
-        references prod.session (trainee_id, pt_id, date) on delete cascade
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    exercise_id int references prod.exercise (id) on delete cascade,
+    primary key (trainer_id, exercise_id)
 );
 
 create table if not exists prod.feedback
 (
-    id       uuid default uuid_generate_v4() primary key,
-    source   char check (source in ('T', 'P')) not null,
+    id       serial primary key,
+    source   prod.source not null,
     feedback text
 );
 
 create table if not exists prod.session_feedback
 (
-    feedback_id        uuid references prod.feedback (id) on delete cascade,
+    feedback_id        int references prod.feedback (id) on delete cascade,
     session_trainee_id uuid,
-    session_pt_id      uuid,
+    session_workout_id int,
     session_date       timestamp,
-    primary key (feedback_id, session_trainee_id, session_pt_id, session_date),
-    foreign key (session_trainee_id, session_pt_id, session_date)
-        references prod.session (trainee_id, pt_id, date) on delete cascade
+    primary key (feedback_id, session_trainee_id, session_workout_id, session_date),
+    foreign key (session_trainee_id, session_workout_id, session_date)
+        references prod.session (trainee_id, workout_id, date) on delete cascade
 );
 
-create table if not exists prod.session_exercise_feedback
-(
-    feedback_id         uuid references prod.feedback (id) on delete cascade,
-    session_trainee_id  uuid,
-    session_pt_id       uuid,
-    session_date        timestamp,
-    session_exercise_id uuid,
-    primary key (feedback_id, session_trainee_id, session_pt_id, session_date, session_exercise_id),
-    foreign key (session_trainee_id, session_pt_id, session_date, session_exercise_id)
-        references prod.session_exercise (session_trainee_id, session_pt_id, session_date, exercise_id) on delete cascade
-);
+-- TODO: implement set feedback
 
 end work

@@ -16,18 +16,24 @@ object Uris {
 
     object User {
         const val PROFILE = "/profile"
-        const val USER_DETAILS = "/user/{id}"
 
         fun userDetails(id: Int) = "/$PREFIX/user/$id"
     }
 
     object Company {
-        const val COMPANY_TRAINERS = "/company/trainers"
-        const val ASSIGN_TRAINER_TRAINEE = "/trainer/{trainerId}/assign-trainee/{studentId}"
-        const val REASSIGN_TRAINER = "/trainer/{trainerId}/reassign-trainee/{studentId}"
+        const val PREFIX = "${Uris.PREFIX}/company"
+        const val COMPANY_TRAINERS = "/trainers"
+        const val ASSIGN_TRAINER = "/trainee/{traineeId}/assign-trainer"
+        const val REASSIGN_TRAINER = "/trainee/{traineeId}/reassign-trainer"
+        const val UPDATE_TRAINER_CAPACITY = "/trainer/{trainerId}/update-capacity"
+        const val REMOVE_TRAINER = "/trainer/{trainerId}"
     }
 
-    object Trainer
+    object Trainer {
+        const val PREFIX = "${Uris.PREFIX}/trainer"
+    }
 
-    object Trainee
+    object Trainee {
+        const val PREFIX = "${Uris.PREFIX}/trainee"
+    }
 }

@@ -29,6 +29,8 @@ sealed class AuthenticatedSignupRequest {
 
         val gender: Gender,
 
+        val capacity: Int,
+
         @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
         val phoneNumber: String? // can be optional
     ) : AuthenticatedSignupRequest()

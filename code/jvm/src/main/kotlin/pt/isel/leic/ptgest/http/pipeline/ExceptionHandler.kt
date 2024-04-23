@@ -18,6 +18,8 @@ import org.springframework.web.servlet.NoHandlerFoundException
 import pt.isel.leic.ptgest.http.media.Problem
 import pt.isel.leic.ptgest.http.media.Problem.Companion.PROBLEMS_DOCS_URI
 import pt.isel.leic.ptgest.services.auth.AuthError
+import pt.isel.leic.ptgest.services.company.CompanyError
+import pt.isel.leic.ptgest.services.user.UserError
 import java.net.URI
 
 @ControllerAdvice
@@ -34,7 +36,8 @@ class ExceptionHandler {
     @ExceptionHandler(
         value = [
             IllegalArgumentException::class,
-            IllegalStateException::class
+            IllegalStateException::class,
+            CompanyError.TrainerCapacityReached::class
         ]
     )
     fun handleBadRequest(e: Exception): ResponseEntity<Problem> =
@@ -70,12 +73,15 @@ class ExceptionHandler {
 
     @ExceptionHandler(
         value = [
+            AuthError.TokenError.TokenExpired::class,
+            AuthError.TokenError.TokenExpirationMismatchException::class,
+            AuthError.TokenError.InvalidRefreshToken::class,
+            AuthError.TokenError.InvalidPasswordResetToken::class,
+            AuthError.TokenError.UserIdMismatch::class,
             AuthError.UserAuthenticationError.InvalidPassword::class,
             AuthError.UserAuthenticationError.TokenNotProvided::class,
-            AuthError.TokenError.TokenExpired::class,
-            ExpiredJwtException::class,
-            AuthError.TokenError.TokenExpirationMismatchException::class,
-            AuthError.TokenError.TokenExpirationMismatchException::class,
+            io.jsonwebtoken.SignatureException::class,
+            io.jsonwebtoken.ExpiredJwtException::class,
             AuthenticationException::class
         ]
     )
@@ -88,8 +94,24 @@ class ExceptionHandler {
 
     @ExceptionHandler(
         value = [
+            AuthError.UserAuthenticationError.UnauthorizedRole::class,
+            AuthError.UserAuthenticationError.InvalidUserRoleException::class
+        ]
+    )
+    fun handleForbidden(e: Exception): ResponseEntity<Problem> =
+        Problem(
+            type = URI.create(PROBLEMS_DOCS_URI + e.toProblemType()),
+            title = e.message ?: "Forbidden",
+            status = HttpStatus.FORBIDDEN.value()
+        ).toResponse().also { e.printStackTrace() }
+
+    @ExceptionHandler(
+        value = [
             NoHandlerFoundException::class,
-            NotImplementedError::class
+            NotImplementedError::class,
+            AuthError.UserAuthenticationError.UserNotFound::class,
+            UserError.UserNotFound::class,
+            CompanyError.TrainerNotFound::class
         ]
     )
     fun handleNotFound(e: Exception): ResponseEntity<Problem> =
@@ -147,7 +169,11 @@ class ExceptionHandler {
             status = HttpStatus.BAD_REQUEST.value()
         ).toResponse().also { e.printStackTrace() }
 
-    @ExceptionHandler(value = [Exception::class])
+    @ExceptionHandler(
+        value = [
+            Exception::class
+        ]
+    )
     fun handleInternalServerError(e: Exception): ResponseEntity<Problem> =
         Problem(
             type = URI.create(PROBLEMS_DOCS_URI + e.toProblemType()),

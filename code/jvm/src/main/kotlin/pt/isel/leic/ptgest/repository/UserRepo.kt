@@ -16,7 +16,7 @@ interface UserRepo {
 
     fun createTrainer(id: UUID, gender: Gender, phoneNumber: String? = null)
 
-    fun createCompanyTrainer(companyId: UUID, trainerId: UUID)
+    fun createCompanyTrainer(companyId: UUID, trainerId: UUID, capacity: Int)
 
     fun createTrainee(userId: UUID, birthdate: Date, gender: Gender, phoneNumber: String?)
 

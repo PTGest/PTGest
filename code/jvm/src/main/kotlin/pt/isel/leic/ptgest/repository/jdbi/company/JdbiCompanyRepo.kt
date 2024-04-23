@@ -8,23 +8,30 @@ import java.util.*
 
 class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
-//  TODO: Add filter for gender
+//  TODO: Add filter for gender and capacity
 //  TODO: check if we need to add more filters
     override fun getCompanyTrainers(userId: UUID, skip: Int, limit: Int?): List<Trainer> =
         handle.createQuery(
             """
-                select id, name, gender 
-                from company_pt c_pt join (
-                    select u.id as id, name, gender
-                    from "user" u join dev.personal_trainer pt on u.id = pt.id
-                ) ptd on c_pt.pt_id = ptd.id
+                select id, name, gender, capacity, total_trainees
+                from company_trainer c_pt
+                         join (select id, name, gender, count(*) as total_trainees
+                               from (select u.id as id, name, gender
+                                     from "user" u
+                                              join trainer pt on u.id = pt.id) u_d
+                                        join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                               group by name, gender) ptd on c_pt.trainer_id = ptd.id
                 where company_id = :companyId
                 limit :limit offset :skip
             """.trimIndent()
         )
-            .bind("userId", userId)
-            .bind("skip", skip)
-            .bind("limit", limit)
+            .bindMap(
+                mapOf(
+                    "companyId" to userId,
+                    "skip" to skip,
+                    "limit" to limit
+                )
+            )
             .mapTo<Trainer>()
             .list()
 
@@ -39,4 +46,90 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .bind("userId", userId)
             .mapTo<Int>()
             .one()
+
+    override fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer? =
+        handle.createQuery(
+            """
+                select id, name, gender, capacity, total_trainees
+                from company_trainer c_pt
+                         join (select id, name, gender, count(*) as total_trainees
+                               from (select u.id as id, name, gender
+                                     from "user" u
+                                              join trainer pt on u.id = pt.id) u_d
+                                        join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                               group by name, gender) ptd on c_pt.trainer_id = ptd.id
+                where company_id = :companyId and  trainer_id = :trainerId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "trainerId" to trainerId
+                )
+            )
+            .mapTo<Trainer>()
+            .firstOrNull()
+
+    override fun getTrainerAssigned(traineeId: UUID): UUID =
+        handle.createQuery(
+            """
+                select trainer_id
+                from trainer_trainee
+                where trainee_id = :traineeId
+            """.trimIndent()
+        )
+            .bind("traineeId", traineeId)
+            .mapTo<UUID>()
+            .one()
+
+    override fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID) {
+        handle.createUpdate(
+            """
+                insert into trainer_trainee(trainer_id, trainee_id)
+                values (:trainerId, :traineeId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "traineeId" to traineeId
+                )
+            )
+            .execute()
+    }
+
+    override fun reassignTrainer(trainerId: UUID, traineeId: UUID) {
+        handle.createUpdate(
+            """
+                update trainer_trainee
+                set trainer_id = :trainerId
+                where trainee_id = :traineeId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "traineeId" to traineeId
+                )
+            )
+            .execute()
+    }
+
+    override fun updateTrainerCapacity(companyId: UUID, trainerId: UUID, capacity: Int) {
+        handle.createUpdate(
+            """
+                update company_trainer
+                set capacity = :capacity
+                where company_id = :companyId and trainer_id = :trainerId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "trainerId" to trainerId,
+                    "capacity" to capacity
+                )
+            )
+            .execute()
+    }
 }

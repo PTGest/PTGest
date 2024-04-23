@@ -13,14 +13,82 @@ class CompanyService(
     fun getCompanyTrainers(
         skip: Int?,
         limit: Int?,
-        userId: UUID
-    ): CompanyTrainers =
-        transactionManager.run {
+        companyId: UUID
+    ): CompanyTrainers {
+        if (limit != null) {
+            require(limit > 0) { "Limit must be a positive number." }
+        }
+        if (skip != null) {
+            require(skip >= 0) { "Skip must be a positive number." }
+        }
+
+        return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalCompanyTrainers(userId)
-            val trainers = companyRepo.getCompanyTrainers(userId, skip ?: 0, limit)
+            val totalResults = companyRepo.getTotalCompanyTrainers(companyId)
+            val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit)
 
             return@run CompanyTrainers(trainers, totalResults)
         }
+    }
+
+    fun assignTrainerToTrainee(
+        trainerId: UUID,
+        traineeId: UUID,
+        companyId: UUID
+    ) {
+        transactionManager.run {
+            val companyRepo = it.companyRepo
+
+            val trainer = companyRepo.getCompanyTrainer(trainerId, companyId)
+                ?: throw CompanyError.TrainerNotFound
+
+            if (trainer.totalTrainees >= trainer.capacity) {
+                throw CompanyError.TrainerCapacityReached
+            }
+
+            companyRepo.assignTrainerToTrainee(trainerId, traineeId)
+        }
+    }
+
+    fun reassignTrainer(
+        trainerId: UUID,
+        traineeId: UUID,
+        companyId: UUID
+    ) {
+        transactionManager.run {
+            val companyRepo = it.companyRepo
+
+            val newTrainer = companyRepo.getCompanyTrainer(trainerId, companyId)
+                ?: throw CompanyError.TrainerNotFound
+
+            if (newTrainer.totalTrainees >= newTrainer.capacity) {
+                throw CompanyError.TrainerCapacityReached
+            }
+
+            val trainerAssigned = companyRepo.getTrainerAssigned(traineeId)
+
+            companyRepo.getCompanyTrainer(trainerAssigned, companyId)?.totalTrainees
+                ?: throw CompanyError.TrainerNotFound
+
+            companyRepo.reassignTrainer(trainerId, traineeId)
+        }
+    }
+
+    fun updateTrainerCapacity(
+        trainerId: UUID,
+        companyId: UUID,
+        capacity: Int
+    ) {
+        require(capacity >= 0) { "Capacity must be a positive number." }
+
+        transactionManager.run {
+            val companyRepo = it.companyRepo
+
+            companyRepo.getCompanyTrainer(trainerId, companyId)
+                ?: throw CompanyError.TrainerNotFound
+
+            companyRepo.updateTrainerCapacity(companyId, trainerId, capacity)
+        }
+    }
 }

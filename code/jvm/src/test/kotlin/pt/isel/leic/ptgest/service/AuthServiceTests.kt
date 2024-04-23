@@ -147,7 +147,6 @@ class AuthServiceTests {
 
             val authenticationDetails = mockAuthService.login(email, password)
 
-            assertEquals(uuid, authenticationDetails.userId)
             assertEquals(role, authenticationDetails.role)
             assertTrue(authenticationDetails.tokens.accessToken.token.isNotEmpty())
             assertTrue(authenticationDetails.tokens.refreshToken.token.isNotEmpty())

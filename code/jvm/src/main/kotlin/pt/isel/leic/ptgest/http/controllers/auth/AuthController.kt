@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.AuthenticatedSignupRequest
-import pt.isel.leic.ptgest.http.controllers.auth.model.request.ForgetRequest
+import pt.isel.leic.ptgest.http.controllers.auth.model.request.ForgetPasswordRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.RefreshTokenRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.ResetPasswordRequest
@@ -45,8 +45,7 @@ class AuthController(private val service: AuthService) {
                 service.signUpCompany(userInfo.name, userInfo.email, userInfo.password)
 
                 HttpResponse.created(
-                    message = "Company registered successfully.",
-                    details = null
+                    message = "Company registered successfully."
                 )
             }
             is SignupRequest.IndependentTrainer -> {
@@ -59,8 +58,7 @@ class AuthController(private val service: AuthService) {
                 )
 
                 HttpResponse.created(
-                    message = "Independent trainer registered successfully.",
-                    details = null
+                    message = "Independent trainer registered successfully."
                 )
             }
         }
@@ -82,21 +80,18 @@ class AuthController(private val service: AuthService) {
             else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
         return HttpResponse.created(
-            message = "User registered successfully.",
-            details = null
+            message = "User registered successfully."
         )
     }
 
     @PostMapping(Uris.Auth.FORGET_PASSWORD)
     fun forgetPassword(
         @Valid @RequestBody
-        forgetInfo: ForgetRequest
+        forgetInfo: ForgetPasswordRequest
     ): ResponseEntity<*> {
         service.forgetPassword(forgetInfo.email)
-
         return HttpResponse.ok(
-            message = "Password reset email sent successfully.",
-            details = null
+            message = "Password reset email sent successfully."
         )
     }
 
@@ -105,10 +100,8 @@ class AuthController(private val service: AuthService) {
         @PathVariable token: String
     ): ResponseEntity<*> {
         service.validatePasswordResetToken(token)
-
         return HttpResponse.ok(
-            message = "Password reset token validated successfully.",
-            details = null
+            message = "Password reset token validated successfully."
         )
     }
 
@@ -119,10 +112,8 @@ class AuthController(private val service: AuthService) {
         resetInfo: ResetPasswordRequest
     ): ResponseEntity<*> {
         service.resetPassword(token, resetInfo.password)
-
         return HttpResponse.ok(
-            message = "Password reset successfully.",
-            details = null
+            message = "Password reset successfully."
         )
     }
 
@@ -142,7 +133,6 @@ class AuthController(private val service: AuthService) {
         return HttpResponse.ok(
             message = "User logged in successfully.",
             details = LoginResponse(
-                userId = authenticationDetails.userId,
                 role = authenticationDetails.role,
                 tokens = authenticationDetails.tokens
             )
@@ -211,8 +201,7 @@ class AuthController(private val service: AuthService) {
         }
 
         return HttpResponse.ok(
-            message = "User logged out successfully.",
-            details = null
+            message = "User logged out successfully."
         )
     }
 
@@ -246,6 +235,7 @@ class AuthController(private val service: AuthService) {
                     userInfo.name,
                     userInfo.email,
                     userInfo.gender,
+                    userInfo.capacity,
                     userInfo.phoneNumber
                 )
             }

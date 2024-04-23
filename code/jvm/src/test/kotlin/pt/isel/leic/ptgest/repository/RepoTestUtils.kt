@@ -23,31 +23,23 @@ fun getDevJdbi(): Jdbi = Jdbi.create(
 fun Handle.cleanup() {
     createUpdate(
         """
-        truncate
-            dev.company,
-            dev.company_pt,
-            dev.exercise,
-            dev.feedback,
-            dev.password_reset_token,
-            dev.personal_trainer,
-            dev.pt_trainee,
-            dev.refresh_token,
-            dev.report,
-            dev.session,
-            dev.session_feedback,
-            dev.token,
-            dev.trainee,
-            dev.trainee_data,
-            dev.trainer_favorite_exercise,
-            dev.trainer_favorite_workout,
-            dev."user",
-            dev.workout_exercise_feedback,
-            dev.workout_plan,
-            dev.workout_plan_exercise;
-        
-        alter sequence dev.exercise_id_seq restart with 1;
-        alter sequence dev.feedback_id_seq restart with 1;
-        alter sequence dev.workout_plan_id_seq restart with 1;
+        do $$
+            declare
+                table_name text;
+                seq_name text;
+            begin
+                for table_name in (select tablename from pg_tables where schemaname = 'dev')
+                    loop
+                        execute 'truncate table dev.' || table_name || ' cascade';
+                    end loop;
+            
+                for seq_name in (SELECT sequencename FROM pg_sequences WHERE schemaname = 'dev')
+                    loop
+                        execute 'alter sequence dev.' || seq_name || ' restart with 1';
+                        raise notice 'Sequence % rested to 1 successfully', seq_name;
+                    end loop;
+            end;
+        $$;
         """.trimIndent()
     ).execute()
 }

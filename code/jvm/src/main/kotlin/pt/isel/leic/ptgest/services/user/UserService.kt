@@ -7,25 +7,24 @@ import pt.isel.leic.ptgest.domain.user.TrainerDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*
 
-// TODO change the exception to a custom exception
 @Service
 class UserService(private val transactionManager: TransactionManager) {
 
     fun getTraineeDetails(userId: UUID): TraineeDetails =
         transactionManager.run {
             val userRepo = it.userRepo
-            return@run userRepo.getTraineeDetails(userId) ?: throw Exception("Trainee not found")
+            return@run userRepo.getTraineeDetails(userId) ?: throw UserError.UserNotFound
         }
 
     fun getTrainerDetails(userId: UUID): TrainerDetails =
         transactionManager.run {
             val userRepo = it.userRepo
-            return@run userRepo.getTrainerDetails(userId) ?: throw Exception("Trainer not found")
+            return@run userRepo.getTrainerDetails(userId) ?: throw UserError.UserNotFound
         }
 
     fun getCompanyDetails(userId: UUID): UserDetails =
         transactionManager.run {
             val userRepo = it.userRepo
-            return@run userRepo.getUserDetails(userId) ?: throw Exception("User not found")
+            return@run userRepo.getUserDetails(userId) ?: throw UserError.UserNotFound
         }
 }

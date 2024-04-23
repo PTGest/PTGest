@@ -52,8 +52,11 @@ class AuthService(
         name: String,
         email: String,
         gender: Gender,
+        capacity: Int,
         phoneNumber: String?
     ) {
+        require(capacity > 0) { "Invalid capacity must be greater than 0." }
+
         transactionManager.run {
             val userRepo = it.userRepo
 
@@ -69,7 +72,7 @@ class AuthService(
             )
 
             userRepo.createTrainer(userId, gender, phoneNumber?.trim())
-            userRepo.createCompanyTrainer(companyId, userId)
+            userRepo.createCompanyTrainer(companyId, userId, capacity)
         }
     }
 
@@ -81,6 +84,8 @@ class AuthService(
         phoneNumber: String?,
         trainerId: UUID? = null
     ) {
+        require(birthdate.before(Date())) { "Invalid birthdate." }
+
         transactionManager.run {
             val userRepo = it.userRepo
 
@@ -123,6 +128,7 @@ class AuthService(
                 userDetails.id,
                 tokenExpiration
             )
+
             userRepo.createPasswordResetToken(tokenHash)
         }
 
@@ -204,7 +210,6 @@ class AuthService(
         }
 
         return AuthenticationDetails(
-            userId = userDetails.id,
             role = userDetails.role,
             tokens = tokens
         )
