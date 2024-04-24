@@ -1,8 +1,6 @@
 import LoginUserData from "../../models/authModels/LoginUserData.ts"
 import router from "../../plugins/router.ts"
 import store from "../../store"
-import getRandomIcon from "../utils/utils.ts"
-//import {signedIn} from "../../components/SideBar.vue";
 
 export async function loginUserServices(userLoginData: LoginUserData): Promise<void> {
     try {
@@ -17,10 +15,13 @@ export async function loginUserServices(userLoginData: LoginUserData): Promise<v
             switch (response.status) {
                 case 200:
                     response.json().then((response) => {
-                        const profileImage = getRandomIcon()
                         console.log(response.details)
-                        store.dispatch("setAuthentication", { id: 1, token: response.details.accessToken.token, refreshToken: response.details.refreshToken.token })
-                        store.dispatch("profileImage", profileImage)
+                        store.dispatch("setAuthentication", {
+                            id: response.details.userId,
+                            role: response.details.role,
+                            token: response.details.tokens.accessToken.token,
+                            refreshToken: response.details.tokens.refreshToken.token
+                        })
                         router.push({ name: "home" })
                         return response
                     })

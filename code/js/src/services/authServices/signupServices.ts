@@ -12,7 +12,7 @@ export async function signupUserServices(userData: SignupPTData): Promise<void> 
         body: JSON.stringify(userData),
     }).then((response) => {
         switch (response.status) {
-            case 200:
+            case 201:
                 router.push({ name: "login" })
                 return response.json()
 

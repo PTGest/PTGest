@@ -15,19 +15,14 @@ import { faEye } from "@fortawesome/free-solid-svg-icons"
 
 let value = ref("")
 const props = defineProps<{
-    padding: { type: string; default: "0em 1em 0em 1em"; required: false }
-    width: { type: string; default: "20em"; required: false }
-    height: { type: string; default: "2.5em"; required: false }
+    padding: string
+    width: string
+    height: string
     text: string
     className: string
     is_Password: boolean
     placeholder: string
 }>()
-const padding = ref(props.padding)
-const width = ref(props.width)
-console.log(props)
-console.log(props)
-const height = ref(props.height)
 
 const is_visible = ref(props.is_Password)
 

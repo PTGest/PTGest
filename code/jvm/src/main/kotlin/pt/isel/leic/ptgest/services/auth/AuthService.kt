@@ -136,7 +136,7 @@ class AuthService(
             precessedEmail,
             "PTGest - Password reset",
             "Click the following link to reset your password:\n" +
-                "http://localhost:8080/auth/resetPassword/$token"
+                "http://localhost:5173/resetPassword/$token"
         )
     }
 

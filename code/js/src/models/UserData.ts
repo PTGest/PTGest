@@ -1,13 +1,13 @@
 class UserData {
     id: number | undefined
+    role: string | undefined
     token: string | undefined
     refreshToken: string | undefined
-    profileImage: string | undefined
-    constructor(id: number | undefined, token: string | undefined, refreshToken: string | undefined = undefined, profileImage: string = "") {
+    constructor(id: number | undefined, role: string | undefined ,token: string | undefined, refreshToken: string | undefined = undefined) {
         this.id = id
+        this.role = role
         this.token = token
         this.refreshToken = refreshToken
-        this.profileImage = profileImage
     }
 }
 

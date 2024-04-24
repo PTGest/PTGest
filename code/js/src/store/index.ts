@@ -6,6 +6,7 @@ interface State {
     userData: UserData
     errorType: ErrorType
     is_mobile_view: boolean
+    userBio: string
 }
 
 const vuexLocal = new VuexPersistence({
@@ -18,6 +19,7 @@ const store = createStore<State>({
         return {
             userData: {
                 id: undefined,
+                role: undefined,
                 token: undefined,
                 refreshToken: undefined,
             },
@@ -26,13 +28,11 @@ const store = createStore<State>({
                 message: "",
             },
             is_mobile_view: false,
-            profileImage: "",
+            userBio: "",
         }
     },
     mutations: {
         setUserData(state: State, userData: UserData) {
-            console.log("Im on setUserData", userData)
-            console.log("Im on setUserData", userData.id)
             state.userData = userData
         },
         setErrorType(state: State, errorType: ErrorType) {
@@ -44,14 +44,14 @@ const store = createStore<State>({
         logout(state: State) {
             state.userData = {
                 id: undefined,
+                role: undefined,
                 token: undefined,
                 refreshToken: undefined,
-                profileImage: "",
             }
         },
-        setProfileImage(state: State, profileImage: string) {
-            state.userData.profileImage = profileImage
-        },
+        setUserBio(state: State, bio: string) {
+            state.userBio = bio
+        }
     },
     actions: {
         setAuthentication({ commit }: any, userData: UserData) {
@@ -61,14 +61,16 @@ const store = createStore<State>({
         setMobile(context: any, is_mobile_view: boolean) {
             context.commit("setMobileView", is_mobile_view)
         },
-        profileImage(context: any, profileImage: string) {
-            context.commit("setProfileImage", profileImage)
-        },
+        userBio(context: any, bio: string) {
+            console.log("userBio", bio)
+            context.commit("setUserBio", bio)
+        }
     },
     getters: {
         userData: (state: State) => state.userData,
         errorType: (state: State) => state.errorType,
         is_mobile_view: (state: State) => state.is_mobile_view,
+        userBio: (state: State) => state.userBio,
     },
     plugins: [vuexLocal.plugin],
 })

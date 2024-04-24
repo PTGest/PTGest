@@ -1,0 +1,78 @@
+<template>
+  <div class="profile-container">
+      <ImageContainer class="image-container" :src="image"/>
+      <UserInfoContainer class="user-info" userName="Top xuxa" />
+      <UserPersonalInfoContainer class="user-personal-info"
+                                 email="habibiexample@gmail.com"
+                                 phone="918137550"
+                                 location="Habibi Land"
+                                 age="25"
+                                 height="180cm"
+                                 weight="80kg"
+                                 BMI="24.7"
+      />
+<!--      <BioCard class="bio-card" :userId="props.userId" />-->
+  </div>
+</template>
+
+<script setup lang="ts">
+//import BioCard from "../../../views/user/UserProfile/Bio-Card.vue";
+
+import UserInfoContainer from "../UserProfile/components/UserInfoContainer.vue";
+import ImageContainer from "../UserProfile/components/ImageContainer.vue";
+import image from "../../../assets/./userIcons/man.png";
+import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInfoContainer.vue";
+const props = defineProps({
+  userId: String
+});
+</script>
+
+
+
+<style scoped>
+
+.profile-container{
+    display: grid;
+    grid-template-columns: 1.5fr 2fr;
+    grid-gap: 1.5em;
+    grid-template-rows: 1fr 2fr;
+    background-color: var(--sign-up-blue);
+    border-radius: 10px;
+}
+
+.user-info{
+    margin: 1em;
+    justify-self: center;
+    grid-column-start: 2;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+.bio-card{
+    margin: 1em 1em 1em 0;
+    grid-column-start: 2;
+    grid-row-start: 1;
+}
+
+.image-container{
+    grid-column-start: 1;
+    grid-row-start: 1;
+    grid-row-end: 4;
+    justify-self: center;
+
+}
+
+.user-personal-info{
+    grid-column-start: 1;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    justify-self: center;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+</style>

@@ -59,10 +59,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons"
 import { defineProps, ref } from "vue"
 
-const props = defineProps({
-    size: { type: String, required: false, default: "18.5em" },
-    arrow_right: { type: String, required: false, default: "-13.5em" },
-})
+const props = defineProps<{
+    size: string,
+    arrow_right: string,
+}>()
 
 let is_open = ref(false)
 const toggleOpen = () => {

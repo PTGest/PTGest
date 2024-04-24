@@ -30,7 +30,7 @@
                 />
             </div>
 
-            <DefaultButton class="reset-button" display-text="Reset Password" :is-disabled="!equalPasswords" :click-handler="teste" />
+            <DefaultButton class="reset-button" display-text="Reset Password" :is-disabled="!equalPasswords" :click-handler="resetPassword" />
         </div>
     </div>
 </template>
@@ -39,10 +39,16 @@
 import InputBar from "../../../components/InputBar.vue"
 import { ref } from "vue"
 import DefaultButton from "../../../components/DefaultButton.vue"
+import {resetPasswordServices} from "../../../services/authServices/resetPassword.ts";
+import ResetPasswordData from "../../../models/authModels/ResetPasswordData.ts";
+import {useRoute} from "vue-router";
+
+const params = useRoute().params
 
 let password = ref("")
 let confirm_password = ref("")
 let equalPasswords = ref(false)
+
 
 const updatePasswordValue = (value: string) => {
     console.log(value)
@@ -58,7 +64,9 @@ const verifyPasswords = () => {
         equalPasswords.value = true
     }
 }
-const teste = () => {
+const resetPassword = () => {
+    console.log("teste", params)
+    resetPasswordServices(new ResetPasswordData(password.value),params.token)
     console.log("teste")
     console.log(password.value)
     console.log(confirm_password.value)

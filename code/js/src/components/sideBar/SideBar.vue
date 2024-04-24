@@ -40,7 +40,7 @@ import { faBars, faHouse, faAddressCard, faUserPlus, faUser } from "@fortawesome
 import { computed, ref } from "vue"
 import store from "../../store"
 import LogoutButton from "./components/LogoutButton.vue"
-import UserIcon from "@/components/sideBar/components/UserIcon.vue"
+import UserIcon from "../../components/sideBar/components/UserIcon.vue"
 
 // Define a computed property to track changes to userData
 let userData = computed(() => {
@@ -144,7 +144,7 @@ window.addEventListener("resize", handleResize)
 }
 
 .nav-link:hover {
-    background-color: #535bf2;
+    background-color: var(--nav-bar-blue);
     border-radius: 10%;
 }
 
