@@ -34,6 +34,8 @@ interface UserRepo {
 
     fun createPasswordResetToken(tokenHash: String)
 
+    fun removeOldPasswordResetTokens(userId: UUID)
+
     fun getPasswordResetToken(tokenHash: String): TokenDetails?
 
     fun getUserDetails(email: String): UserDetails?

@@ -173,8 +173,33 @@ class AuthController(private val service: AuthService) {
         )
     }
 
-    fun validateRefreshToken(refreshToken: String): Boolean {
-        throw NotImplementedError("Not implemented yet.")
+    @PostMapping(Uris.Auth.VALIDATE_REFRESH_TOKEN)
+    fun validateRefreshToken(
+        authenticatedUser: AuthenticatedUser,
+        @RequestBody(required = false)
+        refreshTokenBody: RefreshTokenRequest?,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<*> {
+        val sessionCookies = request.cookies
+
+        when {
+            sessionCookies != null -> {
+                val refreshToken = processCookies(sessionCookies).second
+
+                service.validateRefreshToken(authenticatedUser.id, refreshToken)
+            }
+            refreshTokenBody != null -> {
+                service.validateRefreshToken(authenticatedUser.id, refreshTokenBody.refreshToken)
+            }
+            else -> {
+                throw AuthError.UserAuthenticationError.TokenNotProvided
+            }
+        }
+
+        return HttpResponse.ok(
+            message = "Refresh token validated successfully."
+        )
     }
 
     @PostMapping(Uris.Auth.LOGOUT)

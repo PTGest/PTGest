@@ -11,6 +11,7 @@ object Uris {
         const val RESET_PASSWORD = "/reset-password/{token}"
         const val LOGIN = "/login"
         const val REFRESH = "/auth/refresh"
+        const val VALIDATE_REFRESH_TOKEN = "/auth/validate-refresh-token"
         const val LOGOUT = "/auth/logout"
     }
 

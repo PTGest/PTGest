@@ -201,6 +201,18 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
+    override fun removeOldPasswordResetTokens(userId: UUID) {
+        handle.createUpdate(
+            """
+                delete from token 
+                using password_reset_token prt
+                where token.token_hash = prt.token_hash and token.user_id = :userId;
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .execute()
+    }
+
     override fun getPasswordResetToken(tokenHash: String) =
         handle.createQuery(
             """

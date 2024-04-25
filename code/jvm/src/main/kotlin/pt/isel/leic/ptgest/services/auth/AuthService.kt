@@ -123,6 +123,8 @@ class AuthService(
         transactionManager.run {
             val userRepo = it.userRepo
 
+            userRepo.removeOldPasswordResetTokens(userDetails.id)
+
             userRepo.createToken(
                 tokenHash,
                 userDetails.id,
@@ -245,8 +247,28 @@ class AuthService(
                 newRefreshTokenHash
             )
         }
-
         return tokens
+    }
+
+    fun validateRefreshToken(userId: UUID, refreshToken: String) {
+
+        require(refreshToken.isNotBlank()) { "Invalid refresh token." }
+
+        val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
+
+        transactionManager.run {
+            val userRepo = it.userRepo
+            val refreshTokenDetails = userRepo.getRefreshTokenDetails(refreshTokenHash)
+                ?: throw AuthError.TokenError.InvalidRefreshToken
+
+            if (refreshTokenDetails.expiration.before(Date())) {
+                throw AuthError.TokenError.TokenExpired
+            }
+
+            if (refreshTokenDetails.userId != userId) {
+                throw AuthError.TokenError.UserIdMismatch
+            }
+        }
     }
 
     fun logout(refreshToken: String) {

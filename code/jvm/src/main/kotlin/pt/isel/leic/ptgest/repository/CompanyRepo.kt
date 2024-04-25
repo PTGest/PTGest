@@ -9,7 +9,6 @@ interface CompanyRepo {
 
     fun getTotalCompanyTrainers(userId: UUID): Int
 
-//  TODO: Add more information to the trainer
     fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer?
 
     fun getTrainerAssigned(traineeId: UUID): UUID
