@@ -29,6 +29,7 @@ import kotlin.test.assertTrue
 @SpringBootTest
 class AuthServiceTests {
 
+    private val mockAuthRepo = MockRepos.mockAuthRepo
     private val mockUserRepo = MockRepos.mockUserRepo
 
     @Nested
@@ -49,7 +50,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashPassword(password))
                 .then { passwordHash }
 
-            `when`(mockUserRepo.createUser(name, email, passwordHash, role))
+            `when`(mockAuthRepo.createUser(name, email, passwordHash, role))
                 .then { uuid }
 
             mockAuthService.signUpCompany(name, email, password)
@@ -90,7 +91,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashPassword(password))
                 .then { passwordHash }
 
-            `when`(mockUserRepo.createUser(name, email, passwordHash, role))
+            `when`(mockAuthRepo.createUser(name, email, passwordHash, role))
                 .then { uuid }
 
             mockAuthService.signUpIndependentTrainer(name, email, password, gender, phoneNumber)
@@ -106,7 +107,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashPassword(password))
                 .then { passwordHash }
 
-            `when`(mockUserRepo.createUser(name, email, passwordHash, role))
+            `when`(mockAuthRepo.createUser(name, email, passwordHash, role))
                 .then { uuid }
 
             mockAuthService.signUpIndependentTrainer(name, email, password, gender, null)
@@ -210,7 +211,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashToken(refreshToken))
                 .then { refreshTokenHash }
 
-            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+            `when`(mockAuthRepo.getRefreshTokenDetails(refreshTokenHash))
                 .then { TokenDetails(uuid, refreshTokenExpirationDate) }
 
             val tokens = mockAuthService.refreshToken(accessToken, refreshToken)
@@ -245,7 +246,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashToken(refreshToken))
                 .then { refreshTokenHash }
 
-            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+            `when`(mockAuthRepo.getRefreshTokenDetails(refreshTokenHash))
                 .then { TokenDetails(uuid, refreshTokenExpirationDate) }
 
             assertFailsWith<AuthError.TokenError.TokenExpired> {
@@ -275,7 +276,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashToken(refreshToken))
                 .then { refreshTokenHash }
 
-            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+            `when`(mockAuthRepo.getRefreshTokenDetails(refreshTokenHash))
                 .then { null }
 
             assertFailsWith<AuthError.TokenError.InvalidRefreshToken> {
@@ -306,7 +307,7 @@ class AuthServiceTests {
             `when`(mockAuthDomain.hashToken(refreshToken))
                 .then { refreshTokenHash }
 
-            `when`(mockUserRepo.getRefreshTokenDetails(refreshTokenHash))
+            `when`(mockAuthRepo.getRefreshTokenDetails(refreshTokenHash))
                 .then { TokenDetails(UUID.randomUUID(), refreshTokenExpirationDate) }
 
             assertFailsWith<AuthError.TokenError.UserIdMismatch> {
@@ -317,7 +318,7 @@ class AuthServiceTests {
 
     @AfterEach
     fun cleanUp() {
-        reset(mockUserRepo)
+        reset(mockAuthRepo)
     }
 
     companion object {

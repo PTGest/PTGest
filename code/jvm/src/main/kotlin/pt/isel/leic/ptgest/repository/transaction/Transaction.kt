@@ -1,9 +1,11 @@
 package pt.isel.leic.ptgest.repository.transaction
 
+import pt.isel.leic.ptgest.repository.AuthRepo
 import pt.isel.leic.ptgest.repository.CompanyRepo
 import pt.isel.leic.ptgest.repository.UserRepo
 
 interface Transaction {
+    val authRepo: AuthRepo
     val userRepo: UserRepo
     val companyRepo: CompanyRepo
 

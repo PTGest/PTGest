@@ -4,6 +4,7 @@ import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.mockito.Mockito.mock
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
+import pt.isel.leic.ptgest.repository.AuthRepo
 import pt.isel.leic.ptgest.repository.CompanyRepo
 import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
@@ -13,6 +14,7 @@ import pt.isel.leic.ptgest.services.auth.AuthService
 import pt.isel.leic.ptgest.services.auth.JwtService
 
 object MockRepos {
+    val mockAuthRepo: AuthRepo = mock(AuthRepo::class.java)
     val mockUserRepo: UserRepo = mock(UserRepo::class.java)
     val mockCompanyRepo: CompanyRepo = mock(CompanyRepo::class.java)
 }
@@ -20,6 +22,7 @@ object MockRepos {
 object MockServices {
 
     val mockTransaction = object : Transaction {
+        override val authRepo: AuthRepo = MockRepos.mockAuthRepo
         override val userRepo: UserRepo = MockRepos.mockUserRepo
         override val companyRepo: CompanyRepo = MockRepos.mockCompanyRepo
 
