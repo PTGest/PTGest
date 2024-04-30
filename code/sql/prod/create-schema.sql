@@ -148,17 +148,9 @@ create table if not exists prod.exercise_trainer
 create table if not exists prod.set_trainer
 (
     trainer_id  uuid references prod.trainer (id) on delete cascade,
-    set_id int references prod.exercise (id) on delete cascade,
+    set_id int references prod.set (id) on delete cascade,
     primary key (trainer_id, set_id)
 );
-
-create table if not exists prod.workout_trainer
-(
-    trainer_id  uuid references prod.trainer (id) on delete cascade,
-    workout_id int references prod.exercise (id) on delete cascade,
-    primary key (trainer_id, workout_id)
-);
-
 
 create table if not exists prod.workout_set
 (

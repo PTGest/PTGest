@@ -148,17 +148,9 @@ create table if not exists dev.exercise_trainer
 create table if not exists dev.set_trainer
 (
     trainer_id  uuid references dev.trainer (id) on delete cascade,
-    set_id int references dev.exercise (id) on delete cascade,
+    set_id int references dev.set (id) on delete cascade,
     primary key (trainer_id, set_id)
 );
-
-create table if not exists dev.workout_trainer
-(
-    trainer_id  uuid references dev.trainer (id) on delete cascade,
-    workout_id int references dev.exercise (id) on delete cascade,
-    primary key (trainer_id, workout_id)
-);
-
 
 create table if not exists dev.workout_set
 (
