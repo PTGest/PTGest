@@ -132,4 +132,20 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             )
             .execute()
     }
+
+    override fun associateCompanyToExercise(exerciseId: Int, companyId: UUID) {
+        handle.createUpdate(
+            """
+                insert into exercise_company(company_id, exercise_id)
+                values (:companyId, :exerciseId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "exerciseId" to exerciseId
+                )
+            )
+            .execute()
+    }
 }

@@ -8,7 +8,7 @@ create type dev.role as enum ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER',
 create type dev.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
 create type dev.set_type as enum ('NORMAL', 'DROPSET', 'SUPERSET');
 -- TODO: to be changed
-create type dev.exercise_category as enum ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+create type dev.exercise_category as enum ('CARDIO', 'ARMS', 'LEGS', 'BACK', 'CHEST', 'SHOULDERS', 'ABS', 'OTHER');
 create type dev.session_category as enum ('P', 'A');
 create type dev.source as enum ('T', 'P');
 
@@ -95,17 +95,19 @@ create table if not exists dev.report
 );
 
 -- Trainee's workout plan
-
--- TODO: check how to store custom workouts (maybe add name to identify the workout in frontend)
 create table if not exists dev.workout
 (
     id         serial primary key,
-    trainer_id uuid references dev.trainer (id) on delete cascade
+    trainer_id uuid references dev.trainer (id) on delete cascade,
+    name       varchar(50) not null,
+    description text
 );
 
 create table if not exists dev.set
 (
     id      serial primary key,
+    name   varchar(50) not null,
+    notes   text,
     type    dev.set_type not null,
     details jsonb        not null
 );
@@ -116,7 +118,7 @@ create table if not exists dev.exercise
     name        varchar(50)           not null,
     description text,
     category    dev.exercise_category not null,
-    url         varchar(256)
+    ref         varchar(256)
 );
 
 create table if not exists dev.session
@@ -142,6 +144,21 @@ create table if not exists dev.exercise_trainer
     exercise_id int references dev.exercise (id) on delete cascade,
     primary key (trainer_id, exercise_id)
 );
+
+create table if not exists dev.set_trainer
+(
+    trainer_id  uuid references dev.trainer (id) on delete cascade,
+    set_id int references dev.exercise (id) on delete cascade,
+    primary key (trainer_id, set_id)
+);
+
+create table if not exists dev.workout_trainer
+(
+    trainer_id  uuid references dev.trainer (id) on delete cascade,
+    workout_id int references dev.exercise (id) on delete cascade,
+    primary key (trainer_id, workout_id)
+);
+
 
 create table if not exists dev.workout_set
 (

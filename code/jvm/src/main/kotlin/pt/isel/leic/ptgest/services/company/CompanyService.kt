@@ -1,6 +1,7 @@
 package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
+import pt.isel.leic.ptgest.domain.common.ExerciseType
 import pt.isel.leic.ptgest.domain.company.CompanyTrainers
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*
@@ -89,6 +90,22 @@ class CompanyService(
                 ?: throw CompanyError.TrainerNotFound
 
             companyRepo.updateTrainerCapacity(companyId, trainerId, capacity)
+        }
+    }
+
+    fun createCustomExercise(
+        companyId: UUID,
+        name: String,
+        description: String?,
+        category: ExerciseType,
+        ref: String?
+    ) {
+        transactionManager.run {
+            val workoutRepo = it.workoutRepo
+            val companyRepo = it.companyRepo
+
+            val exerciseId = workoutRepo.createExercise(name, description, category, ref)
+            companyRepo.associateCompanyToExercise(exerciseId, companyId)
         }
     }
 }

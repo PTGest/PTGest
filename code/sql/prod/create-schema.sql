@@ -8,7 +8,7 @@ create type prod.role as enum ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER'
 create type prod.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
 create type prod.set_type as enum ('NORMAL', 'DROPSET', 'SUPERSET');
 -- TODO: to be changed
-create type prod.exercise_category as enum ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+create type prod.exercise_category as enum ('CARDIO', 'ARMS', 'LEGS', 'BACK', 'CHEST', 'SHOULDERS', 'ABS', 'OTHER');
 create type prod.session_category as enum ('P', 'A');
 create type prod.source as enum ('T', 'P');
 
@@ -95,17 +95,19 @@ create table if not exists prod.report
 );
 
 -- Trainee's workout plan
-
--- TODO: check how to store custom workouts (maybe add name to identify the workout in frontend)
 create table if not exists prod.workout
 (
     id         serial primary key,
-    trainer_id uuid references prod.trainer (id) on delete cascade
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    name       varchar(50) not null,
+    description text
 );
 
 create table if not exists prod.set
 (
     id      serial primary key,
+    name   varchar(50) not null,
+    notes   text,
     type    prod.set_type not null,
     details jsonb        not null
 );
@@ -116,7 +118,7 @@ create table if not exists prod.exercise
     name        varchar(50)           not null,
     description text,
     category    prod.exercise_category not null,
-    url         varchar(256)
+    ref         varchar(256)
 );
 
 create table if not exists prod.session
@@ -142,6 +144,21 @@ create table if not exists prod.exercise_trainer
     exercise_id int references prod.exercise (id) on delete cascade,
     primary key (trainer_id, exercise_id)
 );
+
+create table if not exists prod.set_trainer
+(
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    set_id int references prod.exercise (id) on delete cascade,
+    primary key (trainer_id, set_id)
+);
+
+create table if not exists prod.workout_trainer
+(
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    workout_id int references prod.exercise (id) on delete cascade,
+    primary key (trainer_id, workout_id)
+);
+
 
 create table if not exists prod.workout_set
 (

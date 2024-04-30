@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.controllers.company.model.request.AssignTrainerRequest
+import pt.isel.leic.ptgest.http.controllers.company.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
@@ -33,6 +34,7 @@ class CompanyController(private val service: CompanyService) {
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val trainers = service.getCompanyTrainers(skip, limit, authenticatedUser.id)
+
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
             details = GetCompanyTrainersResponse(
@@ -49,6 +51,7 @@ class CompanyController(private val service: CompanyService) {
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         service.assignTrainerToTrainee(trainerInfo.trainerId, traineeId, authenticatedUser.id)
+
         return HttpResponse.created(
             message = "Trainer assigned to trainee successfully."
         )
@@ -61,6 +64,7 @@ class CompanyController(private val service: CompanyService) {
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         service.reassignTrainer(trainerInfo.newTrainerId, traineeId, authenticatedUser.id)
+
         return HttpResponse.ok(
             message = "Trainer reassigned to trainee successfully."
         )
@@ -73,6 +77,7 @@ class CompanyController(private val service: CompanyService) {
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         service.updateTrainerCapacity(trainerId, authenticatedUser.id, capacityInfo.capacity)
+
         return HttpResponse.ok(
             message = "Trainer capacity updated successfully to ${authenticatedUser.id}."
         )
@@ -83,5 +88,23 @@ class CompanyController(private val service: CompanyService) {
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         throw NotImplementedError()
+    }
+
+    @PostMapping(Uris.Company.CREATE_CUSTOM_EXERCISE)
+    fun createCustomExercise(
+        @RequestBody exerciseDetails: CreateCustomExerciseRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        service.createCustomExercise(
+            authenticatedUser.id,
+            exerciseDetails.name,
+            exerciseDetails.description,
+            exerciseDetails.category,
+            exerciseDetails.ref
+        )
+
+        return HttpResponse.created(
+            message = "Custom exercise created successfully."
+        )
     }
 }

@@ -18,4 +18,6 @@ interface CompanyRepo {
     fun reassignTrainer(trainerId: UUID, traineeId: UUID)
 
     fun updateTrainerCapacity(companyId: UUID, trainerId: UUID, capacity: Int)
+
+    fun associateCompanyToExercise(exerciseId: Int, companyId: UUID)
 }

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.http.controllers.company.CompanyController
+import pt.isel.leic.ptgest.http.controllers.trainer.TrainerController
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.JwtService
 
@@ -45,6 +46,10 @@ class AuthInterceptor(
                 handler.beanType.javaClass == CompanyController::class.java && user.role != Role.COMPANY -> {
                     throw AuthError.UserAuthenticationError.UnauthorizedRole
                 }
+                handler.beanType.javaClass == TrainerController::class.java &&
+                    user.role !in listOf(Role.HIRED_TRAINER, Role.INDEPENDENT_TRAINER) -> {
+                    throw AuthError.UserAuthenticationError.UnauthorizedRole
+                }
             }
 
             AuthenticatedUserResolver.addUserTo(user, request)
@@ -54,6 +59,7 @@ class AuthInterceptor(
 
     private fun processAuthorizationHeaderValue(authorizationValue: String): AuthenticatedUser {
         val headerParts = authorizationValue.trim().split(" ")
+
         if (headerParts.size != 2) {
             throw BadCredentialsException("Invalid Authorization header")
         }

@@ -62,7 +62,7 @@ In this way, the tables were changed to the following:
 
 - **Objectives:**
     1. Start implementing the methods to manage training plans and exercises.
-    2. Statr implementing the methods to manage sessions.
+    2. Start implementing the methods to manage sessions.
     3. Start implementing a system to manage what methods the user can access in frontend.
     4. Implement the views to register trainees and hired trainers.
     5. Implement the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
