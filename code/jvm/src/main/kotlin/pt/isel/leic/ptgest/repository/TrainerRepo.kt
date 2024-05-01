@@ -7,4 +7,6 @@ interface TrainerRepo {
     fun associateTrainerToExercise(exerciseId: Int, trainerId: UUID)
 
     fun associateTrainerToSet(setId: Int, trainerId: UUID)
+
+    fun getLastSetNameId(trainerId: UUID): Int
 }

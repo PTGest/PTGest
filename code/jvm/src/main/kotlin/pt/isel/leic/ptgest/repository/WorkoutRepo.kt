@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.repository
 import pt.isel.leic.ptgest.domain.common.ExerciseType
 import pt.isel.leic.ptgest.domain.common.SetType
 import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
+import java.util.*
 
 interface WorkoutRepo {
 

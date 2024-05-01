@@ -8,4 +8,9 @@ sealed class TrainerError : BaseError() {
         private fun readResolve(): Any = ExerciseNotFoundError
         override val message: String get() = "Exercise not found."
     }
+
+    data object InvalidSetTypeError : TrainerError() {
+        private fun readResolve(): Any = InvalidSetTypeError
+        override val message: String get() = "Invalid set type."
+    }
 }

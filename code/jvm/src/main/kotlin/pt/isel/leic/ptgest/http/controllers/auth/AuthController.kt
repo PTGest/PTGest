@@ -29,7 +29,7 @@ import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.PREFIX)

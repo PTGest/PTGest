@@ -2,11 +2,23 @@ package pt.isel.leic.ptgest.domain.common
 
 sealed class SetDetails {
 
+    open val exercise: Int = 0
+
+    open val exercises: List<SuperSetExercise> = emptyList()
+
+    open fun toMapDetails(): Map<String, Any> {
+        return emptyMap()
+    }
+
+    open fun toMapDetailsList(): List<Map<String, Any>> {
+        return emptyList()
+    }
+
     data class DropSet(
-        val exercise: Int,
+        override val exercise: Int,
         val initialWeight: Double
     ) : SetDetails() {
-        fun toMapDetails(): Map<String, Any> {
+        override fun toMapDetails(): Map<String, Any> {
             require(initialWeight > 0) { "Initial weight must be greater than 0." }
             return mapOf(
                 "initialWeight" to initialWeight
@@ -15,9 +27,9 @@ sealed class SetDetails {
     }
 
     data class SuperSet(
-        val exercises: List<SuperSetExercise>
+        override val exercises: List<SuperSetExercise>
     ) : SetDetails() {
-        fun toMapDetails(): List<Map<String, Any>> {
+        override fun toMapDetailsList(): List<Map<String, Any>> {
             return exercises.map { it.toMapDetails() }
         }
     }
@@ -45,12 +57,12 @@ sealed class SetDetails {
     }
 
     data class Running(
-        val exercise: Int,
+        override val exercise: Int,
         val time: Double?,
         val distance: Double?,
         val speed: Double?
     ) : SetDetails() {
-        fun toMapDetails(): Map<String, Any> {
+        override fun toMapDetails(): Map<String, Any> {
             val properties = mutableMapOf<String, Any>()
 
             if (time != null) {
@@ -73,11 +85,11 @@ sealed class SetDetails {
     }
 
     data class BodyWeight(
-        val exercise: Int,
+        override val exercise: Int,
         val reps: Int,
         val sets: Int
     ) : SetDetails() {
-        fun toMapDetails(): Map<String, Any> {
+        override fun toMapDetails(): Map<String, Any> {
             require(reps > 0) { "Reps must be greater than 0." }
             require(sets > 0) { "Sets must be greater than 0." }
             return mapOf(
@@ -88,12 +100,12 @@ sealed class SetDetails {
     }
 
     data class WeightedLift(
-        val exercise: Int,
+        override val exercise: Int,
         val reps: Int,
         val sets: Int,
         val weight: Double
     ) : SetDetails() {
-        fun toMapDetails(): Map<String, Any> {
+        override fun toMapDetails(): Map<String, Any> {
             require(reps > 0) { "Reps must be greater than 0." }
             require(sets > 0) { "Sets must be greater than 0." }
             require(weight > 0) { "Weight must be greater than 0." }
@@ -103,5 +115,15 @@ sealed class SetDetails {
                 "weight" to weight
             )
         }
+    }
+
+    companion object {
+        val setTypeMap = mapOf(
+            DropSet::class to SetType.DROPSET,
+            SuperSet::class to SetType.SUPERSET,
+            Running::class to SetType.RUNNING,
+            BodyWeight::class to SetType.BODYWEIGHT,
+            WeightedLift::class to SetType.WEIGHTEDLIFT
+        )
     }
 }

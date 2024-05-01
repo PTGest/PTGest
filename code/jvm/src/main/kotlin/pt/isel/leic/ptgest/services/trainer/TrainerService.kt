@@ -4,11 +4,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.ExerciseType
 import pt.isel.leic.ptgest.domain.common.SetDetails
-import pt.isel.leic.ptgest.domain.common.SetDetails.SuperSetExercise
 import pt.isel.leic.ptgest.domain.common.SetType
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import java.util.*
+import java.util.UUID
 
 @Service
 class TrainerService(
@@ -32,6 +31,7 @@ class TrainerService(
     }
 
 //  TODO: check if the user can use the exercise
+//  TODO: check if could have concurrency problems
     fun createCustomSet(
         trainerId: UUID,
         name: String?,
@@ -43,35 +43,23 @@ class TrainerService(
         if (notes != null) {
             require(notes.isNotEmpty()) { "Notes must not be empty." }
         }
-        if (name != null) {
-            require(name.isNotEmpty()) { "Name must not be empty." }
 
-            when (details) {
-                is SetDetails.DropSet -> {
-                    transactionManager.run {
-                        it.createSet(trainerId, details.exercise, name, notes, SetType.DROPSET, jsonDetails)
-                    }
-                }
-                is SetDetails.SuperSet -> {
-                    transactionManager.run {
-                        it.createSuperSet(details.exercises, trainerId, name, notes, jsonDetails)
-                    }
-                }
-                is SetDetails.Running -> {
-                    transactionManager.run {
-                        it.createSet(trainerId, details.exercise, name, notes, SetType.RUNNING, jsonDetails)
-                    }
-                }
-                is SetDetails.BodyWeight -> {
-                    transactionManager.run {
-                        it.createSet(trainerId, details.exercise, name, notes, SetType.BODYWEIGHT, jsonDetails)
-                    }
-                }
-                is SetDetails.WeightedLift -> {
-                    transactionManager.run {
-                        it.createSet(trainerId, details.exercise, name, notes, SetType.WEIGHTEDLIFT, jsonDetails)
-                    }
-                }
+        transactionManager.run {
+            val setName = if (name != null) {
+                require(name.isNotEmpty()) { "Name must not be empty." }
+                name
+            } else {
+                val lastNameId = it.trainerRepo.getLastSetNameId(trainerId)
+                "Set #${lastNameId + 1}"
+            }
+
+            if (details is SetDetails.SuperSet) {
+                it.createSuperSet(details.exercises, trainerId, setName, notes, jsonDetails)
+            } else {
+                val setType = SetDetails.setTypeMap[details::class]
+                    ?: throw TrainerError.InvalidSetTypeError
+
+                it.createSet(trainerId, details.exercise, setName, notes, setType, jsonDetails)
             }
         }
     }
@@ -79,27 +67,15 @@ class TrainerService(
     private fun convertDetailsToJson(details: SetDetails): String {
         val jsonMapper = jacksonObjectMapper()
 
-        when (details) {
-            is SetDetails.DropSet -> {
-                return jsonMapper.writeValueAsString(details.toMapDetails())
-            }
-            is SetDetails.SuperSet -> {
-                return jsonMapper.writeValueAsString(details.toMapDetails())
-            }
-            is SetDetails.Running -> {
-                return jsonMapper.writeValueAsString(details.toMapDetails())
-            }
-            is SetDetails.BodyWeight -> {
-                return jsonMapper.writeValueAsString(details.toMapDetails())
-            }
-            is SetDetails.WeightedLift -> {
-                return jsonMapper.writeValueAsString(details.toMapDetails())
-            }
+        return if (details is SetDetails.SuperSet) {
+            jsonMapper.writeValueAsString(details.toMapDetailsList())
+        } else {
+            jsonMapper.writeValueAsString(details.toMapDetails())
         }
     }
 
     private fun Transaction.createSuperSet(
-        exercises: List<SuperSetExercise>,
+        exercises: List<SetDetails.SuperSetExercise>,
         trainerId: UUID,
         name: String,
         notes: String?,

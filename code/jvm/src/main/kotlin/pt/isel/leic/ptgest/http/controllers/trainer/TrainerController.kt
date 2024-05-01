@@ -15,6 +15,7 @@ import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 
+// TODO: return link to access the created resource details
 @RestController
 @RequestMapping(Uris.Trainer.PREFIX)
 class TrainerController(private val service: TrainerService) {
