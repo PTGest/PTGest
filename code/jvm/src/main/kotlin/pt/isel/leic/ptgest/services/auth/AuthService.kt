@@ -14,6 +14,7 @@ import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
 import java.util.Date
 import java.util.UUID
+import pt.isel.leic.ptgest.repository.transaction.Transaction
 
 @Service
 class AuthService(
@@ -30,11 +31,8 @@ class AuthService(
     ) {
         transactionManager.run {
             val authRepo = it.authRepo
-            val userRepo = it.userRepo
 
-            val userId = createUser(
-                authRepo,
-                userRepo,
+            val userId = it.createUser(
                 name,
                 email,
                 password,
@@ -53,11 +51,8 @@ class AuthService(
     ) {
         transactionManager.run {
             val authRepo = it.authRepo
-            val userRepo = it.userRepo
 
-            val userId = createUser(
-                authRepo,
-                userRepo,
+            val userId = it.createUser(
                 name,
                 email,
                 password,
@@ -79,14 +74,11 @@ class AuthService(
 
         transactionManager.run {
             val authRepo = it.authRepo
-            val userRepo = it.userRepo
 
             val tempPassword = authDomain.generateTokenValue()
             val tempPasswordHash = authDomain.hashPassword(tempPassword)
 
-            val userId = createUser(
-                authRepo,
-                userRepo,
+            val userId = it.createUser(
                 name,
                 email,
                 tempPasswordHash,
@@ -116,9 +108,7 @@ class AuthService(
             val tempPassword = authDomain.generateTokenValue()
             val tempPasswordHash = authDomain.hashPassword(tempPassword)
 
-            val userId = createUser(
-                authRepo,
-                userRepo,
+            val userId = it.createUser(
                 name,
                 email,
                 tempPasswordHash,
@@ -127,9 +117,9 @@ class AuthService(
 
             authRepo.createTrainee(userId, birthdate, gender, phoneNumber?.trim())
 
-//            if (trainerId != null) {
-//                userRepo.associateTraineeToTrainer(userId, trainerId)
-//            }
+            if (trainerId != null) {
+                userRepo.associateTraineeToTrainer(userId, trainerId)
+            }
         }
     }
 
@@ -214,6 +204,7 @@ class AuthService(
         )
     }
 
+//  TODO: check
     fun login(currentDate: Date, email: String, password: String): AuthenticationDetails {
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
@@ -309,9 +300,7 @@ class AuthService(
         }
     }
 
-    private fun createUser(
-        authRepo: AuthRepo,
-        userRepo: UserRepo,
+    private fun Transaction.createUser(
         name: String,
         email: String,
         password: String,

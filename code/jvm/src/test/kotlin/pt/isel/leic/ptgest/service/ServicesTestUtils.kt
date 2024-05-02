@@ -6,7 +6,9 @@ import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.repository.AuthRepo
 import pt.isel.leic.ptgest.repository.CompanyRepo
+import pt.isel.leic.ptgest.repository.TrainerRepo
 import pt.isel.leic.ptgest.repository.UserRepo
+import pt.isel.leic.ptgest.repository.WorkoutRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
@@ -16,7 +18,9 @@ import pt.isel.leic.ptgest.services.auth.JwtService
 object MockRepos {
     val mockAuthRepo: AuthRepo = mock(AuthRepo::class.java)
     val mockUserRepo: UserRepo = mock(UserRepo::class.java)
+    val mockWorkoutRepo: WorkoutRepo = mock(WorkoutRepo::class.java)
     val mockCompanyRepo: CompanyRepo = mock(CompanyRepo::class.java)
+    val mockTrainerRepo: TrainerRepo = mock(TrainerRepo::class.java)
 }
 
 object MockServices {
@@ -24,7 +28,9 @@ object MockServices {
     val mockTransaction = object : Transaction {
         override val authRepo: AuthRepo = MockRepos.mockAuthRepo
         override val userRepo: UserRepo = MockRepos.mockUserRepo
+        override val workoutRepo: WorkoutRepo = MockRepos.mockWorkoutRepo
         override val companyRepo: CompanyRepo = MockRepos.mockCompanyRepo
+        override val trainerRepo: TrainerRepo = MockRepos.mockTrainerRepo
 
         override fun commit() {}
         override fun rollback() {}

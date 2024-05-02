@@ -100,6 +100,7 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
                     "phoneNumber" to phoneNumber
                 )
             )
+            .execute()
     }
 
     override fun resetPassword(userId: UUID, newPasswordHash: String) {

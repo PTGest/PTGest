@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*
 
@@ -24,7 +25,9 @@ class JwtService(
     ): String {
         val claims = HashMap<String, Any>()
 
-        validateUser(userId, role)
+        transactionManager.run {
+            it.validateUser(userId, role)
+        }
 
         require(
             currentDate.before(expirationDate) ||
@@ -47,22 +50,20 @@ class JwtService(
             expirationDate = Date(expirationDate.time)
         )
 
-        validateUser(accessTokenDetails.userId, accessTokenDetails.role)
+        transactionManager.run {
+            it.validateUser(accessTokenDetails.userId, accessTokenDetails.role)
+        }
 
         return accessTokenDetails
     }
 
-    private fun validateUser(userId: UUID, role: Role) {
-        transactionManager.run {
-            val authRepo = it.userRepo
+    private fun Transaction.validateUser(userId: UUID, role: Role) {
+        val userDetails =
+            userRepo.getUserDetails(userId)
+                ?: throw AuthError.UserAuthenticationError.UserNotFound
 
-            val userDetails =
-                authRepo.getUserDetails(userId)
-                    ?: throw AuthError.UserAuthenticationError.UserNotFound
-
-            if (userDetails.role != role) {
-                throw AuthError.UserAuthenticationError.InvalidUserRoleException
-            }
+        if (userDetails.role != role) {
+            throw AuthError.UserAuthenticationError.InvalidUserRoleException
         }
     }
 

@@ -64,6 +64,12 @@ class TrainerService(
         }
     }
 
+    fun createCustomWorkout(
+        trainerId: UUID
+    ) {
+        throw NotImplementedError("Not implemented yet.")
+    }
+
     private fun convertDetailsToJson(details: SetDetails): String {
         val jsonMapper = jacksonObjectMapper()
 
