@@ -13,7 +13,7 @@ const props = defineProps({
     is_open: Boolean,
     is_mobile_view: Boolean,
 })
-let userId = store.getters.userData.id;
+let userId = store.getters.userData.token;
 </script>
 
 

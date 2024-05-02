@@ -108,6 +108,7 @@ class AuthService(
     ) {
         require(birthdate.before(Date())) { "Invalid birthdate." }
 
+
         transactionManager.run {
             val authRepo = it.authRepo
             val userRepo = it.userRepo
@@ -125,9 +126,10 @@ class AuthService(
             )
 
             authRepo.createTrainee(userId, birthdate, gender, phoneNumber?.trim())
-            if (trainerId != null) {
-                userRepo.associateTraineeToTrainer(userId, trainerId)
-            }
+
+//            if (trainerId != null) {
+//                userRepo.associateTraineeToTrainer(userId, trainerId)
+//            }
         }
     }
 
@@ -212,7 +214,7 @@ class AuthService(
         )
     }
 
-    fun login(email: String, password: String): AuthenticationDetails {
+    fun login(currentDate: Date, email: String, password: String): AuthenticationDetails {
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
 
@@ -225,7 +227,7 @@ class AuthService(
 
             return@run user
         }
-        val currentDate = Date()
+
         val tokens = createTokens(currentDate, userDetails.id, userDetails.role)
         val refreshTokenHash = authDomain.hashToken(tokens.refreshToken.token)
 
@@ -246,8 +248,7 @@ class AuthService(
         )
     }
 
-    fun refreshToken(accessToken: String, refreshToken: String): TokenPair {
-        val currentDate = Date()
+    fun refreshToken(accessToken: String, refreshToken: String, currentDate: Date): TokenPair {
 
         val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
         val accessTokenDetails = jwtService.extractToken(accessToken.trim())

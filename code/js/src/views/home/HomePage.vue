@@ -9,7 +9,7 @@ import { computed } from "vue"
 import store from "../../store"
 import Calendar from "../../components/calendar/Calendar.vue";
 
-let is_logged_in = computed(() => store.state.userData.id !== undefined)
+let is_logged_in = computed(() => store.state.userData.token !== undefined)
 </script>
 
 <style>

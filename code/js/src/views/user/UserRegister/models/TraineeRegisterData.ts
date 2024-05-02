@@ -1,17 +1,18 @@
 class TraineeRegisterData {
     name: string;
     email: string;
-    birthDate: string;
+    birthdate: string;
     gender: string;
-    phone: string;
-
-    constructor(name: string, email: string, birthDate: string, gender: string, phone: string) {
+    phoneNumber: string;
+    user_type: string = "trainee";
+    constructor(name: string, email: string, birthdate: string, gender: string, phoneNumber: string, user_type: string = "trainee") {
         this.name = name;
         this.email = email;
-        this.birthDate = birthDate;
+        this.birthdate = birthdate;
         this.gender = gender;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
+        this.user_type = user_type;
     }
-
 }
+
 export default TraineeRegisterData;

@@ -7,7 +7,7 @@
                  text="Trainee Email" height="3em" placeholder="Enter Trainee Email"/>
       <div class="birth-text">
           Trainee Birthdate
-          <input v-model="trainee_Data.birthDate" type="date" placeholder="Enter Trainee BirthDate" class="trainee-birth"/>
+          <input v-model="trainee_Data.birthdate" type="date" placeholder="Enter Trainee BirthDate" class="trainee-birth"/>
       </div>
       <div class="birth-text">
           Gender
@@ -25,7 +25,7 @@
       </div>
 
 
-      <default-button class="register-button" display-text="Register Trainee" :click-handler="Teste" :is-disabled="!is_disabled"/>
+      <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="!is_disabled"/>
   </div>
 
 </template>
@@ -40,26 +40,31 @@ import TraineeRegisterData from "../../../views/user/UserRegister/models/Trainee
 import DropdownMenu from "../../../components/DropdownMenu.vue";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import authenticatedSignup from "../../../services/AuthServices/AuthenticatedSignup.ts";
 
 let countryNumber = ref("");
 let phoneNumber = ref("");
 let trainee_Data: Ref<TraineeRegisterData> = ref({
     name: ref(""),
     email: ref(""),
-    birthDate: ref(""),
+    birthdate: ref(""),
     gender: ref(""),
-    phone: ref(""),
+    phoneNumber: ref(""),
+    user_type: ref("trainee"),
 });
 
 const is_disabled = computed(() => {
     console.log("is_disabled", trainee_Data.value);
     console.log("countryNumber", countryNumber.value);
     console.log("phoneNumber", phoneNumber.value);
+
     return !(trainee_Data.value.name == "" ||
         trainee_Data.value.email == "" ||
-        trainee_Data.value.birthDate == "" ||
+        trainee_Data.value.gender == "" ||
+        trainee_Data.value.birthdate == "" ||
         countryNumber.value == "" ||
-        phoneNumber.value == "");
+        phoneNumber.value == ""
+    );
 });
 
 function updatePhone (type: string, value: string)  {
@@ -73,7 +78,7 @@ function updatePhone (type: string, value: string)  {
              console.log("phoneNumber", phoneNumber.value);
              break;
    }
-};
+}
 
 
 function update(paramName: string, value: string) {
@@ -86,16 +91,22 @@ function update(paramName: string, value: string) {
             trainee_Data.value.email = value;
             break;
         case "gender" :
-            trainee_Data.value.gender = value;
+            trainee_Data.value.gender = value.toUpperCase();
             break;
 
     }
 }
 
-const Teste = () => {
-    console.log("Trainee Data", trainee_Data.value);
-    console.log("Country Number", countryNumber.value);
-    console.log("Phone Number", phoneNumber.value);
+const authSign = () => {
+    trainee_Data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`;
+    authenticatedSignup(new TraineeRegisterData(
+        trainee_Data.value.name,
+        trainee_Data.value.email,
+        trainee_Data.value.birthdate,
+        trainee_Data.value.gender,
+        trainee_Data.value.phoneNumber,
+        "trainee"
+    ));
 }
 
 </script>

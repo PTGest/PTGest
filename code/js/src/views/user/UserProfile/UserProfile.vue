@@ -3,8 +3,8 @@
       <ImageContainer class="image-container" :src="image"/>
       <UserInfoContainer class="user-info" userName="Top xuxa" />
       <UserPersonalInfoContainer class="user-personal-info"
-                                 email="habibiexample@gmail.com"
-                                 phone="918137550"
+                                 :email="userInfo.email"
+                                 :phone="userInfo.phone"
                                  location="Habibi Land"
                                  age="25"
                                  height="180cm"
@@ -22,9 +22,24 @@ import UserInfoContainer from "../UserProfile/components/UserInfoContainer.vue";
 import ImageContainer from "../UserProfile/components/ImageContainer.vue";
 import image from "../../../assets/./userIcons/man.png";
 import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInfoContainer.vue";
+import {getUserInfo} from "../../../services/UserServices/profileServices.ts";
+import store from "../../../store";
+
 const props = defineProps({
   userId: String
 });
+
+
+(async () => {
+    try {
+        await getUserInfo();
+    } catch (error) {
+        console.error('Error getting user info:', error);
+    }})();
+
+const userInfo = store.getters.userInfo;
+
+console.log(userInfo);
 </script>
 
 

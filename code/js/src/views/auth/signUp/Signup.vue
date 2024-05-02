@@ -7,7 +7,6 @@
                 <div class="signup-input-text">Name</div>
                 <input v-model="signupUserData.name" class="signup-name-input signup-input-base" placeholder="Enter your name" />
             </div>
-            <!--      <input-bar class-name="signup-input-text" :user-data="signupUserData"/>-->
             <div class="signup-input-container">
                 <div class="signup-input-text">Email</div>
                 <input v-model="signupUserData.email" class="signup-email-input signup-input-base" placeholder="Enter your email" />
@@ -49,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
-import { signupUserServices } from "../../../services/authServices/signupServices.ts"
+import { signupUserServices } from "../../../services/AuthServices/signupServices.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faBuilding, faEye, faPerson, faPlus } from "@fortawesome/free-solid-svg-icons"
 import DropdownMenu from "../../../components/DropdownMenu.vue"

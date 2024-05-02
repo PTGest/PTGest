@@ -5,10 +5,11 @@ import jakarta.servlet.http.HttpServletResponse
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import java.util.*
 
-fun setCookies(response: HttpServletResponse, tokens: TokenPair) {
+fun setCookies(response: HttpServletResponse, tokens: TokenPair, currentDate: Date) {
     setCookie(
         "access_token",
         tokens.accessToken.token,
+        currentDate,
         tokens.accessToken.expirationDate,
         response
     )
@@ -16,6 +17,7 @@ fun setCookies(response: HttpServletResponse, tokens: TokenPair) {
     setCookie(
         "refresh_token",
         tokens.refreshToken.token,
+        currentDate,
         tokens.refreshToken.expirationDate,
         response
     )
@@ -36,11 +38,14 @@ fun revokeCookies(response: HttpServletResponse) {
 private fun setCookie(
     name: String,
     value: String,
+    currentDate: Date,
     expirationDate: Date,
     response: HttpServletResponse
 ) {
     val cookie = Cookie(name, value)
-    cookie.maxAge = expirationDate.toInstant().epochSecond.toInt()
+    val currentInSeconds = currentDate.time / 1000
+    val expirationInSeconds = expirationDate.time / 1000
+    cookie.maxAge = (expirationInSeconds - currentInSeconds).toInt()
     cookie.isHttpOnly = true
     cookie.secure = true
     response.addCookie(cookie)

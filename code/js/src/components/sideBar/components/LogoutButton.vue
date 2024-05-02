@@ -9,7 +9,7 @@
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons"
 import { computed } from "vue"
 import store from "../../../store"
-import logoutServices from "../../../services/authServices/logoutServices.ts"
+import logoutServices from "../../../services/AuthServices/logoutServices.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 const props = defineProps({
@@ -18,7 +18,7 @@ const props = defineProps({
 })
 
 let userData = computed(() => {
-    return store.state.userData.id !== undefined
+    return store.state.userData.token !== undefined
 })
 
 const logout = () => {
@@ -57,7 +57,6 @@ const logout = () => {
 
 .logout-button-open {
     position: relative;
-    bottom: -36em;
     width: 13em;
     border-radius: 20px;
     transition: width 0.2s ease-out;

@@ -89,7 +89,7 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
         handle.createUpdate(
             """
                 insert into trainee (id, gender, birthdate, phone_number)
-                values (:id, :gender, :birthdate, :phoneNumber)
+                values (:id, :gender::gender, :birthdate, :phoneNumber)
             """.trimIndent()
         )
             .bindMap(

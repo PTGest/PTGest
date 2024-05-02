@@ -1,12 +1,14 @@
 import { createStore } from "vuex"
 import UserData from "../models/UserData.ts"
 import VuexPersistence from "vuex-persist"
+import {UserInfo} from "../views/user/UserProfile/Models/UserInfo.ts";
 
 interface State {
     userData: UserData
     errorType: ErrorType
     is_mobile_view: boolean
     userBio: string
+    userInfo: UserInfo
 }
 
 const vuexLocal = new VuexPersistence({
@@ -28,7 +30,11 @@ const store = createStore<State>({
                 message: "",
             },
             is_mobile_view: false,
-            userBio: "",
+            userInfo: {
+                name: "",
+                email: "",
+                phone: "",
+            }
         }
     },
     mutations: {
@@ -49,8 +55,8 @@ const store = createStore<State>({
                 refreshToken: undefined,
             }
         },
-        setUserBio(state: State, bio: string) {
-            state.userBio = bio
+        setUserInfo(state: State, userInfo: UserInfo) {
+            state.userInfo = userInfo
         }
     },
     actions: {
@@ -58,19 +64,19 @@ const store = createStore<State>({
             console.log("setAuthentication", commit, userData)
             commit("setUserData", userData)
         },
-        setMobile(context: any, is_mobile_view: boolean) {
-            context.commit("setMobileView", is_mobile_view)
+        setMobile({commit}:any , is_mobile_view: boolean) {
+           commit("setMobileView", is_mobile_view)
         },
-        userBio(context: any, bio: string) {
-            console.log("userBio", bio)
-            context.commit("setUserBio", bio)
+        userInfo({commit}: any, userInfo: UserInfo) {
+            console.log("userBio", userInfo)
+            commit("setUserInfo", userInfo)
         }
     },
     getters: {
         userData: (state: State) => state.userData,
         errorType: (state: State) => state.errorType,
         is_mobile_view: (state: State) => state.is_mobile_view,
-        userBio: (state: State) => state.userBio,
+        userInfo: (state: State) => state.userInfo,
     },
     plugins: [vuexLocal.plugin],
 })

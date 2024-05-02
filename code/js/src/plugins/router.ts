@@ -8,7 +8,8 @@ import Error from "../views/Error.vue";
 import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue";
 import UserProfile from "../views/user/UserProfile/UserProfile.vue";
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue";
-// import {verifyToken} from "../services/authServices/verifyToken.ts";
+import Students from "../views/user/IndependentTrainerViews/Students.vue";
+// import {verifyToken} from "../services/AuthServices/verifyToken.ts";
 
 
 const routes:RouteRecordRaw[] = [
@@ -35,8 +36,9 @@ const routes:RouteRecordRaw[] = [
         //     }
         // }
     },
-    //User Views
+    //UserServices Views
     {path: '/user/profile/:userId', name: 'userProfile', component: UserProfile, props: true , meta: {requiresAuth: true}},
+    {path: '/students', name: 'students', component: Students},
     {path: '/register-trainee', name: 'registerTrainee', component: RegisterTrainee , meta: {requiresAuth: true}},
     //Error Views
     {path: '/error', name: 'error', component: Error},

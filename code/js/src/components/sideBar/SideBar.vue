@@ -28,6 +28,7 @@
                     </router-link>
                 </template>
                 <UserIcon :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view" />
+                <router-link v-if="userData" class="nav-link" :to="{name: 'students'}">Students</router-link>
                 <LogoutButton :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view" />
             </div>
         </div>
@@ -44,7 +45,7 @@ import UserIcon from "../../components/sideBar/components/UserIcon.vue"
 
 // Define a computed property to track changes to userData
 let userData = computed(() => {
-    return store.state.userData.id !== undefined
+    return store.state.userData.token !== undefined
 })
 
 // Define other reactive variables
@@ -176,6 +177,10 @@ window.addEventListener("resize", handleResize)
     .side-bar-container-open {
         width: 8em;
         transition: 0.2s ease-out;
+    }
+
+    .students{
+        color: white;
     }
 }
 </style>

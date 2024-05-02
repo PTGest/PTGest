@@ -13,7 +13,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
     override fun associateTraineeToTrainer(traineeId: UUID, trainerId: UUID) {
         handle.createUpdate(
             """
-                insert into trainer_trainer (trainer_id, trainee_id)
+                insert into trainer_trainee (trainer_id, trainee_id)
                 values (:trainerId, :traineeId)
             """.trimIndent()
         )
@@ -53,7 +53,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             """
                 select name, email, gender, birthdate, phone_number
                 from trainee join "user" on trainee.id = "user".id
-                where id = :userId
+                where trainee.id = :userId
             """.trimIndent()
         )
             .bind("userId", userId)
@@ -65,7 +65,7 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             """
                 select name, email, gender, phone_number
                 from trainer join "user" on trainer.id = "user".id
-                where id = :userId
+                where trainer.id = :userId
             """.trimIndent()
         )
             .bind("userId", userId)

@@ -18,7 +18,7 @@ export async function signupUserServices(userData: SignupPTData): Promise<void> 
 
             case 409:
                 const element = document.createElement("div")
-                element.innerHTML = "User already exists"
+                element.innerHTML = "UserServices already exists"
                 element.classList.add("error-message")
                 element.style.color = "red"
                 element.style.padding = "0.5em"

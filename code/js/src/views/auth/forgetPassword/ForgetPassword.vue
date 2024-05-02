@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import forgetPasswordServices from "../../../services/authServices/forgetPassword.ts"
+import forgetPasswordServices from "../../../services/AuthServices/forgetPassword.ts"
 import DefaultButton from "../../../components/DefaultButton.vue"
 import InputBar from "../../../components/InputBar.vue"
 

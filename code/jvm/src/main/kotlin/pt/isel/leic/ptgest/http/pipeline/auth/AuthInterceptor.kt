@@ -76,10 +76,6 @@ class AuthInterceptor(
     ): AuthenticatedUser {
         val tokenDetails = jwtService.extractToken(cookie.value)
 
-        if ((tokenDetails.expirationDate.time / 1000).toInt() != cookie.maxAge) {
-            throw AuthError.TokenError.TokenExpirationMismatchException
-        }
-
         return AuthenticatedUser(
             id = tokenDetails.userId,
             role = tokenDetails.role

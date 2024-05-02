@@ -123,12 +123,15 @@ class AuthController(private val service: AuthService) {
         userInfo: LoginRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {
+        val currentDate = Date()
+
         val authenticationDetails = service.login(
+            currentDate,
             userInfo.email,
             userInfo.password
         )
 
-        setCookies(response, authenticationDetails.tokens)
+        setCookies(response, authenticationDetails.tokens, currentDate)
 
         return HttpResponse.ok(
             message = "User logged in successfully.",
@@ -147,17 +150,19 @@ class AuthController(private val service: AuthService) {
     ): ResponseEntity<*> {
         val sessionCookies = request.cookies
 
+        val currentDate = Date()
+
         val tokens = when {
             sessionCookies != null -> {
                 val (accessToken, refreshToken) = processCookies(sessionCookies)
-                val tokens = service.refreshToken(accessToken, refreshToken)
+                val tokens = service.refreshToken(accessToken, refreshToken, currentDate)
 
-                setCookies(response, tokens)
+                setCookies(response, tokens, currentDate)
                 tokens
             }
             refreshTokenBody != null -> {
                 val accessToken = processHeader(request)
-                service.refreshToken(accessToken, refreshTokenBody.refreshToken)
+                service.refreshToken(accessToken, refreshTokenBody.refreshToken, currentDate)
             }
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
