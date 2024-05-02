@@ -8,8 +8,6 @@ import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.repository.AuthRepo
-import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
 import java.util.Date
@@ -88,6 +86,8 @@ class AuthService(
             authRepo.createTrainer(userId, gender, phoneNumber?.trim())
             authRepo.createCompanyTrainer(companyId, userId, capacity)
         }
+
+        reSetPassword(email, true)
     }
 
     fun signUpTrainee(
@@ -121,9 +121,11 @@ class AuthService(
                 userRepo.associateTraineeToTrainer(userId, trainerId)
             }
         }
+
+        reSetPassword(email, true)
     }
 
-    fun forgetPassword(email: String) {
+    fun reSetPassword(email: String, setPassword: Boolean = false) {
         val precessedEmail = email.trim()
 
         val userDetails = transactionManager.run {
@@ -153,7 +155,7 @@ class AuthService(
         mailService.sendMail(
             precessedEmail,
             "PTGest - Password reset",
-            "Click the following link to reset your password:\n" +
+            "Click the following link to ${if (setPassword) "set" else "reset" } your password:\n" +
                 "http://localhost:5173/resetPassword/$token"
         )
     }

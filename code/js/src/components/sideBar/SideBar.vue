@@ -28,7 +28,7 @@
                     </router-link>
                 </template>
                 <UserIcon :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view" />
-                <router-link v-if="userData" class="nav-link" :to="{name: 'students'}">Students</router-link>
+                <router-link v-if="userData" class="nav-link" :to="{name: 'trainees'}">Trainees</router-link>
                 <LogoutButton :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view" />
             </div>
         </div>

@@ -38,7 +38,7 @@ const routes:RouteRecordRaw[] = [
     },
     //UserServices Views
     {path: '/user/profile/:userId', name: 'userProfile', component: UserProfile, props: true , meta: {requiresAuth: true}},
-    {path: '/students', name: 'students', component: Students},
+    {path: '/trainees', name: 'trainees', component: Students},
     {path: '/register-trainee', name: 'registerTrainee', component: RegisterTrainee , meta: {requiresAuth: true}},
     //Error Views
     {path: '/error', name: 'error', component: Error},

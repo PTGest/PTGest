@@ -1,4 +1,5 @@
 import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeRegisterData.ts";
+import router from "../../plugins/router.ts";
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up
@@ -10,11 +11,14 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
         credentials: "include",
         body: JSON.stringify(userRegisterData),
     }).then((response) => {
-        if (response.ok) {
-            console.log("Deu Bom familia nao dei fumble da bag")
-            return response.json()
-        } else {
-            throw new Error("Failed to send email")
+        switch (response.status) {
+            case 201:
+                router.push("/login")
+                return response.json()
+            case 409:
+                throw new Error("Email already exists")
+            default:
+                throw new Error("Failed to sign up")
         }
     })
     return

@@ -1,17 +1,17 @@
 <template>
   <div class="profile-container">
       <ImageContainer class="image-container" :src="image"/>
-      <UserInfoContainer class="user-info" userName="Top xuxa" />
-      <UserPersonalInfoContainer class="user-personal-info"
-                                 :email="userInfo.email"
-                                 :phone="userInfo.phone"
-                                 location="Habibi Land"
-                                 age="25"
-                                 height="180cm"
-                                 weight="80kg"
-                                 BMI="24.7"
+      <UserInfoContainer class="user-info" userName="Reports" />
+      <UserPersonalInfoContainer
+          class="user-personal-info"
+          :email="userInfo.email"
+          :phone="userInfo.phone"
+          location="Habibi Land"
+          age="25"
+          height="180cm"
+          weight="80kg"
+          BMI="24.7"
       />
-<!--      <BioCard class="bio-card" :userId="props.userId" />-->
   </div>
 </template>
 

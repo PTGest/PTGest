@@ -90,7 +90,7 @@ class AuthController(private val service: AuthService) {
         @Valid @RequestBody
         forgetInfo: ForgetPasswordRequest
     ): ResponseEntity<*> {
-        service.forgetPassword(forgetInfo.email)
+        service.reSetPassword(forgetInfo.email)
         return HttpResponse.ok(
             message = "Password reset email sent successfully."
         )
