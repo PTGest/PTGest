@@ -6,9 +6,10 @@ create extension if not exists "uuid-ossp";
 
 create type dev.role as enum ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE');
 create type dev.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
-create type dev.set_type as enum ('NORMAL', 'DROPSET', 'SUPERSET');
+create type dev.set_type as enum ('SIMPLESET', 'DROPSET', 'SUPERSET');
+create type dev.muscle_group as enum ('CHEST', 'BACK', 'SHOULDERS', 'BICEPS', 'TRICEPS', 'LEGS', 'ABS', 'CARDIO');
+create type dev.exercise_type as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
 -- TODO: to be changed
-create type dev.exercise_category as enum ('CARDIO', 'ARMS', 'LEGS', 'BACK', 'CHEST', 'SHOULDERS', 'ABS', 'OTHER');
 create type dev.session_category as enum ('P', 'A');
 create type dev.source as enum ('T', 'P');
 
@@ -97,28 +98,29 @@ create table if not exists dev.report
 -- Trainee's workout plan
 create table if not exists dev.workout
 (
-    id         serial primary key,
-    trainer_id uuid references dev.trainer (id) on delete cascade,
-    name       varchar(50) not null,
-    description text
+    id          serial primary key,
+    trainer_id  uuid references dev.trainer (id) on delete cascade,
+    name        varchar(50)      not null,
+    description text,
+    category    dev.muscle_group not null
 );
 
 create table if not exists dev.set
 (
-    id      serial primary key,
-    name   varchar(50) not null,
-    notes   text,
-    type    dev.set_type not null,
-    details jsonb        not null
+    id    serial primary key,
+    name  varchar(50)  not null,
+    notes text,
+    type  dev.set_type not null
 );
 
 create table if not exists dev.exercise
 (
-    id          serial primary key,
-    name        varchar(50)           not null,
-    description text,
-    category    dev.exercise_category not null,
-    ref         varchar(256)
+    id           serial primary key,
+    name         varchar(50)       not null,
+    description  text,
+    muscle_group dev.muscle_group  not null,
+    type         dev.exercise_type not null,
+    ref          varchar(256)
 );
 
 create table if not exists dev.session
@@ -147,23 +149,27 @@ create table if not exists dev.exercise_trainer
 
 create table if not exists dev.set_trainer
 (
-    trainer_id  uuid references dev.trainer (id) on delete cascade,
-    set_id int references dev.set (id) on delete cascade,
+    trainer_id uuid references dev.trainer (id) on delete cascade,
+    set_id     int references dev.set (id) on delete cascade,
     primary key (trainer_id, set_id)
 );
 
 create table if not exists dev.workout_set
 (
+    order_id   int not null,
     workout_id int references dev.workout (id) on delete cascade,
     set_id     int references dev.set (id) on delete cascade,
-    primary key (workout_id, set_id)
+    primary key (order_id, workout_id, set_id)
 );
 
+-- TODO: check if we let other use details null
 create table if not exists dev.set_exercise
 (
+    order_id    int not null,
     set_id      int references dev.set (id) on delete cascade,
     exercise_id int references dev.exercise (id) on delete cascade,
-    primary key (set_id, exercise_id)
+    details     jsonb,
+    primary key (order_id, set_id, exercise_id)
 );
 
 create table if not exists dev.trainer_favorite_workout

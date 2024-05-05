@@ -17,6 +17,7 @@ import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTraine
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse.Companion.toResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomExerciseResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.services.company.CompanyService
@@ -95,16 +96,18 @@ class CompanyController(private val service: CompanyService) {
         @RequestBody exerciseDetails: CreateCustomExerciseRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        service.createCustomExercise(
+        val exerciseId = service.createCustomExercise(
             authenticatedUser.id,
             exerciseDetails.name,
             exerciseDetails.description,
-            exerciseDetails.category,
+            exerciseDetails.muscleGroup,
+            exerciseDetails.exerciseType,
             exerciseDetails.ref
         )
 
         return HttpResponse.created(
-            message = "Custom exercise created successfully."
+            message = "Custom exercise created successfully.",
+            details = CreateCustomExerciseResponse(exerciseId)
         )
     }
 }

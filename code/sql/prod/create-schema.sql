@@ -6,9 +6,10 @@ create extension if not exists "uuid-ossp";
 
 create type prod.role as enum ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE');
 create type prod.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
-create type prod.set_type as enum ('NORMAL', 'DROPSET', 'SUPERSET');
+create type prod.set_type as enum ('SIMPLESET', 'DROPSET', 'SUPERSET');
+create type prod.muscle_group as enum ('CHEST', 'BACK', 'SHOULDERS', 'BICEPS', 'TRICEPS', 'LEGS', 'ABS', 'CARDIO');
+create type prod.exercise_type as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
 -- TODO: to be changed
-create type prod.exercise_category as enum ('CARDIO', 'ARMS', 'LEGS', 'BACK', 'CHEST', 'SHOULDERS', 'ABS', 'OTHER');
 create type prod.session_category as enum ('P', 'A');
 create type prod.source as enum ('T', 'P');
 
@@ -97,28 +98,29 @@ create table if not exists prod.report
 -- Trainee's workout plan
 create table if not exists prod.workout
 (
-    id         serial primary key,
-    trainer_id uuid references prod.trainer (id) on delete cascade,
-    name       varchar(50) not null,
-    description text
+    id          serial primary key,
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    name        varchar(50)      not null,
+    description text,
+    category    prod.muscle_group not null
 );
 
 create table if not exists prod.set
 (
-    id      serial primary key,
-    name   varchar(50) not null,
-    notes   text,
-    type    prod.set_type not null,
-    details jsonb        not null
+    id    serial primary key,
+    name  varchar(50)  not null,
+    notes text,
+    type  prod.set_type not null
 );
 
 create table if not exists prod.exercise
 (
-    id          serial primary key,
-    name        varchar(50)           not null,
-    description text,
-    category    prod.exercise_category not null,
-    ref         varchar(256)
+    id           serial primary key,
+    name         varchar(50)       not null,
+    description  text,
+    muscle_group prod.muscle_group  not null,
+    type         prod.exercise_type not null,
+    ref          varchar(256)
 );
 
 create table if not exists prod.session
@@ -147,23 +149,27 @@ create table if not exists prod.exercise_trainer
 
 create table if not exists prod.set_trainer
 (
-    trainer_id  uuid references prod.trainer (id) on delete cascade,
-    set_id int references prod.set (id) on delete cascade,
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    set_id     int references prod.set (id) on delete cascade,
     primary key (trainer_id, set_id)
 );
 
 create table if not exists prod.workout_set
 (
+    order_id   int not null,
     workout_id int references prod.workout (id) on delete cascade,
     set_id     int references prod.set (id) on delete cascade,
-    primary key (workout_id, set_id)
+    primary key (order_id, workout_id, set_id)
 );
 
+-- TODO: check if we let other use details null
 create table if not exists prod.set_exercise
 (
+    order_id    int not null,
     set_id      int references prod.set (id) on delete cascade,
     exercise_id int references prod.exercise (id) on delete cascade,
-    primary key (set_id, exercise_id)
+    details     jsonb,
+    primary key (order_id, set_id, exercise_id)
 );
 
 create table if not exists prod.trainer_favorite_workout

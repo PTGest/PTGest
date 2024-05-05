@@ -3,24 +3,32 @@ package pt.isel.leic.ptgest.repository.jdbi.workout
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.common.ExerciseType
+import pt.isel.leic.ptgest.domain.common.MuscleGroup
 import pt.isel.leic.ptgest.domain.common.SetType
 import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
 import pt.isel.leic.ptgest.repository.WorkoutRepo
 
 class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
-    override fun createExercise(name: String, description: String?, category: ExerciseType, ref: String?): Int =
+    override fun createExercise(
+        name: String,
+        description: String?,
+        muscleGroup: MuscleGroup,
+        exerciseType: ExerciseType,
+        ref: String?
+    ): Int =
         handle.createUpdate(
             """
-            insert into exercise (name, description, category, ref)
-            values (:name, :description, :category::exercise_category, :ref)
-            """
+            insert into exercise (name, description, category, type, ref)
+            values (:name, :description, :muscleGroup::muscle_group, :type::exercise_type, :ref)
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "name" to name,
                     "description" to description,
-                    "category" to category.name,
+                    "muscleGroup" to muscleGroup.name,
+                    "type" to exerciseType.name,
                     "ref" to ref
                 )
             )
@@ -31,26 +39,25 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
     override fun getExerciseDetails(exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
-            select id, name, description, category, ref
+            select id, name, description, muscle_group, type, ref
             from exercise
             where id = :id
-            """
+            """.trimIndent()
         )
             .bind("id", exerciseId)
             .mapTo<ExerciseDetails>()
             .firstOrNull()
 
-    override fun createSet(name: String, notes: String?, type: SetType, details: String): Int =
+    override fun createSet(name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(
             """
-            insert into set (name, notes, type, details)
-            values (:name, :type::set_type, :notes, :details)
-            """
+            insert into set (name, notes, type)
+            values (:name, :type::set_type, :notes)
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "name" to name,
-                    "details" to details,
                     "type" to type.name,
                     "notes" to notes
                 )
@@ -59,17 +66,19 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Int>()
             .one()
 
-    override fun associateExerciseToSet(exerciseId: Int, setId: Int) {
+    override fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String) {
         handle.createUpdate(
             """
-            insert into set_exercise (set_id, exercise_id)
-            values (:set_id, :exerciseId)
-            """
+            insert into set_exercise (order_id, set_id, exercise_id, details)
+            values (:orderId, :set_id, :exerciseId, :details)
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
+                    "orderId" to orderId,
                     "setId" to setId,
-                    "exerciseId" to exerciseId
+                    "exerciseId" to exerciseId,
+                    "details" to details
                 )
             )
             .execute()

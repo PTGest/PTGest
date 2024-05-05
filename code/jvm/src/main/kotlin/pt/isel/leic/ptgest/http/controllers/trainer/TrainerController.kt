@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomExerciseResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 
-// TODO: return link to access the created resource details
 @RestController
 @RequestMapping(Uris.Trainer.PREFIX)
 class TrainerController(private val service: TrainerService) {
@@ -25,16 +25,18 @@ class TrainerController(private val service: TrainerService) {
         @RequestBody exerciseDetails: CreateCustomExerciseRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        service.createCustomExercise(
+        val exerciseId = service.createCustomExercise(
             authenticatedUser.id,
             exerciseDetails.name,
             exerciseDetails.description,
-            exerciseDetails.category,
+            exerciseDetails.muscleGroup,
+            exerciseDetails.exerciseType,
             exerciseDetails.ref
         )
 
         return HttpResponse.created(
-            message = "Custom exercise created successfully."
+            message = "Custom exercise created successfully.",
+            details = CreateCustomExerciseResponse(exerciseId)
         )
     }
 
@@ -43,11 +45,12 @@ class TrainerController(private val service: TrainerService) {
         @RequestBody setDetails: CreateCustomSetRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        service.createCustomSet(
+        val setId = service.createCustomSet(
             authenticatedUser.id,
             setDetails.name,
             setDetails.notes,
-            setDetails.details
+            setDetails.setType,
+            setDetails.sets
         )
 
         return HttpResponse.created(

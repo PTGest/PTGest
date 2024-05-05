@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.ExerciseType
+import pt.isel.leic.ptgest.domain.common.MuscleGroup
 import pt.isel.leic.ptgest.domain.company.CompanyTrainers
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*
@@ -94,18 +95,20 @@ class CompanyService(
     }
 
     fun createCustomExercise(
-        companyId: UUID,
+        trainerId: UUID,
         name: String,
         description: String?,
-        category: ExerciseType,
+        muscleGroup: MuscleGroup,
+        exerciseType: ExerciseType,
         ref: String?
-    ) {
+    ): Int =
         transactionManager.run {
             val workoutRepo = it.workoutRepo
-            val companyRepo = it.companyRepo
+            val trainerRepo = it.trainerRepo
 
-            val exerciseId = workoutRepo.createExercise(name, description, category, ref)
-            companyRepo.associateCompanyToExercise(exerciseId, companyId)
+            val exerciseId = workoutRepo.createExercise(name, description, muscleGroup, exerciseType, ref)
+            trainerRepo.associateTrainerToExercise(exerciseId, trainerId)
+
+            return@run exerciseId
         }
-    }
 }

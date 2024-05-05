@@ -3,9 +3,9 @@ package pt.isel.leic.ptgest.services.trainer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.ExerciseType
+import pt.isel.leic.ptgest.domain.common.MuscleGroup
 import pt.isel.leic.ptgest.domain.common.SetDetails
 import pt.isel.leic.ptgest.domain.common.SetType
-import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.UUID
 
@@ -18,49 +18,54 @@ class TrainerService(
         trainerId: UUID,
         name: String,
         description: String?,
-        category: ExerciseType,
+        muscleGroup: MuscleGroup,
+        exerciseType: ExerciseType,
         ref: String?
-    ) {
+    ): Int =
         transactionManager.run {
             val workoutRepo = it.workoutRepo
             val trainerRepo = it.trainerRepo
 
-            val exerciseId = workoutRepo.createExercise(name, description, category, ref)
+            val exerciseId = workoutRepo.createExercise(name, description, muscleGroup, exerciseType, ref)
             trainerRepo.associateTrainerToExercise(exerciseId, trainerId)
-        }
-    }
 
-//  TODO: check if the user can use the exercise
-//  TODO: check if could have concurrency problems
+            return@run exerciseId
+        }
+
     fun createCustomSet(
         trainerId: UUID,
         name: String?,
         notes: String?,
-        details: SetDetails
+        setType: SetType,
+        sets: List<SetDetails>
     ) {
-        val jsonDetails = convertDetailsToJson(details)
-
         if (notes != null) {
             require(notes.isNotEmpty()) { "Notes must not be empty." }
         }
 
         transactionManager.run {
-            val setName = if (name != null) {
+            val workoutRepo = it.workoutRepo
+            val trainerRepo = it.trainerRepo
+
+            val setId = if (name != null) {
                 require(name.isNotEmpty()) { "Name must not be empty." }
-                name
+                workoutRepo.createSet(name, notes, setType)
             } else {
-                val lastNameId = it.trainerRepo.getLastSetNameId(trainerId)
-                "Set #${lastNameId + 1}"
+                val lastSetNameId = trainerRepo.getLastSetNameId(trainerId)
+                val nextSetName = "Set #${lastSetNameId + 1}"
+                workoutRepo.createSet(nextSetName, notes, setType)
             }
 
-            if (details is SetDetails.SuperSet) {
-                it.createSuperSet(details.exercises, trainerId, setName, notes, jsonDetails)
-            } else {
-                val setType = SetDetails.setTypeMap[details::class]
-                    ?: throw TrainerError.InvalidSetTypeError
+            sets.forEachIndexed { index, set ->
+                workoutRepo.getExerciseDetails(set.exerciseId)
+                    ?: throw TrainerError.ExerciseNotFoundError
 
-                it.createSet(trainerId, details.exercise, setName, notes, setType, jsonDetails)
+                val jsonDetails = convertDetailsToJson(set, setType)
+
+                workoutRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
             }
+
+            trainerRepo.associateTrainerToSet(setId, trainerId)
         }
     }
 
@@ -70,49 +75,12 @@ class TrainerService(
         throw NotImplementedError("Not implemented yet.")
     }
 
-    private fun convertDetailsToJson(details: SetDetails): String {
+    private fun convertDetailsToJson(set: SetDetails, setType: SetType): String {
         val jsonMapper = jacksonObjectMapper()
 
-        return if (details is SetDetails.SuperSet) {
-            jsonMapper.writeValueAsString(details.toMapDetailsList())
-        } else {
-            jsonMapper.writeValueAsString(details.toMapDetails())
-        }
-    }
+        val validator = ExerciseValidator.getValidator(setType, set.exerciseType)
+        val validatedDetails = validator.validate(set.details)
 
-    private fun Transaction.createSuperSet(
-        exercises: List<SetDetails.SuperSetExercise>,
-        trainerId: UUID,
-        name: String,
-        notes: String?,
-        details: String
-    ) {
-        exercises.forEach { set ->
-            workoutRepo.getExerciseDetails(set.exercise)
-                ?: throw TrainerError.ExerciseNotFoundError
-        }
-
-        val setId = workoutRepo.createSet(name, notes, SetType.SUPERSET, details)
-        trainerRepo.associateTrainerToSet(setId, trainerId)
-
-        exercises.forEach { set ->
-            workoutRepo.associateExerciseToSet(set.exercise, setId)
-        }
-    }
-
-    private fun Transaction.createSet(
-        trainerId: UUID,
-        exerciseId: Int,
-        name: String,
-        notes: String?,
-        type: SetType,
-        details: String
-    ) {
-        workoutRepo.getExerciseDetails(exerciseId)
-            ?: throw TrainerError.ExerciseNotFoundError
-
-        val setId = workoutRepo.createSet(name, notes, type, details)
-        trainerRepo.associateTrainerToSet(setId, trainerId)
-        workoutRepo.associateExerciseToSet(exerciseId, setId)
+        return jsonMapper.writeValueAsString(validatedDetails)
     }
 }

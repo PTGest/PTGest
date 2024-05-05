@@ -138,6 +138,7 @@ class AuthServiceTests {
 
         @Test
         fun `login Successfully`() {
+            val currentDate = Date()
             val passwordHash = mockAuthDomain.hashPassword(password)
 
             `when`(mockUserRepo.getUserDetails(email))
@@ -146,7 +147,7 @@ class AuthServiceTests {
             `when`(mockUserRepo.getUserDetails(uuid))
                 .then { UserDetails(uuid, name, email, passwordHash, role) }
 
-            val authenticationDetails = mockAuthService.login(email, password)
+            val authenticationDetails = mockAuthService.login(currentDate, email, password)
 
             assertEquals(role, authenticationDetails.role)
             assertTrue(authenticationDetails.tokens.accessToken.token.isNotEmpty())
@@ -155,13 +156,15 @@ class AuthServiceTests {
 
         @Test
         fun `login with invalid password`() {
+            val currentDate = Date()
+
             val passwordHash = mockAuthDomain.hashPassword(password)
 
             `when`(mockUserRepo.getUserDetails(email))
                 .then { UserDetails(uuid, name, email, passwordHash, role) }
 
             val exception = assertFailsWith<AuthError.UserAuthenticationError.InvalidPassword> {
-                mockAuthService.login(email, "invalidPassword")
+                mockAuthService.login(currentDate, email, "invalidPassword")
             }
 
             assertEquals("Invalid password for user.", exception.message)
@@ -169,11 +172,13 @@ class AuthServiceTests {
 
         @Test
         fun `login with invalid email`() {
+            val currentDate = Date()
+
             `when`(mockUserRepo.getUserDetails(email))
                 .then { null }
 
             val exception = assertFailsWith<AuthError.UserAuthenticationError.UserNotFound> {
-                mockAuthService.login(email, password)
+                mockAuthService.login(currentDate, email, password)
             }
 
             assertEquals("User not found.", exception.message)
@@ -214,7 +219,7 @@ class AuthServiceTests {
             `when`(mockAuthRepo.getRefreshTokenDetails(refreshTokenHash))
                 .then { TokenDetails(uuid, refreshTokenExpirationDate) }
 
-            val tokens = mockAuthService.refreshToken(accessToken, refreshToken)
+            val tokens = mockAuthService.refreshToken(accessToken, refreshToken, currentDate)
 
             assertTrue(tokens.accessToken.token.isNotEmpty())
             assertTrue(tokens.refreshToken.token.isNotEmpty())
@@ -250,7 +255,7 @@ class AuthServiceTests {
                 .then { TokenDetails(uuid, refreshTokenExpirationDate) }
 
             assertFailsWith<AuthError.TokenError.TokenExpired> {
-                mockAuthService.refreshToken(accessToken, refreshToken)
+                mockAuthService.refreshToken(accessToken, refreshToken, currentDate)
             }
         }
 
@@ -280,7 +285,7 @@ class AuthServiceTests {
                 .then { null }
 
             assertFailsWith<AuthError.TokenError.InvalidRefreshToken> {
-                mockAuthService.refreshToken(accessToken, refreshToken)
+                mockAuthService.refreshToken(accessToken, refreshToken, currentDate)
             }
         }
 
@@ -311,7 +316,7 @@ class AuthServiceTests {
                 .then { TokenDetails(UUID.randomUUID(), refreshTokenExpirationDate) }
 
             assertFailsWith<AuthError.TokenError.UserIdMismatch> {
-                mockAuthService.refreshToken(accessToken, refreshToken)
+                mockAuthService.refreshToken(accessToken, refreshToken, currentDate)
             }
         }
     }

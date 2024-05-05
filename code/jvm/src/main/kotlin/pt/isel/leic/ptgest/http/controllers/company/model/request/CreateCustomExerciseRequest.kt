@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.http.controllers.company.model.request
 
 import jakarta.validation.constraints.NotEmpty
 import pt.isel.leic.ptgest.domain.common.ExerciseType
+import pt.isel.leic.ptgest.domain.common.MuscleGroup
 
 data class CreateCustomExerciseRequest(
 
@@ -10,7 +11,9 @@ data class CreateCustomExerciseRequest(
 
     val description: String?,
 
-    val category: ExerciseType,
+    val muscleGroup: MuscleGroup,
+
+    val exerciseType: ExerciseType,
 
     val ref: String?
 )

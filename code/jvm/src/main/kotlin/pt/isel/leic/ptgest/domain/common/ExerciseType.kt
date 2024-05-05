@@ -1,5 +1,11 @@
 package pt.isel.leic.ptgest.domain.common
 
 enum class ExerciseType {
-    CARDIO, ARMS, LEGS, BACK, CHEST, SHOULDERS, ABS, OTHER
+    BODYWEIGHT,
+    WEIGHTLIFT,
+    RUNNING_IN,
+    RUNNING_OUT,
+    CYCLING_IN,
+    CYCLING_OUT,
+    OTHER
 }

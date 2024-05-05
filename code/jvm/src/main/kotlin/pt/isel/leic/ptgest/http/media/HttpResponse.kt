@@ -23,6 +23,12 @@ object HttpResponse {
         headers: HttpHeaders = HttpHeaders()
     ) = httpResponse(message, headers, HttpStatus.CREATED)
 
+    fun <T> created(
+        message: String? = null,
+        details: T?,
+        headers: HttpHeaders = HttpHeaders()
+    ) = httpResponse(message, details, headers, HttpStatus.CREATED)
+
     private fun <T> httpResponse(
         message: String? = null,
         details: T? = null,

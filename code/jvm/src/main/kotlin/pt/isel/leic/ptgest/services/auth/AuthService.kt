@@ -8,11 +8,11 @@ import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
 import java.util.Date
 import java.util.UUID
-import pt.isel.leic.ptgest.repository.transaction.Transaction
 
 @Service
 class AuthService(
@@ -99,7 +99,6 @@ class AuthService(
         trainerId: UUID? = null
     ) {
         require(birthdate.before(Date())) { "Invalid birthdate." }
-
 
         transactionManager.run {
             val authRepo = it.authRepo
@@ -206,7 +205,6 @@ class AuthService(
         )
     }
 
-//  TODO: check
     fun login(currentDate: Date, email: String, password: String): AuthenticationDetails {
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
@@ -242,7 +240,6 @@ class AuthService(
     }
 
     fun refreshToken(accessToken: String, refreshToken: String, currentDate: Date): TokenPair {
-
         val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
         val accessTokenDetails = jwtService.extractToken(accessToken.trim())
         val refreshTokenDetails = getRefreshTokenDetails(
