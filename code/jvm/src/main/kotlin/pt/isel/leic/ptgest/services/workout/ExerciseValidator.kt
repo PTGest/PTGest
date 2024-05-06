@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.trainer
+package pt.isel.leic.ptgest.services.workout
 
 import pt.isel.leic.ptgest.domain.common.ExerciseType
 import pt.isel.leic.ptgest.domain.common.SetType

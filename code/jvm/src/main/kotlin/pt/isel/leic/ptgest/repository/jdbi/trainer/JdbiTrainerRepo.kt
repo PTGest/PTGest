@@ -2,12 +2,42 @@ package pt.isel.leic.ptgest.repository.jdbi.trainer
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
 import pt.isel.leic.ptgest.repository.TrainerRepo
 import java.util.UUID
 
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
 
-    override fun associateTrainerToExercise(exerciseId: Int, trainerId: UUID) {
+    override fun getCompanyAssignedTrainer(trainerId: UUID): UUID =
+        handle.createQuery(
+            """
+            select company_id
+            from company_trainer
+            where trainer_id = :trainerId
+            """.trimIndent()
+        )
+            .bind("trainerId", trainerId)
+            .mapTo<UUID>()
+            .one()
+
+    override fun getExerciseDetails(trainerId: UUID, exerciseId: Int): ExerciseDetails? =
+        handle.createQuery(
+            """
+            select id, name, description, muscle_group, type, ref
+            from exercise e join exercise_trainer et on e.id = et.exercise_id
+            where id = :id and trainer_id = :trainer_id
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "id" to exerciseId,
+                    "trainer_id" to trainerId
+                )
+            )
+            .mapTo<ExerciseDetails>()
+            .firstOrNull()
+
+    override fun associateTrainerToExercise(trainerId: UUID, exerciseId: Int) {
         handle.createUpdate(
             """
             insert into exercise_trainer (trainer_id, exercise_id)
@@ -23,7 +53,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .execute()
     }
 
-    override fun associateTrainerToSet(setId: Int, trainerId: UUID) {
+    override fun associateTrainerToSet(trainerId: UUID, setId: Int) {
         handle.createUpdate(
             """
             insert into set_trainer (trainer_id, set_id)

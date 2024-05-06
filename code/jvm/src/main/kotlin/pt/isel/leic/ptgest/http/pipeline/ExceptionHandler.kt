@@ -3,7 +3,6 @@ package pt.isel.leic.ptgest.http.pipeline
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
-import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpStatus
@@ -19,8 +18,8 @@ import pt.isel.leic.ptgest.http.media.Problem
 import pt.isel.leic.ptgest.http.media.Problem.Companion.PROBLEMS_DOCS_URI
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.company.CompanyError
-import pt.isel.leic.ptgest.services.trainer.TrainerError
 import pt.isel.leic.ptgest.services.user.UserError
+import pt.isel.leic.ptgest.services.workout.WorkoutError
 import java.net.URI
 
 @ControllerAdvice
@@ -113,7 +112,7 @@ class ExceptionHandler {
             AuthError.UserAuthenticationError.UserNotFound::class,
             UserError.UserNotFound::class,
             CompanyError.TrainerNotFound::class,
-            TrainerError.ExerciseNotFoundError::class
+            WorkoutError.ExerciseNotFoundError::class
         ]
     )
     fun handleNotFound(e: Exception): ResponseEntity<Problem> =
@@ -174,7 +173,7 @@ class ExceptionHandler {
     @ExceptionHandler(
         value = [
             Exception::class,
-            TrainerError.InvalidSetTypeError::class
+            WorkoutError.InvalidSetTypeError::class
         ]
     )
     fun handleInternalServerError(e: Exception): ResponseEntity<Problem> =

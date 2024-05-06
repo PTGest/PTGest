@@ -5,7 +5,6 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.common.ExerciseType
 import pt.isel.leic.ptgest.domain.common.MuscleGroup
 import pt.isel.leic.ptgest.domain.common.SetType
-import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
 import pt.isel.leic.ptgest.repository.WorkoutRepo
 
 class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
@@ -35,18 +34,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .executeAndReturnGeneratedKeys("id")
             .mapTo<Int>()
             .one()
-
-    override fun getExerciseDetails(exerciseId: Int): ExerciseDetails? =
-        handle.createQuery(
-            """
-            select id, name, description, muscle_group, type, ref
-            from exercise
-            where id = :id
-            """.trimIndent()
-        )
-            .bind("id", exerciseId)
-            .mapTo<ExerciseDetails>()
-            .firstOrNull()
 
     override fun createSet(name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(

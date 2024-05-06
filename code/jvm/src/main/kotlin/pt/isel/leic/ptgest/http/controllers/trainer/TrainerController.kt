@@ -11,22 +11,25 @@ import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
-import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomExerciseResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.services.trainer.TrainerService
+import pt.isel.leic.ptgest.services.workout.WorkoutService
 
 @RestController
 @RequestMapping(Uris.Trainer.PREFIX)
-class TrainerController(private val service: TrainerService) {
+class TrainerController(
+    private val trainerService: TrainerService,
+    private val workoutService: WorkoutService
+) {
 
     @PostMapping(Uris.Trainer.CREATE_CUSTOM_EXERCISE)
     fun createCustomExercise(
         @RequestBody exerciseDetails: CreateCustomExerciseRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val exerciseId = service.createCustomExercise(
-            authenticatedUser.id,
+        val exerciseId = workoutService.createCustomExercise(
             exerciseDetails.name,
             exerciseDetails.description,
             exerciseDetails.muscleGroup,
@@ -34,9 +37,11 @@ class TrainerController(private val service: TrainerService) {
             exerciseDetails.ref
         )
 
+        trainerService.associateTrainerToExercise(authenticatedUser.id, exerciseId)
+
         return HttpResponse.created(
             message = "Custom exercise created successfully.",
-            details = CreateCustomExerciseResponse(exerciseId)
+            details = CreateCustomWorkoutResponse(exerciseId)
         )
     }
 
@@ -45,16 +50,20 @@ class TrainerController(private val service: TrainerService) {
         @RequestBody setDetails: CreateCustomSetRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val setId = service.createCustomSet(
+        val setId = workoutService.createCustomSet(
             authenticatedUser.id,
+            authenticatedUser.role,
             setDetails.name,
             setDetails.notes,
             setDetails.setType,
             setDetails.sets
         )
 
+        trainerService.associateTrainerToSet(authenticatedUser.id, setId)
+
         return HttpResponse.created(
-            message = "Custom set created successfully."
+            message = "Custom set created successfully.",
+            details = CreateCustomWorkoutResponse(setId)
         )
     }
 

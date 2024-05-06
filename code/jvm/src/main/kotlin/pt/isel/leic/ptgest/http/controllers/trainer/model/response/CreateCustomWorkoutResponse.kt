@@ -1,5 +1,5 @@
 package pt.isel.leic.ptgest.http.controllers.trainer.model.response
 
-data class CreateCustomExerciseResponse(
+data class CreateCustomWorkoutResponse(
     val exerciseId: Int
 )

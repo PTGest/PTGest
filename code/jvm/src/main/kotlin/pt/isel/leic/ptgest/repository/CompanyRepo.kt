@@ -1,6 +1,7 @@
 package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.company.Trainer
+import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
 import java.util.*
 
 interface CompanyRepo {
@@ -19,5 +20,7 @@ interface CompanyRepo {
 
     fun updateTrainerCapacity(companyId: UUID, trainerId: UUID, capacity: Int)
 
-    fun associateCompanyToExercise(exerciseId: Int, companyId: UUID)
+    fun associateCompanyToExercise(companyId: UUID, exerciseId: Int)
+
+    fun getExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails?
 }

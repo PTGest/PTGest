@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.repository.jdbi.company
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.company.Trainer
+import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
 import pt.isel.leic.ptgest.repository.CompanyRepo
 import java.util.*
 
@@ -133,7 +134,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .execute()
     }
 
-    override fun associateCompanyToExercise(exerciseId: Int, companyId: UUID) {
+    override fun associateCompanyToExercise(companyId: UUID, exerciseId: Int) {
         handle.createUpdate(
             """
                 insert into exercise_company(company_id, exercise_id)
@@ -148,4 +149,21 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             )
             .execute()
     }
+
+    override fun getExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails? =
+        handle.createQuery(
+            """
+            select id, name, description, muscle_group, type, ref
+            from exercise e join exercise_company et on e.id = et.company_id
+            where id = :id and company_id = :companyId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "id" to exerciseId,
+                    "companyId" to companyId
+                )
+            )
+            .mapTo<ExerciseDetails>()
+            .firstOrNull()
 }

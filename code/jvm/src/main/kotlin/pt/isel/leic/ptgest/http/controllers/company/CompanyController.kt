@@ -17,15 +17,19 @@ import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTraine
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse.Companion.toResponse
-import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomExerciseResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.services.company.CompanyService
+import pt.isel.leic.ptgest.services.workout.WorkoutService
 import java.util.*
 
 @RestController
 @RequestMapping(Uris.Company.PREFIX)
-class CompanyController(private val service: CompanyService) {
+class CompanyController(
+    private val companyService: CompanyService,
+    private val workoutService: WorkoutService
+) {
 
 //  TODO: Add to the response the total number of trainee assigned to the trainer and the capacity
     @GetMapping(Uris.Company.COMPANY_TRAINERS)
@@ -34,7 +38,7 @@ class CompanyController(private val service: CompanyService) {
         @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainers = service.getCompanyTrainers(skip, limit, authenticatedUser.id)
+        val trainers = companyService.getCompanyTrainers(skip, limit, authenticatedUser.id)
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
@@ -51,7 +55,7 @@ class CompanyController(private val service: CompanyService) {
         @RequestBody trainerInfo: AssignTrainerRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        service.assignTrainerToTrainee(trainerInfo.trainerId, traineeId, authenticatedUser.id)
+        companyService.assignTrainerToTrainee(trainerInfo.trainerId, traineeId, authenticatedUser.id)
 
         return HttpResponse.created(
             message = "Trainer assigned to trainee successfully."
@@ -64,7 +68,7 @@ class CompanyController(private val service: CompanyService) {
         @RequestBody trainerInfo: ReassignTrainerRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        service.reassignTrainer(trainerInfo.newTrainerId, traineeId, authenticatedUser.id)
+        companyService.reassignTrainer(trainerInfo.newTrainerId, traineeId, authenticatedUser.id)
 
         return HttpResponse.ok(
             message = "Trainer reassigned to trainee successfully."
@@ -77,7 +81,7 @@ class CompanyController(private val service: CompanyService) {
         @RequestParam capacityInfo: UpdateTrainerCapacityRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        service.updateTrainerCapacity(trainerId, authenticatedUser.id, capacityInfo.capacity)
+        companyService.updateTrainerCapacity(trainerId, authenticatedUser.id, capacityInfo.capacity)
 
         return HttpResponse.ok(
             message = "Trainer capacity updated successfully to ${authenticatedUser.id}."
@@ -96,8 +100,7 @@ class CompanyController(private val service: CompanyService) {
         @RequestBody exerciseDetails: CreateCustomExerciseRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val exerciseId = service.createCustomExercise(
-            authenticatedUser.id,
+        val exerciseId = workoutService.createCustomExercise(
             exerciseDetails.name,
             exerciseDetails.description,
             exerciseDetails.muscleGroup,
@@ -105,9 +108,11 @@ class CompanyController(private val service: CompanyService) {
             exerciseDetails.ref
         )
 
+        companyService.associateCompanyToExercise(authenticatedUser.id, exerciseId)
+
         return HttpResponse.created(
             message = "Custom exercise created successfully.",
-            details = CreateCustomExerciseResponse(exerciseId)
+            details = CreateCustomWorkoutResponse(exerciseId)
         )
     }
 }
