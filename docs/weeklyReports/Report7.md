@@ -8,15 +8,16 @@
     1. Continue implementing the methods to manage training plans and exercises.
     2. Continue implementing the methods to manage sessions.
     3. Start implementing a system to manage what methods the user can access in frontend.
-    4. Finish the views to register trainees and hired trainers and integrate them with the backend.
-    5. Implement the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
+    4. Finish the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
 - **Progress:**
     1. Implemented the methods to create custom exercises, sets and workouts.
-    2. Implemented the methods to get the exercises, sets and workouts created by the user.
-
+    2. Implemented the methods to get the exercises, sets and workouts created by the user. 
+    3. Implement the view to the methods 'assignTrainer'
 ---
 
 ## Frontend changes
+This week we finish the connection between the frontend and the backend for the methods register hired Trainer and register Trainee, also we implemented the views for the company watch the list of trainers and trainees that are hired by the company, even tough we are having an issue with the API function that returns the list of trainers, we are working on it to fix it.  
+Also we start implementing the view for the method assignTrainer, this view is on progress, we are working on it to finish it as soon as possible.
 
 ---
 
