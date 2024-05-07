@@ -9,6 +9,6 @@ data class CreateCustomExerciseRequest(
     val name: String,
     val description: String?,
     val muscleGroup: MuscleGroup,
-    val exerciseType: ExerciseType,
+    val type: ExerciseType,
     val ref: String?
 )

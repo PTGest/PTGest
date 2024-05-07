@@ -38,7 +38,7 @@ class TrainerController(
             exerciseDetails.name,
             exerciseDetails.description,
             exerciseDetails.muscleGroup,
-            exerciseDetails.exerciseType,
+            exerciseDetails.type,
             exerciseDetails.ref
         )
 
@@ -77,7 +77,7 @@ class TrainerController(
             authenticatedUser.role,
             setDetails.name,
             setDetails.notes,
-            setDetails.setType,
+            setDetails.type,
             setDetails.setExercises
         )
 

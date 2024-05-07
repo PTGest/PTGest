@@ -6,6 +6,6 @@ import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 data class CreateCustomSetRequest(
     val name: String?,
     val notes: String?,
-    val setType: SetType,
+    val type: SetType,
     val setExercises: List<SetExercise>
 )
