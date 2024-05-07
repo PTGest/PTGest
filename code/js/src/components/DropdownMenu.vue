@@ -60,17 +60,17 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons"
 import { defineProps, ref } from "vue"
 
 const props = defineProps<{
-    size: string,
-    arrow_right: string,
+    size: string
+    arrowRight: string
 }>()
 
-let is_open = ref(false)
+const is_open = ref(false)
 const toggleOpen = () => {
     is_open.value = !is_open.value
 }
 
-let gender = ref("Gender")
-let optionChange = (option: string) => {
+const gender = ref("Gender")
+const optionChange = (option: string) => {
     gender.value = option
     toggleOpen()
 }
@@ -121,7 +121,7 @@ let optionChange = (option: string) => {
 .drop-icon,
 .drop-icon-open {
     position: relative;
-    right: v-bind(arrow_right);
+    right: v-bind(arrowRight);
     padding: 1em;
     color: var(--sign-up-black);
     cursor: pointer;

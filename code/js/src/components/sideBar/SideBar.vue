@@ -27,9 +27,10 @@
                         <div v-if="!is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Signup</div>
                     </router-link>
                 </template>
-                <UserIcon :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view" />
-                <router-link v-if="userData" class="nav-link" :to="{name: 'trainees'}">Trainees</router-link>
-                <LogoutButton :is_open="is_open" v-if="userData" :is_mobile_view="is_mobile_view" />
+                <UserIcon :isOpen="is_open" v-if="userData" :isMobileView="is_mobile_view" />
+                <router-link v-if="userData" class="nav-link" :to="{ name: 'trainees', params: { isTrainee: true }}">Trainees</router-link>
+                <router-link v-if="userData" class="nav-link" :to="{ name: 'trainers', params: { isTrainee: false }}">Trainers</router-link>
+                <LogoutButton :isOpen="is_open" v-if="userData" :isMobileView="is_mobile_view" />
             </div>
         </div>
     </div>
@@ -44,13 +45,13 @@ import LogoutButton from "./components/LogoutButton.vue"
 import UserIcon from "../../components/sideBar/components/UserIcon.vue"
 
 // Define a computed property to track changes to userData
-let userData = computed(() => {
+const userData = computed(() => {
     return store.state.userData.token !== undefined
 })
 
 // Define other reactive variables
-let is_mobile_view = store.getters.is_mobile_view === "true" ? ref(true) : ref(false)
-let is_open = ref(false)
+const is_mobile_view = store.getters.is_mobile_view === "true" ? ref(true) : ref(false)
+const is_open = ref(false)
 
 const open = () => {
     is_open.value = !is_open.value
@@ -179,7 +180,7 @@ window.addEventListener("resize", handleResize)
         transition: 0.2s ease-out;
     }
 
-    .students{
+    .students {
         color: white;
     }
 }

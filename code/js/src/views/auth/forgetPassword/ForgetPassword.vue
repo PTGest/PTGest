@@ -18,7 +18,7 @@ import forgetPasswordServices from "../../../services/AuthServices/forgetPasswor
 import DefaultButton from "../../../components/DefaultButton.vue"
 import InputBar from "../../../components/InputBar.vue"
 
-let email = ref("")
+const email = ref("")
 
 const forgetPassword = () => {
     forgetPasswordServices(email.value)

@@ -22,7 +22,7 @@
 
             <div v-if="toggle" class="signup-input-container">
                 <div class="signup-input-text">Gender</div>
-                <DropdownMenu @gender="updateGender" arrow_right="-13.6em" size="18.5em"/>
+                <DropdownMenu @gender="updateGender" arrowRight="-13.6em" size="18.5em" />
             </div>
 
             <div v-if="toggle" class="signup-input-container">
@@ -55,11 +55,11 @@ import DropdownMenu from "../../../components/DropdownMenu.vue"
 import SignupPTData from "../../../models/authModels/SignupPTData.ts"
 import store from "../../../store"
 
-let countryNumber = ref("")
-let phoneNumber = ref("")
-let is_visible = ref("password")
-let toggle = ref(true)
-let signupUserData: Ref<SignupPTData> = ref({
+const countryNumber = ref("")
+const phoneNumber = ref("")
+const is_visible = ref("password")
+const toggle = ref(true)
+const signupUserData: Ref<SignupPTData> = ref({
     name: "",
     email: "",
     gender: "",
@@ -69,8 +69,7 @@ let signupUserData: Ref<SignupPTData> = ref({
 })
 
 function isFullOfData(data: SignupPTData): boolean {
-    return data.name !== "" && data.email !== "" && data.gender !== "" &&
-        data.password !== "" && phoneNumber.value != "" && countryNumber.value != ""
+    return data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== "" && phoneNumber.value != "" && countryNumber.value != ""
 }
 
 const isSignUpDisabled = computed(() => {

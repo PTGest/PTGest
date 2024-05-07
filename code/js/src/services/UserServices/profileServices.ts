@@ -1,6 +1,6 @@
-import router from "../../plugins/router.ts";
-import store from "../../store";
-import {UserInfo} from "../../views/user/UserProfile/Models/UserInfo.ts";
+import router from "../../plugins/router.ts"
+import store from "../../store"
+import { UserInfo } from "../../views/user/UserProfile/Models/UserInfo.ts"
 
 export async function getUserInfo(): Promise<void> {
     // Logic to sign up
@@ -15,9 +15,9 @@ export async function getUserInfo(): Promise<void> {
             case 200:
                 response.json().then((response) => {
                     console.log(response)
-                    store.dispatch('userInfo', new UserInfo(response.details.name, response.details.email, response.details.phoneNumber))
+                    store.dispatch("userInfo", new UserInfo(response.details.name, response.details.email, response.details.phoneNumber))
                 })
-                break;
+                break
 
             default:
                 response.json().then((response) => {

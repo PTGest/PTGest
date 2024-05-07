@@ -39,16 +39,15 @@
 import InputBar from "../../../components/InputBar.vue"
 import { ref } from "vue"
 import DefaultButton from "../../../components/DefaultButton.vue"
-import {resetPasswordServices} from "../../../services/AuthServices/resetPassword.ts";
-import ResetPasswordData from "../../../models/authModels/ResetPasswordData.ts";
-import {useRoute} from "vue-router";
+import { resetPasswordServices } from "../../../services/AuthServices/resetPassword.ts"
+import ResetPasswordData from "../../../models/authModels/ResetPasswordData.ts"
+import { useRoute } from "vue-router"
 
 const params = useRoute().params
 
-let password = ref("")
-let confirm_password = ref("")
-let equalPasswords = ref(false)
-
+const password = ref("")
+const confirm_password = ref("")
+const equalPasswords = ref(false)
 
 const updatePasswordValue = (value: string) => {
     console.log(value)
@@ -65,7 +64,7 @@ const verifyPasswords = () => {
     }
 }
 const resetPassword = () => {
-    resetPasswordServices(new ResetPasswordData(password.value),params.token)
+    resetPasswordServices(new ResetPasswordData(password.value), params.token)
 }
 </script>
 

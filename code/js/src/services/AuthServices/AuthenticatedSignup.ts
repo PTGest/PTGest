@@ -1,5 +1,5 @@
-import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeRegisterData.ts";
-import router from "../../plugins/router.ts";
+import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeRegisterData.ts"
+import router from "../../plugins/router.ts"
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up

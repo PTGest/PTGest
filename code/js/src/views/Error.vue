@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import { useStore } from "vuex"
 
-let store = useStore()
-let type = store.state.errorType.type
+const store = useStore()
+const type = store.state.errorType.type
 
 console.log("Error Page")
 console.log(store.state.errorType.type)

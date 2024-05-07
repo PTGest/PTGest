@@ -1,25 +1,23 @@
 <template>
     <div class="image-container">
-        <img class="image" :src="props.src" alt="User Image">
+        <img class="image" :src="props.src" alt="User Image" />
     </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
-    src: String
-});
+    src: String,
+})
 </script>
 
-
-
 <style scoped>
-.image{
+.image {
     width: 10em;
     height: 10em;
     border-radius: 50%;
 }
 
-.image-container{
+.image-container {
     display: flex;
     flex-direction: column;
     width: 10em;
@@ -33,5 +31,4 @@ const props = defineProps({
     font-weight: bold;
     color: whitesmoke;
 }
-
 </style>

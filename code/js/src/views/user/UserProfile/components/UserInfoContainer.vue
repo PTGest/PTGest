@@ -1,30 +1,25 @@
 <template>
     <div class="user-info">
-        <div class="username-text">{{props.userName}}</div>
-        <p>Personal Trainer: </p>
-
+        <div class="username-text">{{ props.userName }}</div>
+        <p>Personal Trainer:</p>
     </div>
 </template>
 
-
-
 <script setup lang="ts">
 const props = defineProps({
-    userName: String,
-    email: String,
-    phone: String,
-    location: String,
-    age : Number,
-    height: Number,
-    weight: Number,
-    BMI: Number
-});
-
+    userName: { type: String, default: "" },
+    email: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    location: { type: String, default: "" },
+    age: { type: Number, default: -1 },
+    height: { type: Number, default: -1 },
+    weight: { type: Number, default: -1 },
+    BMI: { type: Number, default: -1 },
+})
 </script>
 
-
 <style scoped>
-.username-text{
+.username-text {
     font-size: 1.5em;
     font-weight: bold;
     color: whitesmoke;
@@ -32,7 +27,7 @@ const props = defineProps({
     text-align: center;
 }
 
-.user-info{
+.user-info {
     width: 80%;
     height: 89%;
     padding: 1em;

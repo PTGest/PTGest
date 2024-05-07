@@ -1,52 +1,40 @@
 <template>
-  <div class="profile-container">
-      <ImageContainer class="image-container" :src="image"/>
-      <UserInfoContainer class="user-info" userName="Reports" />
-      <UserPersonalInfoContainer
-          class="user-personal-info"
-          :email="userInfo.email"
-          :phone="userInfo.phone"
-          location="Habibi Land"
-          age="25"
-          height="180cm"
-          weight="80kg"
-          BMI="24.7"
-      />
-  </div>
+    <div class="profile-container">
+        <ImageContainer class="image-container" :src="image" />
+        <UserInfoContainer class="user-info" userName="Reports" />
+        <UserPersonalInfoContainer class="user-personal-info" :email="userInfo.email" :phone="userInfo.phone" location="Habibi Land" age="25" height="180cm" weight="80kg" BMI="24.7" />
+    </div>
 </template>
 
 <script setup lang="ts">
 //import BioCard from "../../../views/user/UserProfile/Bio-Card.vue";
 
-import UserInfoContainer from "../UserProfile/components/UserInfoContainer.vue";
-import ImageContainer from "../UserProfile/components/ImageContainer.vue";
-import image from "../../../assets/./userIcons/man.png";
-import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInfoContainer.vue";
-import {getUserInfo} from "../../../services/UserServices/profileServices.ts";
-import store from "../../../store";
+import UserInfoContainer from "../UserProfile/components/UserInfoContainer.vue"
+import ImageContainer from "../UserProfile/components/ImageContainer.vue"
+import image from "../../../assets/./userIcons/man.png"
+import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInfoContainer.vue"
+import { getUserInfo } from "../../../services/UserServices/profileServices.ts"
+import store from "../../../store"
 
 const props = defineProps({
-  userId: String
+    userId: String,
 });
-
 
 (async () => {
     try {
-        await getUserInfo();
+        await getUserInfo()
     } catch (error) {
-        console.error('Error getting user info:', error);
-    }})();
+        console.error("Error getting user info:", error)
+    }
+})()
 
-const userInfo = store.getters.userInfo;
+const userInfo = store.getters.userInfo
 
-console.log(userInfo);
+console.log(userInfo)
 </script>
 
-
-
 <style scoped>
-
-.profile-container{
+.profile-container {
     display: grid;
     grid-template-columns: 1.5fr 2fr;
     grid-gap: 1.5em;
@@ -55,7 +43,7 @@ console.log(userInfo);
     border-radius: 10px;
 }
 
-.user-info{
+.user-info {
     margin: 1em;
     justify-self: center;
     grid-column-start: 2;
@@ -66,21 +54,20 @@ console.log(userInfo);
     border-radius: 10px;
 }
 
-.bio-card{
+.bio-card {
     margin: 1em 1em 1em 0;
     grid-column-start: 2;
     grid-row-start: 1;
 }
 
-.image-container{
+.image-container {
     grid-column-start: 1;
     grid-row-start: 1;
     grid-row-end: 4;
     justify-self: center;
-
 }
 
-.user-personal-info{
+.user-personal-info {
     grid-column-start: 1;
     grid-row-start: 2;
     grid-row-end: 3;
@@ -89,5 +76,4 @@ console.log(userInfo);
     border-radius: 10px;
     font-weight: bold;
 }
-
 </style>

@@ -1,7 +1,7 @@
 import { createStore } from "vuex"
 import UserData from "../models/UserData.ts"
 import VuexPersistence from "vuex-persist"
-import {UserInfo} from "../views/user/UserProfile/Models/UserInfo.ts";
+import { UserInfo } from "../views/user/UserProfile/Models/UserInfo.ts"
 
 interface State {
     userData: UserData
@@ -34,7 +34,7 @@ const store = createStore<State>({
                 name: "",
                 email: "",
                 phone: "",
-            }
+            },
         }
     },
     mutations: {
@@ -57,20 +57,20 @@ const store = createStore<State>({
         },
         setUserInfo(state: State, userInfo: UserInfo) {
             state.userInfo = userInfo
-        }
+        },
     },
     actions: {
         setAuthentication({ commit }: any, userData: UserData) {
             console.log("setAuthentication", commit, userData)
             commit("setUserData", userData)
         },
-        setMobile({commit}:any , is_mobile_view: boolean) {
-           commit("setMobileView", is_mobile_view)
+        setMobile({ commit }: any, is_mobile_view: boolean) {
+            commit("setMobileView", is_mobile_view)
         },
-        userInfo({commit}: any, userInfo: UserInfo) {
+        userInfo({ commit }: any, userInfo: UserInfo) {
             console.log("userBio", userInfo)
             commit("setUserInfo", userInfo)
-        }
+        },
     },
     getters: {
         userData: (state: State) => state.userData,

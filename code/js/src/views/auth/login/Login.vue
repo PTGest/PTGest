@@ -33,11 +33,11 @@ import { Ref } from "vue/dist/vue"
 import LoginUserData from "../../../models/authModels/LoginUserData.ts"
 import DefaultButton from "../../../components/DefaultButton.vue"
 
-let loginUserData: Ref<LoginUserData> = ref({
+const loginUserData: Ref<LoginUserData> = ref({
     email: "",
     password: "",
 })
-let is_visible = ref("password")
+const is_visible = ref("password")
 const updateVisibility = () => {
     if (is_visible.value === "") {
         is_visible.value = "password"

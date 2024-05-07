@@ -3,7 +3,7 @@
         <div :class="props.className">{{ props.text }}</div>
         <div class="input-icon-container">
             <input v-model="value" @change="$emit('value', value)" :type="is_visible ? 'password' : ''" class="signup-input-base" :placeholder="placeholder" />
-            <font-awesome-icon v-if="is_Password" :icon="faEye" class="visible-icon" @click="updateVisibility"></font-awesome-icon>
+            <font-awesome-icon v-if="isPassword" :icon="faEye" class="visible-icon" @click="updateVisibility"></font-awesome-icon>
         </div>
     </div>
 </template>
@@ -13,18 +13,18 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref } from "vue"
 import { faEye } from "@fortawesome/free-solid-svg-icons"
 
-let value = ref("")
+const value = ref("")
 const props = defineProps<{
     padding: string
     width: string
     height: string
     text: string
     className: string
-    is_Password: boolean
+    isPassword: boolean
     placeholder: string
 }>()
 
-const is_visible = ref(props.is_Password)
+const is_visible = ref(props.isPassword)
 
 const updateVisibility = () => {
     is_visible.value = !is_visible.value

@@ -1,4 +1,4 @@
-export default async function forgetPasswordServices(email: String): Promise<void> {
+export default async function forgetPasswordServices(email: string): Promise<void> {
     // Logic to sign up
     fetch("http://localhost:8080/api/forget-password", {
         method: "POST",

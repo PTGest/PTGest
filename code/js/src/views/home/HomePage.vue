@@ -7,9 +7,9 @@
 import MainTextContainer from "../home/components/MainTextContainer.vue"
 import { computed } from "vue"
 import store from "../../store"
-import Calendar from "../../components/calendar/Calendar.vue";
+import Calendar from "../../components/calendar/Calendar.vue"
 
-let is_logged_in = computed(() => store.state.userData.token !== undefined)
+const is_logged_in = computed(() => store.state.userData.token !== undefined)
 </script>
 
 <style>

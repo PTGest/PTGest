@@ -1,5 +1,5 @@
 import store from "../../store"
-import router from "../../plugins/router.ts";
+import router from "../../plugins/router.ts"
 
 export default async function logoutServices(): Promise<void> {
     // Logic to sign up

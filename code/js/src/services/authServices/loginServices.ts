@@ -20,19 +20,21 @@ export async function loginUserServices(userLoginData: LoginUserData): Promise<v
                             id: response.details.userId,
                             role: response.details.role,
                             token: response.details.tokens.accessToken.token,
-                            refreshToken: response.details.tokens.refreshToken.token
+                            refreshToken: response.details.tokens.refreshToken.token,
                         })
                         router.push({ name: "home" })
                         return response
                     })
                     break
                 case 401:
-                    const element = document.createElement("div")
-                    element.innerHTML = "Invalid email or password"
-                    element.classList.add("error-message")
-                    element.style.color = "red"
-                    element.style.padding = "0.5em"
-                    document.getElementById("login-inputs-containers")?.appendChild(element)
+                    if (!document.querySelector(".error-message")) {
+                        const element = document.createElement("div")
+                        element.innerHTML = "Invalid email or password"
+                        element.classList.add("error-message")
+                        element.style.color = "red"
+                        element.style.padding = "0.5em"
+                        document.getElementById("login-inputs-containers")?.appendChild(element)
+                    }
                     break
                 default:
                     response.json().then((response) => {
