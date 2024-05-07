@@ -3,7 +3,9 @@ package pt.isel.leic.ptgest.domain.auth
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
-import java.util.*
+import java.util.Base64
+import java.util.Calendar
+import java.util.Date
 
 @Component
 class AuthDomain(

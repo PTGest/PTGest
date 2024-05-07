@@ -154,7 +154,7 @@ class AuthService(
         mailService.sendMail(
             precessedEmail,
             "PTGest - Password reset",
-            "Click the following link to ${if (setPassword) "set" else "reset" } your password:\n" +
+            "Click the following link to ${if (setPassword) "set" else "reset"} your password:\n" +
                 "http://localhost:5173/resetPassword/$token"
         )
     }

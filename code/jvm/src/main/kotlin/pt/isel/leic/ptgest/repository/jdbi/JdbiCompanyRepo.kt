@@ -1,15 +1,15 @@
-package pt.isel.leic.ptgest.repository.jdbi.company
+package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.company.Trainer
-import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
+import pt.isel.leic.ptgest.domain.company.model.Trainer
+import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.CompanyRepo
-import java.util.*
+import java.util.UUID
 
 class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
-//  TODO: Add filter for gender and capacity
+    //  TODO: Add filter for gender and capacity
 //  TODO: check if we need to add more filters
     override fun getCompanyTrainers(userId: UUID, skip: Int, limit: Int?): List<Trainer> =
         handle.createQuery(
@@ -153,7 +153,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun getExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
-            select id, name, description, muscle_group, type, ref
+            select name, description, muscle_group, type, ref
             from exercise e join exercise_company et on e.id = et.company_id
             where id = :id and company_id = :companyId
             """.trimIndent()

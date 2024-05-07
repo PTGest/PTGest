@@ -108,6 +108,7 @@ create table if not exists dev.workout
 create table if not exists dev.set
 (
     id    serial primary key,
+    trainer_id uuid references dev.trainer (id) on delete cascade,
     name  varchar(50)  not null,
     notes text,
     type  dev.set_type not null
@@ -145,13 +146,6 @@ create table if not exists dev.exercise_trainer
     trainer_id  uuid references dev.trainer (id) on delete cascade,
     exercise_id int references dev.exercise (id) on delete cascade,
     primary key (trainer_id, exercise_id)
-);
-
-create table if not exists dev.set_trainer
-(
-    trainer_id uuid references dev.trainer (id) on delete cascade,
-    set_id     int references dev.set (id) on delete cascade,
-    primary key (trainer_id, set_id)
 );
 
 create table if not exists dev.workout_set

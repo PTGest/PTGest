@@ -1,9 +1,9 @@
 package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
-import pt.isel.leic.ptgest.domain.user.TraineeDetails
-import pt.isel.leic.ptgest.domain.user.TrainerDetails
-import java.util.*
+import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
+import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
+import java.util.UUID
 
 interface UserRepo {
 

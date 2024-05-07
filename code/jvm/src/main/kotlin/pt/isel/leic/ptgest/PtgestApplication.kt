@@ -16,7 +16,7 @@ import pt.isel.leic.ptgest.domain.auth.Sha256TokenEncoder
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.http.pipeline.auth.AuthInterceptor
 import pt.isel.leic.ptgest.http.pipeline.auth.AuthenticatedUserResolver
-import pt.isel.leic.ptgest.repository.jdbi.configureWithAppRequirements
+import pt.isel.leic.ptgest.repository.jdbi.config.configureWithAppRequirements
 
 @SpringBootApplication
 class PtgestApplication {

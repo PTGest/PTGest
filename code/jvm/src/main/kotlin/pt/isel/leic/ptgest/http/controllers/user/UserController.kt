@@ -27,6 +27,7 @@ class UserController(private val service: UserService) {
                     details = traineeDetails.toResponse()
                 )
             }
+
             Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER -> {
                 val trainerDetails = service.getTrainerDetails(authenticatedUser.id)
                 return HttpResponse.ok(
@@ -34,6 +35,7 @@ class UserController(private val service: UserService) {
                     details = trainerDetails.toResponse()
                 )
             }
+
             Role.COMPANY -> {
                 val companyDetails = service.getCompanyDetails(authenticatedUser.id)
                 return HttpResponse.ok(

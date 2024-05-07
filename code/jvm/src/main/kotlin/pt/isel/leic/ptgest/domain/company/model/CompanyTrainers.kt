@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.domain.company
+package pt.isel.leic.ptgest.domain.company.model
 
 data class CompanyTrainers(
     val trainers: List<Trainer>,

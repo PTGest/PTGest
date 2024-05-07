@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.company.Trainer
-import pt.isel.leic.ptgest.domain.workout.ExerciseDetails
-import java.util.*
+import pt.isel.leic.ptgest.domain.company.model.Trainer
+import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
+import java.util.UUID
 
 interface CompanyRepo {
 

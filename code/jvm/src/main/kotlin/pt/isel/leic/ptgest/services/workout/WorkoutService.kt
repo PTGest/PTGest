@@ -3,11 +3,12 @@ package pt.isel.leic.ptgest.services.workout
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.common.ExerciseType
-import pt.isel.leic.ptgest.domain.common.MuscleGroup
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.domain.common.SetDetails
-import pt.isel.leic.ptgest.domain.common.SetType
+import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.auth.AuthError
@@ -23,42 +24,50 @@ class WorkoutService(
         muscleGroup: MuscleGroup,
         exerciseType: ExerciseType,
         ref: String?
-    ): Int =
-        transactionManager.run {
+    ): Int {
+        if (description != null) {
+            require(description.isNotEmpty()) { "Description must not be empty." }
+        }
+
+        if (ref != null) {
+            require(isYoutubeUrl(ref)) { "Reference must be a valid YouTube URL." }
+        }
+        return transactionManager.run {
             val workoutRepo = it.workoutRepo
 
             return@run workoutRepo.createExercise(
-                name,
+                name.trim(),
                 description,
                 muscleGroup,
                 exerciseType,
                 ref
             )
         }
+    }
 
     fun createCustomSet(
-        userId: UUID,
+        trainerId: UUID,
         userRole: Role,
         name: String?,
         notes: String?,
         setType: SetType,
-        sets: List<SetDetails>
+        setExercises: List<SetExercise>
     ): Int {
         if (notes != null) {
             require(notes.isNotEmpty()) { "Notes must not be empty." }
         }
 
         val setId = transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            it.createSet(userId, name, notes, setType)
+            it.createSet(trainerId, name, notes, setType)
         }
 
         transactionManager.run {
             val workoutRepo = it.workoutRepo
 
-            sets.forEachIndexed { index, set ->
-                it.validateExercise(userId, userRole, set.exerciseId)
+            setExercises.forEachIndexed { index, set ->
+                val exercise = it.getExercise(trainerId, userRole, set.exerciseId)
 
-                val validator = ExerciseValidator.getValidator(setType, set.exerciseType)
+                val validator = ExerciseValidator.getValidator(setType, exercise.type)
                 val validatedDetails = validator.validate(set.details)
 
                 val jsonDetails = convertDataToJson(validatedDetails)
@@ -70,9 +79,33 @@ class WorkoutService(
     }
 
     fun createCustomWorkout(
-        trainerId: UUID
-    ) {
-        throw NotImplementedError("Not implemented yet.")
+        trainerId: UUID,
+        name: String?,
+        description: String?,
+        category: MuscleGroup,
+        sets: List<Int>
+    ): Int {
+        if (description != null) {
+            require(description.isNotEmpty()) { "Description must not be empty." }
+        }
+
+        val workoutId = transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
+            it.createWorkout(trainerId, name, description, category)
+        }
+
+        transactionManager.run {
+            val workoutRepo = it.workoutRepo
+            val trainerRepo = it.trainerRepo
+
+            sets.forEachIndexed { index, setId ->
+                trainerRepo.getSet(trainerId, setId)
+                    ?: throw WorkoutError.SetNotFoundError
+
+                workoutRepo.associateSetToWorkout(index + 1, setId, workoutId)
+            }
+        }
+
+        return workoutId
     }
 
     private fun convertDataToJson(data: Map<String, Any>): String {
@@ -81,34 +114,56 @@ class WorkoutService(
         return jsonMapper.writeValueAsString(data)
     }
 
-    private fun Transaction.createSet(userId: UUID, name: String?, notes: String?, setType: SetType): Int {
-        return if (name != null) {
-            require(name.isNotEmpty()) { "Name must not be empty." }
-            workoutRepo.createSet(name, notes, setType)
-        } else {
-            val lastSetNameId = trainerRepo.getLastSetNameId(userId)
-            val nextSetName = "Set #${lastSetNameId + 1}"
-            workoutRepo.createSet(nextSetName, notes, setType)
-        }
+    private fun isYoutubeUrl(url: String): Boolean {
+        val pattern = "^(https://)?((w){3}.)?youtube\\.com/watch\\?v=\\w+"
+        val compiledPattern = Regex(pattern)
+        return compiledPattern.matches(url)
     }
 
-    private fun Transaction.validateExercise(userId: UUID, userRole: Role, exerciseId: Int) {
+    private fun Transaction.createSet(
+        trainerId: UUID,
+        name: String?,
+        notes: String?,
+        setType: SetType
+    ): Int =
+        if (name != null) {
+            require(name.isNotEmpty()) { "Name must not be empty." }
+            workoutRepo.createSet(trainerId, name.trim(), notes, setType)
+        } else {
+            val lastSetNameId = trainerRepo.getLastSetNameId(trainerId)
+            val nextSetName = "Set #${lastSetNameId + 1}"
+            workoutRepo.createSet(trainerId, nextSetName, notes, setType)
+        }
+
+    private fun Transaction.getExercise(userId: UUID, userRole: Role, exerciseId: Int): ExerciseDetails =
         when (userRole) {
             Role.INDEPENDENT_TRAINER -> {
                 trainerRepo.getExerciseDetails(userId, exerciseId)
                     ?: throw WorkoutError.ExerciseNotFoundError
             }
-            Role.COMPANY -> {
-                companyRepo.getExerciseDetails(userId, exerciseId)
-                    ?: throw WorkoutError.ExerciseNotFoundError
-            }
+
             Role.HIRED_TRAINER -> {
                 val companyId = trainerRepo.getCompanyAssignedTrainer(userId)
                 trainerRepo.getExerciseDetails(userId, exerciseId)
                     ?: companyRepo.getExerciseDetails(companyId, exerciseId)
                     ?: throw WorkoutError.ExerciseNotFoundError
             }
+
             else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
-    }
+
+    private fun Transaction.createWorkout(
+        trainerId: UUID,
+        name: String?,
+        description: String?,
+        category: MuscleGroup
+    ): Int =
+        if (name != null) {
+            require(name.isNotEmpty()) { "Name must not be empty." }
+            workoutRepo.createWorkout(trainerId, name.trim(), description, category)
+        } else {
+            val lastWorkoutNameId = trainerRepo.getLastWorkoutNameId(trainerId)
+            val nextWorkoutName = "Workout #${lastWorkoutNameId + 1}"
+            workoutRepo.createWorkout(trainerId, nextWorkoutName, description, category)
+        }
 }

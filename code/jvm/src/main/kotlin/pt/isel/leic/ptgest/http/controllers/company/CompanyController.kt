@@ -22,7 +22,7 @@ import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.services.company.CompanyService
 import pt.isel.leic.ptgest.services.workout.WorkoutService
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.Company.PREFIX)
@@ -31,7 +31,7 @@ class CompanyController(
     private val workoutService: WorkoutService
 ) {
 
-//  TODO: Add to the response the total number of trainee assigned to the trainer and the capacity
+    //  TODO: Add to the response the total number of trainee assigned to the trainer and the capacity
     @GetMapping(Uris.Company.COMPANY_TRAINERS)
     fun getCompanyTrainers(
         @RequestParam skip: Int?,
@@ -78,7 +78,7 @@ class CompanyController(
     @PutMapping(Uris.Company.UPDATE_TRAINER_CAPACITY)
     fun updateTrainerCapacity(
         @PathVariable trainerId: UUID,
-        @RequestParam capacityInfo: UpdateTrainerCapacityRequest,
+        @RequestBody capacityInfo: UpdateTrainerCapacityRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         companyService.updateTrainerCapacity(trainerId, authenticatedUser.id, capacityInfo.capacity)
@@ -114,5 +114,13 @@ class CompanyController(
             message = "Custom exercise created successfully.",
             details = CreateCustomWorkoutResponse(exerciseId)
         )
+    }
+
+    @GetMapping(Uris.Company.GET_EXERCISE_DETAILS)
+    fun getExerciseDetails(
+        @PathVariable exerciseId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        throw NotImplementedError()
     }
 }

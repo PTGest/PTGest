@@ -9,7 +9,8 @@ import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 @Service
 class JwtService(

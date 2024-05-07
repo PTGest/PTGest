@@ -9,6 +9,11 @@ sealed class WorkoutError : BaseError() {
         override val message: String get() = "Exercise not found."
     }
 
+    data object SetNotFoundError : WorkoutError() {
+        private fun readResolve(): Any = SetNotFoundError
+        override val message: String get() = "Set not found."
+    }
+
     data object InvalidSetTypeError : WorkoutError() {
         private fun readResolve(): Any = InvalidSetTypeError
         override val message: String get() = "Invalid set type."

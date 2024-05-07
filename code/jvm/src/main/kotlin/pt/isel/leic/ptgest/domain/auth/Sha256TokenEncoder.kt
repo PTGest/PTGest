@@ -1,7 +1,7 @@
 package pt.isel.leic.ptgest.domain.auth
 
 import java.security.MessageDigest
-import java.util.*
+import java.util.Base64
 
 class Sha256TokenEncoder : TokenEncoder {
 

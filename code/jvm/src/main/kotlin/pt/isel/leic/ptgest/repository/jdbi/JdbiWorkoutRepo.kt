@@ -1,11 +1,12 @@
-package pt.isel.leic.ptgest.repository.jdbi.workout
+package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.common.ExerciseType
-import pt.isel.leic.ptgest.domain.common.MuscleGroup
-import pt.isel.leic.ptgest.domain.common.SetType
+import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.repository.WorkoutRepo
+import java.util.UUID
 
 class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
@@ -35,15 +36,16 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Int>()
             .one()
 
-    override fun createSet(name: String, notes: String?, type: SetType): Int =
+    override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(
             """
-            insert into set (name, notes, type)
-            values (:name, :type::set_type, :notes)
+            insert into set (trainer_id, name, notes, type)
+            values (:trainerId, :name, :type::set_type, :notes)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
+                    "trainerId" to trainerId,
                     "name" to name,
                     "type" to type.name,
                     "notes" to notes
@@ -66,6 +68,42 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
                     "setId" to setId,
                     "exerciseId" to exerciseId,
                     "details" to details
+                )
+            )
+            .execute()
+    }
+
+    override fun createWorkout(trainerId: UUID, name: String, description: String?, category: MuscleGroup): Int =
+        handle.createUpdate(
+            """
+            insert into workout (trainer_id, name, description, category)
+            values (:trainerId, :name, :description, :category::muscle_group)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "name" to name,
+                    "description" to description,
+                    "category" to category.name
+                )
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
+
+    override fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int) {
+        handle.createUpdate(
+            """
+            insert into workout_set (order_id, workout_id, set_id)
+            values (:orderId, :workoutId, :setId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "orderId" to orderId,
+                    "workoutId" to workoutId,
+                    "setId" to setId
                 )
             )
             .execute()

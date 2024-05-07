@@ -1,8 +1,9 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.common.ExerciseType
-import pt.isel.leic.ptgest.domain.common.MuscleGroup
-import pt.isel.leic.ptgest.domain.common.SetType
+import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.SetType
+import java.util.UUID
 
 interface WorkoutRepo {
 
@@ -14,7 +15,11 @@ interface WorkoutRepo {
         ref: String?
     ): Int
 
-    fun createSet(name: String, notes: String?, type: SetType): Int
+    fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int
 
     fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String)
+
+    fun createWorkout(trainerId: UUID, name: String, description: String?, category: MuscleGroup): Int
+
+    fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
 }

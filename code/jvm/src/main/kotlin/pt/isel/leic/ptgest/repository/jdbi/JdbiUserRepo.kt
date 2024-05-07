@@ -1,12 +1,12 @@
-package pt.isel.leic.ptgest.repository.jdbi.user
+package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.auth.model.UserDetails
-import pt.isel.leic.ptgest.domain.user.TraineeDetails
-import pt.isel.leic.ptgest.domain.user.TrainerDetails
+import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
+import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
 import pt.isel.leic.ptgest.repository.UserRepo
-import java.util.*
+import java.util.UUID
 
 class JdbiUserRepo(private val handle: Handle) : UserRepo {
 

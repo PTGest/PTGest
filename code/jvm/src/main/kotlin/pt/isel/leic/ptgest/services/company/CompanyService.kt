@@ -1,9 +1,9 @@
 package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.company.CompanyTrainers
+import pt.isel.leic.ptgest.domain.company.model.CompanyTrainers
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import java.util.*
+import java.util.UUID
 
 @Service
 class CompanyService(

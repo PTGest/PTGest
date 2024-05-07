@@ -1,7 +1,8 @@
 package pt.isel.leic.ptgest.domain.auth.model
 
 import pt.isel.leic.ptgest.domain.common.Role
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 data class AccessTokenDetails(
     val userId: UUID,

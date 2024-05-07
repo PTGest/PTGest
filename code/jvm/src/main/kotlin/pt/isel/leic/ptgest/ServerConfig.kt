@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest
 
-import pt.isel.leic.ptgest.domain.common.DevInfo
+import pt.isel.leic.ptgest.domain.common.model.DevInfo
 
 object ServerConfig {
 

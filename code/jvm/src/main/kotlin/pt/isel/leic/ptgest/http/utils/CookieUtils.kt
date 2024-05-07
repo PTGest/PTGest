@@ -3,7 +3,7 @@ package pt.isel.leic.ptgest.http.utils
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
-import java.util.*
+import java.util.Date
 
 fun setCookies(response: HttpServletResponse, tokens: TokenPair, currentDate: Date) {
     setCookie(

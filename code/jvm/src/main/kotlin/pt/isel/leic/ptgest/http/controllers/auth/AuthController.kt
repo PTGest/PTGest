@@ -49,6 +49,7 @@ class AuthController(private val service: AuthService) {
                     message = "Company registered successfully."
                 )
             }
+
             is SignupRequest.IndependentTrainer -> {
                 service.signUpIndependentTrainer(
                     userInfo.name,
@@ -75,9 +76,11 @@ class AuthController(private val service: AuthService) {
             Role.COMPANY -> {
                 processCompanyRequest(authenticatedUser.id, userInfo)
             }
+
             Role.INDEPENDENT_TRAINER -> {
                 processIndependentTrainerRequest(userInfo, authenticatedUser.id)
             }
+
             else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
         return HttpResponse.created(
@@ -161,10 +164,12 @@ class AuthController(private val service: AuthService) {
                 setCookies(response, tokens, currentDate)
                 tokens
             }
+
             refreshTokenBody != null -> {
                 val accessToken = processHeader(request)
                 service.refreshToken(accessToken, refreshTokenBody.refreshToken, currentDate)
             }
+
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
             }
@@ -195,9 +200,11 @@ class AuthController(private val service: AuthService) {
 
                 service.validateRefreshToken(authenticatedUser.id, refreshToken)
             }
+
             refreshTokenBody != null -> {
                 service.validateRefreshToken(authenticatedUser.id, refreshTokenBody.refreshToken)
             }
+
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
             }
@@ -223,9 +230,11 @@ class AuthController(private val service: AuthService) {
 
                 revokeCookies(response)
             }
+
             refreshTokenBody != null -> {
                 service.logout(refreshTokenBody.refreshToken)
             }
+
             else -> {
                 throw AuthError.UserAuthenticationError.TokenNotProvided
             }
@@ -270,6 +279,7 @@ class AuthController(private val service: AuthService) {
                     userInfo.phoneNumber
                 )
             }
+
             is AuthenticatedSignupRequest.Trainee -> {
                 service.signUpTrainee(
                     userInfo.name,

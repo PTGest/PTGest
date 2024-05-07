@@ -5,7 +5,7 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.leic.ptgest.ServerConfig
-import pt.isel.leic.ptgest.repository.jdbi.configureWithAppRequirements
+import pt.isel.leic.ptgest.repository.jdbi.config.configureWithAppRequirements
 
 fun <R> asTransaction(jdbi: Jdbi, block: (Handle) -> R): R =
     jdbi.inTransaction<R, Exception> { handle -> block(handle) }

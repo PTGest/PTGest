@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Nested
 import org.springframework.boot.test.context.SpringBootTest
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.repository.jdbi.auth.JdbiAuthRepo
-import pt.isel.leic.ptgest.repository.jdbi.user.JdbiUserRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiAuthRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiUserRepo
 import java.util.Calendar
 import java.util.Date
 import java.util.UUID
@@ -28,7 +28,6 @@ class UserRepoTests {
         @Test
         fun `create user Successfully`() {
             val userId = asTransaction(jdbi) { handle ->
-                val userRepo = JdbiUserRepo(handle)
                 val authRepo = JdbiAuthRepo(handle)
 
                 authRepo.createUser(

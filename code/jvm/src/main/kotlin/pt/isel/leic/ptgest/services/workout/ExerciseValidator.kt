@@ -1,7 +1,7 @@
 package pt.isel.leic.ptgest.services.workout
 
-import pt.isel.leic.ptgest.domain.common.ExerciseType
-import pt.isel.leic.ptgest.domain.common.SetType
+import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.SetType
 
 class ExerciseValidator {
 
@@ -53,10 +53,12 @@ class ExerciseValidator {
                         require(distance is Double && distance > 0) { "Distance must be a positive double" }
                         resultMap["distance"] = distance
                     }
+
                     time != null -> {
                         require(time is Double && time > 0) { "Time must be a positive double" }
                         resultMap["time"] = time
                     }
+
                     else -> throw IllegalArgumentException("Either distance or time must be provided")
                 }
 
@@ -76,6 +78,7 @@ class ExerciseValidator {
                         require(distance is Double && distance > 0) { "Distance must be a positive double" }
                         resultMap["distance"] = distance
                     }
+
                     time != null -> {
                         require(time is Double && time > 0) { "Time must be a positive double" }
                         resultMap["time"] = time
@@ -90,6 +93,7 @@ class ExerciseValidator {
                             resultMap["incline"] = incline
                         }
                     }
+
                     else -> throw IllegalArgumentException("Either distance or time must be provided")
                 }
 
@@ -109,6 +113,7 @@ class ExerciseValidator {
                         require(distance is Double && distance > 0) { "Distance must be a positive double" }
                         resultMap["distance"] = distance
                     }
+
                     time != null -> {
                         require(time is Double && time > 0) { "Time must be a positive double" }
                         resultMap["time"] = time
@@ -116,6 +121,7 @@ class ExerciseValidator {
                         val resistance = requireNotNull(details["resistance"]) { "Resistance is required" }
                         require(resistance is Double && resistance >= 0) { "Resistance must be a positive double" }
                     }
+
                     else -> throw IllegalArgumentException("Either distance or time must be provided")
                 }
 

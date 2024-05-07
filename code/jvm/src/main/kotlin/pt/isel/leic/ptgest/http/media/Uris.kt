@@ -29,13 +29,21 @@ object Uris {
         const val UPDATE_TRAINER_CAPACITY = "/trainer/{trainerId}/update-capacity"
         const val REMOVE_TRAINER = "/trainer/{trainerId}"
         const val CREATE_CUSTOM_EXERCISE = "/custom-exercise"
+        const val GET_EXERCISE_DETAILS = "/exercise/{exerciseId}"
     }
 
     object Trainer {
         const val PREFIX = "${Uris.PREFIX}/trainer"
+
         const val CREATE_CUSTOM_EXERCISE = "/custom-exercise"
+        const val GET_EXERCISE_DETAILS = "/exercise/{exerciseId}"
+
         const val CREATE_CUSTOM_SET = "/custom-set"
+        const val GET_SET_DETAILS = "/set/{setId}"
+
         const val CREATE_CUSTOM_WORKOUT = "/custom-workout"
+        const val GET_WORKOUT_DETAILS = "/workout/{workoutId}"
+
         const val CREATE_SESSION = "/session"
         const val CHANGE_SESSION_DATE = "/session/{sessionId}/change-date"
         const val CANCEL_SESSION = "/session/{sessionId}/cancel"

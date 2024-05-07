@@ -3,7 +3,8 @@ package pt.isel.leic.ptgest.repository
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Role
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 interface AuthRepo {
 

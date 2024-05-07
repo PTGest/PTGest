@@ -36,9 +36,11 @@ class AuthInterceptor(
                     sessionCookie != null && sessionCookie.name.isNotEmpty() -> {
                         processCookieValue(sessionCookie)
                     }
+
                     requestHeader != null && requestHeader.startsWith("Bearer") -> {
                         processAuthorizationHeaderValue(requestHeader)
                     }
+
                     else -> throw AuthError.UserAuthenticationError.TokenNotProvided
                 }
 
@@ -46,6 +48,7 @@ class AuthInterceptor(
                 handler.beanType.javaClass == CompanyController::class.java && user.role != Role.COMPANY -> {
                     throw AuthError.UserAuthenticationError.UnauthorizedRole
                 }
+
                 handler.beanType.javaClass == TrainerController::class.java &&
                     user.role !in listOf(Role.HIRED_TRAINER, Role.INDEPENDENT_TRAINER) -> {
                     throw AuthError.UserAuthenticationError.UnauthorizedRole

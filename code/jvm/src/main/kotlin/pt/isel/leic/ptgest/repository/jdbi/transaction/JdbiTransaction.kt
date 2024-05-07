@@ -6,11 +6,11 @@ import pt.isel.leic.ptgest.repository.CompanyRepo
 import pt.isel.leic.ptgest.repository.TrainerRepo
 import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.WorkoutRepo
-import pt.isel.leic.ptgest.repository.jdbi.auth.JdbiAuthRepo
-import pt.isel.leic.ptgest.repository.jdbi.company.JdbiCompanyRepo
-import pt.isel.leic.ptgest.repository.jdbi.trainer.JdbiTrainerRepo
-import pt.isel.leic.ptgest.repository.jdbi.user.JdbiUserRepo
-import pt.isel.leic.ptgest.repository.jdbi.workout.JdbiWorkoutRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiAuthRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiCompanyRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiTrainerRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiUserRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiWorkoutRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 
 class JdbiTransaction(

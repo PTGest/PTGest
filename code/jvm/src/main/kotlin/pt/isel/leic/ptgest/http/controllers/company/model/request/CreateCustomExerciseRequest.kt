@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.controllers.company.model.request
 
 import jakarta.validation.constraints.NotEmpty
-import pt.isel.leic.ptgest.domain.common.ExerciseType
-import pt.isel.leic.ptgest.domain.common.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 
 data class CreateCustomExerciseRequest(
 
