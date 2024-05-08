@@ -1,4 +1,4 @@
-# Weekly Report 6
+# Weekly Report 7
 
 ## Week: 29/04/2023 - 05/05/2023
 
@@ -11,13 +11,16 @@
     4. Start implementing the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
 - **Progress:**
     1. Implemented the methods to create custom exercises, sets and workouts.
-    2. Implemented the methods to get the exercises, sets and workouts created by the user. 
+    2. Implemented the methods to get the exercises, sets and workouts created by the user.
     3. Implement the view to the methods 'assignTrainer'
+
 ---
 
 ## Frontend changes
-This week we finish the connection between the frontend and the backend for the methods register hired Trainer and register Trainee, also we implemented the views for the company watch the list of trainers and trainees that are hired by the company, even tough we are having an issue with the API function that returns the list of trainers, we are working on it to fix it.  
-Also we start implementing the view for the method assignTrainer, this view is on progress, we are working on it to finish it as soon as possible.
+
+This week, a successful connection was established between the frontend and the backend for the `registerHiredTrainer` and `registerTrainee` methods. Additionally, views were implemented that allow companies to observe the list of hired trainers. However, there is currently an issue with the API function that retrieves this list of trainers.
+
+Furthermore, the implementation of the view for the `assignTrainer` method has been initiated. This view is currently under development, and efforts are being made to complete it as promptly as possible.
 
 ---
 
@@ -82,6 +85,7 @@ In this way, the tables were changed to the following:
 
 - **Objectives:**
     1. Improve the methods to create custom exercises, sets and workouts.
-    2. Start implementing the methods to manage sessions. 
+    2. Start implementing the methods to manage sessions.
     3. Finish implementing a system to manage what methods the user can access in frontend.
     4. Finish the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
+    

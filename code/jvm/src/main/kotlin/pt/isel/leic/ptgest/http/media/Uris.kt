@@ -1,5 +1,7 @@
 package pt.isel.leic.ptgest.http.media
 
+import java.util.UUID
+
 object Uris {
     const val PREFIX = "/api"
 
@@ -18,7 +20,7 @@ object Uris {
     object User {
         const val PROFILE = "/profile"
 
-        fun userDetails(id: Int) = "/$PREFIX/user/$id"
+        fun userDetails(id: UUID) = "/$PREFIX/user/$id"
     }
 
     object Company {
