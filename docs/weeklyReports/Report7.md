@@ -8,7 +8,7 @@
     1. Continue implementing the methods to manage training plans and exercises.
     2. Continue implementing the methods to manage sessions.
     3. Start implementing a system to manage what methods the user can access in frontend.
-    4. Finish the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
+    4. Start implementing the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.
 - **Progress:**
     1. Implemented the methods to create custom exercises, sets and workouts.
     2. Implemented the methods to get the exercises, sets and workouts created by the user. 
@@ -82,4 +82,6 @@ In this way, the tables were changed to the following:
 
 - **Objectives:**
     1. Improve the methods to create custom exercises, sets and workouts.
-    2. Start implementing the methods to manage sessions.
+    2. Start implementing the methods to manage sessions. 
+    3. Finish implementing a system to manage what methods the user can access in frontend.
+    4. Finish the views to the methods 'assignTrainer', 'reassignTrainer', and 'updateTrainerCapacity' in the frontend.

@@ -152,7 +152,6 @@ const authSign = () => {
             "hired_trainer")
         )
     }
-
 }
 </script>
 
