@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.http.controllers.company.model.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
@@ -31,14 +33,15 @@ class CompanyController(
     private val workoutService: WorkoutService
 ) {
 
-    //  TODO: Add to the response the total number of trainee assigned to the trainer and the capacity
     @GetMapping(Uris.Company.COMPANY_TRAINERS)
     fun getCompanyTrainers(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
+        @RequestParam gender: Gender?,
+        @RequestParam(defaultValue = "DESC") availability: Order,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainers = companyService.getCompanyTrainers(skip, limit, authenticatedUser.id)
+        val trainers = companyService.getCompanyTrainers(skip, limit, gender, availability, authenticatedUser.id)
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",

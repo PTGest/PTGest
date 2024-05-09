@@ -1,7 +1,7 @@
 package pt.isel.leic.ptgest.domain.company.model
 
-import java.util.UUID
 import pt.isel.leic.ptgest.domain.common.Gender
+import java.util.UUID
 
 data class Trainer(
     val id: UUID,

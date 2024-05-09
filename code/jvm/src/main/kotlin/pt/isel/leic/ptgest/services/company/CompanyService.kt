@@ -1,6 +1,8 @@
 package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
+import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.company.model.CompanyTrainers
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.UUID
@@ -13,6 +15,8 @@ class CompanyService(
     fun getCompanyTrainers(
         skip: Int?,
         limit: Int?,
+        gender: Gender?,
+        availability: Order,
         companyId: UUID
     ): CompanyTrainers {
         if (limit != null) {
@@ -25,8 +29,8 @@ class CompanyService(
         return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalCompanyTrainers(companyId)
-            val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit)
+            val totalResults = companyRepo.getTotalCompanyTrainers(companyId, gender)
+            val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit, gender, availability)
 
             return@run CompanyTrainers(trainers, totalResults)
         }

@@ -10,7 +10,6 @@ data class TrainerResponse(
     val assignedTrainees: Int
 
 ) {
-    constructor(trainer: Trainer):
+    constructor(trainer: Trainer) :
         this(trainer.id, trainer.name, trainer.capacity, trainer.totalTrainees)
-
 }

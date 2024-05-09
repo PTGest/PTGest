@@ -2,6 +2,8 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.company.model.Trainer
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.CompanyRepo
@@ -9,45 +11,58 @@ import java.util.UUID
 
 class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
-    //  TODO: Add filter for gender and capacity
-//  TODO: check if we need to add more filters
-    override fun getCompanyTrainers(userId: UUID, skip: Int, limit: Int?): List<Trainer> =
-        handle.createQuery(
+    override fun getCompanyTrainers(
+        companyId: UUID,
+        skip: Int,
+        limit: Int?,
+        gender: Gender?,
+        availability: Order
+    ): List<Trainer> {
+        return handle.createQuery(
             """
-            select id, name, gender, total_trainees, capacity
-            from company_trainer c_pt join (
-                select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
-                from (
-                    select u.id as id, name, gender
-                    from "user" u
-                    join trainer pt on u.id = pt.id
-                ) u_d
-                left join trainer_trainee t_t on u_d.id = t_t.trainer_id
-                group by u_d.id, u_d.name, u_d.gender
-            ) ptd on c_pt.trainer_id = ptd.id
-            where company_id = :companyId
-            limit :limit offset :skip;
+        select id, name, gender, total_trainees, capacity
+        from company_trainer c_pt join (
+            select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
+            from (
+                select u.id as id, name, gender
+                from "user" u
+                join trainer pt on u.id = pt.id
+            ) u_d
+            left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+            group by u_d.id, u_d.name, u_d.gender
+        ) ptd on c_pt.trainer_id = ptd.id
+        where company_id = :companyId  ${if (gender != null) "and t.gender = :gender" else ""}
+        order by (capacity - total_trainees) ${availability.name.lowercase()}
+        limit :limit offset :skip;
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "companyId" to userId,
+                    "companyId" to companyId,
+                    "gender" to gender,
                     "skip" to skip,
                     "limit" to limit
                 )
             )
             .mapTo<Trainer>()
             .list()
+    }
 
-    override fun getTotalCompanyTrainers(userId: UUID): Int =
+    override fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?): Int =
         handle.createQuery(
             """
-                select count(*)
-                from company_trainer 
-                where company_id = :companyId
+            select count(*)
+            from company_trainer join trainer t on t.id = company_trainer.trainer_id
+            where company_id = :companyId ${if (gender != null) "and t.gender = :gender" else ""}
             """.trimIndent()
         )
-            .bind("companyId", userId)
+//            .bind("companyId", companyId)
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "gender" to gender
+                )
+            )
             .mapTo<Int>()
             .one()
 
