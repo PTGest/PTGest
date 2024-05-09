@@ -1,19 +1,16 @@
 package pt.isel.leic.ptgest.http.controllers.company.model.response
 
-import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.company.model.Trainer
-import pt.isel.leic.ptgest.http.media.Uris.User.userDetails
+import java.util.UUID
 
 data class TrainerResponse(
-    val ref: String,
+    val id: UUID,
     val name: String,
-    val gender: Gender
+    val capacity: Int,
+    val assignedTrainees: Int
+
 ) {
-    companion object {
-        fun Trainer.toResponse() = TrainerResponse(
-            ref = userDetails(id),
-            name = name,
-            gender = gender
-        )
-    }
+    constructor(trainer: Trainer):
+        this(trainer.id, trainer.name, trainer.capacity, trainer.totalTrainees)
+
 }

@@ -16,7 +16,7 @@ import pt.isel.leic.ptgest.http.controllers.company.model.request.CreateCustomEx
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
-import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse.Companion.toResponse
+import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
@@ -43,7 +43,7 @@ class CompanyController(
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
             details = GetCompanyTrainersResponse(
-                trainers = trainers.trainers.map { it.toResponse() },
+                trainers = trainers.trainers.map { TrainerResponse(it) },
                 total = trainers.total
             )
         )

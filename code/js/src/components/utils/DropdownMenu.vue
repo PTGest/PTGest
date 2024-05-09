@@ -14,7 +14,6 @@
             >
                 Male
             </div>
-
             <div
                 class="drop-option"
                 @click="
@@ -26,7 +25,6 @@
             >
                 Female
             </div>
-
             <div
                 class="drop-option"
                 @click="
@@ -38,7 +36,6 @@
             >
                 Undefined
             </div>
-
             <div
                 class="drop-option"
                 @click="

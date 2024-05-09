@@ -5,11 +5,17 @@
         </div>
         <div class="text">
             <p>Capacity</p>
-            <input :class="isDisabled ? 'capacity' : 'edit-capacity'"
+            <input v-model="capacity" :class="isDisabled ? 'capacity' : 'edit-capacity'"
                    :placeholder="`${props.trainer.capacity}`" :disabled="isDisabled"
             />
         </div>
-        <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="updateCapacity" class="icon"></font-awesome-icon>
+        <div class="text">
+            <p>Assigned Trainees</p>
+            <input v-model="assignedTrainees" class="capacity"
+                   :placeholder="`${props.trainer.capacity}`" disabled
+            />
+        </div>
+        <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
         <font-awesome-icon v-if="!isDisabled" :icon="faCheck" @click="updateCapacity" class="icon"></font-awesome-icon>
         <font-awesome-icon :icon="faX" class="deleteIcon"></font-awesome-icon>
 
@@ -21,14 +27,21 @@ import Trainer from "../../../../views/user/CompaniesViews/models/Trainer.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faCheck, faPen, faX} from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
+import changeTrainerCapacity from "../../../../services/companyServices/changeTrainerCapacity.ts";
 
 const isDisabled = ref(true)
 const props = defineProps<{
     trainer: Trainer
 }>()
+const capacity = ref(props.trainer.capacity)
+const assignedTrainees = ref(props.trainer.assignedTrainees)
+const editCapacity = () => {
+    isDisabled.value = !isDisabled.value
+}
 
 const updateCapacity = () => {
-    isDisabled.value = !isDisabled.value
+    changeTrainerCapacity(props.trainer.id, capacity.value)
+    editCapacity()
 }
 
 </script>

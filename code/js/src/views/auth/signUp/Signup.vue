@@ -51,7 +51,7 @@ import { computed, Ref, ref } from "vue"
 import { signupUserServices } from "../../../services/AuthServices/signupServices.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faBuilding, faEye, faPerson, faPlus } from "@fortawesome/free-solid-svg-icons"
-import DropdownMenu from "../../../components/DropdownMenu.vue"
+import DropdownMenu from "../../../components/utils/DropdownMenu.vue"
 import SignupPTData from "../../../models/authModels/SignupPTData.ts"
 import store from "../../../store"
 

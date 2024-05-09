@@ -31,6 +31,6 @@ const userId = store.getters.userData.token
 }
 
 .user-icon {
-    width: 60px;
+    width: 50px;
 }
 </style>

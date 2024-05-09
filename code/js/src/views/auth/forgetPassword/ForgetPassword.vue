@@ -15,8 +15,8 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import forgetPasswordServices from "../../../services/AuthServices/forgetPassword.ts"
-import DefaultButton from "../../../components/DefaultButton.vue"
-import InputBar from "../../../components/InputBar.vue"
+import DefaultButton from "../../../components/utils/DefaultButton.vue"
+import InputBar from "../../../components/utils/InputBar.vue"
 
 const email = ref("")
 

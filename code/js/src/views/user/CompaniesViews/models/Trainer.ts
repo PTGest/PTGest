@@ -1,17 +1,16 @@
 class Trainer {
-    id: number
     name: string
     gender: string
-    totalTrainees: number
+    ref: string
     capacity: number
+    assignedTrainees: number
 
-
-    constructor(id: number, name: string, gender: string, totalTrainees: number, capacity: number) {
-        this.id = id;
+    constructor(name: string, gender: string, ref: string, capacity: number, assignedTrainees: number) {
         this.name = name;
         this.gender = gender;
-        this.totalTrainees = totalTrainees;
+        this.ref = ref;
         this.capacity = capacity;
+        this.assignedTrainees = assignedTrainees;
     }
 }
 

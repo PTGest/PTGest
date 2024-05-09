@@ -1,5 +1,6 @@
 import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeRegisterData.ts"
 import router from "../../plugins/router.ts"
+import HiredTrainerRegisterData from "../../models/authModels/HiredTrainerRegisterData.ts";
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up
@@ -13,7 +14,11 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
     }).then((response) => {
         switch (response.status) {
             case 201:
-                router.push("/login")
+                if(userRegisterData instanceof TraineeRegisterData){
+                    router.push("/trainees")
+                }else{
+                    router.push("/trainers")
+                }
                 return response.json()
             case 409:
                 throw new Error("Email already exists")

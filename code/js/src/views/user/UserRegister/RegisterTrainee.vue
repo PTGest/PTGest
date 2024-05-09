@@ -1,5 +1,5 @@
 <template>
-    <h2>Register Trainee</h2>
+    <h2>{{ text }}</h2>
     <div class="trainee-register">
         <input-bar @value="update('name', $event)" padding="0em 0.5em 0 0.5em" is_password width="18em" class-name="trainee-input" text="Trainee Name" placeholder="Enter Trainee Name" height="3em" />
         <input-bar
@@ -12,7 +12,7 @@
             height="3em"
             placeholder="Enter Trainee Email"
         />
-        <div v-if="props.isTrainee" class="birth-text">
+        <div v-if="isTrainee" class="birth-text">
             Trainee Birthdate
             <input v-model="trainee_Data.birthdate" type="date" placeholder="Enter Trainee BirthDate" class="trainee-birth" />
         </div>
@@ -20,11 +20,6 @@
             Gender
             <dropdown-menu class="menu" @gender="update('gender', $event)" size="16em" arrowRight="-11em" />
         </div>
-        <div v-if="!props.isTrainee" class="birth-text">
-            Capacity
-            <input-bar class="capacity" @value="update('capacity', $event)" />
-        </div>
-
 
         <div class="phone-container">
             <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
@@ -52,28 +47,41 @@
             />
         </div>
 
+        <div v-if="!isTrainee" class="capacity-text">
+            Capacity
+            <input-bar   class="capacity" @value="update('capacity', $event)"
+                         padding="0em 0.5em 0 0.5em"
+                         is_password
+                         width="2em"
+                         class-name="trainer-capacity"
+                         text=""
+                         height="3em"
+                         placeholder=""
+            />
+        </div>
+
         <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="!is_disabled" />
     </div>
 </template>
 
 <script setup lang="ts">
-import InputBar from "../../../components/InputBar.vue"
-import DefaultButton from "../../../components/DefaultButton.vue"
+import InputBar from "../../../components/utils/InputBar.vue"
+import DefaultButton from "../../../components/utils/DefaultButton.vue"
 import { computed, Ref, ref } from "vue"
 import TraineeRegisterData from "../../../views/user/UserRegister/models/TraineeRegisterData.ts"
-import DropdownMenu from "../../../components/DropdownMenu.vue"
+import DropdownMenu from "../../../components/utils/DropdownMenu.vue"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import authenticatedSignup from "../../../services/AuthServices/AuthenticatedSignup.ts"
-import HiredTrainerRegisterData from "@/models/authModels/HiredTrainerRegisterData.ts";
+import HiredTrainerRegisterData from "../../../models/authModels/HiredTrainerRegisterData.ts";
+import router from "../../../plugins/router.ts";
 
-const props = defineProps({
-    isTrainee: Boolean,
+
+let isTrainee = ref(router.currentRoute.value.params.isTrainee==="true")
+const text = computed(() => {
+    return isTrainee.value ? "Register Trainee" : "Register Trainer"
 })
-
-console.log("isTrainee", props.isTrainee)
-
-
+console.log("isTrainee", isTrainee)
 const capacity = ref(-1)
 const countryNumber = ref("")
 const phoneNumber = ref("")
@@ -96,7 +104,7 @@ const is_disabled = computed(() => {
         trainee_Data.value.email == "" ||
         trainee_Data.value.gender == "" ||
         countryNumber.value == "" ||
-        phoneNumber.value == "") && (trainee_Data.value.birthdate == "" && props.isTrainee)
+        phoneNumber.value == "") && (trainee_Data.value.birthdate == "" && isTrainee)
     )
 })
 
@@ -133,7 +141,7 @@ function update(paramName: string, value: any) {
 
 const authSign = () => {
     trainee_Data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
-    if(props.isTrainee){
+    if(isTrainee.value){
         authenticatedSignup(new TraineeRegisterData(
             trainee_Data.value.name,
             trainee_Data.value.email,
@@ -203,9 +211,17 @@ h2 {
     justify-content: center;
     align-items: center;
     gap: 0.5em;
+    margin-top: 1em;
 }
 
 .trainee-phone-input {
     margin-bottom: 0;
+}
+
+.capacity-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 </style>

@@ -25,25 +25,14 @@ const routes: RouteRecordRaw[] = [
         component: ResetPassword,
         props: (route) => ({ token: route.params.token }),
         meta: { requiresAuth: false },
-        // beforeEnter: async (to, from, next) => {
-        //     if (to.params.token) {
-        //         const token : string | string[] = to.params.token;
-        //         if (await verifyToken(token)) {
-        //             next()
-        //         } else {
-        //             next({name: 'error'})
-        //         }
-        //     }
-        // }
     },
     //UserServices Views
     { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true } },
     { path: "/trainees", name: "trainees", component: Students },
     { path: "/trainers", name: "trainers", component: Trainers },
-    { path: "/register-trainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true },
-        props: route => ({ isTrainee: route.query.isTrainee })},
-    { path: "/register-trainers", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true },
-        props: route => ({ isTrainee: route.query.isTrainee })},
+    { path: "/register-trainee/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true }},
+    { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true },
+        props: route => ({ isTrainee: route.params.isTrainee })},
     //Error Views
     { path: "/error", name: "error", component: Error },
     { path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },

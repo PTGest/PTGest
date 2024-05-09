@@ -31,7 +31,7 @@ import { computed, ref } from "vue"
 import { loginUserServices } from "../../../services/AuthServices/loginServices.ts"
 import { Ref } from "vue/dist/vue"
 import LoginUserData from "../../../models/authModels/LoginUserData.ts"
-import DefaultButton from "../../../components/DefaultButton.vue"
+import DefaultButton from "../../../components/utils/DefaultButton.vue"
 
 const loginUserData: Ref<LoginUserData> = ref({
     email: "",

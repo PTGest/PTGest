@@ -54,15 +54,16 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer? =
         handle.createQuery(
             """
-                select id, name, gender, capacity, total_trainees
-                from company_trainer c_pt
-                         join (select id, name, gender, count(*) as total_trainees
-                               from (select u.id as id, name, gender
-                                     from "user" u
-                                              join trainer pt on u.id = pt.id) u_d
-                                        join trainer_trainee t_t on u_d.id = t_t.trainer_id
-                               group by name, gender) ptd on c_pt.trainer_id = ptd.id
-                where company_id = :companyId and  trainer_id = :trainerId
+            select id, name, gender, capacity, total_trainees
+            from company_trainer c_pt join (
+                select id, name, gender, count(t_t.trainee_id) as total_trainees
+                from (
+                    select u.id, name, gender
+                    from "user" u join trainer pt on u.id = pt.id
+                ) u_d left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                group by id, name, gender
+            ) ptd on c_pt.trainer_id = ptd.id
+            where company_id = :companyId and  trainer_id = :trainerId
             """.trimIndent()
         )
             .bindMap(
