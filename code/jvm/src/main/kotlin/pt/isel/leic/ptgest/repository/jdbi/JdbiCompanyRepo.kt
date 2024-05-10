@@ -16,24 +16,28 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         skip: Int,
         limit: Int?,
         gender: Gender?,
-        availability: Order
+        availability: Order,
+        name: String?
     ): List<Trainer> {
+        val genderCondition = if (gender != null) "and t.gender = :gender" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
         return handle.createQuery(
             """
-        select id, name, gender, total_trainees, capacity
-        from company_trainer c_pt join (
-            select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
-            from (
-                select u.id as id, name, gender
-                from "user" u
-                join trainer pt on u.id = pt.id
-            ) u_d
-            left join trainer_trainee t_t on u_d.id = t_t.trainer_id
-            group by u_d.id, u_d.name, u_d.gender
-        ) ptd on c_pt.trainer_id = ptd.id
-        where company_id = :companyId  ${if (gender != null) "and t.gender = :gender" else ""}
-        order by (capacity - total_trainees) ${availability.name.lowercase()}
-        limit :limit offset :skip;
+            select id, name, gender, total_trainees, capacity
+            from company_trainer c_pt join (
+                select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
+                from (
+                    select u.id as id, name, gender
+                    from "user" u
+                    join trainer pt on u.id = pt.id
+                ) u_d
+                left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                group by u_d.id, u_d.name, u_d.gender
+            ) ptd on c_pt.trainer_id = ptd.id
+            where company_id = :companyId $genderCondition $nameCondition
+            order by (capacity - total_trainees) ${availability.name.lowercase()}
+            limit :limit offset :skip;
             """.trimIndent()
         )
             .bindMap(
@@ -41,30 +45,35 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                     "companyId" to companyId,
                     "gender" to gender,
                     "skip" to skip,
-                    "limit" to limit
+                    "limit" to limit,
+                    "name" to "%$name%"
                 )
             )
             .mapTo<Trainer>()
             .list()
     }
 
-    override fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?): Int =
-        handle.createQuery(
+    override fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?, name: String?): Int {
+        val genderCondition = if (gender != null) "and t.gender = :gender" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
             """
             select count(*)
             from company_trainer join trainer t on t.id = company_trainer.trainer_id
-            where company_id = :companyId ${if (gender != null) "and t.gender = :gender" else ""}
+            where company_id = :companyId $genderCondition $nameCondition
             """.trimIndent()
         )
-//            .bind("companyId", companyId)
             .bindMap(
                 mapOf(
                     "companyId" to companyId,
-                    "gender" to gender
+                    "gender" to gender,
+                    "name" to "%$name%"
                 )
             )
             .mapTo<Int>()
             .one()
+    }
 
     override fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer? =
         handle.createQuery(

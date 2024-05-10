@@ -17,6 +17,7 @@ class CompanyService(
         limit: Int?,
         gender: Gender?,
         availability: Order,
+        name: String?,
         companyId: UUID
     ): CompanyTrainers {
         if (limit != null) {
@@ -25,12 +26,15 @@ class CompanyService(
         if (skip != null) {
             require(skip >= 0) { "Skip must be a positive number." }
         }
+        if (name != null) {
+            require(name.isNotBlank()) { "Name must not be blank." }
+        }
 
         return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalCompanyTrainers(companyId, gender)
-            val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit, gender, availability)
+            val totalResults = companyRepo.getTotalCompanyTrainers(companyId, gender, name)
+            val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit, gender, availability, name)
 
             return@run CompanyTrainers(trainers, totalResults)
         }

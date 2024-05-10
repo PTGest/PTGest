@@ -8,9 +8,16 @@ import java.util.UUID
 
 interface CompanyRepo {
 
-    fun getCompanyTrainers(companyId: UUID, skip: Int, limit: Int?, gender: Gender?, availability: Order): List<Trainer>
+    fun getCompanyTrainers(
+        companyId: UUID,
+        skip: Int,
+        limit: Int?,
+        gender: Gender?,
+        availability: Order,
+        name: String?
+    ): List<Trainer>
 
-    fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?): Int
+    fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?, name: String?): Int
 
     fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer?
 

@@ -39,9 +39,10 @@ class CompanyController(
         @RequestParam limit: Int?,
         @RequestParam gender: Gender?,
         @RequestParam(defaultValue = "DESC") availability: Order,
+        @RequestParam name: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainers = companyService.getCompanyTrainers(skip, limit, gender, availability, authenticatedUser.id)
+        val trainers = companyService.getCompanyTrainers(skip, limit, gender, availability, name, authenticatedUser.id)
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
