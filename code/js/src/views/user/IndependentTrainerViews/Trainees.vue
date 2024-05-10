@@ -1,7 +1,7 @@
 <template>
     <div class="Trainees">
         <h1>Trainees</h1>
-        <router-link :to="{ name: 'registerTrainee',  params: { isTrainee: true }}" class="add-trainee">
+        <router-link v-if="canEdit" :to="{ name: 'registerTrainee',  params: { isTrainee: true }}" class="add-trainee">
             <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
         </router-link>
     </div>
@@ -10,25 +10,13 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"
-import {ref, Ref} from "vue";
-import getAllTrainees from "../../../services/companyServices/getCompanyTrainers.ts";
+import store from "../../../store";
+import router from "../../../plugins/router.ts";
 
 
-
-// const traineesRef : Ref<Trainees> = ref({
-//     trainers: [],
-//     total: 0
-// });
-
-// (async () => {
-//     try {
-//         companyTrainersRef.value = await getCompanyTrainers();
-//     } catch (error) {
-//         console.error("Error getting user info:", error)
-//     }
-// })()
-
-
+const role = store.getters.userData.role;
+const route = router.currentRoute.value.meta.canEdit as string[];
+const canEdit = route.includes(role);
 </script>
 
 <style scoped>

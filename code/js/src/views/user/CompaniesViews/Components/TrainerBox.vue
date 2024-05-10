@@ -6,13 +6,13 @@
         <div class="text">
             <p>Capacity</p>
             <input v-model="capacity" :class="isDisabled ? 'capacity' : 'edit-capacity'"
-                   :placeholder="`${props.trainer.capacity}`" :disabled="isDisabled"
+                   :disabled="isDisabled"
             />
         </div>
         <div class="text">
-            <p>Assigned Trainees</p>
+            <p>Trainees</p>
             <input v-model="assignedTrainees" class="capacity"
-                   :placeholder="`${props.trainer.capacity}`" disabled
+                   :placeholder="`${props.trainer.assignedTrainees}`" disabled
             />
         </div>
         <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
@@ -48,12 +48,14 @@ const updateCapacity = () => {
 
 <style scoped>
 .trainer{
+    width: 20em;
+    height: 2em;
     display: flex;
     justify-content: center;
     align-content: center;
     padding: 1em 0.5em 1em 0.5em;
     border-radius: 10px;
-    margin: 1em;
+    margin: 0.5em;
     background-color: var(--light-blue);
     color: whitesmoke;
     font-size: 1.5em;
@@ -62,7 +64,7 @@ const updateCapacity = () => {
 }
 .icon{
     position: relative;
-    top: 1.2em;
+    top: 0.8em;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
@@ -71,6 +73,14 @@ const updateCapacity = () => {
 p, h6, h4, input{
     padding: 0;
     margin: 0;
+}
+h4{
+    position: relative;
+    left : -1em;
+    text-shadow: var(--secundary-color) 2px 2px 2px;
+}
+p{
+    font-size: 0.8em;
 }
 .text{
     display: flex;
@@ -82,6 +92,7 @@ p, h6, h4, input{
 .capacity, .edit-capacity{
     width: 3em;
     height: 2em;
+    font-size: 0.8em;
     border: 0;
     color: whitesmoke;
     background-color: var(--light-blue);

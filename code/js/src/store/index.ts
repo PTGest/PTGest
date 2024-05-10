@@ -5,7 +5,6 @@ import { UserInfo } from "../views/user/UserProfile/Models/UserInfo.ts"
 
 interface State {
     userData: UserData
-    errorType: ErrorType
     is_mobile_view: boolean
     userBio: string
     userInfo: UserInfo
@@ -25,10 +24,6 @@ const store = createStore<State>({
                 token: undefined,
                 refreshToken: undefined,
             },
-            errorType: {
-                type: "",
-                message: "",
-            },
             is_mobile_view: false,
             userInfo: {
                 name: "",
@@ -40,9 +35,6 @@ const store = createStore<State>({
     mutations: {
         setUserData(state: State, userData: UserData) {
             state.userData = userData
-        },
-        setErrorType(state: State, errorType: ErrorType) {
-            state.errorType = errorType
         },
         setMobileView(state: State, is_mobile_view: boolean) {
             state.is_mobile_view = is_mobile_view
@@ -71,10 +63,12 @@ const store = createStore<State>({
             console.log("userBio", userInfo)
             commit("setUserInfo", userInfo)
         },
+        logout({ commit }: any) {
+            commit("logout")
+        },
     },
     getters: {
         userData: (state: State) => state.userData,
-        errorType: (state: State) => state.errorType,
         is_mobile_view: (state: State) => state.is_mobile_view,
         userInfo: (state: State) => state.userInfo,
     },

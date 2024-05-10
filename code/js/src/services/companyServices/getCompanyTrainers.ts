@@ -1,9 +1,9 @@
 import CompanyTrainers from "../../views/user/CompaniesViews/models/CompanyTrainers.ts";
 
 
-export default async function getCompanyTrainers(): Promise<CompanyTrainers> {
+export default async function getCompanyTrainers(skip: number, /*limit: number, availability: string*/): Promise<CompanyTrainers> {
     // Logic to sign up
-    return fetch("http://localhost:8080/api/company/trainers", {
+    return fetch(`http://localhost:8080/api/company/trainers?skip=${skip}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
