@@ -1,6 +1,6 @@
 <template>
-    <h2>{{ text }}</h2>
-    <div class="trainee-register">
+    <h2>Register {{ text }}</h2>
+    <div v-if="!isLoading" class="trainee-register">
         <input-bar @value="update('name', $event)" padding="0em 0.5em 0 0.5em" is_password width="18em" class-name="trainee-input" text="Trainee Name" placeholder="Enter Trainee Name" height="3em" />
         <input-bar
             @value="update('email', $event)"
@@ -60,105 +60,114 @@
             />
         </div>
 
-        <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="!is_disabled" />
+        <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="is_disabled" />
     </div>
+
+    <div v-else class="loading">
+    <h1>Loading...</h1>
+    </div>
+
 </template>
 
 <script setup lang="ts">
-import InputBar from "../../../components/utils/InputBar.vue"
-import DefaultButton from "../../../components/utils/DefaultButton.vue"
-import { computed, Ref, ref } from "vue"
-import TraineeRegisterData from "../../../views/user/UserRegister/models/TraineeRegisterData.ts"
-import DropdownMenu from "../../../components/utils/DropdownMenu.vue"
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import authenticatedSignup from "../../../services/AuthServices/AuthenticatedSignup.ts"
-import HiredTrainerRegisterData from "../../../models/authModels/HiredTrainerRegisterData.ts";
-import router from "../../../plugins/router.ts";
+import { ref, computed } from 'vue';
+import authenticatedSignup from '../../../services/AuthServices/AuthenticatedSignup.ts';
+import TraineeRegisterData from '../../../views/user/UserRegister/models/TraineeRegisterData.ts';
+import HiredTrainerRegisterData from '../../../models/authModels/HiredTrainerRegisterData.ts';
+import router from '../../../plugins/router.ts';
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import InputBar from "../../../components/utils/InputBar.vue";
+import DropdownMenu from "../../../components/utils/DropdownMenu.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import DefaultButton from "../../../components/utils/DefaultButton.vue";
 
-
-let isTrainee = ref(router.currentRoute.value.params.isTrainee==="true")
+let isTrainee = ref(router.currentRoute.value.params.isTrainee === 'true');
 const text = computed(() => {
-    return isTrainee.value ? "Register Trainee" : "Register Trainer"
-})
-console.log("isTrainee", isTrainee)
-const capacity = ref(-1)
-const countryNumber = ref("")
-const phoneNumber = ref("")
-const trainee_Data: Ref<TraineeRegisterData> = ref({
-    name: ref(""),
-    email: ref(""),
-    birthdate: ref(""),
-    gender: ref(""),
-    phoneNumber: ref(""),
-    user_type: ref("trainee"),
-})
+    return isTrainee.value ? 'Trainee' : 'Trainer';
+});
+
+const capacity = ref(-1);
+const countryNumber = ref('');
+const phoneNumber = ref('');
+const trainee_Data = ref<TraineeRegisterData>({
+    name: '',
+    email: '',
+    birthdate: '',
+    gender: '',
+    phoneNumber: '',
+    user_type: 'trainee'
+});
+
+const isLoading = ref(false); // Loading state variable
 
 const is_disabled = computed(() => {
-    console.log("is_disabled", trainee_Data.value)
-    console.log("countryNumber", countryNumber.value)
-    console.log("phoneNumber", phoneNumber.value)
-
-    return !(
-        (trainee_Data.value.name == "" ||
-        trainee_Data.value.email == "" ||
-        trainee_Data.value.gender == "" ||
-        countryNumber.value == "" ||
-        phoneNumber.value == "") && (trainee_Data.value.birthdate == "" && isTrainee)
-    )
-})
+    return (
+        (!trainee_Data.value.name ||
+            !trainee_Data.value.email ||
+            !trainee_Data.value.gender ||
+            !countryNumber.value ||
+            !phoneNumber.value) &&
+        (!trainee_Data.value.birthdate && isTrainee)
+    );
+});
 
 function updatePhone(type: string, value: string) {
     switch (type) {
-        case "country":
-            countryNumber.value = value
-            console.log("countryNumber", countryNumber.value)
-            break
-        case "phone":
-            phoneNumber.value = value
-            console.log("phoneNumber", phoneNumber.value)
-            break
+        case 'country':
+            countryNumber.value = value;
+            break;
+        case 'phone':
+            phoneNumber.value = value;
+            break;
     }
 }
 
 function update(paramName: string, value: any) {
-    console.log(paramName, value)
     switch (paramName) {
-        case "name":
-            trainee_Data.value.name = value
-            break
-        case "email":
-            trainee_Data.value.email = value
-            break
-        case "gender":
-            trainee_Data.value.gender = value.toUpperCase()
-            break
-        case "capacity":
-            capacity.value = value
-            break
+        case 'name':
+            trainee_Data.value.name = value;
+            break;
+        case 'email':
+            trainee_Data.value.email = value;
+            break;
+        case 'gender':
+            trainee_Data.value.gender = value.toUpperCase();
+            break;
+        case 'capacity':
+            capacity.value = value;
+            break;
     }
 }
 
-const authSign = () => {
-    trainee_Data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
-    if(isTrainee.value){
-        authenticatedSignup(new TraineeRegisterData(
-            trainee_Data.value.name,
-            trainee_Data.value.email,
-            trainee_Data.value.birthdate,
-            trainee_Data.value.gender,
-            trainee_Data.value.phoneNumber,
-            "trainee")
-        )
-    }else{
-        authenticatedSignup(new HiredTrainerRegisterData(
-            trainee_Data.value.name,
-            trainee_Data.value.email,
-            trainee_Data.value.gender,
-            capacity.value,
-            trainee_Data.value.phoneNumber,
-            "hired_trainer")
-        )
+const authSign = async () => {
+    isLoading.value = true; // Set loading state to true before API request
+    console.log("isLoader", isLoading.value)
+    trainee_Data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`;
+    try {
+        const userData = isTrainee.value ?
+            new TraineeRegisterData(
+                trainee_Data.value.name,
+                trainee_Data.value.email,
+                trainee_Data.value.birthdate,
+                trainee_Data.value.gender,
+                trainee_Data.value.phoneNumber,
+                'trainee'
+            ) :
+            new HiredTrainerRegisterData(
+                trainee_Data.value.name,
+                trainee_Data.value.email,
+                trainee_Data.value.gender,
+                capacity.value,
+                trainee_Data.value.phoneNumber,
+                'hired_trainer'
+            );
+        await authenticatedSignup(userData);
+        console.log("isLoader", isLoading.value)
+    } catch (error) {
+        console.error('Error:', error);
+    } finally {
+        isLoading.value = false; // Reset loading state after API request is completed
+        console.log("isLoader", isLoading.value)
     }
 }
 </script>

@@ -8,9 +8,11 @@ import Error from "../views/Error.vue"
 import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue"
 import UserProfile from "../views/user/UserProfile/UserProfile.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
-import Students from "../views/user/IndependentTrainerViews/Students.vue"
+import Students from "../views/user/IndependentTrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue";
-// import {verifyToken} from "../services/AuthServices/verifyToken.ts";
+import RBAC from "../services/utils/RBAC/RBAC.ts";
+import store from "../store";
+
 
 const routes: RouteRecordRaw[] = [
     { path: "/", name: "home", component: Home, meta: { requiresAuth: false } },
@@ -27,12 +29,20 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: false },
     },
     //UserServices Views
-    { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true } },
-    { path: "/trainees", name: "trainees", component: Students },
-    { path: "/trainers", name: "trainers", component: Trainers },
-    { path: "/register-trainee/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true }},
-    { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true },
-        props: route => ({ isTrainee: route.params.isTrainee })},
+    { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINEE', 'COMPANY', 'TRAINER', 'HIRED_TRAINER'] } },
+    { path: "/trainees", name: "trainees", component: Students, meta: { requiresAuth: true ,
+        roleNeeded : ['COMPANY', 'TRAINER', 'HIRED_TRAINER'], canEdit:['COMPANY', 'TRAINER']}
+    },
+    { path: "/trainers", name: "trainers", component: Trainers, meta: { requiresAuth: true,
+            roleNeeded : ['COMPANY']}
+    },
+    { path: "/register-trainee/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true,
+            roleNeeded : ['COMPANY', 'TRAINER']}
+    },
+    { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true,
+        roleNeeded : ['COMPANY']}
+    },
     //Error Views
     { path: "/error", name: "error", component: Error },
     { path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },
@@ -43,17 +53,34 @@ const router = createRouter({
     history: createWebHistory(),
 })
 
-// router.beforeEach((to : any, next) => {
-//     if (to.meta.requiresAuth) {
-//         const token = store.getters.userData.token;
-//         if (token) {
-//             next();
-//         } else {
-//             next({name: 'login'});
-//         }
-//     } else {
-//         next({name: 'login'});
-//     }
-// })
+router.beforeEach((to , from) => {
+    console.log("to",to)
+    console.log("from",from)
+    if (to.meta.requiresAuth) {
+        if (store.getters.userData.token == undefined) {
+            return {name: "login"}
+        }
+        // else {
+        //     // if (!document.cookie.includes('access_token')) {
+        //     //     store.commit('logout')
+        //     // }
+        // }
+    }
+    if ((to.name === "login" || to.name === 'signup') && store.getters.userData.token) {
+        return {name: "home"}
+    }
+
+})
+
+router.beforeEach((to, from) => {
+    if (to.meta.roleNeeded) {
+        const roles = to.meta.roleNeeded as string[]
+        const rbac = RBAC
+        const userRole = rbac.getUserRole()
+        if (!roles.includes(userRole)) {
+            return {name: "error"}
+        }
+    }
+})
 
 export default router
