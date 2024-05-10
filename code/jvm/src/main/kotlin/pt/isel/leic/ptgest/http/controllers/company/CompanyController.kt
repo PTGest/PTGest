@@ -17,7 +17,9 @@ import pt.isel.leic.ptgest.http.controllers.company.model.request.AssignTrainerR
 import pt.isel.leic.ptgest.http.controllers.company.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
+import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
+import pt.isel.leic.ptgest.http.controllers.company.model.response.TraineeResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
@@ -49,6 +51,25 @@ class CompanyController(
             details = GetCompanyTrainersResponse(
                 trainers = trainers.trainers.map { TrainerResponse(it) },
                 total = trainers.total
+            )
+        )
+    }
+
+    @GetMapping(Uris.Company.COMPANY_TRAINEES)
+    fun getCompanyTrainees(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam gender: Gender?,
+        @RequestParam name: String?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val trainees = companyService.getCompanyTrainees(skip, limit, gender, name, authenticatedUser.id)
+
+        return HttpResponse.ok(
+            message = "Company trainees retrieved successfully.",
+            details = GetCompanyTraineesResponse(
+                trainees = trainees.trainees.map { TraineeResponse(it) },
+                total = trainees.total
             )
         )
     }

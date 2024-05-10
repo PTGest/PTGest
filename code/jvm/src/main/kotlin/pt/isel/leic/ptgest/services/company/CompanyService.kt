@@ -3,8 +3,10 @@ package pt.isel.leic.ptgest.services.company
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.company.model.CompanyTrainees
 import pt.isel.leic.ptgest.domain.company.model.CompanyTrainers
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.UUID
 
 @Service
@@ -20,15 +22,11 @@ class CompanyService(
         name: String?,
         companyId: UUID
     ): CompanyTrainers {
-        if (limit != null) {
-            require(limit > 0) { "Limit must be a positive number." }
-        }
-        if (skip != null) {
-            require(skip >= 0) { "Skip must be a positive number." }
-        }
-        if (name != null) {
-            require(name.isNotBlank()) { "Name must not be blank." }
-        }
+        Validators.validate(
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(name, "Name must not be blank.") { (it as String).isNotBlank() }
+        )
 
         return transactionManager.run {
             val companyRepo = it.companyRepo
@@ -37,6 +35,29 @@ class CompanyService(
             val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit, gender, availability, name)
 
             return@run CompanyTrainers(trainers, totalResults)
+        }
+    }
+
+    fun getCompanyTrainees(
+        skip: Int?,
+        limit: Int?,
+        gender: Gender?,
+        name: String?,
+        companyId: UUID
+    ): CompanyTrainees {
+        Validators.validate(
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(name, "Name must not be blank.") { (it as String).isNotBlank() }
+        )
+
+        return transactionManager.run {
+            val companyRepo = it.companyRepo
+
+            val totalResults = companyRepo.getTotalCompanyTrainees(companyId, gender, name)
+            val trainees = companyRepo.getCompanyTrainees(companyId, skip ?: 0, limit, gender, name)
+
+            return@run CompanyTrainees(trainees, totalResults)
         }
     }
 

@@ -11,6 +11,7 @@ import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
+import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.Date
 import java.util.UUID
 
@@ -68,7 +69,12 @@ class AuthService(
         capacity: Int,
         phoneNumber: String?
     ) {
-        require(capacity > 0) { "Invalid capacity must be greater than 0." }
+        Validators.validate(
+            Validators.ValidationRequest(
+                capacity,
+                "Invalid capacity must be greater than 0."
+            ) { it as Int > 0 }
+        )
 
         transactionManager.run {
             val authRepo = it.authRepo
@@ -98,7 +104,12 @@ class AuthService(
         phoneNumber: String?,
         trainerId: UUID? = null
     ) {
-        require(birthdate.before(Date())) { "Invalid birthdate." }
+        Validators.validate(
+            Validators.ValidationRequest(
+                birthdate,
+                "Invalid birthdate."
+            ) { (it as Date).before(Date()) }
+        )
 
         transactionManager.run {
             val authRepo = it.authRepo

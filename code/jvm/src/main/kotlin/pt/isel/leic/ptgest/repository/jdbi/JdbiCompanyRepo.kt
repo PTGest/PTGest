@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.company.model.Trainee
 import pt.isel.leic.ptgest.domain.company.model.Trainer
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.CompanyRepo
@@ -29,10 +30,8 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                 select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
                 from (
                     select u.id as id, name, gender
-                    from "user" u
-                    join trainer pt on u.id = pt.id
-                ) u_d
-                left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                    from "user" u join trainer pt on u.id = pt.id
+                ) u_d left join trainer_trainee t_t on u_d.id = t_t.trainer_id
                 group by u_d.id, u_d.name, u_d.gender
             ) ptd on c_pt.trainer_id = ptd.id
             where company_id = :companyId $genderCondition $nameCondition
@@ -60,8 +59,86 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         return handle.createQuery(
             """
             select count(*)
-            from company_trainer join trainer t on t.id = company_trainer.trainer_id
+            from company_trainer c_pt join (
+                select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
+                from (
+                    select u.id as id, name, gender
+                    from "user" u join trainer pt on u.id = pt.id
+                ) u_d left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                group by u_d.id, u_d.name, u_d.gender
+            ) ptd on c_pt.trainer_id = ptd.id
             where company_id = :companyId $genderCondition $nameCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "gender" to gender,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
+    override fun getCompanyTrainees(
+        companyId: UUID,
+        skip: Int,
+        limit: Int?,
+        gender: Gender?,
+        name: String?
+    ): List<Trainee> {
+        val genderCondition = if (gender != null) "and gender = :gender" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select u.id, name, gender
+            from "user" u join (
+                select id, gender
+                from trainee t join (
+                    select trainee_id
+                    from trainer_trainee tt join (
+                        select trainer_id
+                        from company_trainer
+                        where company_id = :companyId
+                    ) ct on tt.trainer_id = ct.trainer_id
+            ) tId on t.id = tId.trainee_id) trainee on u.id = trainee.id
+            ${if (name != null || gender != null) "where" else ""} $genderCondition $nameCondition
+            limit :limit offset :skip;
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "gender" to gender,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Trainee>()
+            .list()
+    }
+
+    override fun getTotalCompanyTrainees(companyId: UUID, gender: Gender?, name: String?): Int {
+        val genderCondition = if (gender != null) "and gender = :gender" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select u.id, name, gender
+            from "user" u join (
+                select id, gender
+                from trainee t join (
+                    select trainee_id
+                    from trainer_trainee tt join (
+                        select trainer_id
+                        from company_trainer
+                        where company_id = :companyId
+                    ) ct on tt.trainer_id = ct.trainer_id
+            ) tId on t.id = tId.trainee_id) trainee on u.id = trainee.id
+            ${if (name != null || gender != null) "where" else ""} $genderCondition $nameCondition
             """.trimIndent()
         )
             .bindMap(
