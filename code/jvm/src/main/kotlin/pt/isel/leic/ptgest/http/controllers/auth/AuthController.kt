@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.AuthenticatedSignupRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.ForgetPasswordRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
@@ -30,7 +29,6 @@ import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
 import java.util.Date
-import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.PREFIX)
@@ -72,16 +70,29 @@ class AuthController(private val service: AuthService) {
         @Valid @RequestBody
         userInfo: AuthenticatedSignupRequest
     ): ResponseEntity<*> {
-        when (authenticatedUser.role) {
-            Role.COMPANY -> {
-                processCompanyRequest(authenticatedUser.id, userInfo)
+        when (userInfo) {
+            is AuthenticatedSignupRequest.Trainee -> {
+                service.signUpTrainee(
+                    authenticatedUser.id,
+                    authenticatedUser.role,
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.birthdate,
+                    userInfo.gender,
+                    userInfo.phoneNumber
+                )
             }
-
-            Role.INDEPENDENT_TRAINER -> {
-                processIndependentTrainerRequest(userInfo, authenticatedUser.id)
+            is AuthenticatedSignupRequest.HiredTrainer -> {
+                service.signUpHiredTrainer(
+                    authenticatedUser.id,
+                    authenticatedUser.role,
+                    userInfo.name,
+                    userInfo.email,
+                    userInfo.gender,
+                    userInfo.capacity,
+                    userInfo.phoneNumber
+                )
             }
-
-            else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
         return HttpResponse.created(
             message = "User registered successfully."
@@ -265,45 +276,5 @@ class AuthController(private val service: AuthService) {
         }
 
         return accessTokenParts[1]
-    }
-
-    private fun processCompanyRequest(authenticatedUserId: UUID, userInfo: AuthenticatedSignupRequest) {
-        when (userInfo) {
-            is AuthenticatedSignupRequest.HiredTrainer -> {
-                service.signUpHiredTrainer(
-                    authenticatedUserId,
-                    userInfo.name,
-                    userInfo.email,
-                    userInfo.gender,
-                    userInfo.capacity,
-                    userInfo.phoneNumber
-                )
-            }
-
-            is AuthenticatedSignupRequest.Trainee -> {
-                service.signUpTrainee(
-                    userInfo.name,
-                    userInfo.email,
-                    userInfo.birthdate,
-                    userInfo.gender,
-                    userInfo.phoneNumber
-                )
-            }
-        }
-    }
-
-    private fun processIndependentTrainerRequest(userInfo: AuthenticatedSignupRequest, authenticatedUserId: UUID) {
-        if (userInfo is AuthenticatedSignupRequest.Trainee) {
-            service.signUpTrainee(
-                userInfo.name,
-                userInfo.email,
-                userInfo.birthdate,
-                userInfo.gender,
-                userInfo.phoneNumber,
-                authenticatedUserId
-            )
-        } else {
-            throw AuthError.UserAuthenticationError.UnauthorizedRole
-        }
     }
 }

@@ -23,6 +23,7 @@ create table if not exists prod."user"
     role          prod.role                                                          not null
 );
 
+-- Auth tables
 create table if not exists prod.token
 (
     token_hash varchar(256) check (token_hash <> '') primary key,
@@ -40,6 +41,7 @@ create table if not exists prod.refresh_token
     token_hash varchar(256) primary key references prod.token (token_hash) on delete cascade
 );
 
+-- User's personal data
 create table if not exists prod.company
 (
     id uuid primary key references prod."user" (id) on delete cascade
@@ -52,6 +54,15 @@ create table if not exists prod.trainer
     phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
+create table if not exists prod.trainee
+(
+    id           uuid primary key references prod."user" (id) on delete cascade,
+    gender       prod.gender not null,
+    birthdate    date       not null,
+    phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
+);
+
+-- User's relationships
 create table if not exists prod.company_trainer
 (
     company_id uuid references prod.company (id) on delete cascade,
@@ -60,12 +71,11 @@ create table if not exists prod.company_trainer
     primary key (company_id, trainer_id)
 );
 
-create table if not exists prod.trainee
+create table if not exists prod.company_trainee
 (
-    id           uuid primary key references prod."user" (id) on delete cascade,
-    gender       prod.gender not null,
-    birthdate    date       not null,
-    phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
+    company_id uuid references prod.company (id) on delete cascade,
+    trainee_id uuid references prod.trainee (id) on delete cascade,
+    primary key (company_id, trainee_id)
 );
 
 create table if not exists prod.trainer_trainee
@@ -107,11 +117,11 @@ create table if not exists prod.workout
 
 create table if not exists prod.set
 (
-    id    serial primary key,
+    id         serial primary key,
     trainer_id uuid references prod.trainer (id) on delete cascade,
-    name  varchar(50)  not null,
-    notes text,
-    type  prod.set_type not null
+    name       varchar(50)  not null,
+    notes      text,
+    type       prod.set_type not null
 );
 
 create table if not exists prod.exercise
