@@ -1,35 +1,73 @@
 <template>
     <div class="filters-box">
         <div class="filters">
-            <font-awesome-icon class="x-button" :icon="faX"></font-awesome-icon>
+            <font-awesome-icon @click="() => {
+                        $emit('visible', false)
+                    }
+            " class="x-button" :icon="faX"/>
            <div class="filter-texts">Filter by:</div>
               <div class="filter-sort">
                   Availability
                   <font-awesome-icon v-if="isSortedDown" @click="handleSort" class="avail-icons active" :icon="faArrowUpWideShort"></font-awesome-icon>
                   <font-awesome-icon v-if="!isSortedDown" @click="handleSort" class="avail-icons active" :icon="faArrowDownWideShort"></font-awesome-icon>
               </div>
-              <div class="filter-gender">Gender</div>
+              <div class="filter-gender">
+                  Gender
+                  <font-awesome-icon @click="handleGender('1')" :class="[gender == '1' ?'gender-icon active' : 'gender-icon']" :icon="faPerson"></font-awesome-icon>
+                  <font-awesome-icon @click="handleGender('2')" :class="[gender == '2' ?'gender-icon active' : 'gender-icon']" :icon="faPersonDress"></font-awesome-icon>
+                  <font-awesome-icon @click="handleGender('3')" :class="[gender == '3' ?'gender-icon active' : 'gender-icon']" :icon="faPersonHalfDress"></font-awesome-icon>
+              </div>
+            <default-button class="button" display-text="Apply Filters" :click-handler="handleApplyFilters"  ></default-button>
         </div>
-
-
-
-
     </div>
 </template>
 
 <script setup lang="ts">
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faArrowDownWideShort, faArrowUpWideShort, faX} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowDownWideShort,
+    faArrowUpWideShort,
+    faPerson,
+    faPersonDress, faPersonHalfDress,
+    faX
+} from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
+import DefaultButton from "../../../../components/utils/DefaultButton.vue";
+import getCompanyTrainers from "@/services/companyServices/getCompanyTrainers.ts";
 
-
+const gender = ref("");
 const isSortedDown = ref(false);
+
+const handleGender = (newGender: string) => {
+    gender.value = newGender
+    console.log(gender.value)
+}
 const handleSort = ( ) => {
     isSortedDown.value = !isSortedDown.value;
     console.log("Sorting")
 }
 
+
+const handleApplyFilters = () => {
+    const sorted = isSortedDown.value ? "ASC" : "DESC";
+    let genderValue = null;
+        switch(gender.value){
+            case "1":
+                genderValue = 'MALE'
+                break;
+            case "2":
+                genderValue = 'FEMALE'
+                break;
+            case "3":
+                genderValue = 'OTHER'
+                break;
+
+        }
+        console.log(genderValue)
+    console.log(sorted)
+    getCompanyTrainers(4, null, sorted, genderValue)
+}
 </script>
 
 <style scoped>
@@ -37,7 +75,7 @@ const handleSort = ( ) => {
 .filters-box{
     position: absolute;
     background-color: var(--primary-color);
-    width: 20em;
+    width: 25em;
     height: 20em;
     border-radius: 10px;
     z-index: 99;
@@ -45,7 +83,8 @@ const handleSort = ( ) => {
 .filters{
     display: grid;
     grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 0.5em;
     justify-content: center;
     align-items: start;
 }
@@ -56,6 +95,7 @@ const handleSort = ( ) => {
     grid-row-end: 1;
     grid-column-start: 4;
     grid-column-end: 5;
+    cursor: pointer;
 }
 
 
@@ -67,7 +107,7 @@ const handleSort = ( ) => {
     grid-column-end: 1;
     grid-row-start: 0;
     grid-row-end: 1;
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: bold;
     font-family: Poppins, sans-serif;
 }
@@ -85,13 +125,11 @@ const handleSort = ( ) => {
 
 .filter-gender{
     grid-column-start: 2;
-    grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 2;
     font-size: 1.2em;
     font-weight: bold;
     font-family: Poppins, sans-serif;
-    background-color: #c800ff;
 }
 
 .avail-icons{
@@ -102,6 +140,26 @@ const handleSort = ( ) => {
     background-color: var(--light-blue);
     color: whitesmoke;
     border-radius: 10px;
+}
+.gender-icon{
+    padding: 0.5em;
+    margin: 0.5em;
+    cursor: pointer;
+}
+
+.button{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    margin-top: 1em;
+    width: 15em;
+    height: 3em;
+    border-radius: 5px;
+    background-color: whitesmoke;
+    color: var(--sign-up-black);
+    border: 0;
+    cursor: pointer;
 }
 
 </style>
