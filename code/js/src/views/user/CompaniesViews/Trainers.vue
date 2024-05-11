@@ -6,8 +6,8 @@
                 <router-link :to="{ name: 'registerTrainer',  params: { isTrainee: false }}" class="add-trainer">
                     <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
                 </router-link>
-                <font-awesome-icon @click="handleFilters" :icon="faFilter" class="filter-icon"></font-awesome-icon>
-                <Filters v-if="areFiltersVisible"></Filters>
+                <font-awesome-icon v-if="companyTrainersRef.trainers.length != 0" @click="handleFilters(true)" :icon="faFilter" class="filter-icon"></font-awesome-icon>
+                <Filters @visible="handleFilters($event)" v-if="areFiltersVisible"></Filters>
                 <div v-for="trainer in companyTrainersRef.trainers" class="trainer">
                     <TrainerBox :trainer="trainer"></TrainerBox>
                 </div>
@@ -50,7 +50,7 @@ const skip = ref(0) ;
 const areFiltersVisible = ref(false);
 (async () => {
  try {
-    companyTrainersRef.value = await getCompanyTrainers(skip.value);
+    companyTrainersRef.value = await getCompanyTrainers(skip.value, null, null, null );
  } catch (error) {
      console.error("Error getting user info:", error)
  }
@@ -76,8 +76,9 @@ const getTrainers = async (skip: number) => {
         console.error("Error getting user info:", error)
     }
 }
-const handleFilters = () => {
-    areFiltersVisible.value = !areFiltersVisible.value;
+const handleFilters = (isOpen : boolean) => {
+    console.log(isOpen)
+    areFiltersVisible.value = isOpen;
     console.log("Filters")
 }
 
@@ -92,6 +93,7 @@ const handleFilters = () => {
     margin-top: 2em;
     background-color: var(--sign-up-blue);
     border-radius: 10px;
+    min-width: 25em;
 }
 
 .pagination{
@@ -105,6 +107,7 @@ const handleFilters = () => {
 .icons{
     padding: 1em;
     transition: 1ms ease-in ;
+    cursor: pointer;
 }
 
 .icons-disable{
@@ -133,6 +136,7 @@ h2{
 .filter-icon{
     position: relative;
     left: 14em;
+    cursor: pointer;
 }
 
 </style>

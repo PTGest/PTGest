@@ -17,7 +17,7 @@
         </div>
         <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
         <font-awesome-icon v-if="!isDisabled" :icon="faCheck" @click="updateCapacity" class="icon"></font-awesome-icon>
-        <font-awesome-icon :icon="faX" class="deleteIcon"></font-awesome-icon>
+        <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
 
     </div>
 </template>
@@ -109,10 +109,10 @@ input{
     color: whitesmoke;
 }
 
-.deleteIcon{
+.delete-icon{
     position: relative;
     top: -0.5em;
-    right: -0.7em;
+    right: -2.6em;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
