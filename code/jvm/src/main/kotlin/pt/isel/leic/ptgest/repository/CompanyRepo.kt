@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.company.model.Trainee
 import pt.isel.leic.ptgest.domain.company.model.Trainer
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import java.util.UUID
@@ -18,6 +19,16 @@ interface CompanyRepo {
     ): List<Trainer>
 
     fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?, name: String?): Int
+
+    fun getCompanyTrainees(
+        companyId: UUID,
+        skip: Int,
+        limit: Int?,
+        gender: Gender?,
+        name: String?
+    ): List<Trainee>
+
+    fun getTotalCompanyTrainees(companyId: UUID, gender: Gender?, name: String?): Int
 
     fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer?
 

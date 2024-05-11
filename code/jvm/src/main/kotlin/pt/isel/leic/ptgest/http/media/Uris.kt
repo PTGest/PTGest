@@ -26,6 +26,7 @@ object Uris {
     object Company {
         const val PREFIX = "${Uris.PREFIX}/company"
         const val COMPANY_TRAINERS = "/trainers"
+        const val COMPANY_TRAINEES = "/trainees"
         const val ASSIGN_TRAINER = "/trainee/{traineeId}/assign-trainer"
         const val REASSIGN_TRAINER = "/trainee/{traineeId}/reassign-trainer"
         const val UPDATE_TRAINER_CAPACITY = "/trainer/{trainerId}/update-capacity"
