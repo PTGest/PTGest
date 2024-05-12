@@ -63,12 +63,17 @@ class AuthService(
 
     fun signUpHiredTrainer(
         companyId: UUID,
+        userRole: Role,
         name: String,
         email: String,
         gender: Gender,
         capacity: Int,
         phoneNumber: String?
     ) {
+        if (userRole != Role.COMPANY) {
+            throw AuthError.UserAuthenticationError.UnauthorizedRole
+        }
+
         Validators.validate(
             Validators.ValidationRequest(
                 capacity,
@@ -97,13 +102,18 @@ class AuthService(
     }
 
     fun signUpTrainee(
+        userId: UUID,
+        userRole: Role,
         name: String,
         email: String,
         birthdate: Date,
         gender: Gender,
-        phoneNumber: String?,
-        trainerId: UUID? = null
+        phoneNumber: String?
     ) {
+        if (userRole != Role.COMPANY && userRole != Role.INDEPENDENT_TRAINER) {
+            throw AuthError.UserAuthenticationError.UnauthorizedRole
+        }
+
         Validators.validate(
             Validators.ValidationRequest(
                 birthdate,
@@ -113,25 +123,21 @@ class AuthService(
 
         transactionManager.run {
             val authRepo = it.authRepo
-            val userRepo = it.userRepo
 
             val tempPassword = authDomain.generateTokenValue()
             val tempPasswordHash = authDomain.hashPassword(tempPassword)
 
-            val userId = it.createUser(
+            val traineeId = it.createUser(
                 name,
                 email,
                 tempPasswordHash,
                 Role.TRAINEE
             )
 
-            authRepo.createTrainee(userId, birthdate, gender, phoneNumber?.trim())
+            authRepo.createTrainee(traineeId, birthdate, gender, phoneNumber?.trim())
 
-            if (trainerId != null) {
-                userRepo.associateTraineeToTrainer(userId, trainerId)
-            }
+            it.associateTrainee(userId, userRole, traineeId)
         }
-
         reSetPassword(email, true)
     }
 
@@ -253,10 +259,12 @@ class AuthService(
     fun refreshToken(accessToken: String, refreshToken: String, currentDate: Date): TokenPair {
         val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
         val accessTokenDetails = jwtService.extractToken(accessToken.trim())
-        val refreshTokenDetails = getRefreshTokenDetails(
-            refreshTokenHash,
-            accessTokenDetails.userId
-        )
+        val refreshTokenDetails = transactionManager.run {
+            it.getRefreshTokenDetails(
+                refreshTokenHash,
+                accessTokenDetails.userId
+            )
+        }
 
         if (refreshTokenDetails.expiration.before(currentDate)) {
             throw AuthError.TokenError.TokenExpired
@@ -354,17 +362,32 @@ class AuthService(
         )
     }
 
-    private fun getRefreshTokenDetails(tokenHash: String, userId: UUID): TokenDetails =
-        transactionManager.run {
-            val authRepo = it.authRepo
+    private fun Transaction.getRefreshTokenDetails(tokenHash: String, userId: UUID): TokenDetails {
+        val refreshToken = authRepo.getRefreshTokenDetails(tokenHash)
+            ?: throw AuthError.TokenError.InvalidRefreshToken
 
-            val refreshToken = authRepo.getRefreshTokenDetails(tokenHash)
-                ?: throw AuthError.TokenError.InvalidRefreshToken
-
-            if (refreshToken.userId != userId) {
-                throw AuthError.TokenError.UserIdMismatch
-            }
-
-            return@run refreshToken
+        if (refreshToken.userId != userId) {
+            throw AuthError.TokenError.UserIdMismatch
         }
+
+        return refreshToken
+    }
+
+    private fun Transaction.associateTrainee(userId: UUID, userRole: Role, traineeId: UUID) {
+        when (userRole) {
+            Role.COMPANY -> {
+                userRepo.associateTraineeToCompany(
+                    traineeId = traineeId,
+                    companyId = userId
+                )
+            }
+            Role.INDEPENDENT_TRAINER -> {
+                userRepo.associateTraineeToTrainer(
+                    traineeId = traineeId,
+                    trainerId = traineeId
+                )
+            }
+            else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
+        }
+    }
 }

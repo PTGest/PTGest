@@ -26,6 +26,22 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
+    override fun associateTraineeToCompany(traineeId: UUID, companyId: UUID) {
+        handle.createUpdate(
+            """
+                insert into company_trainee (company_id, trainee_id)
+                values (:companyId, :traineeId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "traineeId" to traineeId
+                )
+            )
+            .execute()
+    }
+
     override fun getUserDetails(email: String): UserDetails? =
         handle.createQuery(
             """

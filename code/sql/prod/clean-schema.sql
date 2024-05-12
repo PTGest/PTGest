@@ -1,9 +1,10 @@
 begin work;
 
-do $$
+do
+$$
     declare
         table_name text;
-        seq_name text;
+        seq_name   text;
     begin
         for table_name in (select tablename from pg_tables where schemaname = 'prod')
             loop

@@ -9,6 +9,8 @@ interface UserRepo {
 
     fun associateTraineeToTrainer(traineeId: UUID, trainerId: UUID)
 
+    fun associateTraineeToCompany(traineeId: UUID, companyId: UUID)
+
     fun getUserDetails(email: String): UserDetails?
 
     fun getUserDetails(userId: UUID): UserDetails?

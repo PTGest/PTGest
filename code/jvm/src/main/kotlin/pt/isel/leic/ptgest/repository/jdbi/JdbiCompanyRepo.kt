@@ -98,12 +98,10 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                 select id, gender
                 from trainee t join (
                     select trainee_id
-                    from trainer_trainee tt join (
-                        select trainer_id
-                        from company_trainer
-                        where company_id = :companyId
-                    ) ct on tt.trainer_id = ct.trainer_id
-            ) tId on t.id = tId.trainee_id) trainee on u.id = trainee.id
+                    from company_trainee
+                    where company_id = :companyId
+                ) tId on t.id = tId.trainee_id
+            ) trainee on u.id = trainee.id
             ${if (name != null || gender != null) "where" else ""} $genderCondition $nameCondition
             limit :limit offset :skip;
             """.trimIndent()
@@ -127,17 +125,15 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
         return handle.createQuery(
             """
-            select u.id, name, gender
+            select count(*)
             from "user" u join (
                 select id, gender
                 from trainee t join (
                     select trainee_id
-                    from trainer_trainee tt join (
-                        select trainer_id
-                        from company_trainer
-                        where company_id = :companyId
-                    ) ct on tt.trainer_id = ct.trainer_id
-            ) tId on t.id = tId.trainee_id) trainee on u.id = trainee.id
+                    from company_trainee
+                    where company_id = :companyId
+                ) tId on t.id = tId.trainee_id
+            ) trainee on u.id = trainee.id
             ${if (name != null || gender != null) "where" else ""} $genderCondition $nameCondition
             """.trimIndent()
         )
