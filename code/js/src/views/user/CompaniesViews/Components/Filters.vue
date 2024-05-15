@@ -34,7 +34,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
 import DefaultButton from "../../../../components/utils/DefaultButton.vue";
-import getCompanyTrainers from "@/services/companyServices/getCompanyTrainers.ts";
+import getCompanyTrainersOrTrainees from "@/services/companyServices/getCompanyTrainersOrTrainees.js";
 
 const gender = ref("");
 const isSortedDown = ref(false);
@@ -66,7 +66,7 @@ const handleApplyFilters = () => {
         }
         console.log(genderValue)
     console.log(sorted)
-    getCompanyTrainers(4, null, sorted, genderValue)
+    getCompanyTrainersOrTrainees(4, null, sorted, genderValue)
 }
 </script>
 

@@ -3,12 +3,11 @@
         <h1>Personal Info</h1>
         <div>
             <p>{{ props.email }}</p>
-            <p>Phone: {{ props.phone }}</p>
-            <p>Location: {{ props.location }}</p>
-            <p>Age: {{ props.age }}</p>
-            <p>Height: {{ props.height }}</p>
-            <p>Weight: {{ props.weight }}</p>
-            <p>BMI: {{ props.BMI }}</p>
+<!--            <p>Phone: {{ props.phone }}</p>-->
+<!--            <p>Age: {{ props.age }}</p>-->
+<!--            <p>Height: {{ props.height }}</p>-->
+<!--            <p>Weight: {{ props.weight }}</p>-->
+<!--            <p>BMI: {{ props.BMI }}</p>-->
         </div>
     </div>
 </template>
@@ -18,7 +17,6 @@ const props = defineProps({
     userName: { type: String, default: "" },
     email: { type: String, default: "" },
     phone: { type: String, default: "" },
-    location: { type: String, default: "" },
     age: { type: Number, default: -1 },
     height: { type: Number, default: -1 },
     weight: { type: Number, default: -1 },

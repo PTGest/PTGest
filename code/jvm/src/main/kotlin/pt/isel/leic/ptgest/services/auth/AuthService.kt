@@ -69,7 +69,7 @@ class AuthService(
         gender: Gender,
         capacity: Int,
         phoneNumber: String?
-    ) {
+    ): UUID{
         if (userRole != Role.COMPANY) {
             throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
@@ -81,24 +81,26 @@ class AuthService(
             ) { it as Int > 0 }
         )
 
-        transactionManager.run {
+        val trainerId = transactionManager.run {
             val authRepo = it.authRepo
 
             val tempPassword = authDomain.generateTokenValue()
             val tempPasswordHash = authDomain.hashPassword(tempPassword)
 
-            val userId = it.createUser(
+            val trainerId = it.createUser(
                 name,
                 email,
                 tempPasswordHash,
                 Role.HIRED_TRAINER
             )
 
-            authRepo.createTrainer(userId, gender, phoneNumber?.trim())
-            authRepo.createCompanyTrainer(companyId, userId, capacity)
+            authRepo.createTrainer(trainerId, gender, phoneNumber?.trim())
+            authRepo.createCompanyTrainer(companyId, trainerId, capacity)
+            return@run trainerId
         }
 
         reSetPassword(email, true)
+        return trainerId
     }
 
     fun signUpTrainee(
@@ -109,7 +111,7 @@ class AuthService(
         birthdate: Date,
         gender: Gender,
         phoneNumber: String?
-    ) {
+    ) : UUID {
         if (userRole != Role.COMPANY && userRole != Role.INDEPENDENT_TRAINER) {
             throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
@@ -121,7 +123,7 @@ class AuthService(
             ) { (it as Date).before(Date()) }
         )
 
-        transactionManager.run {
+        val traineeId = transactionManager.run {
             val authRepo = it.authRepo
 
             val tempPassword = authDomain.generateTokenValue()
@@ -137,8 +139,10 @@ class AuthService(
             authRepo.createTrainee(traineeId, birthdate, gender, phoneNumber?.trim())
 
             it.associateTrainee(userId, userRole, traineeId)
+            return@run traineeId
         }
         reSetPassword(email, true)
+        return traineeId
     }
 
     fun reSetPassword(email: String, setPassword: Boolean = false) {

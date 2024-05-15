@@ -15,11 +15,15 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
         switch (response.status) {
             case 201:
                 if(userRegisterData instanceof TraineeRegisterData){
-                    router.push("/trainees")
+                   response.json().then((data) => {
+                        const userId = data.details.userId
+                        router.push({name: "assignTrainer", params: {traineeId: userId}})
+                        return
+                    })
                 }else{
                     router.push("/trainers")
                 }
-                return response.json()
+                break;
             case 409:
                 throw new Error("Email already exists")
             default:

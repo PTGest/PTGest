@@ -20,6 +20,7 @@ import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.RefreshTokenRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.ResetPasswordRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.SignupRequest
+import pt.isel.leic.ptgest.http.controllers.auth.model.response.AuthenticatedSignupResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.RefreshTokenResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
@@ -72,7 +73,7 @@ class AuthController(private val service: AuthService) {
     ): ResponseEntity<*> {
         when (userInfo) {
             is AuthenticatedSignupRequest.Trainee -> {
-                service.signUpTrainee(
+                val traineeId = service.signUpTrainee(
                     authenticatedUser.id,
                     authenticatedUser.role,
                     userInfo.name,
@@ -81,9 +82,15 @@ class AuthController(private val service: AuthService) {
                     userInfo.gender,
                     userInfo.phoneNumber
                 )
+                return HttpResponse.created(
+                    message = "Trainee registered successfully.",
+                    details = AuthenticatedSignupResponse(
+                        userId = traineeId
+                    )
+                )
             }
             is AuthenticatedSignupRequest.HiredTrainer -> {
-                service.signUpHiredTrainer(
+                val trainerId = service.signUpHiredTrainer(
                     authenticatedUser.id,
                     authenticatedUser.role,
                     userInfo.name,
@@ -92,11 +99,14 @@ class AuthController(private val service: AuthService) {
                     userInfo.capacity,
                     userInfo.phoneNumber
                 )
+                return HttpResponse.created(
+                    message = "Hired Trainer registered successfully.",
+                    details = AuthenticatedSignupResponse(
+                        userId = trainerId
+                    )
+                )
             }
         }
-        return HttpResponse.created(
-            message = "User registered successfully."
-        )
     }
 
     @PostMapping(Uris.Auth.FORGET_PASSWORD)

@@ -1,7 +1,7 @@
 <template>
     <div class="profile-container">
         <ImageContainer class="image-container" :src="image" />
-        <UserInfoContainer class="user-info" userName="Reports" />
+<!--        <UserInfoContainer class="user-info" userName="Reports" />-->
         <UserPersonalInfoContainer class="user-personal-info" :email="userInfo.email" :phone="userInfo.phone" location="Habibi Land" age="25" height="180cm" weight="80kg" BMI="24.7" />
     </div>
 </template>
@@ -9,7 +9,7 @@
 <script setup lang="ts">
 //import BioCard from "../../../views/user/UserProfile/Bio-Card.vue";
 
-import UserInfoContainer from "../UserProfile/components/UserInfoContainer.vue"
+//import UserInfoContainer from "../UserProfile/components/UserInfoContainer.vue"
 import ImageContainer from "../UserProfile/components/ImageContainer.vue"
 import image from "../../../assets/./userIcons/man.png"
 import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInfoContainer.vue"
@@ -34,11 +34,13 @@ console.log(userInfo)
 </script>
 
 <style scoped>
+
+
 .profile-container {
     display: grid;
-    grid-template-columns: 1.5fr 2fr;
+    grid-template-columns: 1.5fr;
     grid-gap: 1.5em;
-    grid-template-rows: 1fr 2fr;
+    grid-template-rows: 1.5fr 1fr;
     background-color: var(--sign-up-blue);
     border-radius: 10px;
 }
@@ -75,5 +77,6 @@ console.log(userInfo)
     background-color: var(--primary-color);
     border-radius: 10px;
     font-weight: bold;
+    padding: 0 4em 0 4em;
 }
 </style>

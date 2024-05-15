@@ -21,8 +21,10 @@
                         <div v-if="!is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Signup</div>
                     </router-link>
                 </template>
-                <div v-if="userRole == 'COMPANY' || userRole == 'HIRED_TRAINER' ">
+                <div v-if="userRole == 'COMPANY' || userRole == 'HIRED_TRAINER' || userRole == 'INDEPENDENT_TRAINER' ">
                     <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'trainees'}">Trainees</router-link>
+                </div>
+                <div v-if="userRole == 'COMPANY'">
                     <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'trainers'}">Trainers</router-link>
                 </div>
                 <UserIcon @click="handleMenu" class="userIcon" :isOpen="is_open" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open)) " :isMobileView="is_mobile_view" />

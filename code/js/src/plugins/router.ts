@@ -12,6 +12,7 @@ import Students from "../views/user/IndependentTrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue";
 import RBAC from "../services/utils/RBAC/RBAC.ts";
 import store from "../store";
+import AssignTrainer from "../views/user/CompaniesViews/AssignTrainer.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -32,9 +33,12 @@ const routes: RouteRecordRaw[] = [
     { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
             roleNeeded : ['TRAINEE', 'COMPANY', 'TRAINER', 'HIRED_TRAINER'] } },
     { path: "/trainees", name: "trainees", component: Students, meta: { requiresAuth: true ,
-        roleNeeded : ['COMPANY', 'TRAINER', 'HIRED_TRAINER'], canEdit:['COMPANY', 'TRAINER']}
+        roleNeeded : ['COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER'], canEdit:['COMPANY', 'INDEPENDENT_TRAINER']}
     },
     { path: "/trainers", name: "trainers", component: Trainers, meta: { requiresAuth: true,
+            roleNeeded : ['COMPANY']}
+    },
+    { path: "/trainee/:traineeId", name: "assignTrainer", component: AssignTrainer, meta: { requiresAuth: true,
             roleNeeded : ['COMPANY']}
     },
     { path: "/register-trainee/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true,
@@ -45,7 +49,7 @@ const routes: RouteRecordRaw[] = [
     },
     //Error Views
     { path: "/error", name: "error", component: Error },
-    { path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },
+    //{ path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },
 ]
 
 const router = createRouter({

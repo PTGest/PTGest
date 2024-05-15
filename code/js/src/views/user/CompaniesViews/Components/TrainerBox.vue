@@ -17,6 +17,7 @@
         </div>
         <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
         <font-awesome-icon v-if="!isDisabled" :icon="faCheck" @click="updateCapacity" class="icon"></font-awesome-icon>
+        <AssignTrainerButton v-if="isAssignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId"></AssignTrainerButton>
         <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
 
     </div>
@@ -28,10 +29,13 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faCheck, faPen, faX} from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
 import changeTrainerCapacity from "../../../../services/companyServices/changeTrainerCapacity.ts";
+import AssignTrainer from "@/views/user/CompaniesViews/AssignTrainer.vue";
+import AssignTrainerButton from "@/views/user/CompaniesViews/Components/AssignTrainerButton.vue";
 
 const isDisabled = ref(true)
 const props = defineProps<{
     trainer: Trainer
+    isAssignTrainer: boolean
 }>()
 const capacity = ref(props.trainer.capacity)
 const assignedTrainees = ref(props.trainer.assignedTrainees)

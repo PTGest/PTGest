@@ -10,7 +10,6 @@ const props = defineProps({
     userName: { type: String, default: "" },
     email: { type: String, default: "" },
     phone: { type: String, default: "" },
-    location: { type: String, default: "" },
     age: { type: Number, default: -1 },
     height: { type: Number, default: -1 },
     weight: { type: Number, default: -1 },
