@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.services.workout
 
-import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.SetType
 
 class ExerciseValidator {
@@ -162,24 +162,24 @@ class ExerciseValidator {
     }
 
     companion object {
-        private val validators: Map<Pair<SetType, ExerciseType>, Validator> = mapOf(
-            Pair(SetType.SIMPLESET, ExerciseType.BODYWEIGHT) to SimpleSetValidators.BodyWeightValidator(),
-            Pair(SetType.SIMPLESET, ExerciseType.WEIGHTLIFT) to SimpleSetValidators.WeightLiftValidator(),
-            Pair(SetType.SIMPLESET, ExerciseType.RUNNING_IN) to SimpleSetValidators.RunningInValidator(),
-            Pair(SetType.SIMPLESET, ExerciseType.RUNNING_OUT) to SimpleSetValidators.OutdoorActivitiesValidator(),
-            Pair(SetType.SIMPLESET, ExerciseType.CYCLING_IN) to SimpleSetValidators.CyclingInValidator(),
-            Pair(SetType.SIMPLESET, ExerciseType.CYCLING_OUT) to SimpleSetValidators.OutdoorActivitiesValidator(),
-            Pair(SetType.SIMPLESET, ExerciseType.OTHER) to SimpleSetValidators.OtherValidator(),
-            Pair(SetType.DROPSET, ExerciseType.BODYWEIGHT) to DropSetValidators.BodyWeightValidator(),
-            Pair(SetType.DROPSET, ExerciseType.WEIGHTLIFT) to DropSetValidators.WeightLiftValidator(),
-            Pair(SetType.SUPERSET, ExerciseType.BODYWEIGHT) to SimpleSetValidators.BodyWeightValidator(),
-            Pair(SetType.SUPERSET, ExerciseType.WEIGHTLIFT) to SimpleSetValidators.WeightLiftValidator()
+        private val validators: Map<Pair<SetType, Modality>, Validator> = mapOf(
+            Pair(SetType.SIMPLESET, Modality.BODYWEIGHT) to SimpleSetValidators.BodyWeightValidator(),
+            Pair(SetType.SIMPLESET, Modality.WEIGHTLIFT) to SimpleSetValidators.WeightLiftValidator(),
+            Pair(SetType.SIMPLESET, Modality.RUNNING_IN) to SimpleSetValidators.RunningInValidator(),
+            Pair(SetType.SIMPLESET, Modality.RUNNING_OUT) to SimpleSetValidators.OutdoorActivitiesValidator(),
+            Pair(SetType.SIMPLESET, Modality.CYCLING_IN) to SimpleSetValidators.CyclingInValidator(),
+            Pair(SetType.SIMPLESET, Modality.CYCLING_OUT) to SimpleSetValidators.OutdoorActivitiesValidator(),
+            Pair(SetType.SIMPLESET, Modality.OTHER) to SimpleSetValidators.OtherValidator(),
+            Pair(SetType.DROPSET, Modality.BODYWEIGHT) to DropSetValidators.BodyWeightValidator(),
+            Pair(SetType.DROPSET, Modality.WEIGHTLIFT) to DropSetValidators.WeightLiftValidator(),
+            Pair(SetType.SUPERSET, Modality.BODYWEIGHT) to SimpleSetValidators.BodyWeightValidator(),
+            Pair(SetType.SUPERSET, Modality.WEIGHTLIFT) to SimpleSetValidators.WeightLiftValidator()
         )
 
-        fun getValidator(setType: SetType, exerciseType: ExerciseType): Validator {
-            val key = Pair(setType, exerciseType)
+        fun getValidator(setType: SetType, modality: Modality): Validator {
+            val key = Pair(setType, modality)
 
-            return requireNotNull(validators[key]) { "SetType $setType does not support ExerciseType $exerciseType" }
+            return requireNotNull(validators[key]) { "SetType $setType does not support ExerciseType $modality" }
         }
     }
 }

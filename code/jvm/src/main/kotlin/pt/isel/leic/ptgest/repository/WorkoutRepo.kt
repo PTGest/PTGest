@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import java.util.UUID
@@ -10,8 +10,8 @@ interface WorkoutRepo {
     fun createExercise(
         name: String,
         description: String?,
-        muscleGroup: MuscleGroup,
-        exerciseType: ExerciseType,
+        muscleGroup: List<MuscleGroup>,
+        modality: Modality,
         ref: String?
     ): Int
 

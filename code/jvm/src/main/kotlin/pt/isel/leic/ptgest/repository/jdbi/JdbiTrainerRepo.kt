@@ -2,9 +2,12 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.workout.Modality
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.model.Exercise
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Set
+import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.repository.TrainerRepo
 import java.util.UUID
@@ -23,10 +26,73 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<UUID>()
             .one()
 
+    override fun getExercises(
+        trainerId: UUID,
+        skip: Int,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): List<Exercise> {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val modalityCondition = if (modality != null) "and type = :modality" else ""
+
+        return handle.createQuery(
+            """
+            select id, name
+            from exercise_trainer ec join exercise e on ec.exercise_id = e.id
+            where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name,
+                    "modality" to modality?.name
+                )
+            )
+            .mapTo<Exercise>()
+            .list()
+    }
+
+    override fun getTotalExercises(
+        trainerId: UUID,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): Int {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val modalityCondition = if (modality != null) "and type = :modality" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from exercise_trainer ec join exercise e on ec.exercise_id = e.id
+            where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to trainerId,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name,
+                    "modality" to modality?.name
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getExerciseDetails(trainerId: UUID, exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
-            select name, description, muscle_group, type, ref
+            select id, name, description, muscle_group, type, ref
             from exercise e join exercise_trainer et on e.id = et.exercise_id
             where id = :id and trainer_id = :trainer_id
             """.trimIndent()
@@ -113,7 +179,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<Set>()
             .one()
 
-    override fun getSetExercises(setId: Int): List<Exercise> =
+    override fun getSetExercises(setId: Int): List<SetExerciseDetails> =
         handle.createQuery(
             """
             select e.id, e.name, e.muscle_group, e.type, se.details
@@ -123,7 +189,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             """.trimIndent()
         )
             .bind("setId", setId)
-            .mapTo<Exercise>()
+            .mapTo<SetExerciseDetails>()
             .list()
 
     override fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout? =

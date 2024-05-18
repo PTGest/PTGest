@@ -1,14 +1,16 @@
 package pt.isel.leic.ptgest.http.controllers.trainer.model.request
 
 import jakarta.validation.constraints.NotEmpty
-import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import jakarta.validation.constraints.Size
+import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 
 data class CreateCustomExerciseRequest(
     @NotEmpty
     val name: String,
     val description: String?,
-    val muscleGroup: MuscleGroup,
-    val type: ExerciseType,
+    @field:Size(max = 3)
+    val muscleGroup: List<MuscleGroup>,
+    val modality: Modality,
     val ref: String?
 )

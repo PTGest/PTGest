@@ -8,13 +8,17 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.workout.Modality
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomWorkoutRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetExerciseDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetSetDetails
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
@@ -38,7 +42,7 @@ class TrainerController(
             exerciseDetails.name,
             exerciseDetails.description,
             exerciseDetails.muscleGroup,
-            exerciseDetails.type,
+            exerciseDetails.modality,
             exerciseDetails.ref
         )
 
@@ -47,6 +51,31 @@ class TrainerController(
         return HttpResponse.created(
             message = "Custom exercise created successfully.",
             details = CreateCustomWorkoutResponse(exerciseId)
+        )
+    }
+
+    @GetMapping(Uris.Trainer.GET_EXERCISES)
+    fun getExercises(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam name: String?,
+        @RequestParam muscleGroup: MuscleGroup?,
+        @RequestParam modality: Modality?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val exercises = trainerService.getExercises(
+            skip,
+            limit,
+            name,
+            muscleGroup,
+            modality,
+            authenticatedUser.id,
+            authenticatedUser.role
+        )
+
+        return HttpResponse.ok(
+            message = "Exercises retrieved successfully.",
+            details = GetExercisesResponse(exercises)
         )
     }
 

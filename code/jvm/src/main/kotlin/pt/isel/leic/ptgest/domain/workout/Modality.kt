@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.domain.workout
 
-enum class ExerciseType {
+enum class Modality {
     BODYWEIGHT,
     WEIGHTLIFT,
     RUNNING_IN,

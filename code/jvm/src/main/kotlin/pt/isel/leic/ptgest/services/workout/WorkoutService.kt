@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
@@ -12,6 +12,7 @@ import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.auth.AuthError
+import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.UUID
 
 @Service
@@ -21,17 +22,15 @@ class WorkoutService(
     fun createCustomExercise(
         name: String,
         description: String?,
-        muscleGroup: MuscleGroup,
-        exerciseType: ExerciseType,
+        muscleGroup: List<MuscleGroup>,
+        modality: Modality,
         ref: String?
     ): Int {
-        if (description != null) {
-            require(description.isNotEmpty()) { "Description must not be empty." }
-        }
+        Validators.validate(
+            Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() },
+            Validators.ValidationRequest(ref, "Reference must be a valid YouTube URL.") { isYoutubeUrl(it as String) }
+        )
 
-        if (ref != null) {
-            require(isYoutubeUrl(ref)) { "Reference must be a valid YouTube URL." }
-        }
         return transactionManager.run {
             val workoutRepo = it.workoutRepo
 
@@ -39,7 +38,7 @@ class WorkoutService(
                 name.trim(),
                 description,
                 muscleGroup,
-                exerciseType,
+                modality,
                 ref
             )
         }
@@ -67,7 +66,7 @@ class WorkoutService(
             setExercises.forEachIndexed { index, set ->
                 val exercise = it.getExercise(trainerId, userRole, set.exerciseId)
 
-                val validator = ExerciseValidator.getValidator(setType, exercise.type)
+                val validator = ExerciseValidator.getValidator(setType, exercise.modality)
                 val validatedDetails = validator.validate(set.details)
 
                 val jsonDetails = convertDataToJson(validatedDetails)

@@ -7,8 +7,10 @@ create extension if not exists "uuid-ossp";
 create type prod.role as enum ('COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER', 'TRAINEE');
 create type prod.gender as enum ('MALE', 'FEMALE', 'OTHER', 'UNDEFINED');
 create type prod.set_type as enum ('SIMPLESET', 'DROPSET', 'SUPERSET');
-create type prod.muscle_group as enum ('CHEST', 'BACK', 'SHOULDERS', 'BICEPS', 'TRICEPS', 'LEGS', 'ABS', 'CARDIO');
-create type prod.exercise_type as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
+create type prod.muscle_group as enum ('BICEPS', 'CHEST', 'CORE', 'FOREARMS', 'FULL_BODY',
+    'GLUTES', 'HAMSTRINGS', 'HIP_GROIN', 'LOWER_BACK', 'LOWER_BODY', 'LOWER_LEG', 'MID_BACK',
+    'QUADS', 'SHOULDERS', 'TRIPEPS', 'UPPER_BACK_NECK', 'UPPER_BODY');
+create type prod.modality as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
 -- TODO: to be changed
 create type prod.session_category as enum ('P', 'A');
 create type prod.source as enum ('T', 'P');
@@ -127,10 +129,10 @@ create table if not exists prod.set
 create table if not exists prod.exercise
 (
     id           serial primary key,
-    name         varchar(50)       not null,
+    name         varchar(50)        not null,
     description  text,
-    muscle_group prod.muscle_group  not null,
-    type         prod.exercise_type not null,
+    muscle_group prod.muscle_group[] not null,
+    modality     prod.modality       not null,
     ref          varchar(256)
 );
 

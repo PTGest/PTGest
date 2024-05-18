@@ -3,11 +3,10 @@ package pt.isel.leic.ptgest.domain.workout.model
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 
-data class ExerciseDetails(
+data class SetExerciseDetails(
     val id: Int,
     val name: String,
-    val description: String?,
     val muscleGroup: MuscleGroup,
     val modality: Modality,
-    val ref: String?
+    val details: Map<String, Any>
 )

@@ -3,8 +3,12 @@ package pt.isel.leic.ptgest.services.company
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.domain.company.model.CompanyTrainees
 import pt.isel.leic.ptgest.domain.company.model.CompanyTrainers
+import pt.isel.leic.ptgest.domain.workout.Modality
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.model.Exercises
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.UUID
@@ -128,6 +132,44 @@ class CompanyService(
         transactionManager.run {
             val companyRepo = it.companyRepo
             companyRepo.associateCompanyToExercise(companyId, exerciseId)
+        }
+    }
+
+    fun getExercises(
+        skip: Int?,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?,
+        trainerId: UUID,
+        userRole: Role
+    ): Exercises {
+        Validators.validate(
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(name, "Name must not be blank.") { (it as String).isNotBlank() }
+        )
+
+        return transactionManager.run {
+            val companyRepo = it.companyRepo
+
+            val exercises = companyRepo.getExercises(
+                trainerId,
+                skip ?: 0,
+                limit,
+                name,
+                muscleGroup,
+                modality
+            )
+
+            val totalExercises = companyRepo.getTotalExercises(
+                trainerId,
+                name,
+                muscleGroup,
+                modality
+            )
+
+            return@run Exercises(exercises, totalExercises)
         }
     }
 }

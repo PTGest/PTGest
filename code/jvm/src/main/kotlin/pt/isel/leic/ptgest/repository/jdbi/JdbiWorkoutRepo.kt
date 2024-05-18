@@ -2,7 +2,7 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.workout.ExerciseType
+import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.repository.WorkoutRepo
@@ -13,28 +13,30 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
     override fun createExercise(
         name: String,
         description: String?,
-        muscleGroup: MuscleGroup,
-        exerciseType: ExerciseType,
+        muscleGroup: List<MuscleGroup>,
+        modality: Modality,
         ref: String?
-    ): Int =
-        handle.createUpdate(
+    ): Int {
+        val muscleGroupArray = muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
+
+        return handle.createUpdate(
             """
-            insert into exercise (name, description, category, type, ref)
-            values (:name, :description, :muscleGroup::muscle_group, :type::exercise_type, :ref)
+            insert into exercise (name, description, muscle_group, modality, ref)
+            values (:name, :description, ARRAY[$muscleGroupArray], :modality::modality, :ref)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "name" to name,
                     "description" to description,
-                    "muscleGroup" to muscleGroup.name,
-                    "type" to exerciseType.name,
+                    "modality" to modality.name,
                     "ref" to ref
                 )
             )
             .executeAndReturnGeneratedKeys("id")
             .mapTo<Int>()
             .one()
+    }
 
     override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(

@@ -6,6 +6,9 @@ import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.company.model.Trainee
 import pt.isel.leic.ptgest.domain.company.model.Trainer
+import pt.isel.leic.ptgest.domain.workout.Modality
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.model.Exercise
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.CompanyRepo
 import java.util.UUID
@@ -251,10 +254,73 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .execute()
     }
 
+    override fun getExercises(
+        companyId: UUID,
+        skip: Int,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): List<Exercise> {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val modalityCondition = if (modality != null) "and type = :modality" else ""
+
+        return handle.createQuery(
+            """
+            select id, name
+            from exercise_company ec join exercise e on ec.exercise_id = e.id
+            where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name,
+                    "modality" to modality?.name
+                )
+            )
+            .mapTo<Exercise>()
+            .list()
+    }
+
+    override fun getTotalExercises(
+        companyId: UUID,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): Int {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val modalityCondition = if (modality != null) "and type = :modality" else ""
+
+        return handle.createQuery(
+            """
+            select id, name
+            from exercise_company ec join exercise e on ec.exercise_id = e.id
+            where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "companyId" to companyId,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name,
+                    "modality" to modality?.name
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
-            select name, description, muscle_group, type, ref
+            select id, name, description, muscle_group, type, ref
             from exercise e join exercise_company et on e.id = et.company_id
             where id = :id and company_id = :companyId
             """.trimIndent()

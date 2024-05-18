@@ -69,7 +69,7 @@ class AuthService(
         gender: Gender,
         capacity: Int,
         phoneNumber: String?
-    ): UUID{
+    ): UUID {
         if (userRole != Role.COMPANY) {
             throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
@@ -111,7 +111,7 @@ class AuthService(
         birthdate: Date,
         gender: Gender,
         phoneNumber: String?
-    ) : UUID {
+    ): UUID {
         if (userRole != Role.COMPANY && userRole != Role.INDEPENDENT_TRAINER) {
             throw AuthError.UserAuthenticationError.UnauthorizedRole
         }

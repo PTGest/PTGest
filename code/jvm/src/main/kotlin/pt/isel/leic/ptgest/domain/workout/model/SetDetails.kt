@@ -6,7 +6,7 @@ data class SetDetails(
     val name: String,
     val notes: String?,
     val type: SetType,
-    val exercises: List<Exercise>
+    val setExerciseDetails: List<SetExerciseDetails>
 ) {
-    constructor(set: Set, exercises: List<Exercise>) : this(set.name, set.notes, set.type, exercises)
+    constructor(set: Set, setExerciseDetails: List<SetExerciseDetails>) : this(set.name, set.notes, set.type, setExerciseDetails)
 }

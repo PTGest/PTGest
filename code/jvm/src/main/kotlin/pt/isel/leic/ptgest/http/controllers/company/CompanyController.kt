@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.workout.Modality
+import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.http.controllers.company.model.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
+import pt.isel.leic.ptgest.http.controllers.company.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.TraineeResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
@@ -44,7 +47,14 @@ class CompanyController(
         @RequestParam name: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainers = companyService.getCompanyTrainers(skip, limit, gender, availability, name, authenticatedUser.id)
+        val trainers = companyService.getCompanyTrainers(
+            skip,
+            limit,
+            gender,
+            availability,
+            name,
+            authenticatedUser.id
+        )
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
@@ -129,7 +139,7 @@ class CompanyController(
             exerciseDetails.name,
             exerciseDetails.description,
             exerciseDetails.muscleGroup,
-            exerciseDetails.exerciseType,
+            exerciseDetails.modality,
             exerciseDetails.ref
         )
 
@@ -138,6 +148,31 @@ class CompanyController(
         return HttpResponse.created(
             message = "Custom exercise created successfully.",
             details = CreateCustomWorkoutResponse(exerciseId)
+        )
+    }
+
+    @GetMapping(Uris.Trainer.GET_EXERCISES)
+    fun getExercises(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam name: String?,
+        @RequestParam muscleGroup: MuscleGroup?,
+        @RequestParam modality: Modality?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val exercises = companyService.getExercises(
+            skip,
+            limit,
+            name,
+            muscleGroup,
+            modality,
+            authenticatedUser.id,
+            authenticatedUser.role
+        )
+
+        return HttpResponse.ok(
+            message = "Exercises retrieved successfully.",
+            details = GetExercisesResponse(exercises)
         )
     }
 
