@@ -18,12 +18,14 @@ class CompanyService(
     private val transactionManager: TransactionManager
 ) {
 
+//  TODO: Check if the new Trainer is already assigned to the Trainee
     fun getCompanyTrainers(
         skip: Int?,
         limit: Int?,
         gender: Gender?,
         availability: Order,
         name: String?,
+        excludeTraineeTrainer: UUID?,
         companyId: UUID
     ): CompanyTrainers {
         Validators.validate(
@@ -35,8 +37,16 @@ class CompanyService(
         return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalCompanyTrainers(companyId, gender, name)
-            val trainers = companyRepo.getCompanyTrainers(companyId, skip ?: 0, limit, gender, availability, name)
+            val totalResults = companyRepo.getTotalCompanyTrainers(companyId, gender, name, excludeTraineeTrainer)
+            val trainers = companyRepo.getCompanyTrainers(
+                companyId,
+                skip ?: 0,
+                limit,
+                gender,
+                availability,
+                name,
+                excludeTraineeTrainer
+            )
 
             return@run CompanyTrainers(trainers, totalResults)
         }

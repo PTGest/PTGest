@@ -45,6 +45,7 @@ class CompanyController(
         @RequestParam gender: Gender?,
         @RequestParam(defaultValue = "DESC") availability: Order,
         @RequestParam name: String?,
+        @RequestParam excludeTraineeTrainer: UUID?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val trainers = companyService.getCompanyTrainers(
@@ -53,6 +54,7 @@ class CompanyController(
             gender,
             availability,
             name,
+            excludeTraineeTrainer,
             authenticatedUser.id
         )
 

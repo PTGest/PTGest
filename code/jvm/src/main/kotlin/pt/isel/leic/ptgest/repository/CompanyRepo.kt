@@ -18,10 +18,16 @@ interface CompanyRepo {
         limit: Int?,
         gender: Gender?,
         availability: Order,
-        name: String?
+        name: String?,
+        excludeTraineeTrainer: UUID?
     ): List<Trainer>
 
-    fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?, name: String?): Int
+    fun getTotalCompanyTrainers(
+        companyId: UUID,
+        gender: Gender?,
+        name: String?,
+        excludeTraineeTrainer: UUID?
+    ): Int
 
     fun getCompanyTrainees(
         companyId: UUID,

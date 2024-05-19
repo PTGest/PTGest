@@ -21,10 +21,16 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         limit: Int?,
         gender: Gender?,
         availability: Order,
-        name: String?
+        name: String?,
+        excludeTraineeTrainer: UUID?
     ): List<Trainer> {
         val genderCondition = if (gender != null) "and t.gender = :gender" else ""
         val nameCondition = if (name != null) "and name like :name" else ""
+        val excludeCondition = if (excludeTraineeTrainer != null) {
+            "where t_t.trainee_id != :excludeTraineeTrainer"
+        } else {
+            ""
+        }
 
         return handle.createQuery(
             """
@@ -35,6 +41,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                     select u.id as id, name, gender
                     from "user" u join trainer pt on u.id = pt.id
                 ) u_d left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                $excludeCondition
                 group by u_d.id, u_d.name, u_d.gender
             ) ptd on c_pt.trainer_id = ptd.id
             where company_id = :companyId $genderCondition $nameCondition
@@ -55,9 +62,19 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .list()
     }
 
-    override fun getTotalCompanyTrainers(companyId: UUID, gender: Gender?, name: String?): Int {
+    override fun getTotalCompanyTrainers(
+        companyId: UUID,
+        gender: Gender?,
+        name: String?,
+        excludeTraineeTrainer: UUID?
+    ): Int {
         val genderCondition = if (gender != null) "and t.gender = :gender" else ""
         val nameCondition = if (name != null) "and name like :name" else ""
+        val excludeCondition = if (excludeTraineeTrainer != null) {
+            "where t_t.trainee_id != :excludeTraineeTrainer"
+        } else {
+            ""
+        }
 
         return handle.createQuery(
             """
@@ -68,16 +85,18 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                     select u.id as id, name, gender
                     from "user" u join trainer pt on u.id = pt.id
                 ) u_d left join trainer_trainee t_t on u_d.id = t_t.trainer_id
+                $excludeCondition
                 group by u_d.id, u_d.name, u_d.gender
             ) ptd on c_pt.trainer_id = ptd.id
-            where company_id = :companyId $genderCondition $nameCondition
+            where company_id = :companyId $genderCondition $nameCondition $excludeCondition
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "companyId" to companyId,
                     "gender" to gender,
-                    "name" to "%$name%"
+                    "name" to "%$name%",
+                    "excludeTraineeTrainer" to excludeTraineeTrainer
                 )
             )
             .mapTo<Int>()
