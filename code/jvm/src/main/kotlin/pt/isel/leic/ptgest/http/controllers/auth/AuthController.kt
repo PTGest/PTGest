@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.AuthenticatedSignupRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.ForgetPasswordRequest
 import pt.isel.leic.ptgest.http.controllers.auth.model.request.LoginRequest
@@ -25,6 +26,7 @@ import pt.isel.leic.ptgest.http.controllers.auth.model.response.LoginResponse
 import pt.isel.leic.ptgest.http.controllers.auth.model.response.RefreshTokenResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
+import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
@@ -66,6 +68,7 @@ class AuthController(private val service: AuthService) {
     }
 
     @PostMapping(Uris.Auth.AUTHENTICATED_SIGNUP)
+    @RequiredRole(Role.COMPANY, Role.INDEPENDENT_TRAINER)
     fun authenticatedSignup(
         authenticatedUser: AuthenticatedUser,
         @Valid @RequestBody
@@ -84,9 +87,7 @@ class AuthController(private val service: AuthService) {
                 )
                 return HttpResponse.created(
                     message = "Trainee registered successfully.",
-                    details = AuthenticatedSignupResponse(
-                        userId = traineeId
-                    )
+                    details = AuthenticatedSignupResponse(traineeId)
                 )
             }
             is AuthenticatedSignupRequest.HiredTrainer -> {
@@ -101,9 +102,7 @@ class AuthController(private val service: AuthService) {
                 )
                 return HttpResponse.created(
                     message = "Hired Trainer registered successfully.",
-                    details = AuthenticatedSignupResponse(
-                        userId = trainerId
-                    )
+                    details = AuthenticatedSignupResponse(trainerId)
                 )
             }
         }
@@ -115,6 +114,7 @@ class AuthController(private val service: AuthService) {
         forgetInfo: ForgetPasswordRequest
     ): ResponseEntity<*> {
         service.reSetPassword(forgetInfo.email)
+
         return HttpResponse.ok(
             message = "Password reset email sent successfully."
         )
@@ -124,7 +124,8 @@ class AuthController(private val service: AuthService) {
     fun validatePasswordResetToken(
         @PathVariable token: String
     ): ResponseEntity<*> {
-        service.validatePasswordResetToken(token)
+        service.validatePasswordResetToken(token.trim())
+
         return HttpResponse.ok(
             message = "Password reset token validated successfully."
         )
@@ -136,7 +137,8 @@ class AuthController(private val service: AuthService) {
         @Valid @RequestBody
         resetInfo: ResetPasswordRequest
     ): ResponseEntity<*> {
-        service.resetPassword(token, resetInfo.password)
+        service.resetPassword(token.trim(), resetInfo.password)
+
         return HttpResponse.ok(
             message = "Password reset successfully."
         )
@@ -160,16 +162,15 @@ class AuthController(private val service: AuthService) {
 
         return HttpResponse.ok(
             message = "User logged in successfully.",
-            details = LoginResponse(
-                role = authenticationDetails.role,
-                tokens = authenticationDetails.tokens
-            )
+            details = LoginResponse(authenticationDetails)
         )
     }
 
     @PostMapping(Uris.Auth.REFRESH)
     fun refreshToken(
-        @RequestBody(required = false) refreshTokenBody: RefreshTokenRequest?,
+        @Valid
+        @RequestBody(required = false)
+        refreshTokenBody: RefreshTokenRequest?,
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {
@@ -198,16 +199,14 @@ class AuthController(private val service: AuthService) {
 
         return HttpResponse.ok(
             message = "Token refreshed successfully.",
-            details = RefreshTokenResponse(
-                accessToken = tokens.accessToken,
-                refreshToken = tokens.refreshToken
-            )
+            details = RefreshTokenResponse(tokens)
         )
     }
 
     @PostMapping(Uris.Auth.VALIDATE_REFRESH_TOKEN)
     fun validateRefreshToken(
         authenticatedUser: AuthenticatedUser,
+        @Valid
         @RequestBody(required = false)
         refreshTokenBody: RefreshTokenRequest?,
         request: HttpServletRequest,
@@ -238,7 +237,9 @@ class AuthController(private val service: AuthService) {
 
     @PostMapping(Uris.Auth.LOGOUT)
     fun logout(
-        @RequestBody(required = false) refreshTokenBody: RefreshTokenRequest?,
+        @Valid
+        @RequestBody(required = false)
+        refreshTokenBody: RefreshTokenRequest?,
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {

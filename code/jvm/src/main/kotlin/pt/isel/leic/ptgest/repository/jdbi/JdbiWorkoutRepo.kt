@@ -5,6 +5,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.WorkoutRepo
 import java.util.UUID
 
@@ -37,6 +38,22 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Int>()
             .one()
     }
+
+    override fun getExerciseDetails(exerciseId: Int): ExerciseDetails? =
+        handle.createQuery(
+            """
+            select id, name, description, muscle_group, type, ref
+            from exercise
+            where id = :id
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "id" to exerciseId
+                )
+            )
+            .mapTo<ExerciseDetails>()
+            .firstOrNull()
 
     override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(

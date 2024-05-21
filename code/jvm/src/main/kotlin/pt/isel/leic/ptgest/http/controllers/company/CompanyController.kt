@@ -13,29 +13,23 @@ import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
-import pt.isel.leic.ptgest.domain.workout.Modality
-import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.http.controllers.company.model.request.AssignTrainerRequest
-import pt.isel.leic.ptgest.http.controllers.company.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
-import pt.isel.leic.ptgest.http.controllers.company.model.response.GetExercisesResponse
-import pt.isel.leic.ptgest.http.controllers.company.model.response.TraineeResponse
-import pt.isel.leic.ptgest.http.controllers.company.model.response.TrainerResponse
-import pt.isel.leic.ptgest.http.controllers.trainer.model.response.CreateCustomWorkoutResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
+import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.company.CompanyService
-import pt.isel.leic.ptgest.services.workout.WorkoutService
 import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.Company.PREFIX)
+@RequiredRole(Role.COMPANY)
 class CompanyController(
-    private val companyService: CompanyService,
-    private val workoutService: WorkoutService
+    private val companyService: CompanyService
 ) {
 
     @GetMapping(Uris.Company.COMPANY_TRAINERS)
@@ -53,17 +47,14 @@ class CompanyController(
             limit,
             gender,
             availability,
-            name,
+            name?.trim(),
             excludeTraineeTrainer,
             authenticatedUser.id
         )
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
-            details = GetCompanyTrainersResponse(
-                trainers = trainers.trainers.map { TrainerResponse(it) },
-                total = trainers.total
-            )
+            details = GetCompanyTrainersResponse(trainers)
         )
     }
 
@@ -75,14 +66,11 @@ class CompanyController(
         @RequestParam name: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainees = companyService.getCompanyTrainees(skip, limit, gender, name, authenticatedUser.id)
+        val trainees = companyService.getCompanyTrainees(skip, limit, gender, name?.trim(), authenticatedUser.id)
 
         return HttpResponse.ok(
             message = "Company trainees retrieved successfully.",
-            details = GetCompanyTraineesResponse(
-                trainees = trainees.trainees.map { TraineeResponse(it) },
-                total = trainees.total
-            )
+            details = GetCompanyTraineesResponse(trainees)
         )
     }
 
@@ -121,66 +109,12 @@ class CompanyController(
         companyService.updateTrainerCapacity(trainerId, authenticatedUser.id, capacityInfo.capacity)
 
         return HttpResponse.ok(
-            message = "Trainer capacity updated successfully to ${authenticatedUser.id}."
+            message = "Trainer capacity updated successfully to ${capacityInfo.capacity}."
         )
     }
 
     @DeleteMapping(Uris.Company.REMOVE_TRAINER)
     fun removeTrainer(
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        throw NotImplementedError()
-    }
-
-    @PostMapping(Uris.Company.CREATE_CUSTOM_EXERCISE)
-    fun createCustomExercise(
-        @RequestBody exerciseDetails: CreateCustomExerciseRequest,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        val exerciseId = workoutService.createCustomExercise(
-            exerciseDetails.name,
-            exerciseDetails.description,
-            exerciseDetails.muscleGroup,
-            exerciseDetails.modality,
-            exerciseDetails.ref
-        )
-
-        companyService.associateCompanyToExercise(authenticatedUser.id, exerciseId)
-
-        return HttpResponse.created(
-            message = "Custom exercise created successfully.",
-            details = CreateCustomWorkoutResponse(exerciseId)
-        )
-    }
-
-    @GetMapping(Uris.Trainer.GET_EXERCISES)
-    fun getExercises(
-        @RequestParam skip: Int?,
-        @RequestParam limit: Int?,
-        @RequestParam name: String?,
-        @RequestParam muscleGroup: MuscleGroup?,
-        @RequestParam modality: Modality?,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        val exercises = companyService.getExercises(
-            skip,
-            limit,
-            name,
-            muscleGroup,
-            modality,
-            authenticatedUser.id,
-            authenticatedUser.role
-        )
-
-        return HttpResponse.ok(
-            message = "Exercises retrieved successfully.",
-            details = GetExercisesResponse(exercises)
-        )
-    }
-
-    @GetMapping(Uris.Company.GET_EXERCISE_DETAILS)
-    fun getExerciseDetails(
-        @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         throw NotImplementedError()

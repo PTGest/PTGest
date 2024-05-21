@@ -1,9 +1,9 @@
 package pt.isel.leic.ptgest.http.controllers.user.model
 
-import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
 import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
+import pt.isel.leic.ptgest.domain.user.model.UserDetails
 import java.util.Date
 
 sealed class ProfileResponse {
@@ -14,39 +14,34 @@ sealed class ProfileResponse {
         val gender: Gender,
         val birthdate: Date,
         val phoneNumber: String?
-    ) : ProfileResponse()
+    ) : ProfileResponse() {
+        constructor(trainee: TraineeDetails) : this(
+            trainee.name,
+            trainee.email,
+            trainee.gender,
+            trainee.birthdate,
+            trainee.phoneNumber
+        )
+    }
 
     data class TrainerProfile(
         val name: String,
         val email: String,
         val gender: Gender,
         val phoneNumber: String?
-    ) : ProfileResponse()
+    ) : ProfileResponse() {
+        constructor(trainer: TrainerDetails) : this(
+            trainer.name,
+            trainer.email,
+            trainer.gender,
+            trainer.phoneNumber
+        )
+    }
 
     data class CompanyProfile(
         val name: String,
         val email: String
-    ) : ProfileResponse()
-
-    companion object {
-        fun TraineeDetails.toResponse() = TraineeProfile(
-            name = name,
-            email = email,
-            gender = gender,
-            birthdate = birthdate,
-            phoneNumber = phoneNumber
-        )
-
-        fun TrainerDetails.toResponse() = TrainerProfile(
-            name = name,
-            email = email,
-            gender = gender,
-            phoneNumber = phoneNumber
-        )
-
-        fun UserDetails.toResponse() = CompanyProfile(
-            name = name,
-            email = email
-        )
+    ) : ProfileResponse() {
+        constructor(company: UserDetails) : this(company.name, company.email)
     }
 }

@@ -11,7 +11,6 @@ import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
-import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.Date
 import java.util.UUID
 
@@ -57,7 +56,7 @@ class AuthService(
                 password,
                 Role.INDEPENDENT_TRAINER
             )
-            authRepo.createTrainer(userId, gender, phoneNumber?.trim())
+            authRepo.createTrainer(userId, gender, phoneNumber)
         }
     }
 
@@ -74,12 +73,7 @@ class AuthService(
             throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
 
-        Validators.validate(
-            Validators.ValidationRequest(
-                capacity,
-                "Invalid capacity must be greater than 0."
-            ) { it as Int > 0 }
-        )
+        require(capacity > 0) { "Invalid capacity must be greater than 0." }
 
         val trainerId = transactionManager.run {
             val authRepo = it.authRepo
@@ -94,7 +88,7 @@ class AuthService(
                 Role.HIRED_TRAINER
             )
 
-            authRepo.createTrainer(trainerId, gender, phoneNumber?.trim())
+            authRepo.createTrainer(trainerId, gender, phoneNumber)
             authRepo.createCompanyTrainer(companyId, trainerId, capacity)
             return@run trainerId
         }
@@ -112,16 +106,7 @@ class AuthService(
         gender: Gender,
         phoneNumber: String?
     ): UUID {
-        if (userRole != Role.COMPANY && userRole != Role.INDEPENDENT_TRAINER) {
-            throw AuthError.UserAuthenticationError.UnauthorizedRole
-        }
-
-        Validators.validate(
-            Validators.ValidationRequest(
-                birthdate,
-                "Invalid birthdate."
-            ) { (it as Date).before(Date()) }
-        )
+        require(birthdate.before(Date())) { "Invalid birthdate." }
 
         val traineeId = transactionManager.run {
             val authRepo = it.authRepo
@@ -136,7 +121,7 @@ class AuthService(
                 Role.TRAINEE
             )
 
-            authRepo.createTrainee(traineeId, birthdate, gender, phoneNumber?.trim())
+            authRepo.createTrainee(traineeId, birthdate, gender, phoneNumber)
 
             it.associateTrainee(userId, userRole, traineeId)
             return@run traineeId
@@ -146,11 +131,9 @@ class AuthService(
     }
 
     fun reSetPassword(email: String, setPassword: Boolean = false) {
-        val precessedEmail = email.trim()
-
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
-            return@run userRepo.getUserDetails(precessedEmail)
+            return@run userRepo.getUserDetails(email)
                 ?: throw AuthError.UserAuthenticationError.UserNotFound
         }
 
@@ -173,7 +156,7 @@ class AuthService(
         }
 
         mailService.sendMail(
-            precessedEmail,
+            email,
             "PTGest - Password reset",
             "Click the following link to ${if (setPassword) "set" else "reset"} your password:\n" +
                 "http://localhost:5173/resetPassword/$token"
@@ -181,7 +164,9 @@ class AuthService(
     }
 
     fun validatePasswordResetToken(token: String) {
-        val tokenHash = authDomain.hashToken(token.trim())
+        require(token.isNotBlank()) { "Invalid token." }
+
+        val tokenHash = authDomain.hashToken(token)
 
         transactionManager.run {
             val authRepo = it.authRepo
@@ -196,8 +181,10 @@ class AuthService(
     }
 
     fun resetPassword(token: String, password: String) {
+        require(token.isNotBlank()) { "Invalid token." }
+
         val currentDate = Date()
-        val tokenHash = authDomain.hashToken(token.trim())
+        val tokenHash = authDomain.hashToken(token)
 
         val userDetails = transactionManager.run {
             val authRepo = it.authRepo
@@ -212,7 +199,7 @@ class AuthService(
                 throw AuthError.TokenError.TokenExpired
             }
 
-            val passwordHash = authDomain.hashPassword(password.trim())
+            val passwordHash = authDomain.hashPassword(password)
 
             authRepo.resetPassword(resetToken.userId, passwordHash)
 
@@ -230,10 +217,10 @@ class AuthService(
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
 
-            val user = userRepo.getUserDetails(email.trim())
+            val user = userRepo.getUserDetails(email)
                 ?: throw AuthError.UserAuthenticationError.UserNotFound
 
-            if (!authDomain.validatePassword(password.trim(), user.passwordHash)) {
+            if (!authDomain.validatePassword(password, user.passwordHash)) {
                 throw AuthError.UserAuthenticationError.InvalidPassword
             }
 
@@ -261,8 +248,8 @@ class AuthService(
     }
 
     fun refreshToken(accessToken: String, refreshToken: String, currentDate: Date): TokenPair {
-        val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
-        val accessTokenDetails = jwtService.extractToken(accessToken.trim())
+        val refreshTokenHash = authDomain.hashToken(refreshToken)
+        val accessTokenDetails = jwtService.extractToken(accessToken)
         val refreshTokenDetails = transactionManager.run {
             it.getRefreshTokenDetails(
                 refreshTokenHash,
@@ -296,7 +283,7 @@ class AuthService(
     fun validateRefreshToken(userId: UUID, refreshToken: String) {
         require(refreshToken.isNotBlank()) { "Invalid refresh token." }
 
-        val refreshTokenHash = authDomain.hashToken(refreshToken.trim())
+        val refreshTokenHash = authDomain.hashToken(refreshToken)
 
         transactionManager.run {
             val authRepo = it.authRepo
@@ -318,7 +305,7 @@ class AuthService(
         transactionManager.run {
             val authRepo = it.authRepo
 
-            authRepo.removeToken(authDomain.hashToken(refreshToken.trim()))
+            authRepo.removeToken(authDomain.hashToken(refreshToken))
         }
     }
 
@@ -328,17 +315,13 @@ class AuthService(
         password: String,
         role: Role
     ): UUID {
-        val processedName = name.trim()
-        val processedEmail = email.trim()
-        val processedPassword = password.trim()
-
-        if (userRepo.getUserDetails(processedEmail) != null) {
+        if (userRepo.getUserDetails(email) != null) {
             throw AuthError.UserRegistrationError.UserAlreadyExists
         }
 
-        val passwordHash = authDomain.hashPassword(processedPassword)
+        val passwordHash = authDomain.hashPassword(password)
 
-        return authRepo.createUser(processedName, processedEmail, passwordHash, role)
+        return authRepo.createUser(name, email, passwordHash, role)
     }
 
     private fun createTokens(currentDate: Date, userId: UUID, userRole: Role): TokenPair {

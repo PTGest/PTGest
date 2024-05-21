@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.repository
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import java.util.UUID
 
 interface WorkoutRepo {
@@ -14,6 +15,8 @@ interface WorkoutRepo {
         modality: Modality,
         ref: String?
     ): Int
+
+    fun getExerciseDetails(exerciseId: Int): ExerciseDetails?
 
     fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int
 

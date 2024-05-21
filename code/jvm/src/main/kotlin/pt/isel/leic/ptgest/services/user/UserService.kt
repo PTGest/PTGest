@@ -1,9 +1,9 @@
 package pt.isel.leic.ptgest.services.user
 
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.auth.model.UserDetails
 import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
 import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
+import pt.isel.leic.ptgest.domain.user.model.UserDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.UUID
 

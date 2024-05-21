@@ -7,6 +7,6 @@ data class Trainer(
     val id: UUID,
     val name: String,
     val gender: Gender,
-    val totalTrainees: Int,
+    val assignedTrainees: Int,
     val capacity: Int
 )

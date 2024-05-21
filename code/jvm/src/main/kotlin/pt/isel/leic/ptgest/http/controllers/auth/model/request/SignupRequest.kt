@@ -22,32 +22,52 @@ sealed class SignupRequest {
 
     @JsonTypeName("company")
     data class Company(
-        @NotEmpty
+        @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @NotEmpty
-        @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
+        @field:Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
+            message = "Invalid email address."
+        )
         val email: String,
 
-        @field:Size(min = 8)
+        @field:Size(min = 8, message = "Password must have at least 8 characters.")
         val password: String
-    ) : SignupRequest()
+    ) : SignupRequest() {
+        init {
+            name.trim()
+            email.trim()
+            password.trim()
+        }
+    }
 
     @JsonTypeName("independent_trainer")
     data class IndependentTrainer(
-        @NotEmpty
+        @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @NotEmpty
-        @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
+        @field:Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
+            message = "Invalid email address."
+        )
         val email: String,
 
-        @field:Size(min = 8)
+        @field:Size(min = 8, message = "Password must have at least 8 characters.")
         val password: String,
 
         val gender: Gender,
 
-        @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
+        @field:Pattern(
+            regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$",
+            message = "Invalid phone number."
+        )
         val phoneNumber: String?
-    ) : SignupRequest()
+    ) : SignupRequest() {
+        init {
+            name.trim()
+            email.trim()
+            password.trim()
+            phoneNumber?.trim()
+        }
+    }
 }

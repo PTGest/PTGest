@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.trainer.model.request
+package pt.isel.leic.ptgest.http.controllers.workout.model.request
 
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 
@@ -7,4 +7,9 @@ data class CreateCustomWorkoutRequest(
     val description: String?,
     val category: MuscleGroup,
     val sets: List<Int>
-)
+) {
+    init {
+        name?.trim()
+        description?.trim()
+    }
+}

@@ -3,7 +3,6 @@ package pt.isel.leic.ptgest.services.company
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
-import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.domain.company.model.CompanyTrainees
 import pt.isel.leic.ptgest.domain.company.model.CompanyTrainers
 import pt.isel.leic.ptgest.domain.workout.Modality
@@ -18,7 +17,6 @@ class CompanyService(
     private val transactionManager: TransactionManager
 ) {
 
-//  TODO: Check if the new Trainer is already assigned to the Trainee
     fun getCompanyTrainers(
         skip: Int?,
         limit: Int?,
@@ -86,7 +84,7 @@ class CompanyService(
             val trainer = companyRepo.getCompanyTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
-            if (trainer.totalTrainees >= trainer.capacity) {
+            if (trainer.assignedTrainees >= trainer.capacity) {
                 throw CompanyError.TrainerCapacityReached
             }
 
@@ -94,6 +92,7 @@ class CompanyService(
         }
     }
 
+//  TODO: Check if the new Trainer is already assigned to the Trainee
     fun reassignTrainer(
         trainerId: UUID,
         traineeId: UUID,
@@ -105,13 +104,13 @@ class CompanyService(
             val newTrainer = companyRepo.getCompanyTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
-            if (newTrainer.totalTrainees >= newTrainer.capacity) {
+            if (newTrainer.assignedTrainees >= newTrainer.capacity) {
                 throw CompanyError.TrainerCapacityReached
             }
 
             val trainerAssigned = companyRepo.getTrainerAssigned(traineeId)
 
-            companyRepo.getCompanyTrainer(trainerAssigned, companyId)?.totalTrainees
+            companyRepo.getCompanyTrainer(trainerAssigned, companyId)?.assignedTrainees
                 ?: throw CompanyError.TrainerNotFound
 
             companyRepo.reassignTrainer(trainerId, traineeId)
@@ -151,8 +150,7 @@ class CompanyService(
         name: String?,
         muscleGroup: MuscleGroup?,
         modality: Modality?,
-        trainerId: UUID,
-        userRole: Role
+        trainerId: UUID
     ): Exercises {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },

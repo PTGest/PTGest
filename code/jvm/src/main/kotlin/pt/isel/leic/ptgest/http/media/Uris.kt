@@ -1,7 +1,5 @@
 package pt.isel.leic.ptgest.http.media
 
-import java.util.UUID
-
 object Uris {
     const val PREFIX = "/api"
 
@@ -19,8 +17,6 @@ object Uris {
 
     object User {
         const val PROFILE = "/profile"
-
-        fun userDetails(id: UUID) = "/$PREFIX/user/$id"
     }
 
     object Company {
@@ -31,24 +27,10 @@ object Uris {
         const val REASSIGN_TRAINER = "/trainee/{traineeId}/reassign-trainer"
         const val UPDATE_TRAINER_CAPACITY = "/trainer/{trainerId}/update-capacity"
         const val REMOVE_TRAINER = "/trainer/{trainerId}"
-
-        const val CREATE_CUSTOM_EXERCISE = "/custom-exercise"
-        const val GET_EXERCISES = "/exercises"
-        const val GET_EXERCISE_DETAILS = "/exercise/{exerciseId}"
     }
 
     object Trainer {
         const val PREFIX = "${Uris.PREFIX}/trainer"
-
-        const val CREATE_CUSTOM_EXERCISE = "/custom-exercise"
-        const val GET_EXERCISES = "/exercises"
-        const val GET_EXERCISE_DETAILS = "/exercise/{exerciseId}"
-
-        const val CREATE_CUSTOM_SET = "/custom-set"
-        const val GET_SET_DETAILS = "/set/{setId}"
-
-        const val CREATE_CUSTOM_WORKOUT = "/custom-workout"
-        const val GET_WORKOUT_DETAILS = "/workout/{workoutId}"
 
         const val CREATE_SESSION = "/session"
         const val CHANGE_SESSION_DATE = "/session/{sessionId}/change-date"
@@ -57,5 +39,19 @@ object Uris {
 
     object Trainee {
         const val PREFIX = "${Uris.PREFIX}/trainee"
+    }
+
+    object Workout {
+        const val CREATE_CUSTOM_EXERCISE = "/custom-exercise"
+        const val GET_EXERCISES = "/exercises"
+        const val GET_EXERCISE_DETAILS = "/exercise/{exerciseId}"
+
+        const val CREATE_CUSTOM_SET = "/custom-set"
+        const val GET_SETS = "/sets"
+        const val GET_SET_DETAILS = "/set/{setId}"
+
+        const val CREATE_CUSTOM_WORKOUT = "/custom-workout"
+        const val GET_WORKOUTS = "/workouts"
+        const val GET_WORKOUT_DETAILS = "/workout/{workoutId}"
     }
 }

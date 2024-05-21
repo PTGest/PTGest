@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.domain.auth.model
+package pt.isel.leic.ptgest.domain.user.model
 
 import pt.isel.leic.ptgest.domain.common.Role
 import java.util.UUID

@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.http.controllers.company.CompanyController
-import pt.isel.leic.ptgest.http.controllers.trainer.TrainerController
+import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.JwtService
 
@@ -44,15 +42,16 @@ class AuthInterceptor(
                     else -> throw AuthError.UserAuthenticationError.TokenNotProvided
                 }
 
-            when {
-                handler.beanType.javaClass == CompanyController::class.java && user.role != Role.COMPANY -> {
-                    throw AuthError.UserAuthenticationError.UnauthorizedRole
-                }
+            if (handler.beanType.javaClass.isAnnotationPresent(RequiredRole::class.java) &&
+                !handler.beanType.getAnnotation(RequiredRole::class.java).role.contains(user.role)
+            ) {
+                throw AuthError.UserAuthenticationError.UnauthorizedRole
+            }
 
-                handler.beanType.javaClass == TrainerController::class.java &&
-                    user.role !in listOf(Role.HIRED_TRAINER, Role.INDEPENDENT_TRAINER) -> {
-                    throw AuthError.UserAuthenticationError.UnauthorizedRole
-                }
+            if (handler.method.isAnnotationPresent(RequiredRole::class.java) &&
+                !handler.method.getAnnotation(RequiredRole::class.java).role.contains(user.role)
+            ) {
+                throw AuthError.UserAuthenticationError.UnauthorizedRole
             }
 
             AuthenticatedUserResolver.addUserTo(user, request)

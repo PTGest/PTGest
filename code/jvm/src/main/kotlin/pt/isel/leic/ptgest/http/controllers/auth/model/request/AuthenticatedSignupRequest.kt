@@ -21,33 +21,57 @@ sealed class AuthenticatedSignupRequest {
 
     @JsonTypeName("hired_trainer")
     data class HiredTrainer(
-        @NotEmpty
+        @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
+        @field:Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
+            message = "Invalid email address."
+        )
         val email: String,
 
         val gender: Gender,
 
         val capacity: Int,
 
-        @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
-        val phoneNumber: String? // can be optional
-    ) : AuthenticatedSignupRequest()
+        @field:Pattern(
+            regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$",
+            message = "Invalid phone number."
+        )
+        val phoneNumber: String?
+    ) : AuthenticatedSignupRequest() {
+        init {
+            name.trim()
+            email.trim()
+            phoneNumber?.trim()
+        }
+    }
 
     @JsonTypeName("trainee")
     data class Trainee(
-        @NotEmpty
+        @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @field:Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
+        @field:Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
+            message = "Invalid email address."
+        )
         val email: String,
 
         val birthdate: Date,
 
         val gender: Gender,
 
-        @field:Pattern(regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$")
+        @field:Pattern(
+            regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$",
+            message = "Invalid phone number."
+        )
         val phoneNumber: String?
-    ) : AuthenticatedSignupRequest()
+    ) : AuthenticatedSignupRequest() {
+        init {
+            name.trim()
+            email.trim()
+            phoneNumber?.trim()
+        }
+    }
 }

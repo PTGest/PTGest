@@ -287,7 +287,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
         return handle.createQuery(
             """
-            select id, name
+            select id, name, muscle_group, modality
             from exercise_company ec join exercise e on ec.exercise_id = e.id
             where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
             limit :limit offset :skip
