@@ -18,11 +18,16 @@
 ---
 
 ## Frontend changes
+
 This week were implemented the views to the methods 'assignTrainer', and 'updateTrainerCapacity'. 
+
 Also was finished the system to manage what methods the user can access in frontend, in this way, the user can only access the methods that he has permission to access.
+
 To implement this system, each view inside the Vue router have an array of roles that can access it, and before each route is accessed the router checks if the user have permission to access the view otherwise, he is redirected to a page that says that he does not have permission to access the page.
+
 To check the user Role a method that access the user information in the local storage returns the role of the user.
 This method of getting and storing the userRole is not the safest way to do it, and we are aware of that, so it will be changed.
+
 ---
 
 ## Backend changes
