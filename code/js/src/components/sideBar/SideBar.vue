@@ -10,6 +10,7 @@
                     <font-awesome-icon v-if="is_open" :icon="faHouse"></font-awesome-icon>
                     <div v-if="!is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Home</div>
                 </router-link>
+
                 <template v-if="!userData">
                     <router-link  @click="handleMenu" :to="{ name: 'login' }" class="nav-link" link>
                         <font-awesome-icon v-if="is_open || is_mobile_view" :icon="faUser"></font-awesome-icon>
@@ -21,14 +22,25 @@
                         <div v-if="!is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Signup</div>
                     </router-link>
                 </template>
-                <div v-if="userRole == 'COMPANY' || userRole == 'HIRED_TRAINER' || userRole == 'INDEPENDENT_TRAINER' ">
-                    <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'trainees'}">Trainees</router-link>
+
+                <div v-if="RBAC.isCompany() || RBAC.isHiredTrainer() || RBAC.isTrainer() ">
+                    <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))"
+                                 class="nav-link" :to="{ name: 'trainees'}">Trainees</router-link>
                 </div>
-                <div v-if="userRole == 'COMPANY'">
-                    <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'trainers'}">Trainers</router-link>
+                <div v-if="RBAC.isCompany()">
+                    <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))"
+                                 class="nav-link" :to="{ name: 'trainers'}">Trainers</router-link>
                 </div>
-                <UserIcon @click="handleMenu" class="userIcon" :isOpen="is_open" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open)) " :isMobileView="is_mobile_view" />
-                <LogoutButton :isOpen="is_open" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))" :isMobileView="is_mobile_view" />
+
+                <div v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">
+                    <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))"
+                                 class="nav-link" :to="{ name: 'exercises'}">Exercises</router-link>
+                </div>
+
+                <UserIcon @click="handleMenu" class="userIcon" :isOpen="is_open" v-if="userData && (!is_mobile_view ||
+                    (is_mobile_view && is_open)) " :isMobileView="is_mobile_view" />
+                <LogoutButton :isOpen="is_open" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))"
+                              :isMobileView="is_mobile_view" />
             </div>
         </div>
     </div>
@@ -36,16 +48,13 @@
 
 <script lang="ts" setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faBars, faHouse, faUserPlus, faUser } from "@fortawesome/free-solid-svg-icons"
+import {faBars, faHouse, faUserPlus, faUser, faUsers} from "@fortawesome/free-solid-svg-icons"
 import { computed, ref } from "vue"
 import store from "../../store"
 import LogoutButton from "./components/LogoutButton.vue"
 import UserIcon from "../../components/sideBar/components/UserIcon.vue"
+import RBAC from "@/services/utils/RBAC/RBAC.ts";
 
-
-const userRole = computed(() => {
-    return store.state.userData.role
-})
 // Define a computed property to track changes to userData
 const userData = computed(() => {
     return store.state.userData.token !== undefined
@@ -140,7 +149,7 @@ window.addEventListener("resize", handleResize)
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin: 0 1em 0 1em;
+    margin: 0 0.5em 0 0.5em;
     align-items: center;
 }
 

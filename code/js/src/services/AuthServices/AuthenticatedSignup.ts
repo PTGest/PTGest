@@ -17,7 +17,7 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
                 if(userRegisterData instanceof TraineeRegisterData){
                    response.json().then((data) => {
                         const userId = data.details.userId
-                        router.push({name: "assignTrainer", params: {traineeId: userId}})
+                        router.push({name: "assignTrainer", params: {traineeId: userId, assignTrainer: "assignTrainer"}})
                         return
                     })
                 }else{

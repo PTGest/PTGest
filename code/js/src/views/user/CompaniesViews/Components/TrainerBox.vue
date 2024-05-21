@@ -15,9 +15,13 @@
                    :placeholder="`${props.trainer.assignedTrainees}`" disabled
             />
         </div>
-        <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
-        <font-awesome-icon v-if="!isDisabled" :icon="faCheck" @click="updateCapacity" class="icon"></font-awesome-icon>
+        <div v-if="!(isAssignTrainer||isReassignTrainer)">
+            <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
+            <font-awesome-icon v-if="!isDisabled" :icon="faCheck" @click="updateCapacity" class="icon"></font-awesome-icon>
+        </div>
+
         <AssignTrainerButton v-if="isAssignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId"></AssignTrainerButton>
+        <AssignTrainerButton v-if="isReassignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId" is-reassign-trainer></AssignTrainerButton>
         <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
 
     </div>
@@ -36,6 +40,7 @@ const isDisabled = ref(true)
 const props = defineProps<{
     trainer: Trainer
     isAssignTrainer: boolean
+    isReassignTrainer: boolean
 }>()
 const capacity = ref(props.trainer.capacity)
 const assignedTrainees = ref(props.trainer.assignedTrainees)
@@ -116,10 +121,83 @@ input{
 .delete-icon{
     position: relative;
     top: -0.5em;
-    right: -2.6em;
+    right: -1.8em;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
     cursor: pointer;
+}
+
+@media screen and (max-width: 659px) {
+    .trainer{
+        width: 15em;
+        height: 2em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1em 0.5em 1em 0.5em;
+        border-radius: 10px;
+        margin: 0.5em;
+        background-color: var(--light-blue);
+        color: whitesmoke;
+        font-size: 1em;
+        font-weight: bold;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .icon{
+        position: relative;
+        top: -0.1em;
+        color: whitesmoke;
+        font-size: 0.8em;
+        margin: 0 1em 0 1em;
+        cursor: pointer;
+    }
+    p, h6, h4, input{
+        padding: 0;
+        margin: 0;
+    }
+    h4{
+        position: relative;
+        left : -1em;
+        text-shadow: var(--secundary-color) 2px 2px 2px;
+    }
+    p{
+        font-size: 0.8em;
+    }
+    .text{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .capacity, .edit-capacity{
+        width: 3em;
+        height: 2em;
+        font-size: 0.8em;
+        border: 0;
+        color: whitesmoke;
+        background-color: var(--light-blue);
+    }
+    .edit-capacity{
+        border: 1px solid whitesmoke;
+        border-radius: 10px;
+    }
+    input{
+        text-align: center;
+    }
+    ::placeholder{
+        text-align: center;
+        color: whitesmoke;
+    }
+
+    .delete-icon{
+        position: relative;
+        top: -0.5em;
+        right: -1.8em;
+        color: whitesmoke;
+        font-size: 0.8em;
+        margin: 0 1em 0 1em;
+        cursor: pointer;
+    }
 }
 </style>

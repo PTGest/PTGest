@@ -1,22 +1,29 @@
 <template>
-    <default-button class="assign-button" display-text="Assign Trainer" :click-handler="handleAssignTrainer"/>
+    <default-button class="assign-button" :display-text="text" :click-handler="handleAssignTrainer"/>
 </template>
 
 <script setup lang="ts">
 
 import DefaultButton from "../../../../components/utils/DefaultButton.vue";
-import assignTrainer from "../../../../services/companyServices/assignTrainer.ts";
+import assignOrReassignTrainer from "../../../../services/companyServices/assignOrReassignTrainer.ts";
 
 const props = defineProps<{
     trainerId : string
     traineeId : string
+    isReassignTrainer: boolean
 }>()
 
+const text = props.isReassignTrainer ? "Reassign Trainer" : "Assign Trainer"
 const handleAssignTrainer = async () => {
-    console.log("Assign Trainer")
-    console.log(props.trainerId)
-    console.log(props.traineeId)
-    await assignTrainer(props.traineeId,props.trainerId)
+    if (props.isReassignTrainer){
+        console.log("reassigning trainer")
+        console.log(props.trainerId)
+        console.log(props.traineeId)
+        await assignOrReassignTrainer(props.trainerId, props.traineeId, true)
+    } else {
+        await assignOrReassignTrainer(props.trainerId, props.traineeId,false)
+
+    }
 }
 
 </script>

@@ -1,14 +1,24 @@
 import AssignTrainerRequest from "../../views/user/CompaniesViews/models/AssignTrainerRequest.ts";
 import router from "../../plugins/router.ts";
+import ReassignTrainerRequest from "../../views/user/CompaniesViews/models/ReassignTrainerRequest.ts";
 
-export default async function assignTrainer(traineeId: string,trainerId: string): Promise<void> {
+export default async function assignOrReassignTrainer(traineeId: string, trainerId: string, isReassign: boolean): Promise<void> {
+
+    let url = `http://localhost:8080/api/company/trainee/${traineeId}/assign-trainer`;
+    let method = "POST";
+    let body: AssignTrainerRequest| ReassignTrainerRequest = new AssignTrainerRequest(trainerId);
+    if(isReassign){
+        url = `http://localhost:8080/api/company/trainee/${traineeId}/reassign-trainer`
+        method = "PUT";
+        body = new ReassignTrainerRequest(trainerId);
+    }
     // Logic to sign up
-    fetch(`http://localhost:8080/api/company/trainee/${traineeId}/assign-trainer`, {
-        method: "POST",
+    fetch(url, {
+        method: method,
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(new AssignTrainerRequest(trainerId)),
+        body: JSON.stringify(body),
         credentials: "include",
     }).then(async (response) => {
         switch (response.status) {
@@ -24,3 +34,6 @@ export default async function assignTrainer(traineeId: string,trainerId: string)
         }
     })
 }
+
+
+

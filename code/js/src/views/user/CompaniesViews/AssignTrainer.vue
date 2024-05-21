@@ -1,6 +1,7 @@
 <template>
     <div v-for="trainer in companyTrainersRef.trainers" class="trainer">
-        <TrainerBox :trainer="trainer" is-assign-trainer></TrainerBox>
+        <TrainerBox v-if="$router.currentRoute.value.params.assignTrainer == 'assignTrainer'" :trainer="trainer" is-assign-trainer></TrainerBox>
+        <TrainerBox v-else :trainer="trainer" is-reassign-trainer></TrainerBox>
     </div>
 </template>
 
@@ -19,7 +20,7 @@ const companyTrainersRef : Ref<CompanyTrainers> = ref({
 
 (async () => {
     try {
-        companyTrainersRef.value = await getCompanyTrainersOrTrainees(skip.value, null, null, null );
+        companyTrainersRef.value = <CompanyTrainers>await getCompanyTrainersOrTrainees(skip.value, null, null, null, false);
     } catch (error) {
         console.error("Error getting user info:", error)
     }

@@ -69,7 +69,8 @@ const signupUserData: Ref<SignupPTData> = ref({
 })
 
 function isFullOfData(data: SignupPTData): boolean {
-    return data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== "" && phoneNumber.value != "" && countryNumber.value != ""
+    return toggle && (data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== ""
+        && phoneNumber.value != "" && countryNumber.value != "") || !toggle && (data.name !== "" && data.email !== "")
 }
 
 const isSignUpDisabled = computed(() => {

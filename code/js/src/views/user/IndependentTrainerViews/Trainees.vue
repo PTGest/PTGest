@@ -106,7 +106,7 @@ const handleFilters = (isOpen : boolean) => {
 
 .filter-icon{
     position: relative;
-    left: 9em;
+    left: 10em;
     cursor: pointer;
 }
 

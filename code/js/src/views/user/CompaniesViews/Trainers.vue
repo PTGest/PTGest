@@ -139,4 +139,20 @@ h2{
     cursor: pointer;
 }
 
+@media screen and (max-width: 659px) {
+    .trainers{
+        margin: 0;
+        width : 50%;
+    }
+
+    h1{
+        font-size: 1.5em;
+    }
+
+    .filter-icon{
+        position: relative;
+        left: 0;
+    }
+}
+
 </style>

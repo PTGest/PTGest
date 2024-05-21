@@ -7,6 +7,13 @@
             <p>Gender</p>
             <div class="gender-text">{{props.trainee.gender}}</div>
         </div>
+
+        <router-link :to="{ name: 'assignTrainer', params: {traineeId: trainee.id, assignTrainer : 'reassignTrainer'},}">
+            <button class="reassign-btn">Reassign Trainer</button>
+        </router-link>
+
+
+
         <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
     </div>
 </template>
@@ -16,6 +23,7 @@
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
 import Trainee from "../../../../views/user/CompaniesViews/models/Trainee.ts";
+import DefaultButton from "@/components/utils/DefaultButton.vue";
 
 const props = defineProps<{
     trainee: Trainee
@@ -29,8 +37,8 @@ const props = defineProps<{
     height: 2em;
     display: flex;
     justify-content: center;
-    align-content: center;
-    padding: 1em 0.5em 1em 0.5em;
+    align-items: center;
+    padding: 1em 1em 1em 1em;
     border-radius: 10px;
     margin: 0.5em;
     background-color: var(--light-blue);
@@ -69,8 +77,8 @@ p{
 
 .delete-icon{
     position: relative;
-    top: -0.5em;
-    right: -2.6em;
+    top: -1.5em;
+    right: -0.5em;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
@@ -78,6 +86,16 @@ p{
 }
 .gender-text{
     font-size: 0.6em;
+}
+
+.reassign-btn{
+    font-size: 0.6em;
+    border-radius: 10px;
+    color: var(--primary-color);
+    background-color: whitesmoke;
+    cursor: pointer;
+    margin: 0;
+
 }
 
 </style>
