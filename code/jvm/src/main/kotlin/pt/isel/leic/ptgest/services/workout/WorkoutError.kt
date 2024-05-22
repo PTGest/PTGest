@@ -18,4 +18,9 @@ sealed class WorkoutError : BaseError() {
         private fun readResolve(): Any = InvalidSetTypeError
         override val message: String get() = "Invalid set type."
     }
+
+    data object WorkoutNotFoundError : WorkoutError() {
+        private fun readResolve(): Any = WorkoutNotFoundError
+        override val message: String get() = "Workout not found or does not belong to the trainer."
+    }
 }

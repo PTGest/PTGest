@@ -41,8 +41,6 @@ interface CompanyRepo {
 
     fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer?
 
-    fun getTrainerAssigned(traineeId: UUID): UUID
-
     fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID)
 
     fun reassignTrainer(trainerId: UUID, traineeId: UUID)

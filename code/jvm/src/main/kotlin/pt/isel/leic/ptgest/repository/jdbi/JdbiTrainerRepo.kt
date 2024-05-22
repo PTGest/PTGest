@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.domain.workout.model.Exercise
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Set
@@ -14,7 +15,7 @@ import java.util.UUID
 
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
 
-    override fun getCompanyAssignedTrainer(trainerId: UUID): UUID =
+    override fun getCompanyAssignedTrainer(trainerId: UUID): UUID? =
         handle.createQuery(
             """
             select company_id
@@ -24,7 +25,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
         )
             .bind("trainerId", trainerId)
             .mapTo<UUID>()
-            .one()
+            .firstOrNull()
 
     override fun getExercises(
         trainerId: UUID,
@@ -92,7 +93,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun getExerciseDetails(trainerId: UUID, exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
-            select id, name, description, muscle_group, type, ref
+            select id, name, description, muscle_group, modality, ref
             from exercise e join exercise_trainer et on e.id = et.exercise_id
             where id = :id and trainer_id = :trainer_id
             """.trimIndent()
@@ -150,6 +151,53 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<Int>()
             .one()
 
+    override fun getSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
+        val typeCondition = if (type != null) "and type = :type" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select id, name, notes, type
+            from set
+            where trainer_id = :trainerId $typeCondition $nameCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "type" to type?.name,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Set>()
+            .list()
+    }
+
+    override fun getTotalSets(trainerId: UUID, type: SetType?, name: String?): Int {
+        val typeCondition = if (type != null) "and type = :type" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from set
+            where trainer_id = :trainerId $typeCondition $nameCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "type" to type?.name,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getSet(trainerId: UUID, setId: Int): Set? =
         handle.createQuery(
             """
@@ -170,7 +218,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun getSet(setId: Int): Set =
         handle.createQuery(
             """
-            select name, notes, type
+            select id, name, notes, type
             from set
             where id = :setId
             """.trimIndent()
@@ -192,10 +240,63 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<SetExerciseDetails>()
             .list()
 
+    override fun getWorkouts(
+        trainerId: UUID,
+        skip: Int,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?
+    ): List<Workout> {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+
+        return handle.createQuery(
+            """
+            select id, name, description, muscle_group
+            from workout
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name
+                )
+            )
+            .mapTo<Workout>()
+            .list()
+    }
+
+    override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from workout
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout? =
         handle.createQuery(
             """
-            select name, description, category
+            select id, name, description, muscle_group
             from workout
             where id = :workoutId and trainer_id = :trainerId
             """.trimIndent()

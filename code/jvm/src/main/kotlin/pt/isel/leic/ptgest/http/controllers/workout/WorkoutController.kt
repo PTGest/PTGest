@@ -13,6 +13,7 @@ import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.http.controllers.workout.model.request.CreateCustomExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.workout.model.request.CreateCustomSetRequest
 import pt.isel.leic.ptgest.http.controllers.workout.model.request.CreateCustomWorkoutRequest
@@ -20,20 +21,24 @@ import pt.isel.leic.ptgest.http.controllers.workout.model.response.CreateCustomR
 import pt.isel.leic.ptgest.http.controllers.workout.model.response.GetExerciseDetailsResponse
 import pt.isel.leic.ptgest.http.controllers.workout.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.workout.model.response.GetSetDetails
+import pt.isel.leic.ptgest.http.controllers.workout.model.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.controllers.workout.model.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.workout.model.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.company.CompanyService
+import pt.isel.leic.ptgest.services.trainee.TraineeService
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 import pt.isel.leic.ptgest.services.workout.WorkoutService
 
 @RestController
 @RequestMapping(Uris.Trainer.PREFIX)
 class WorkoutController(
-    private val trainerService: TrainerService,
     private val companyService: CompanyService,
+    private val trainerService: TrainerService,
+    private val traineeService: TraineeService,
     private val workoutService: WorkoutService
 ) {
     @PostMapping(Uris.Workout.CREATE_CUSTOM_EXERCISE)
@@ -67,7 +72,6 @@ class WorkoutController(
         )
     }
 
-//  TODO: correct to return more details about the exercise
     @GetMapping(Uris.Workout.GET_EXERCISES)
     @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
     fun getExercises(
@@ -78,7 +82,7 @@ class WorkoutController(
         @RequestParam modality: Modality?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val exercises = when (authenticatedUser.role) {
+        val (exercises, total) = when (authenticatedUser.role) {
             Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER -> {
                 trainerService.getExercises(
                     skip,
@@ -105,18 +109,35 @@ class WorkoutController(
 
         return HttpResponse.ok(
             message = "Exercises retrieved successfully.",
-            details = GetExercisesResponse(exercises)
+            details = GetExercisesResponse(exercises, total)
         )
     }
 
-//  TODO: check if this operation needs to be authenticated
     @GetMapping(Uris.Workout.GET_EXERCISE_DETAILS)
     fun getExerciseDetails(
-        @PathVariable exerciseId: Int
+        @PathVariable exerciseId: Int,
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val exerciseDetails = workoutService.getExerciseDetails(
-            exerciseId
-        )
+        val exerciseDetails = when (authenticatedUser.role) {
+            Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER -> {
+                trainerService.getExerciseDetails(
+                    exerciseId,
+                    authenticatedUser.id
+                )
+            }
+            Role.COMPANY -> {
+                companyService.getExerciseDetails(
+                    exerciseId,
+                    authenticatedUser.id
+                )
+            }
+            Role.TRAINEE -> {
+                traineeService.getExerciseDetails(
+                    exerciseId,
+                    authenticatedUser.id
+                )
+            }
+        }
 
         return HttpResponse.ok(
             message = "Exercise details retrieved successfully.",
@@ -132,7 +153,6 @@ class WorkoutController(
     ): ResponseEntity<*> {
         val setId = workoutService.createCustomSet(
             authenticatedUser.id,
-            authenticatedUser.role,
             setDetails.name,
             setDetails.notes,
             setDetails.type,
@@ -146,24 +166,37 @@ class WorkoutController(
     }
 
     @GetMapping(Uris.Workout.GET_SETS)
-    @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.TRAINEE)
-    fun getSets() {
-        throw NotImplementedError("Not implemented.")
+    @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER)
+    fun getSets(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam type: SetType?,
+        @RequestParam name: String?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (sets, total) = workoutService.getSets(
+            authenticatedUser.id,
+            skip,
+            limit,
+            type,
+            name?.trim()
+        )
+
+        return HttpResponse.ok(
+            message = "Sets retrieved successfully.",
+            details = GetSetsResponse(sets, total)
+        )
     }
 
-//  TODO: change to be correctly authenticated now only supports trainers
     @GetMapping(Uris.Workout.GET_SET_DETAILS)
     @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.TRAINEE)
     fun getSetDetails(
         @PathVariable setId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        if (authenticatedUser.role == Role.TRAINEE) {
-            throw NotImplementedError("Trainee role not implemented.")
-        }
-
         val setDetails = workoutService.getSetDetails(
             authenticatedUser.id,
+            authenticatedUser.role,
             setId
         )
 
@@ -176,14 +209,15 @@ class WorkoutController(
     @PostMapping(Uris.Workout.CREATE_CUSTOM_WORKOUT)
     @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER)
     fun createCustomWorkout(
-        @RequestBody workoutDetails: CreateCustomWorkoutRequest,
+        @Valid @RequestBody
+        workoutDetails: CreateCustomWorkoutRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val workoutId = workoutService.createCustomWorkout(
             authenticatedUser.id,
             workoutDetails.name,
             workoutDetails.description,
-            workoutDetails.category,
+            workoutDetails.muscleGroup,
             workoutDetails.sets
         )
 
@@ -194,24 +228,37 @@ class WorkoutController(
     }
 
     @GetMapping(Uris.Workout.GET_WORKOUTS)
-    @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.TRAINEE)
-    fun getWorkouts() {
-        throw NotImplementedError("Not implemented.")
+    @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER)
+    fun getWorkouts(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam name: String?,
+        @RequestParam muscleGroup: MuscleGroup?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (workouts, total) = workoutService.getWorkouts(
+            authenticatedUser.id,
+            skip,
+            limit,
+            name?.trim(),
+            muscleGroup
+        )
+
+        return HttpResponse.ok(
+            message = "Workouts retrieved successfully.",
+            details = GetWorkoutsResponse(workouts, total)
+        )
     }
 
-//  TODO: change to be correctly authenticated now only supports trainers
     @GetMapping(Uris.Workout.GET_WORKOUT_DETAILS)
     @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.TRAINEE)
     fun getWorkoutDetails(
         @PathVariable workoutId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        if (authenticatedUser.role == Role.TRAINEE) {
-            throw NotImplementedError("Trainee role not implemented.")
-        }
-
         val workoutDetails = workoutService.getWorkoutDetails(
             authenticatedUser.id,
+            authenticatedUser.role,
             workoutId
         )
 

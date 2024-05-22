@@ -22,7 +22,7 @@ interface WorkoutRepo {
 
     fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String)
 
-    fun createWorkout(trainerId: UUID, name: String, description: String?, category: MuscleGroup): Int
+    fun createWorkout(trainerId: UUID, name: String, description: String?, muscleGroup: List<MuscleGroup>): Int
 
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
 }

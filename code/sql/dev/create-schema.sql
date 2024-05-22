@@ -114,7 +114,7 @@ create table if not exists dev.workout
     trainer_id  uuid references dev.trainer (id) on delete cascade,
     name        varchar(50)      not null,
     description text,
-    category    dev.muscle_group not null
+    muscle_group    dev.muscle_group[] not null
 );
 
 create table if not exists dev.set

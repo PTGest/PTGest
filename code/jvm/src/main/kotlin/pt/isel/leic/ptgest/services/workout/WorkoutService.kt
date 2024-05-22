@@ -8,13 +8,14 @@ import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.workout.model.Set
 import pt.isel.leic.ptgest.domain.workout.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.SetExercise
+import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import pt.isel.leic.ptgest.services.auth.AuthError
-import pt.isel.leic.ptgest.services.trainer.TrainerError
+import pt.isel.leic.ptgest.services.trainee.TraineeError
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.UUID
 
@@ -47,17 +48,8 @@ class WorkoutService(
         }
     }
 
-    fun getExerciseDetails(
-        exerciseId: Int
-    ): ExerciseDetails =
-        transactionManager.run {
-            val workoutRepo = it.workoutRepo
-            return@run workoutRepo.getExerciseDetails(exerciseId) ?: throw WorkoutError.ExerciseNotFoundError
-        }
-
     fun createCustomSet(
         trainerId: UUID,
-        userRole: Role,
         name: String?,
         notes: String?,
         setType: SetType,
@@ -75,7 +67,7 @@ class WorkoutService(
             val workoutRepo = it.workoutRepo
 
             setExercises.forEachIndexed { index, set ->
-                val exercise = it.getExercise(trainerId, userRole, set.exerciseId)
+                val exercise = it.getExercise(trainerId, set.exerciseId)
 
                 val validator = ExerciseValidator.getValidator(setType, exercise.modality)
                 val validatedDetails = validator.validate(set.details)
@@ -88,14 +80,51 @@ class WorkoutService(
         return setId
     }
 
+    fun getSets(
+        userId: UUID,
+        skip: Int?,
+        limit: Int?,
+        type: SetType?,
+        name: String?
+    ): Pair<List<Set>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(name, "Name must be a non-empty string.") { (it as String).isNotEmpty() }
+        )
+
+        return transactionManager.run {
+            val traineeRepo = it.traineeRepo
+            val trainerRepo = it.trainerRepo
+
+            val trainerId = traineeRepo.getTrainerAssigned(userId)
+                ?: throw TraineeError.TraineeNotAssigned
+
+            val sets = trainerRepo.getSets(trainerId, skip ?: 0, limit, type, name)
+            val totalSets = trainerRepo.getTotalSets(trainerId, type, name)
+
+            return@run Pair(sets, totalSets)
+        }
+    }
+
     fun getSetDetails(
-        trainerId: UUID,
+        userId: UUID,
+        userRole: Role,
         setId: Int
     ): SetDetails =
         transactionManager.run {
             val trainerRepo = it.trainerRepo
+            val traineeRepo = it.traineeRepo
 
-            val set = trainerRepo.getSet(trainerId, setId) ?: throw TrainerError.SetNotFoundError
+            val trainerId = if (userRole == Role.TRAINEE) {
+                traineeRepo.getTrainerAssigned(userId)
+                    ?: throw TraineeError.TraineeNotAssigned
+            } else {
+                userId
+            }
+
+            val set = trainerRepo.getSet(trainerId, setId)
+                ?: throw WorkoutError.SetNotFoundError
             val exercises = trainerRepo.getSetExercises(setId)
 
             return@run SetDetails(set, exercises)
@@ -105,7 +134,7 @@ class WorkoutService(
         trainerId: UUID,
         name: String?,
         description: String?,
-        category: MuscleGroup,
+        muscleGroup: List<MuscleGroup>,
         sets: List<Int>
     ): Int {
         Validators.validate(
@@ -113,7 +142,7 @@ class WorkoutService(
         )
 
         val workoutId = transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            it.createWorkout(trainerId, name, description, category)
+            it.createWorkout(trainerId, name, description, muscleGroup)
         }
 
         transactionManager.run {
@@ -131,15 +160,47 @@ class WorkoutService(
         return workoutId
     }
 
-    fun getWorkoutDetails(
+    fun getWorkouts(
         trainerId: UUID,
+        skip: Int?,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?
+    ): Pair<List<Workout>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(name, "Name must be a non-empty string.") { (it as String).isNotEmpty() }
+        )
+
+        return transactionManager.run {
+            val trainerRepo = it.trainerRepo
+
+            val workouts = trainerRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+            val totalWorkouts = trainerRepo.getTotalWorkouts(trainerId, name, muscleGroup)
+
+            return@run Pair(workouts, totalWorkouts)
+        }
+    }
+
+    fun getWorkoutDetails(
+        userId: UUID,
+        userRole: Role,
         workoutId: Int
     ): WorkoutDetails =
         transactionManager.run {
             val trainerRepo = it.trainerRepo
+            val traineeRepo = it.traineeRepo
+
+            val trainerId = if (userRole == Role.TRAINEE) {
+                traineeRepo.getTrainerAssigned(userId)
+                    ?: throw TraineeError.TraineeNotAssigned
+            } else {
+                userId
+            }
 
             val workout = trainerRepo.getWorkoutDetails(trainerId, workoutId)
-                ?: throw TrainerError.WorkoutNotFoundError
+                ?: throw WorkoutError.WorkoutNotFoundError
 
             val sets = trainerRepo.getWorkoutSetIds(workoutId).map { setId ->
                 val set = trainerRepo.getSet(setId)
@@ -177,35 +238,26 @@ class WorkoutService(
             workoutRepo.createSet(trainerId, nextSetName, notes, setType)
         }
 
-    private fun Transaction.getExercise(userId: UUID, userRole: Role, exerciseId: Int): ExerciseDetails =
-        when (userRole) {
-            Role.INDEPENDENT_TRAINER -> {
-                trainerRepo.getExerciseDetails(userId, exerciseId)
-                    ?: throw WorkoutError.ExerciseNotFoundError
-            }
+    private fun Transaction.getExercise(userId: UUID, exerciseId: Int): ExerciseDetails {
+        val companyId = trainerRepo.getCompanyAssignedTrainer(userId)
 
-            Role.HIRED_TRAINER -> {
-                val companyId = trainerRepo.getCompanyAssignedTrainer(userId)
-                trainerRepo.getExerciseDetails(userId, exerciseId)
-                    ?: companyRepo.getExerciseDetails(companyId, exerciseId)
-                    ?: throw WorkoutError.ExerciseNotFoundError
-            }
-
-            else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
-        }
+        return trainerRepo.getExerciseDetails(userId, exerciseId)
+            ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+            ?: throw WorkoutError.ExerciseNotFoundError
+    }
 
     private fun Transaction.createWorkout(
         trainerId: UUID,
         name: String?,
         description: String?,
-        category: MuscleGroup
+        muscleGroup: List<MuscleGroup>
     ): Int =
         if (name != null) {
             require(name.isNotEmpty()) { "Name must not be empty." }
-            workoutRepo.createWorkout(trainerId, name, description, category)
+            workoutRepo.createWorkout(trainerId, name, description, muscleGroup)
         } else {
             val lastWorkoutNameId = trainerRepo.getLastWorkoutNameId(trainerId)
             val nextWorkoutName = "Workout #${lastWorkoutNameId + 1}"
-            workoutRepo.createWorkout(trainerId, nextWorkoutName, description, category)
+            workoutRepo.createWorkout(trainerId, nextWorkoutName, description, muscleGroup)
         }
 }

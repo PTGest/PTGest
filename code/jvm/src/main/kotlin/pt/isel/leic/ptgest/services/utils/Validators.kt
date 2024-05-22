@@ -5,8 +5,8 @@ class Validators {
 
     companion object {
         fun validate(vararg requests: ValidationRequest) {
-            requests.forEach {
-                if (it.value != null) require(it.predicate(it.value)) { it.message }
+            requests.forEach { request ->
+                request.value?.let { require(request.predicate(request.value)) { request.message } }
             }
         }
     }

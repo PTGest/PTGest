@@ -92,24 +92,31 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .execute()
     }
 
-    override fun createWorkout(trainerId: UUID, name: String, description: String?, category: MuscleGroup): Int =
-        handle.createUpdate(
+    override fun createWorkout(
+        trainerId: UUID,
+        name: String,
+        description: String?,
+        muscleGroup: List<MuscleGroup>
+    ): Int {
+        val muscleGroupArray = muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
+
+        return handle.createUpdate(
             """
             insert into workout (trainer_id, name, description, category)
-            values (:trainerId, :name, :description, :category::muscle_group)
+            values (:trainerId, :name, :description, ARRAY[$muscleGroupArray])
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "trainerId" to trainerId,
                     "name" to name,
-                    "description" to description,
-                    "category" to category.name
+                    "description" to description
                 )
             )
             .executeAndReturnGeneratedKeys("id")
             .mapTo<Int>()
             .one()
+    }
 
     override fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int) {
         handle.createUpdate(

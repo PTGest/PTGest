@@ -188,18 +188,6 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .mapTo<Trainer>()
             .firstOrNull()
 
-    override fun getTrainerAssigned(traineeId: UUID): UUID =
-        handle.createQuery(
-            """
-                select trainer_id
-                from trainer_trainee
-                where trainee_id = :traineeId
-            """.trimIndent()
-        )
-            .bind("traineeId", traineeId)
-            .mapTo<UUID>()
-            .one()
-
     override fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID) {
         handle.createUpdate(
             """
@@ -333,8 +321,8 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun getExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
-            select id, name, description, muscle_group, type, ref
-            from exercise e join exercise_company et on e.id = et.company_id
+            select id, name, description, muscle_group, modality, ref
+            from exercise e join exercise_company et on e.id = et.exercise_id
             where id = :id and company_id = :companyId
             """.trimIndent()
         )

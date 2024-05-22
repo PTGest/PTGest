@@ -3,11 +3,13 @@ package pt.isel.leic.ptgest.repository.jdbi.transaction
 import org.jdbi.v3.core.Handle
 import pt.isel.leic.ptgest.repository.AuthRepo
 import pt.isel.leic.ptgest.repository.CompanyRepo
+import pt.isel.leic.ptgest.repository.TraineeRepo
 import pt.isel.leic.ptgest.repository.TrainerRepo
 import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.WorkoutRepo
 import pt.isel.leic.ptgest.repository.jdbi.JdbiAuthRepo
 import pt.isel.leic.ptgest.repository.jdbi.JdbiCompanyRepo
+import pt.isel.leic.ptgest.repository.jdbi.JdbiTraineeRepo
 import pt.isel.leic.ptgest.repository.jdbi.JdbiTrainerRepo
 import pt.isel.leic.ptgest.repository.jdbi.JdbiUserRepo
 import pt.isel.leic.ptgest.repository.jdbi.JdbiWorkoutRepo
@@ -22,6 +24,7 @@ class JdbiTransaction(
     override val workoutRepo: WorkoutRepo = JdbiWorkoutRepo(handle)
     override val companyRepo: CompanyRepo = JdbiCompanyRepo(handle)
     override val trainerRepo: TrainerRepo = JdbiTrainerRepo(handle)
+    override val traineeRepo: TraineeRepo = JdbiTraineeRepo(handle)
 
     override fun commit() {
         handle.commit()

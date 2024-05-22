@@ -42,7 +42,7 @@ class CompanyController(
         @RequestParam excludeTraineeTrainer: UUID?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainers = companyService.getCompanyTrainers(
+        val (trainers, total) = companyService.getCompanyTrainers(
             skip,
             limit,
             gender,
@@ -54,7 +54,7 @@ class CompanyController(
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
-            details = GetCompanyTrainersResponse(trainers)
+            details = GetCompanyTrainersResponse(trainers, total)
         )
     }
 
@@ -66,7 +66,7 @@ class CompanyController(
         @RequestParam name: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainees = companyService.getCompanyTrainees(
+        val (trainees, total) = companyService.getCompanyTrainees(
             skip,
             limit,
             gender,
@@ -76,7 +76,7 @@ class CompanyController(
 
         return HttpResponse.ok(
             message = "Company trainees retrieved successfully.",
-            details = GetCompanyTraineesResponse(trainees)
+            details = GetCompanyTraineesResponse(trainees, total)
         )
     }
 

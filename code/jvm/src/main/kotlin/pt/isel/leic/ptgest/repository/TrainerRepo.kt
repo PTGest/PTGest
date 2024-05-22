@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.domain.workout.model.Exercise
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Set
@@ -11,7 +12,7 @@ import java.util.UUID
 
 interface TrainerRepo {
 
-    fun getCompanyAssignedTrainer(trainerId: UUID): UUID
+    fun getCompanyAssignedTrainer(trainerId: UUID): UUID?
 
     fun getExercises(
         trainerId: UUID,
@@ -37,11 +38,19 @@ interface TrainerRepo {
 
     fun getLastWorkoutNameId(trainerId: UUID): Int
 
+    fun getSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set>
+
+    fun getTotalSets(trainerId: UUID, type: SetType?, name: String?): Int
+
     fun getSet(trainerId: UUID, setId: Int): Set?
 
     fun getSet(setId: Int): Set
 
     fun getSetExercises(setId: Int): List<SetExerciseDetails>
+
+    fun getWorkouts(trainerId: UUID, skip: Int, limit: Int?, name: String?, muscleGroup: MuscleGroup?): List<Workout>
+
+    fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int
 
     fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout?
 

@@ -8,5 +8,5 @@ data class Trainee(
     val traineeName: String,
     val gender: Gender,
     val trainerId: UUID?,
-    val trainerName: String?,
+    val trainerName: String?
 )

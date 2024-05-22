@@ -3,13 +3,15 @@ package pt.isel.leic.ptgest.services.company
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Gender
 import pt.isel.leic.ptgest.domain.common.Order
-import pt.isel.leic.ptgest.domain.company.model.CompanyTrainees
-import pt.isel.leic.ptgest.domain.company.model.CompanyTrainers
+import pt.isel.leic.ptgest.domain.company.model.Trainee
+import pt.isel.leic.ptgest.domain.company.model.Trainer
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.model.Exercises
+import pt.isel.leic.ptgest.domain.workout.model.Exercise
+import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.utils.Validators
+import pt.isel.leic.ptgest.services.workout.WorkoutError
 import java.util.UUID
 
 @Service
@@ -25,7 +27,7 @@ class CompanyService(
         name: String?,
         excludeTraineeTrainer: UUID?,
         companyId: UUID
-    ): CompanyTrainers {
+    ): Pair<List<Trainer>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -46,7 +48,7 @@ class CompanyService(
                 excludeTraineeTrainer
             )
 
-            return@run CompanyTrainers(trainers, totalResults)
+            return@run Pair(trainers, totalResults)
         }
     }
 
@@ -56,7 +58,7 @@ class CompanyService(
         gender: Gender?,
         name: String?,
         companyId: UUID
-    ): CompanyTrainees {
+    ): Pair<List<Trainee>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -69,7 +71,7 @@ class CompanyService(
             val totalResults = companyRepo.getTotalCompanyTrainees(companyId, gender, name)
             val trainees = companyRepo.getCompanyTrainees(companyId, skip ?: 0, limit, gender, name)
 
-            return@run CompanyTrainees(trainees, totalResults)
+            return@run Pair(trainees, totalResults)
         }
     }
 
@@ -99,6 +101,7 @@ class CompanyService(
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo
+            val traineeRepo = it.traineeRepo
 
             val newTrainer = companyRepo.getCompanyTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
@@ -107,7 +110,7 @@ class CompanyService(
                 throw CompanyError.TrainerCapacityReached
             }
 
-            val trainerAssigned = companyRepo.getTrainerAssigned(traineeId)
+            val trainerAssigned = traineeRepo.getTrainerAssigned(traineeId)
 
             if (newTrainer.id == trainerAssigned) {
                 throw CompanyError.TrainerAlreadyAssociatedToTrainee
@@ -151,7 +154,7 @@ class CompanyService(
         muscleGroup: MuscleGroup?,
         modality: Modality?,
         trainerId: UUID
-    ): Exercises {
+    ): Pair<List<Exercise>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -177,7 +180,18 @@ class CompanyService(
                 modality
             )
 
-            return@run Exercises(exercises, totalExercises)
+            return@run Pair(exercises, totalExercises)
         }
     }
+
+    fun getExerciseDetails(
+        exerciseId: Int,
+        userId: UUID
+    ): ExerciseDetails =
+        transactionManager.run {
+            val companyRepo = it.companyRepo
+
+            return@run companyRepo.getExerciseDetails(userId, exerciseId)
+                ?: throw WorkoutError.ExerciseNotFoundError
+        }
 }
