@@ -53,6 +53,6 @@
 }
 
 .router-link:hover {
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
 }
 </style>

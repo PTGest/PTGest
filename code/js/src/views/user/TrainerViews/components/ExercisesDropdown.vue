@@ -1,27 +1,15 @@
 <template>
-
     <div class="exercises-dropdown">
         <div @click="openDropdown" class="select">
-            <span class="selected">Modality</span>
-            <font-awesome-icon :class="[isDropdownOpen ? 'dropdown-icon' : 'dropdown-icon-rotate']" :icon="faChevronDown"/>
-        </div>
-        <div class="dropdown-body">
-            <slot></slot>
+            <span class="selected">{{ selected }}</span>
+            <font-awesome-icon :class="[isDropdownOpen ? 'dropdown-icon-rotate' : 'dropdown-icon']" :icon="faChevronDown"/>
         </div>
 
+        <ul :class="[isDropdownOpen ? 'menu-open' : 'menu']">
+            <li :class="{'active': selected === placeholder}" @click="selectOption(`${props.placeholder}`)">-</li>
+            <li :class="{'active': selected === option}" v-for="option in props.options" :key="option" @click="selectOption(option)">{{ option }}</li>
+        </ul>
     </div>
-
-    <ul :class="[isDropdownOpen ? 'menu-open' : 'menu']">
-        <li class="active">-</li>
-        <li>Activation</li>
-        <li>Agility</li>
-        <li>Cardio</li>
-        <li>Conditioning</li>
-        <li>Mobility</li>
-        <li>Power</li>
-        <li>Strength</li>
-    </ul>
-
 </template>
 
 <script setup lang="ts">
@@ -29,8 +17,36 @@
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faChevronDown} from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
-
 const isDropdownOpen = ref(false);
+
+const emit = defineEmits(['dropdownOption']);
+const props = defineProps<{
+    options: string[]
+    placeholder: string
+}>();
+const selected = ref(props.placeholder);
+
+
+const selectOption = (option: string) => {
+    selected.value = option;
+    isDropdownOpen.value = false;
+    if (option === props.placeholder){
+        emit('dropdownOption', '')
+    }
+    else{
+        emit('dropdownOption', option);
+    }
+
+}
+
+const handleClick = (e: Event) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.exercises-dropdown')) {
+        isDropdownOpen.value = false;
+    }
+}
+
+window.addEventListener('click', handleClick);
 
 const openDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
@@ -44,9 +60,8 @@ const openDropdown = () => {
 <style scoped>
 
 .exercises-dropdown{
-   min-width: 15em;
+    padding: 0.5em;
     position: relative;
-    margin: 2em;
 }
 
 .exercises-dropdown *{
@@ -54,20 +69,20 @@ const openDropdown = () => {
 }
 
 .select{
-    width: 10em;
+    width: 20em;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.5em;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border: 1px solid rgba(245, 245, 245, 0.2);
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
 }
 
 .select:hover{
-    background-color: var(--secundary-color);
+    background-color: var(--main-secundary-color);
 }
 
 .dropdown-icon, .dropdown-icon-rotate{
@@ -81,25 +96,23 @@ const openDropdown = () => {
 .menu, .menu-open{
     list-style-type: none;
     padding: 0 0 0 0.5em ;
-    background-color: var(--secundary-color);
+    background-color: var(--main-secundary-color);
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    position: relative;
-    top: -1em;
-    left: 1.8em;
-    width: 10em;
+    border-radius: 5px;
+    position: absolute;
+    top: 2.4em;
+    width: 20em;
     height: 0;
     z-index: 10;
     overflow-y: scroll;
     transition: 300ms cubic-bezier(0.77, 0, 0.18, 1);
 }
-
 .menu::-webkit-scrollbar, .menu-open::-webkit-scrollbar{
     width: 7px;
 
 }
 .menu::-webkit-scrollbar-thumb, .menu-open::-webkit-scrollbar-thumb{
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
 }
 
@@ -110,11 +123,11 @@ const openDropdown = () => {
     cursor: pointer;
 }
 .menu li:hover, .menu-open li:hover{
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     color: whitesmoke;
 }
 .active{
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     color: whitesmoke;
 }
 
@@ -123,8 +136,12 @@ const openDropdown = () => {
 }
 
 .menu-open{
+    position: absolute;
+    left: 0.5em;
+    top: 2.4em;
     border: 1px solid rgba(245, 245, 245, 0.2);
     height: 15em;
+    transition: 300ms cubic-bezier(0.77, 0, 0.18, 1);
 }
 @keyframes text-fade-in {
     0%{

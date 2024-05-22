@@ -52,7 +52,7 @@ console.log(userInfo)
     grid-row-start: 1;
     grid-row-end: 3;
     font-weight: bold;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
 }
 
@@ -74,7 +74,7 @@ console.log(userInfo)
     grid-row-start: 2;
     grid-row-end: 3;
     justify-self: center;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
     font-weight: bold;
     padding: 0 4em 0 4em;

@@ -74,7 +74,7 @@ const handleApplyFilters = () => {
 
 .filters-box{
     position: absolute;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     width: 25em;
     height: 20em;
     border-radius: 10px;
@@ -95,7 +95,7 @@ const handleApplyFilters = () => {
     grid-row-end: 1;
     grid-column-start: 4;
     grid-column-end: 5;
-    cursor: pointer;
+    cursor: pointer ;
 }
 
 

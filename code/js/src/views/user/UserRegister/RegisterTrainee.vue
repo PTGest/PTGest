@@ -191,7 +191,7 @@ const authSign = async () => {
     border: 0;
     padding: 0 0.5em 0 0.5em;
     margin-bottom: 0.5em;
-    color: var(--primary-color);
+    color: var(--main-primary-color);
     background-color: whitesmoke;
     border-radius: 5px;
 }

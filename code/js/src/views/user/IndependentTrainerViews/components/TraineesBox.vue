@@ -61,7 +61,7 @@ p, h4{
 }
 
 h4{
-    text-shadow: var(--secundary-color) 2px 2px 2px;
+    text-shadow: var(--main-secundary-color) 2px 2px 2px;
 }
 p{
     font-size: 0.8em;
@@ -91,7 +91,7 @@ p{
 .reassign-btn{
     font-size: 0.6em;
     border-radius: 10px;
-    color: var(--primary-color);
+    color: var(--main-primary-color);
     background-color: whitesmoke;
     cursor: pointer;
     margin: 0;

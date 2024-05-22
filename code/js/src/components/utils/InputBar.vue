@@ -39,7 +39,7 @@ const updateVisibility = () => {
     border-radius: 5px;
     border: 0;
     padding: v-bind(padding);
-    color: var(--primary-color);
+    color: var(--main-primary-color);
     background-color: whitesmoke;
 }
 
@@ -60,6 +60,6 @@ const updateVisibility = () => {
 
 .visible-icon {
     margin-left: -2em;
-    color: var(--secundary-color);
+    color: var(--main-secundary-color);
 }
 </style>

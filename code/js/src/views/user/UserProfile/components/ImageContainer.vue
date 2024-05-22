@@ -24,7 +24,7 @@ const props = defineProps({
     height: 10em;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 50%;
     padding: 1em;
     margin: 1em;

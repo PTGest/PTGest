@@ -12,7 +12,7 @@
 
         <div class="input-row">
             <font-awesome-icon class="search-icon" :icon="faMagnifyingGlass"/>
-            <input-bar class="bar" class-name="search-bar" height="1.5em" width="100%" padding="0.5em"
+            <input-bar class="bar" class-name="search-bar" height="2.5em" width="100%" padding="0.5em"
                        placeholder="Search exercise name">
             </input-bar>
             <button class="filters">
@@ -64,7 +64,7 @@ const openAddExercise = () => {
     align-items: start;
     height:90%;
     width: 100%;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
 }
 
@@ -92,6 +92,7 @@ const openAddExercise = () => {
     gap: 10px;
     font-family: Poppins, sans-serif;
     font-size: 1rem;
+    color : whitesmoke;
     background-color: var(--light-blue);
     white-space: nowrap;
 }
@@ -120,25 +121,18 @@ const openAddExercise = () => {
 }
 
 .filters{
-    background-color: var(--secundary-color);
+    background-color: var(--main-secundary-color);
     padding: 0.5em;
     border-radius: 5px;
     font-family: Poppins, sans-serif;
     font-size: 1rem;
+    color : whitesmoke;
     transition: 0.2s ease-in;
 }
 
 .filters:hover{
     background-color: var(--light-blue);
     transition: 0.2s ease-out;
-}
-
-.add-exercise-container{
-    position: absolute;
-    left: calc(50% - 15%);
-    width: 30vw;
-    height: 50%;
-    z-index: 100;
 }
 
 </style>

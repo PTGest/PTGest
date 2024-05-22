@@ -86,7 +86,7 @@ p, h6, h4, input{
 h4{
     position: relative;
     left : -1em;
-    text-shadow: var(--secundary-color) 2px 2px 2px;
+    text-shadow: var(--main-secundary-color) 2px 2px 2px;
 }
 p{
     font-size: 0.8em;
@@ -159,7 +159,7 @@ input{
     h4{
         position: relative;
         left : -1em;
-        text-shadow: var(--secundary-color) 2px 2px 2px;
+        text-shadow: var(--main-secundary-color) 2px 2px 2px;
     }
     p{
         font-size: 0.8em;

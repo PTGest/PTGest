@@ -50,7 +50,7 @@ const logout = () => {
 
 .logout-button:hover,
 .logout-button-open:hover {
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 20px;
     transition: 0.1s ease-out;
 }

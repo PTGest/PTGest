@@ -42,7 +42,7 @@ class AuthInterceptor(
                     else -> throw AuthError.UserAuthenticationError.TokenNotProvided
                 }
 
-            if (handler.beanType.javaClass.isAnnotationPresent(RequiredRole::class.java) &&
+            if (handler.beanType.isAnnotationPresent(RequiredRole::class.java) &&
                 !handler.beanType.getAnnotation(RequiredRole::class.java).role.contains(user.role)
             ) {
                 throw AuthError.UserAuthenticationError.UnauthorizedRole

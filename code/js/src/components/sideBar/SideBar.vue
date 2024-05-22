@@ -94,7 +94,7 @@ window.addEventListener("resize", handleResize)
 
 .side-bar-container,
 .side-bar-container-open {
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -190,7 +190,7 @@ window.addEventListener("resize", handleResize)
     }
     .side-bar-container
      {
-        background-color: var(--primary-color);
+        background-color: var(--main-primary-color);
         display: flex;
         flex-direction: row;
         align-items: center;

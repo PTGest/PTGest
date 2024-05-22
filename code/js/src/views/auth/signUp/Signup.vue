@@ -115,7 +115,7 @@ const signUp = () => {
     border-radius: 5px;
     border: 0;
     padding: 0 1em 0 1em;
-    color: var(--primary-color);
+    color: var(--main-primary-color);
     background-color: whitesmoke;
 }
 

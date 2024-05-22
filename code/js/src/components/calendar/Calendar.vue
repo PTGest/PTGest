@@ -117,7 +117,7 @@ icons.forEach((icon) => {
 <style scoped>
 .wrapper {
     width: 450px;
-    background: var(--primary-color);
+    background: var(--main-primary-color);
     border-radius: 10px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
@@ -173,7 +173,7 @@ header .current-date {
     margin-top: 30px;
 }
 .days li.inactive {
-    color: var(--tertiary-color);
+    color: var(--main-tertiary-color);
 }
 .days li.active {
     color: whitesmoke;
@@ -195,7 +195,7 @@ header .current-date {
     background: var(--sign-up-blue);
 }
 .days li:not(.active):hover::before {
-    background: var(--secundary-color);
+    background: var(--main-secundary-color);
 }
 .days li:not(.active):hover {
     color: whitesmoke;

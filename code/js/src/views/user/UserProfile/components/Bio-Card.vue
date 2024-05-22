@@ -38,7 +38,7 @@ const updateBio = () => {
     justify-content: center;
     align-items: center;
     padding: 10px;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
 }
 
@@ -58,11 +58,11 @@ const updateBio = () => {
     padding: 10px;
     margin: 10px;
     border: none;
-    background-color: var(--primary-color);
+    background-color: var(--main-primary-color);
 }
 .bio-text-edit {
     color: whitesmoke;
     border: 1px solid whitesmoke;
-    background-color: var(--secundary-color);
+    background-color: var(--main-secundary-color);
 }
 </style>
