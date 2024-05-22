@@ -92,7 +92,6 @@ class CompanyService(
         }
     }
 
-//  TODO: Check if the new Trainer is already assigned to the Trainee
     fun reassignTrainer(
         trainerId: UUID,
         traineeId: UUID,
@@ -110,8 +109,9 @@ class CompanyService(
 
             val trainerAssigned = companyRepo.getTrainerAssigned(traineeId)
 
-            companyRepo.getCompanyTrainer(trainerAssigned, companyId)?.assignedTrainees
-                ?: throw CompanyError.TrainerNotFound
+            if (newTrainer.id == trainerAssigned) {
+                throw CompanyError.TrainerAlreadyAssociatedToTrainee
+            }
 
             companyRepo.reassignTrainer(trainerId, traineeId)
         }

@@ -111,20 +111,17 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         name: String?
     ): List<Trainee> {
         val genderCondition = if (gender != null) "and gender = :gender" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
+        val nameCondition = if (name != null) "and ut.name like :name" else ""
 
         return handle.createQuery(
             """
-            select u.id, name, gender
-            from "user" u join (
-                select id, gender
-                from trainee t join (
-                    select trainee_id
-                    from company_trainee
-                    where company_id = :companyId
-                ) tId on t.id = tId.trainee_id
-            ) trainee on u.id = trainee.id
-            ${if (name != null || gender != null) "where" else ""} $genderCondition $nameCondition
+            select t.id as trainee_id, ut.name as trainee_name, t.gender, upt.id as trainer_id, upt.name as trainer_name
+            from trainee t
+            join "user" ut on t.id = ut.id
+            left join trainer_trainee tt on t.id = tt.trainee_id
+            join company_trainee ct on t.id = ct.trainee_id
+            left join "user" upt on tt.trainer_id = upt.id
+            where ct.company_id = :companyId $genderCondition $nameCondition
             limit :limit offset :skip;
             """.trimIndent()
         )
@@ -143,20 +140,17 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
     override fun getTotalCompanyTrainees(companyId: UUID, gender: Gender?, name: String?): Int {
         val genderCondition = if (gender != null) "and gender = :gender" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
+        val nameCondition = if (name != null) "and ut.name like :name" else ""
 
         return handle.createQuery(
             """
             select count(*)
-            from "user" u join (
-                select id, gender
-                from trainee t join (
-                    select trainee_id
-                    from company_trainee
-                    where company_id = :companyId
-                ) tId on t.id = tId.trainee_id
-            ) trainee on u.id = trainee.id
-            ${if (name != null || gender != null) "where" else ""} $genderCondition $nameCondition
+            from trainee t
+            join "user" ut on t.id = ut.id
+            left join trainer_trainee tt on t.id = tt.trainee_id
+            join company_trainee ct on t.id = ct.trainee_id
+            left join "user" upt on tt.trainer_id = upt.id
+            where ct.company_id = :companyId $genderCondition $nameCondition
             """.trimIndent()
         )
             .bindMap(

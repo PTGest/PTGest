@@ -66,7 +66,13 @@ class CompanyController(
         @RequestParam name: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val trainees = companyService.getCompanyTrainees(skip, limit, gender, name?.trim(), authenticatedUser.id)
+        val trainees = companyService.getCompanyTrainees(
+            skip,
+            limit,
+            gender,
+            name?.trim(),
+            authenticatedUser.id
+        )
 
         return HttpResponse.ok(
             message = "Company trainees retrieved successfully.",
