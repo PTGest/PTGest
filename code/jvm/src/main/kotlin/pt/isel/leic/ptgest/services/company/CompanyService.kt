@@ -11,7 +11,6 @@ import pt.isel.leic.ptgest.domain.workout.model.Exercise
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.utils.Validators
-import pt.isel.leic.ptgest.services.workout.WorkoutError
 import java.util.UUID
 
 @Service
@@ -137,13 +136,34 @@ class CompanyService(
         }
     }
 
-    fun associateCompanyToExercise(
+    fun createCustomExercise(
         companyId: UUID,
-        exerciseId: Int
-    ) {
-        transactionManager.run {
+        name: String,
+        description: String?,
+        muscleGroup: List<MuscleGroup>,
+        modality: Modality,
+        ref: String?
+    ): Int {
+        Validators.validate(
+            Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() },
+            Validators.ValidationRequest(ref, "Reference must be a valid YouTube URL.") { Validators.isYoutubeUrl(it as String) }
+        )
+
+        return transactionManager.run {
             val companyRepo = it.companyRepo
+            val workoutRepo = it.workoutRepo
+
+            val exerciseId = workoutRepo.createExercise(
+                name,
+                description,
+                muscleGroup,
+                modality,
+                ref
+            )
+
             companyRepo.associateCompanyToExercise(companyId, exerciseId)
+
+            return@run exerciseId
         }
     }
 
@@ -192,6 +212,6 @@ class CompanyService(
             val companyRepo = it.companyRepo
 
             return@run companyRepo.getExerciseDetails(userId, exerciseId)
-                ?: throw WorkoutError.ExerciseNotFoundError
+                ?: throw CompanyError.ExerciseNotFoundError
         }
 }

@@ -9,5 +9,11 @@ class Validators {
                 request.value?.let { require(request.predicate(request.value)) { request.message } }
             }
         }
+
+        fun isYoutubeUrl(url: String): Boolean {
+            val pattern = "^(https://)?((w){3}.)?youtube\\.com/watch\\?v=\\w+"
+            val compiledPattern = Regex(pattern)
+            return compiledPattern.matches(url)
+        }
     }
 }

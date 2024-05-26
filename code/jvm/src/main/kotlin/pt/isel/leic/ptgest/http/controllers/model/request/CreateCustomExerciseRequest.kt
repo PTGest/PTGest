@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.workout.model.request
+package pt.isel.leic.ptgest.http.controllers.model.request
 
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Size

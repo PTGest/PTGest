@@ -18,4 +18,9 @@ sealed class CompanyError : BaseError() {
         private fun readResolve(): Any = TrainerAlreadyAssociatedToTrainee
         override val message: String get() = "Trainer is already associated to the trainee."
     }
+
+    data object ExerciseNotFoundError : CompanyError() {
+        private fun readResolve(): Any = ExerciseNotFoundError
+        override val message: String get() = "Exercise not found."
+    }
 }

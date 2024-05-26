@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.workout
+package pt.isel.leic.ptgest.services.utils
 
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.SetType

@@ -31,10 +31,6 @@ object Uris {
 
     object Trainer {
         const val PREFIX = "${Uris.PREFIX}/trainer"
-
-        const val CREATE_SESSION = "/session"
-        const val CHANGE_SESSION_DATE = "/session/{sessionId}/change-date"
-        const val CANCEL_SESSION = "/session/{sessionId}/cancel"
     }
 
     object Trainee {
@@ -53,5 +49,14 @@ object Uris {
         const val CREATE_CUSTOM_WORKOUT = "/custom-workout"
         const val GET_WORKOUTS = "/workouts"
         const val GET_WORKOUT_DETAILS = "/workout/{workoutId}"
+    }
+
+    object Session {
+        const val CREATE_SESSION = "/session"
+        const val GET_SESSIONS = "/sessions"
+        const val GET_SESSION_DETAILS = "/session/{sessionId}"
+        const val CHANGE_SESSION_DATE = "/session/{sessionId}/change-date"
+        const val EDIT_SESSION = "/session/{sessionId}/edit"
+        const val CANCEL_SESSION = "/session/{sessionId}/cancel"
     }
 }

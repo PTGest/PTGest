@@ -8,4 +8,19 @@ sealed class TraineeError : BaseError() {
         private fun readResolve(): Any = TraineeNotAssigned
         override val message: String get() = "Trainee not assigned to any trainer."
     }
+
+    data object ExerciseNotFoundError : TraineeError() {
+        private fun readResolve(): Any = ExerciseNotFoundError
+        override val message: String get() = "Exercise not found."
+    }
+
+    data object SetNotFoundError : TraineeError() {
+        private fun readResolve(): Any = SetNotFoundError
+        override val message: String get() = "Set not found."
+    }
+
+    data object WorkoutNotFoundError : TraineeError() {
+        private fun readResolve(): Any = WorkoutNotFoundError
+        override val message: String get() = "Workout not found or does not belong to the trainer."
+    }
 }

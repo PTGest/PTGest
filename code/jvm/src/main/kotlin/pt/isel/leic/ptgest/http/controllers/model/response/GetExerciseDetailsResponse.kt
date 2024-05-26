@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.workout.model.response
+package pt.isel.leic.ptgest.http.controllers.model.response
 
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
