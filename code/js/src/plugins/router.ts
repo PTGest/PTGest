@@ -14,6 +14,7 @@ import RBAC from "../services/utils/RBAC/RBAC.ts";
 import store from "../store";
 import AssignTrainer from "../views/user/CompaniesViews/AssignTrainer.vue";
 import Exercises from "../views/user/TrainerViews/Exercises.vue";
+import Sets from "../views/user/TrainerViews/Sets.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -53,6 +54,9 @@ const routes: RouteRecordRaw[] = [
     { path: "/exercises", name: "exercises", component: Exercises, meta: { requiresAuth: true,
             roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
     },
+    { path: "/sets", name: "sets", component: Sets, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
 
     //Error Views
     { path: "/error", name: "error", component: Error },
@@ -68,7 +72,7 @@ router.beforeEach((to , from) => {
     console.log("to",to)
     console.log("from",from)
     if (to.meta.requiresAuth) {
-        if (store.getters.userData.token == undefined) {
+        if (document.cookie.includes('accessToken') == undefined) {
             return {name: "login"}
         }
         // else {

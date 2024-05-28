@@ -33,7 +33,7 @@
                 text=""
                 height="3em"
                 placeholder=""
-            />
+             />
             <input-bar
                 class="trainee-phone-input"
                 @value="updatePhone('phone', $event)"

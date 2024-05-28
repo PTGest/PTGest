@@ -174,6 +174,7 @@ input{
 :deep(.p-icon){
     color: whitesmoke;
 }
+
 :global(.p-multiselect-items-wrapper) {
     background: var(--main-primary-color);
     color: whitesmoke;
@@ -208,7 +209,8 @@ input{
  color: whitesmoke;
     padding:0;
 }
-:global(.p-multiselect-close-icon){
+
+:global(.p-multiselect-trigger-icon){
     color: whitesmoke;
 }
 :global(::-webkit-scrollbar), :global(.menu-open::-webkit-scrollbar){
@@ -270,6 +272,11 @@ label{
 .submit-btn{
     margin-top: 5em;
     background-color: var(--main-primary-color);
+}
+
+
+::placeholder{
+    color: rgba(245, 245, 245, 0.4);
 }
 
 </style>
