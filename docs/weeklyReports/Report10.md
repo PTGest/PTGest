@@ -1,6 +1,6 @@
-# Weekly Report 9
+# Weekly Report 10
 
-## Week: 13/05/2024 - 19/05/2024
+## Week: 20/05/2024 - 26/05/2024
 
 ## Summary
 
@@ -10,10 +10,10 @@
     3. Finish the view CreateExercise and his connection with the backend.
     4. Implement the Create workout view.
 - **Progress:**
-    1. Improved the methods to create custom exercises, sets and workouts.
-    2. Implemented the method to list all the exercises with filters.
-    3. Finish the views to the methods that list all exercises and sets in the frontend.
-    4. Finish the views to the methods `create exercise` and `create set` in the frontend.
+    1. The methods to list all sets and workouts were implemented.
+    2. The method to create a session was implemented.
+    3. Finished the views to the methods that list all exercises and sets in the frontend.
+    4. Finished the views to the methods `create exercise` and `create set` in the frontend.
     5. Start the implementation of the view to list all workouts and to create a workout.
 
 ---
@@ -43,20 +43,45 @@ The views to list all workouts and to create a workout were started to be implem
 
 ## Backend changes
 
-The method to create custom exercises was improved to receive the tags of the exercise a list of 3 tags that can identify the the muscle group that the exercise works, this tags can be used to filter the exercises when listing them.
+A bug in the method to reassing a trainer to a trainee were the user can reassign the trainer that is already assigned to the trainee was fixed.
 
-In the method to list all the exercises was implemented a filter to search the exercises by name for search the exercises by name, muscle group this filter can be used to search an exercise by the tags that were added when creating the exercise and modalities that can be used to filter the exercises by the modality that the exercise belongs like *BODYWEIGHT*, *WEIGHTLIFT*, etc.
+The methods to list all sets and workouts were implemented with the following filters:
+    - **Workouts:**
+        - **name** - filter the workouts by the names that are similar to the passed value. 
+        - **muscleGroup** - filter the workouts by the muscle group.
+    - **Sets:**
+        - **name** - filter the sets by the names that are similar to the passed value.
+        - **type** - filter the sets by the type.
 
-Were added an anotation to identify the method or class and respective method that needs a especific role to be accessed, this anotation is used by the Authorization Interceptor to check if the user has the role to access the method.
+The method to create a workout was changed to store in muscleGroup a list of 3 muscle groups instead of a single muscle group to be more flexible and to allow the user to create a workout that works in multiple muscle groups.
 
-Some bugs in RequestBody elements validation were fixed, now this validation is working correctly.
+Some other methods were improved to return the correct data and to be more efficient.
+
+The method to create a session was implemented, this method creates a new session with the following fields:
+    - **Trainee Id:** Trainee Identifier.
+    - **Workout Id:** Workout Identifier.
+    - **Begin Date:** Date when the session should start.
+    - **End Date:** Date when the session should end, this field is optional (this field should be more important when the sessio is trainer guided).
+    - **Type:** Type of the session (trainer guided or not).
+    - **Notes:** Notes about the session.
+
+---
+
+
+## Database changes
+
+To achieve the new requirements of the system, some changes were made in the database.
+
+In this way, the tables were changed to the following:
+
+![Database Diagram](./images/dbDiagram7.png)
 
 ---
 
 ## Planning for Next Week
 
 - **Objectives:**
-    1. Implement the methods to list all sets and workouts.
-    2. Start implementing the methods to manage sessions.
-    3. Finish the connection between the ViewExercises, ViewSets, CreateExercise and CreateSet with the backend .
+    1. Continue implementing the methods to manage sessions.
+    2. Start implementing the feedback system.
+    3. Finish the connection between the ViewExercises, ViewSets, CreateExercise and CreateSet with the backend.
     4. Finish the views ViewWorkout and CreateWorkout and his connection with the backend.

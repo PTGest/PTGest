@@ -74,6 +74,7 @@ class CompanyService(
         }
     }
 
+//  TODO: check if the trainee already exists or is from the same company
     fun assignTrainerToTrainee(
         trainerId: UUID,
         traineeId: UUID,
@@ -93,6 +94,7 @@ class CompanyService(
         }
     }
 
+//  TODO: check if the trainee already exists or is from the same company
     fun reassignTrainer(
         trainerId: UUID,
         traineeId: UUID,
