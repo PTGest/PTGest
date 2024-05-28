@@ -17,15 +17,16 @@ import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.http.controllers.model.request.CreateCustomExerciseRequest
-import pt.isel.leic.ptgest.http.controllers.model.request.CreateCustomSetRequest
-import pt.isel.leic.ptgest.http.controllers.model.request.CreateCustomWorkoutRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomWorkoutRequest
 import pt.isel.leic.ptgest.http.controllers.model.response.CreateCustomResourceResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetExerciseDetailsResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetSetDetails
-import pt.isel.leic.ptgest.http.controllers.model.response.GetSetsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetWorkoutDetailsResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetWorkoutsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSessionRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
@@ -216,6 +217,37 @@ class TrainerController(
 
     @PostMapping(Uris.Session.CREATE_SESSION)
     fun createSession(
+        @RequestBody sessionDetails: CreateSessionRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val sessionId = trainerService.createSession(
+            authenticatedUser.id,
+            sessionDetails.traineeId,
+            sessionDetails.workoutId,
+            sessionDetails.beginDate,
+            sessionDetails.endDate,
+            sessionDetails.type,
+            sessionDetails.notes
+        )
+
+        return HttpResponse.created(
+            message = "Session created successfully.",
+            details = CreateCustomResourceResponse(sessionId)
+        )
+    }
+
+    @GetMapping(Uris.Session.GET_SESSIONS)
+    fun getSessions(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        throw NotImplementedError("Not implemented yet.")
+    }
+
+    @GetMapping(Uris.Session.GET_SESSION_DETAILS)
+    fun getSessionDetails(
+        @PathVariable sessionId: String,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         throw NotImplementedError("Not implemented yet.")

@@ -1,5 +1,6 @@
 package pt.isel.leic.ptgest.repository
 
+import pt.isel.leic.ptgest.domain.common.model.SessionType
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
@@ -8,7 +9,7 @@ import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Set
 import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Workout
-import java.util.UUID
+import java.util.*
 
 interface TrainerRepo {
 
@@ -55,4 +56,14 @@ interface TrainerRepo {
     fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout?
 
     fun getWorkoutSetIds(workoutId: Int): List<Int>
+
+    fun createSession(
+        trainerId: UUID,
+        traineeId: UUID,
+        workoutId: Int,
+        beginDate: Date,
+        endDate: Date?,
+        type: SessionType,
+        notes: String?
+    ) : Int
 }

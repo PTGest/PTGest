@@ -11,9 +11,8 @@ create type prod.muscle_group as enum ('BICEPS', 'CHEST', 'CORE', 'FOREARMS', 'F
     'GLUTES', 'HAMSTRINGS', 'HIP_GROIN', 'LOWER_BACK', 'LOWER_BODY', 'LOWER_LEG', 'MID_BACK',
     'QUADS', 'SHOULDERS', 'TRIPEPS', 'UPPER_BACK_NECK', 'UPPER_BODY');
 create type prod.modality as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
--- TODO: to be changed
-create type prod.session_category as enum ('P', 'A');
-create type prod.source as enum ('T', 'P');
+create type prod.session_type as enum ('TRAINER_GUIDED', 'PLAN_BASED');
+create type prod.source as enum ('TRAINER', 'TRAINEE');
 
 create table if not exists prod."user"
 (
@@ -138,12 +137,14 @@ create table if not exists prod.exercise
 
 create table if not exists prod.session
 (
+    id         serial primary key,
     trainee_id uuid references prod.trainee (id) on delete cascade,
+    trainer_id uuid references prod.trainer (id) on delete cascade,
     workout_id int references prod.workout (id) on delete cascade,
-    date       timestamp            not null,
-    category   prod.session_category not null,
-    notes      text,
-    primary key (trainee_id, workout_id, date)
+    begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
+    end_date   timestamp check ( end_date > begin_date and end_date > now() ) not null,
+    type       prod.session_type not null,
+    notes      text
 );
 
 create table if not exists prod.exercise_company

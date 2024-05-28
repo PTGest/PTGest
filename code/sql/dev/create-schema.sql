@@ -11,9 +11,8 @@ create type dev.muscle_group as enum ('BICEPS', 'CHEST', 'CORE', 'FOREARMS', 'FU
     'GLUTES', 'HAMSTRINGS', 'HIP_GROIN', 'LOWER_BACK', 'LOWER_BODY', 'LOWER_LEG', 'MID_BACK',
     'QUADS', 'SHOULDERS', 'TRIPEPS', 'UPPER_BACK_NECK', 'UPPER_BODY');
 create type dev.modality as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
--- TODO: to be changed
-create type dev.session_category as enum ('P', 'A');
-create type dev.source as enum ('T', 'P');
+create type dev.session_type as enum ('TRAINER_GUIDED', 'PLAN_BASED');
+create type dev.source as enum ('TRAINER', 'TRAINEE');
 
 create table if not exists dev."user"
 (
@@ -110,11 +109,11 @@ create table if not exists dev.report
 -- Trainee's workout plan
 create table if not exists dev.workout
 (
-    id          serial primary key,
-    trainer_id  uuid references dev.trainer (id) on delete cascade,
-    name        varchar(50)      not null,
-    description text,
-    muscle_group    dev.muscle_group[] not null
+    id           serial primary key,
+    trainer_id   uuid references dev.trainer (id) on delete cascade,
+    name         varchar(50)        not null,
+    description  text,
+    muscle_group dev.muscle_group[] not null
 );
 
 create table if not exists dev.set
@@ -138,12 +137,14 @@ create table if not exists dev.exercise
 
 create table if not exists dev.session
 (
+    id         serial primary key,
     trainee_id uuid references dev.trainee (id) on delete cascade,
+    trainer_id uuid references dev.trainer (id) on delete cascade,
     workout_id int references dev.workout (id) on delete cascade,
-    date       timestamp            not null,
-    category   dev.session_category not null,
-    notes      text,
-    primary key (trainee_id, workout_id, date)
+    begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
+    end_date   timestamp check ( end_date > begin_date and end_date > now() )   not null,
+    type       dev.session_type                                                 not null,
+    notes      text
 );
 
 create table if not exists dev.exercise_company

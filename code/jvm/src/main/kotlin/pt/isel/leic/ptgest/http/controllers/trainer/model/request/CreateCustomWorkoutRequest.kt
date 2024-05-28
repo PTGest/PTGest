@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.model.request
+package pt.isel.leic.ptgest.http.controllers.trainer.model.request
 
 import jakarta.validation.constraints.Size
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
