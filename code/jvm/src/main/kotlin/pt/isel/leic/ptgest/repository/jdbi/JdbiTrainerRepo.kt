@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.common.model.SessionType
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
@@ -11,7 +12,7 @@ import pt.isel.leic.ptgest.domain.workout.model.Set
 import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.repository.TrainerRepo
-import java.util.UUID
+import java.util.*
 
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
 
@@ -322,4 +323,36 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .bind("workoutId", workoutId)
             .mapTo<Int>()
             .list()
+
+    override fun createSession(
+        trainerId: UUID,
+        traineeId: UUID,
+        workoutId: Int,
+        beginDate: Date,
+        endDate: Date?,
+        type: SessionType,
+        notes: String?
+    ): Int =
+            handle.createUpdate(
+                """
+            insert into session (trainee_id, trainer_id, workout_id, begin_date, end_date, type, notes)
+            values (:traineeId, :trainerId, :workoutId, :beginDate, :endDate, :type, :notes)
+            returning id
+            """
+            )
+                .bindMap(
+                    mapOf(
+                        "traineeId" to traineeId,
+                        "trainerId" to trainerId,
+                        "workoutId" to workoutId,
+                        "beginDate" to beginDate,
+                        "endDate" to endDate,
+                        "type" to type.name,
+                        "notes" to notes
+                    )
+                )
+                .executeAndReturnGeneratedKeys("id")
+                .mapTo<Int>()
+                .one()
+
 }

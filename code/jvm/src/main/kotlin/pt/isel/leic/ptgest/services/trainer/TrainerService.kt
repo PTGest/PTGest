@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.common.model.SessionType
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
@@ -14,12 +15,13 @@ import pt.isel.leic.ptgest.domain.workout.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
+import pt.isel.leic.ptgest.http.controllers.model.response.CreateCustomResourceResponse
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.trainee.TraineeError
 import pt.isel.leic.ptgest.services.utils.ExerciseValidator
 import pt.isel.leic.ptgest.services.utils.Validators
-import java.util.UUID
+import java.util.*
 
 @Service
 class TrainerService(
@@ -243,6 +245,44 @@ class TrainerService(
 
             return@run WorkoutDetails(workout, sets)
         }
+
+    fun createSession(
+        trainerId: UUID,
+        traineeId: UUID,
+        workoutId: Int,
+        beginDate: Date,
+        endDate: Date?,
+        type: SessionType,
+        notes: String?
+    ): Int {
+        Validators.validate(
+            Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() },
+            Validators.ValidationRequest(endDate, "End date must be after begin date.")
+            { (it as Date).after(beginDate) }
+        )
+
+        return transactionManager.run {
+            val traineeRepo = it.traineeRepo
+            val trainerRepo = it.trainerRepo
+
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssigned
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            return@run trainerRepo.createSession(
+                trainerId,
+                traineeId,
+                workoutId,
+                beginDate,
+                endDate,
+                type,
+                notes
+            )
+        }
+    }
 
     private fun Transaction.getExercises(
         trainerId: UUID,
