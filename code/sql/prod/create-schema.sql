@@ -109,11 +109,11 @@ create table if not exists prod.report
 -- Trainee's workout plan
 create table if not exists prod.workout
 (
-    id          serial primary key,
-    trainer_id  uuid references prod.trainer (id) on delete cascade,
-    name        varchar(50)      not null,
-    description text,
-    muscle_group    prod.muscle_group[] not null
+    id           serial primary key,
+    trainer_id   uuid references prod.trainer (id) on delete cascade,
+    name         varchar(50)        not null,
+    description  text,
+    muscle_group prod.muscle_group[] not null
 );
 
 create table if not exists prod.set
@@ -142,8 +142,8 @@ create table if not exists prod.session
     trainer_id uuid references prod.trainer (id) on delete cascade,
     workout_id int references prod.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
-    end_date   timestamp check ( end_date > begin_date and end_date > now() ) not null,
-    type       prod.session_type not null,
+    end_date   timestamp check ( end_date > begin_date and end_date > now() )   not null,
+    type       prod.session_type                                                 not null,
     notes      text
 );
 
@@ -209,13 +209,9 @@ create table if not exists prod.feedback
 
 create table if not exists prod.session_feedback
 (
-    feedback_id        int references prod.feedback (id) on delete cascade,
-    session_trainee_id uuid,
-    session_workout_id int,
-    session_date       timestamp,
-    primary key (feedback_id, session_trainee_id, session_workout_id, session_date),
-    foreign key (session_trainee_id, session_workout_id, session_date)
-        references prod.session (trainee_id, workout_id, date) on delete cascade
+    feedback_id int references prod.feedback (id) on delete cascade,
+    session_id  int references prod.session (id) on delete cascade,
+    primary key (feedback_id, session_id)
 );
 
 -- TODO: implement set feedback

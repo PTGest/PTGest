@@ -209,13 +209,9 @@ create table if not exists dev.feedback
 
 create table if not exists dev.session_feedback
 (
-    feedback_id        int references dev.feedback (id) on delete cascade,
-    session_trainee_id uuid,
-    session_workout_id int,
-    session_date       timestamp,
-    primary key (feedback_id, session_trainee_id, session_workout_id, session_date),
-    foreign key (session_trainee_id, session_workout_id, session_date)
-        references dev.session (trainee_id, workout_id, date) on delete cascade
+    feedback_id int references dev.feedback (id) on delete cascade,
+    session_id  int references dev.session (id) on delete cascade,
+    primary key (feedback_id, session_id)
 );
 
 -- TODO: implement set feedback
