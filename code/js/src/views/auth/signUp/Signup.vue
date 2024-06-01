@@ -1,6 +1,6 @@
 <template>
     <div class="signup-container">
-        <img v-if="!store.state.is_mobile_view" class="signup-img" src="../../../assets/signup.png" alt="Signup image" />
+        <img v-if="!store.state.is_mobile_view" class="signup-img" src="../../../assets/signup.png" alt="Signup svg" />
         <div class="signup-inputs-container" id="signup-container">
             <h1>Sign up</h1>
             <div class="signup-input-container">
@@ -22,7 +22,7 @@
 
             <div v-if="toggle" class="signup-input-container">
                 <div class="signup-input-text">Gender</div>
-                <DropdownMenu @gender="updateGender" arrowRight="-13.6em" size="18.5em" />
+                <DropdownMenu @gender="updateGender"size="16.8em" />
             </div>
 
             <div v-if="toggle" class="signup-input-container">
@@ -68,13 +68,16 @@ const signupUserData: Ref<SignupPTData> = ref({
     user_type: "independent_trainer",
 })
 
-function isFullOfData(data: SignupPTData): boolean {
-    return toggle && (data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== ""
-        && phoneNumber.value != "" && countryNumber.value != "") || !toggle && (data.name !== "" && data.email !== "")
-}
+
+const isFullOfData = computed(
+    () => (data: SignupPTData) => {
+            return toggle && (data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== ""
+                && phoneNumber.value != "" && countryNumber.value != "") || !toggle.value && (data.name !== "" && data.email !== "" && data.password !== "")
+        }
+)
 
 const isSignUpDisabled = computed(() => {
-    return !isFullOfData(signupUserData.value)
+    return !isFullOfData.value(signupUserData.value)
 })
 
 const updateVisibility = () => {
@@ -178,12 +181,12 @@ const signUp = () => {
 }
 
 .signup-phone-country-input {
-    max-width: 2em;
+    max-width: 4em;
     margin-right: 1em;
 }
 
 .signup-phone-input {
-    max-width: 13.6em;
+    max-width: 14em;
 }
 
 .plus-icon {
@@ -255,6 +258,10 @@ const signUp = () => {
 .login-text {
     color: rgba(245, 245, 245, 0.9);
     margin-top: 0.5em;
+}
+
+input{
+    color: var(--main-primary-color);
 }
 
 @media screen and (max-width: 990px) {

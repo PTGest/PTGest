@@ -43,6 +43,8 @@ export default async function getCompanyTrainersOrTrainees(
                     console.log(data);
 
                     if (isTrainees) {
+                        console.log(data.details.trainees);
+                        console.log(data.details.total);
                         const trainees = new CompanyTrainees(
                             data.details.trainees,
                             data.details.total

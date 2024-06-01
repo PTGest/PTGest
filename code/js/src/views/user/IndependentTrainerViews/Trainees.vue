@@ -17,6 +17,7 @@
                                :class="[companyTraineesRef.trainees.length > 0 ?'icons' :'icons-disable' ]"
                                :icon="faChevronRight"></font-awesome-icon>
         </div>
+        <Filters v-if="areFiltersVisible" @visible="handleFilters($event)"></Filters>
     </div>
 </template>
 
@@ -25,11 +26,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import {faChevronLeft, faChevronRight, faFilter, faPlus} from "@fortawesome/free-solid-svg-icons"
 import store from "../../../store";
 import router from "../../../plugins/router.ts";
-import CompanyTrainers from "@/views/user/CompaniesViews/models/CompanyTrainers.ts";
-import getCompanyTrainersOrTrainees from "@/services/companyServices/getCompanyTrainersOrTrainees.ts";
+import getCompanyTrainersOrTrainees from "../../../services/companyServices/getCompanyTrainersOrTrainees.ts";
 import {ref} from "vue";
-import CompanyTrainees from "@/views/user/CompaniesViews/models/CompanyTrainees.ts";
-import TraineesBox from "@/views/user/IndependentTrainerViews/components/TraineesBox.vue";
+import CompanyTrainees from "../../../views/user/CompaniesViews/models/CompanyTrainees.ts";
+import TraineesBox from "../../../views/user/IndependentTrainerViews/components/TraineesBox.vue";
+import Filters from "@/views/user/CompaniesViews/Components/Filters.vue";
 
 const skip = ref(0);
 const areFiltersVisible = ref(false);
@@ -45,6 +46,7 @@ const companyTraineesRef = ref<CompanyTrainees>({
     try {
         companyTraineesRef.value =
             <CompanyTrainees>await getCompanyTrainersOrTrainees(skip.value, null, null, null, true);
+        console.log(companyTraineesRef.value)
         console.log(companyTraineesRef.value)
     } catch (error) {
         console.error("Error getting user info:", error)
@@ -86,7 +88,7 @@ const handleFilters = (isOpen : boolean) => {
     align-items: center;
     justify-content: center;
     margin-top: 2em;
-    background-color: var(--sign-up-blue);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
     min-width: 25em;
 }
@@ -94,19 +96,23 @@ const handleFilters = (isOpen : boolean) => {
 .add-trainee {
     color: whitesmoke;
     padding: 0.5em 1.5em 0.5em 1.5em;
-    background-color: var(--sign-up-blue);
+    background-color: var(--main-secundary-color);
+    border : 1px solid var(--main-primary-color);
     border-radius: 10px;
+    transition: 0.2s ease-in;
 }
 
 .add-trainee:hover {
     color: rgba(245, 245, 245, 0.7);
-    background-color: var(--light-blue);
+    background-color: var(--main-primary-color);
+    border : 1px solid rgba(96, 96, 250, 0.7);
     border-radius: 10px;
+    transition: 0.2s ease-out;
 }
 
 .filter-icon{
     position: relative;
-    left: 10em;
+    left: 13.3em;
     cursor: pointer;
 }
 
@@ -130,7 +136,7 @@ h2{
 
 .icons-disable{
     padding: 1em;
-    color: var(--light-blue);
+    color: var(--main-secundary-color);
     pointer-events: none;
 }
 </style>

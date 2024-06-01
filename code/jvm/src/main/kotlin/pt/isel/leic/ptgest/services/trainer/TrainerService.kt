@@ -147,14 +147,11 @@ class TrainerService(
         )
 
         return transactionManager.run {
-            val traineeRepo = it.traineeRepo
             val trainerRepo = it.trainerRepo
 
-            val trainerId = traineeRepo.getTrainerAssigned(userId)
-                ?: throw TraineeError.TraineeNotAssigned
 
-            val sets = trainerRepo.getSets(trainerId, skip ?: 0, limit, type, name)
-            val totalSets = trainerRepo.getTotalSets(trainerId, type, name)
+            val sets = trainerRepo.getSets(userId, skip ?: 0, limit, type, name)
+            val totalSets = trainerRepo.getTotalSets(userId, type, name)
 
             return@run Pair(sets, totalSets)
         }

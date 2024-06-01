@@ -8,39 +8,101 @@
                 </button>
            </div>
 
+           <ExercisesDetails class="exerciseDetails-container" @exerciseDetails="handleExerciseDetails"  v-if="selectedExercises.length > 0" :exercises="selectedExercises"></ExercisesDetails>
+
            <div class="dropdown-wrapper">
                <label class="label">Type</label>
                <ExercisesDropdown :options="setTypes" placeholder="Set Type" @dropdownOption="updateSetType($event)"/>
 
                <label class="label">Exercise</label>
-               <ExercisesDropdown :options="[]" placeholder="Select Exercise" @dropdownOption="updateSetType($event)"/>
-
+               <MultiSelect v-if="typeOption === 'SUPERSET' " v-model="selectedExercises" display="chip"
+                            :options="
+                            exercises.exercises.map(exercise => {
+                                return {
+                                     id: exercise.id,
+                                    name: exercise.name
+                                }
+                            })"
+                            optionLabel="name" placeholder="Select Exercise"
+                            :maxSelectedLabels="3" class="w-full md:w-20rem" />
+               <exercises-dropdown v-else @dropdownOption="handleExercises($event)" :options="exercises.exercises.map(exercise => {
+                                return {
+                                     id: exercise.id,
+                                    name: exercise.name
+                                }
+                            })" placeholder="Enter Exercise"> </exercises-dropdown>
                <label class="label">Notes</label>
-               <Textarea class="text-area" v-model="setNotes" rows="5" cols="30" />
+               <textarea class="text-area" v-model="setNotes"/>
            </div>
            <div class="submit-row">
-               <Button class="submit-btn" disabled>Create Set</Button>
+               <Button @click="submitSet" label="submit" :class="isDisable ? 'submit-btn-disable' : 'submit-btn'" disabled="true">Create Set</Button>
            </div>
        </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {computed, Ref, ref} from "vue";
 import {faTimes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import ExercisesDropdown from "../../../../views/user/TrainerViews/components/ExercisesDropdown.vue";
+import getExercises from "../../../../services/TrainerServices/getExercises.ts";
+import Exercises from "../../../../views/user/TrainerViews/models/Exercises.ts";
+import MultiSelect from "primevue/multiselect";
+import ExercisesDetails from "../components/ExercisesDetails.vue";
+import SetExercise from "../../../../views/user/TrainerViews/models/SetExercise.ts";
+import createSet from "../../../../services/TrainerServices/createSet.ts";
+import CreateCustomSetRequest from "../../../../views/user/TrainerViews/models/CreateCustomSetRequest.ts";
 
+
+const selectedExercises : Ref<{ id: number, name: string }[]> = ref([]);
+const exercises : Ref<Exercises> = ref({
+    exercises: [],
+    nOfExercises: 0
+});
+const exerciseDetailsList : Ref<SetExercise[]> = ref([]);
 const setName = ref("");
-const setNotes = ref("");
-const modalityOption = ref("");
+const setNotes = ref(null);
+const typeOption = ref("");
 const setTypes = ["SIMPLESET", "DROPSET", "SUPERSET"];
 
-const updateSetType = (type: string) => {
-    modalityOption.value = type;
+const isDisable = computed(() => {
+    return typeOption.value === "" || selectedExercises.value.length === 0 || exerciseDetailsList.value.length === 0;
+});
+
+(async () => {
+    const allExercises = await getExercises([]);
+    exercises.value.exercises = allExercises.exercises;
+    exercises.value.nOfExercises = allExercises.nOfExercises;
+})();
+
+const handleExercises = (exercise:{id:number, name:string}) => {
+    selectedExercises.value.pop();
+    selectedExercises.value.push(exercise);
 }
+
+
+const handleExerciseDetails = (details: SetExercise[]) => {
+    exerciseDetailsList.value = details;
+    console.log(exerciseDetailsList.value);
+}
+const updateSetType = (type: string) => {
+    typeOption.value = type;
+}
+
+const submitSet = () => {
+    console.log(setNotes.value);
+    createSet(new CreateCustomSetRequest(
+        setName.value,
+        setNotes.value,
+        typeOption.value,
+        exerciseDetailsList.value
+    ))
+    console.log("SUBMITTING SET");
+}
+
+
 </script>
 
 
@@ -120,6 +182,10 @@ input{
     color: whitesmoke;
 }
 
+textarea{
+    padding: 0.5em;
+    resize: none;
+}
 .text-area{
     background-color: var(--main-primary-color);
     width: 20em;
@@ -141,9 +207,7 @@ input{
     background-color: var(--main-secundary-color);
     transition : 0.2s ease-out;
 }
-textarea{
-    resize: none;
-}
+
 
 .close-button{
     position : absolute;
@@ -161,7 +225,7 @@ textarea{
     transition: 0.2s ease-out;
 }
 
-.submit-btn{
+.submit-btn,.submit-btn-disable {
     position : relative;
     left : -1em;
     padding: 1em;
@@ -169,6 +233,11 @@ textarea{
     color: whitesmoke;
     font-size: 13px;
     transition : 0.2s ease-in;
+}
+
+.submit-btn-disable{
+    cursor: not-allowed;
+    color: var(--main-secundary-color);
 }
 
 .submit-btn:hover{
@@ -189,5 +258,77 @@ textarea{
 ::placeholder{
     color: rgba(245, 245, 245, 0.4);
 }
+
+
+:deep(.p-multiselect-label-container){
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+:deep(.p-multiselect){
+    margin : 0.5em;
+    width:20em;
+    border: 1px solid rgba(245, 245, 245, 0.2);
+    background-color: var(--main-primary-color);
+    outline: none;
+}
+
+:deep(.p-icon){
+    color: whitesmoke;
+}
+
+:global(.p-multiselect-items-wrapper) {
+    background: var(--main-primary-color);
+    color: whitesmoke;
+}
+
+:global(.p-multiselect-item){
+    background: var(--main-primary-color);
+    color: whitesmoke;
+}
+:global(.p-multiselect-item:hover){
+    background: var(--main-secundary-color);
+    color: whitesmoke;
+}
+
+:global(.p-multiselect-panel){
+    border : 1px solid rgba(245, 245, 245, 0.2);
+    outline: none;
+}
+
+:global(.p-multiselect-header) {
+    background: var(--main-primary-color);
+    padding: 0.5em 0.5em 0.5em 1em;
+    color: whitesmoke;
+}
+
+:deep(.p-multiselect .p-multiselect-label.p-placeholder){
+    color : whitesmoke;
+}
+
+:global(.p-multiselect-close){
+    background: var(--main-secundary-color);
+    color: whitesmoke;
+    padding:0;
+}
+
+:global(.p-multiselect-trigger-icon){
+    color: whitesmoke;
+}
+:global(::-webkit-scrollbar), :global(.menu-open::-webkit-scrollbar){
+    width: 7px;
+
+}
+:global(::-webkit-scrollbar-thumb),:global( ::-webkit-scrollbar-thumb){
+    background-color: var(--main-secundary-color);
+    border-radius: 10px;
+}
+
+
+
+
+
+
 
 </style>

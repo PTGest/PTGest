@@ -23,14 +23,15 @@ export default async function assignOrReassignTrainer(traineeId: string, trainer
     }).then(async (response) => {
         switch (response.status) {
             case 201:
-                return response.json().then((data) => {
-                    console.log("Deu bom guys nao dei fumble",data)
+                return response.json().then(() => {
                     router.push({name: "trainees"})
                 })
             case 400:
                 throw new Error("Bad request")
+            case 401:
+                throw new Error("Unauthorized")
             default:
-                throw new Error("Failed to sign up")
+                throw new Error("Something went wrong")
         }
     })
 }

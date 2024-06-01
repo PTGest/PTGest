@@ -1,14 +1,19 @@
 <template>
     <div class="trainer">
         <div class="text">
-            <h4>{{props.trainee.name}}</h4>
+            <h4>{{props.trainee.traineeName}}</h4>
         </div>
         <div class="text">
             <p>Gender</p>
             <div class="gender-text">{{props.trainee.gender}}</div>
         </div>
 
-        <router-link :to="{ name: 'assignTrainer', params: {traineeId: trainee.id, assignTrainer : 'reassignTrainer'},}">
+        <div class="text">
+            <p>Trainer</p>
+            <div class="gender-text">{{props.trainee.traineeName}}</div>
+        </div>
+
+        <router-link :to="{ name: 'assignTrainer', params: {traineeId: trainee.traineeId, assignTrainer : 'reassignTrainer'}}">
             <button class="reassign-btn">Reassign Trainer</button>
         </router-link>
 
@@ -22,26 +27,27 @@
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
-import Trainee from "../../../../views/user/CompaniesViews/models/Trainee.ts";
-import DefaultButton from "@/components/utils/DefaultButton.vue";
+import Trainee from "../../../../views/user/CompaniesViews/models/Trainee.ts";;
 
 const props = defineProps<{
     trainee: Trainee
 }>()
 
+
 </script>
 
 <style scoped>
 .trainer{
-    width: 13em;
-    height: 2em;
+    width: 20em;
+    height: 4em;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1em 1em 1em 1em;
     border-radius: 10px;
     margin: 0.5em;
-    background-color: var(--light-blue);
+    background-color: var(--main-primary-color);
+    border : 1px solid var(--main-secundary-color);
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: bold;
@@ -89,13 +95,18 @@ p{
 }
 
 .reassign-btn{
+    margin-left:1em;
     font-size: 0.6em;
     border-radius: 10px;
     color: var(--main-primary-color);
     background-color: whitesmoke;
     cursor: pointer;
-    margin: 0;
-
+    transition: 0.2s ease-in;
+}
+.reassign-btn:hover{
+    color: whitesmoke;
+    background-color: var(--main-primary-color);
+    transition: 0.2s ease-out;
 }
 
 </style>

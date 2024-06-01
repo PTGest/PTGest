@@ -7,7 +7,7 @@
 
         <ul :class="[isDropdownOpen ? 'menu-open' : 'menu']">
             <li :class="{'active': selected === placeholder}" @click="selectOption(`${props.placeholder}`)">-</li>
-            <li :class="{'active': selected === option}" v-for="option in props.options" :key="option" @click="selectOption(option)">{{ option }}</li>
+            <li :class="{'active': selected === option}" v-for="option in props.options" :key="option.name" @click="selectOption(option)">{{ option.name }}</li>
         </ul>
     </div>
 </template>
@@ -21,14 +21,14 @@ const isDropdownOpen = ref(false);
 
 const emit = defineEmits(['dropdownOption']);
 const props = defineProps<{
-    options: string[]
+    options: any
     placeholder: string
 }>();
 const selected = ref(props.placeholder);
 
 
-const selectOption = (option: string) => {
-    selected.value = option;
+const selectOption = (option: any) => {
+    selected.value = option.name;
     isDropdownOpen.value = false;
     if (option === props.placeholder){
         emit('dropdownOption', '')

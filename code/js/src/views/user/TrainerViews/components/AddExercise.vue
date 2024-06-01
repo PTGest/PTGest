@@ -10,8 +10,6 @@
             <ExercisesDropdown :options="modalityOptions" placeholder="Modality" @dropdownOption="modalityDropdownOption($event)"/>
             <MultiSelect v-model="selectedMuscleGroups" display="chip" :options="muscleGroupOptions" optionLabel="name" placeholder="Select Muscle Groups"
                          :maxSelectedLabels="3" class="w-full md:w-20rem" />
-            <div class="label-text">Category</div>
-            <ExercisesDropdown :options="categoryOptions" placeholder="Category" @dropdownOption="categoryDropdownOption($event)"/>
         </div>
 
         <div class="exercise-instructions">
@@ -19,7 +17,7 @@
                <label class="label">Description</label>
                <Textarea placeholder="Enter Exercise Description" v-model="exerciseInstructions" rows="9" cols="30" auto-resize />
            </div>
-            <Button v-if="isAllFieldsFilled" class="submit-btn" label="Submit"/>
+            <Button v-if="isAllFieldsFilled" class="submit-btn" label="Submit" @click="submitExercise"/>
             <Button v-else class="submit-btn" label="Submit" disabled />
         </div>
 
@@ -35,43 +33,63 @@ import {computed, ref} from "vue";
 import MultiSelect from 'primevue/multiselect';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
+import createExercise from "../../../../services/TrainerServices/createExercise.ts";
+import CreateCustomExerciseRequest from "../../../../views/user/TrainerViews/models/CreateCustomExerciseRequest.ts";
 
-const modalityOptions = ["Activation", "Agility", "Cardio", "Conditioning", "Mobility", "Power", "Strength"];
-const categoryOptions = ["Strength", "Bodyweight", "Timed", "Distance(Long)", "Distance(Short)"];
+const modalityOptions = [
+    {name: 'BODYWEIGHT'},
+    {name: 'WEIGHTLIFT'},
+    {name: 'RUNNING_IN'},
+    {name: 'RUNNING_OUT'},
+    {name: 'CYCLING_IN'},
+    {name: 'CYCLING_OUT'},
+    {name: 'OTHER'}
+];
 
 const exerciseName = ref("");
 const modalityOption = ref("");
-const categoryOption = ref("");
-const exerciseInstructions = ref("");
-const selectedMuscleGroups = ref();
+const exerciseInstructions = ref(null);
+const selectedMuscleGroups = ref<string[]>([]);
 const muscleGroupOptions = ref([
-    { name: 'Abs'},
-    { name: 'Back'},
-    { name: 'Lower Back'},
-    { name: 'Mid Back'},
-    { name: 'High Back'},
-    { name: 'Biceps'},
-    { name: 'Calves'},
-    { name: 'Chest'},
-    { name: 'Forearms'},
-    { name: 'Glutes'},
-    { name: 'Hamstrings'},
-    { name: 'Quads'},
-    { name: 'Shoulders'},
-    { name: 'Triceps'}
+    {name: 'BICEPS'},
+    {name:'CHEST'},
+    {name:'CORE'},
+    {name:'FOREARMS'},
+    {name:'FULL_BODY'},
+    {name:'GLUTES'},
+    {name:'HAMSTRINGS'},
+    {name:'HIP_GROIN'},
+    {name:'LOWER_BACK'},
+    {name:'LOWER_BODY'},
+    {name:'LOWER_LEG'},
+    {name:'MID_BACK'},
+    {name:'QUADS'},
+    {name:'SHOULDERS'},
+    {name:'TRIPEPS'},
+    {name:'UPPER_BACK_NECK'},
+    {name:'UPPER_BODY'}
 ]);
 
 const isAllFieldsFilled = computed(() => {
-    console.log(modalityOption.value, categoryOption.value, exerciseInstructions.value, selectedMuscleGroups.value)
-    return modalityOption.value !== "" && categoryOption.value !== "" && selectedMuscleGroups.value !== null && exerciseName.value !== "";
+    console.log()
+    return (modalityOption.value != "" && selectedMuscleGroups.value != null && exerciseName.value != "");
 });
-const modalityDropdownOption = (option: string) => {
-    modalityOption.value = option;
+const modalityDropdownOption = (option: any) => {
+    modalityOption.value = option.name;
     console.log(modalityOption.value);
 }
-const categoryDropdownOption = (option: string) => {
-    categoryOption.value = option;
-    console.log(modalityOption.value);
+
+const submitExercise = () => {
+    console.log("submitting exercise");
+    createExercise(
+        new CreateCustomExerciseRequest(
+            exerciseName.value,
+            modalityOption.value,
+            selectedMuscleGroups.value.map((muscleGroup) => muscleGroup.name),
+            exerciseInstructions.value,
+            null
+        )
+    )
 }
 
 

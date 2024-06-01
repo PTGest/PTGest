@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.servlet.NoHandlerFoundException
 import pt.isel.leic.ptgest.http.media.Problem
 import pt.isel.leic.ptgest.http.media.Problem.Companion.PROBLEMS_DOCS_URI
+import pt.isel.leic.ptgest.http.pipeline.ExceptionHandler.Companion.toProblemType
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.company.CompanyError
 import pt.isel.leic.ptgest.services.user.UserError
-import pt.isel.leic.ptgest.services.workout.WorkoutError
+//import pt.isel.leic.ptgest.services.workout.WorkoutError
 import java.net.URI
+//TODO()
 
 @ControllerAdvice
 class ExceptionHandler {
@@ -112,7 +114,6 @@ class ExceptionHandler {
             AuthError.UserAuthenticationError.UserNotFound::class,
             UserError.UserNotFound::class,
             CompanyError.TrainerNotFound::class,
-            WorkoutError.ExerciseNotFoundError::class
         ]
     )
     fun handleNotFound(e: Exception): ResponseEntity<Problem> =
@@ -146,14 +147,14 @@ class ExceptionHandler {
         Problem(
             type = URI.create(PROBLEMS_DOCS_URI + "invalid-request-body"),
             title = "Invalid request body${
-            ex.rootCause.let {
-                ": " + when (it) {
-                    is UnrecognizedPropertyException -> "Unknown property '${it.propertyName}'"
-                    is JsonParseException -> it.originalMessage
-                    is MismatchedInputException -> "Missing property '${it.message}'"
-                    else -> null
+                ex.rootCause.let {
+                    ": " + when (it) {
+                        is UnrecognizedPropertyException -> "Unknown property '${it.propertyName}'"
+                        is JsonParseException -> it.originalMessage
+                        is MismatchedInputException -> "Missing property '${it.message}'"
+                        else -> null
+                    }
                 }
-            }
             }",
             status = HttpStatus.BAD_REQUEST.value()
         ).toResponse().also { ex.printStackTrace() }
@@ -172,8 +173,7 @@ class ExceptionHandler {
 
     @ExceptionHandler(
         value = [
-            Exception::class,
-            WorkoutError.InvalidSetTypeError::class
+            Exception::class
         ]
     )
     fun handleInternalServerError(e: Exception): ResponseEntity<Problem> =

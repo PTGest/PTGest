@@ -1,12 +1,16 @@
 class Trainee{
-    id: string
-    name: string
+    traineeId: string
+    traineeName: string
     gender: string
+    trainerId: string
+    trainerName: string
 
-    constructor(id: string, name: string, gender: string){
-        this.id = id;
-        this.name = name;
+    constructor(traineeId: string, traineeName: string, gender : string, trainerId: string, trainerName: string){
+        this.traineeId = traineeId
+        this.traineeName = traineeName
         this.gender = gender
+        this.trainerId = trainerId
+        this.trainerName = trainerName
     }
 }
 

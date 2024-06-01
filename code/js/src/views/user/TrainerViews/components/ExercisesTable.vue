@@ -3,19 +3,18 @@
         <tr>
             <th class="properties-text">Name</th>
             <th class="properties-text">Muscle Group</th>
-            <th class="properties-text">Sets</th>
-
+            <th class="properties-text">Modality</th>
         </tr>
 
-        <tr v-for="exercise in props.exercises" :key="exercise.id">
+        <tr class="table-row" v-for="exercise in props.exercises" :key="exercise.id">
             <td class="exercise-name">
                 {{exercise.name}}
             </td>
             <td class="normal-text">
-                {{exercise.description}}
+                {{exercise.muscleGroup.map((muscle: string) => muscle).join(", ")}}
             </td>
             <td>
-                {{exercise.sets}}
+                {{exercise.modality}}
             </td>
         </tr>
 
@@ -38,9 +37,9 @@ const props = defineProps<{
 <style scoped>
 
 table{
-    margin-left: 1em;
-    margin-right: 1em;
+    margin : 0em 1em 1em 1em;
     width: calc(100% - 2em);
+    border-collapse: collapse;
 }
 
 .exercise-name{
@@ -56,10 +55,17 @@ table{
     padding: 0.5em;
 }
 
-td,tr{
+
+
+.table-row{
     border-top: 1px solid rgba(245, 245, 245, 0.2);
+    border-radius: 10px;
 }
 
-
+.table-row:hover{
+    cursor: pointer;
+    background-color: var(--main-secundary-color);
+    border-radius: 10px;
+}
 
 </style>

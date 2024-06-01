@@ -1,8 +1,6 @@
 import UpdateCapacity from "../../views/user/CompaniesViews/models/capacity.ts";
 
 export default async function changeTrainerCapacity(trainerId: string, newCapacity: number): Promise<void> {
-    console.log("trainerId",trainerId)
-    console.log("newCapacity",newCapacity)
     // Logic to sign up
     fetch(`http://localhost:8080/api/company/trainer/${trainerId}/update-capacity`, {
         method: "PUT",
@@ -14,13 +12,13 @@ export default async function changeTrainerCapacity(trainerId: string, newCapaci
     }).then(async (response) => {
         switch (response.status) {
             case 200:
-                return response.json().then((data) => {
-                    console.log("Deu bom guys nao dei fumble",data)
-                })
+                return
             case 400:
                 throw new Error("Bad request")
+            case 401:
+                throw new Error("Unauthorized")
             default:
-                throw new Error("Failed to sign up")
+                throw new Error("Something went wrong")
         }
     })
 }

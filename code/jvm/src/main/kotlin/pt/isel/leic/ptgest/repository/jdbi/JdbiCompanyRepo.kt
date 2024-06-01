@@ -34,9 +34,9 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
         return handle.createQuery(
             """
-            select id, name, gender, total_trainees, capacity
+            select id, name, gender, assigned_trainees, capacity
             from company_trainer c_pt join (
-                select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as total_trainees
+                select u_d.id, u_d.name, u_d.gender, count(t_t.trainee_id) as assigned_trainees
                 from (
                     select u.id as id, name, gender
                     from "user" u join trainer pt on u.id = pt.id
@@ -45,7 +45,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                 group by u_d.id, u_d.name, u_d.gender
             ) ptd on c_pt.trainer_id = ptd.id
             where company_id = :companyId $genderCondition $nameCondition
-            order by (capacity - total_trainees) ${availability.name.lowercase()}
+            order by (capacity - assigned_trainees) ${availability.name.lowercase()}
             limit :limit offset :skip;
             """.trimIndent()
         )
@@ -167,9 +167,9 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer? =
         handle.createQuery(
             """
-            select id, name, gender, capacity, total_trainees
+            select id, name, gender, capacity, assigned_trainees
             from company_trainer c_pt join (
-                select id, name, gender, count(t_t.trainee_id) as total_trainees
+                select id, name, gender, count(t_t.trainee_id) as assigned_trainees
                 from (
                     select u.id, name, gender
                     from "user" u join trainer pt on u.id = pt.id
@@ -301,7 +301,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
         return handle.createQuery(
             """
-            select id, name
+            select count(*)
             from exercise_company ec join exercise e on ec.exercise_id = e.id
             where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
             """.trimIndent()

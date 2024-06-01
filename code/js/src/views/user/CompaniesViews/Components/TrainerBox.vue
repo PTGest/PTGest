@@ -5,13 +5,13 @@
         </div>
         <div class="text">
             <p>Capacity</p>
-            <input v-model="capacity" :class="isDisabled ? 'capacity' : 'edit-capacity'"
+            <input v-model="capacity" :class="isDisabled ? 'input' : 'edit-input'"
                    :disabled="isDisabled"
             />
         </div>
         <div class="text">
             <p>Trainees</p>
-            <input v-model="assignedTrainees" class="capacity"
+            <input v-model="assignedTrainees" class="input"
                    :placeholder="`${props.trainer.assignedTrainees}`" disabled
             />
         </div>
@@ -57,23 +57,23 @@ const updateCapacity = () => {
 
 <style scoped>
 .trainer{
+    position: relative;
     width: 20em;
-    height: 2em;
+    height: 3em;
     display: flex;
     justify-content: center;
-    align-content: center;
-    padding: 1em 0.5em 1em 0.5em;
+    align-items: center;
+    padding: 1em 0.5em 1em 1em;
     border-radius: 10px;
     margin: 0.5em;
-    background-color: var(--light-blue);
+    background-color: var(--main-primary-color);
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border : 1px solid var(--main-secundary-color);
 }
 .icon{
     position: relative;
-    top: 0.8em;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
@@ -98,15 +98,15 @@ p{
     align-items: center;
     margin: 0 0.5em 0 0.5em;
 }
-.capacity, .edit-capacity{
+.input, .edit-input{
     width: 3em;
     height: 2em;
     font-size: 0.8em;
     border: 0;
     color: whitesmoke;
-    background-color: var(--light-blue);
+    background-color: transparent;
 }
-.edit-capacity{
+.edit-input{
     border: 1px solid whitesmoke;
     border-radius: 10px;
 }
@@ -119,9 +119,9 @@ input{
 }
 
 .delete-icon{
-    position: relative;
-    top: -0.5em;
-    right: -1.8em;
+    position: absolute;
+    top: 0.3em;
+    right: -0.5em;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
@@ -130,15 +130,12 @@ input{
 
 @media screen and (max-width: 659px) {
     .trainer{
-        width: 15em;
-        height: 2em;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 1em 0.5em 1em 0.5em;
+        padding: 1em 0.5em 1em 1em;
         border-radius: 10px;
         margin: 0.5em;
-        background-color: var(--light-blue);
         color: whitesmoke;
         font-size: 1em;
         font-weight: bold;
@@ -193,7 +190,7 @@ input{
     .delete-icon{
         position: relative;
         top: -0.5em;
-        right: -1.8em;
+        right: -1em;
         color: whitesmoke;
         font-size: 0.8em;
         margin: 0 1em 0 1em;

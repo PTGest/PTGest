@@ -44,13 +44,13 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             """
             select id, name, muscle_group, modality
             from exercise_trainer ec join exercise e on ec.exercise_id = e.id
-            where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition $modalityCondition
             limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "companyId" to trainerId,
+                    "trainerId" to trainerId,
                     "skip" to skip,
                     "limit" to limit,
                     "name" to "%$name%",
@@ -76,12 +76,12 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             """
             select count(*)
             from exercise_trainer ec join exercise e on ec.exercise_id = e.id
-            where company_id = :companyId $nameCondition $muscleGroupCondition $modalityCondition
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition $modalityCondition
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "companyId" to trainerId,
+                    "trainerId" to trainerId,
                     "name" to "%$name%",
                     "muscleGroup" to muscleGroup?.name,
                     "modality" to modality?.name

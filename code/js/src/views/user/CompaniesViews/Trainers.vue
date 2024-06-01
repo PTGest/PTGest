@@ -91,7 +91,7 @@ const handleFilters = (isOpen : boolean) => {
     align-items: center;
     justify-content: center;
     margin-top: 2em;
-    background-color: var(--sign-up-blue);
+    background-color: var(--main-primary-color);
     border-radius: 10px;
     min-width: 25em;
 }
@@ -112,21 +112,25 @@ const handleFilters = (isOpen : boolean) => {
 
 .icons-disable{
     padding: 1em;
-    color: var(--light-blue);
+    color: var(--main-secundary-color);
     pointer-events: none;
 }
 
 .add-trainer {
     color: whitesmoke;
     padding: 0.5em 1.5em 0.5em 1.5em;
-    background-color: var(--sign-up-blue);
+    background-color: var(--main-secundary-color);
+    border : 1px solid var(--main-primary-color);
     border-radius: 10px;
+    transition: 0.2s ease-in;
 }
 
 .add-trainer:hover {
     color: rgba(245, 245, 245, 0.7);
-    background-color: var(--light-blue);
+    background-color: var(--main-primary-color);
+    border : 1px solid var(--button-border-color);
     border-radius: 10px;
+    transition: 0.2s ease-out;
 }
 
 h2{
@@ -135,7 +139,7 @@ h2{
 
 .filter-icon{
     position: relative;
-    left: 14em;
+    left: 13.8em;
     cursor: pointer;
 }
 
@@ -148,10 +152,9 @@ h2{
     h1{
         font-size: 1.5em;
     }
-
     .filter-icon{
         position: relative;
-        left: 0;
+        left: 9.2em;
     }
 }
 

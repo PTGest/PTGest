@@ -1,5 +1,4 @@
 class SetExercise {
-
     exerciseId: number;
     details: Map<string, any>;
 
@@ -8,5 +7,6 @@ class SetExercise {
         this.details = details;
     }
 }
+export default SetExercise;
 
 

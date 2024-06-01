@@ -87,7 +87,7 @@ router.beforeEach((to , from) => {
 
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
     if (to.meta.roleNeeded) {
         const roles = to.meta.roleNeeded as string[]
         const rbac = RBAC

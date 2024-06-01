@@ -75,9 +75,10 @@ const optionChange = (option: string) => {
 
 <style scoped>
 .dropdown-menu-container {
+    position: relative;
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: space-between;
     align-items: center;
     background-color: whitesmoke;
     width: v-bind(size);
@@ -86,50 +87,51 @@ const optionChange = (option: string) => {
 }
 
 .dropdown {
-    position: relative;
-    top: 6.5em;
-    left: -5em;
+    position: absolute;
+    top: 2.5em;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: whitesmoke;
     z-index: 998;
 }
 
 .drop-option {
-    width: 18.5em;
+    display: flex;
+    justify-content: center;
+    width: v-bind(size);
     list-style-type: none;
     padding: 0.5em 0 0.5em 0;
     transition: 0.1s ease-in;
-    color: whitesmoke;
-    background-color: #263238;
+    color: var(--main-primary-color);
+    background-color: transparent;
 }
 
 .drop-option:hover {
     cursor: pointer;
-    background-color: whitesmoke;
-    color: var(--black1a);
+    background-color: var(--main-primary-color);
+    border-radius: 5px;
+    color: whitesmoke;
     transition: 0.1s ease-out;
 }
 
 .drop-icon,
 .drop-icon-open {
     position: relative;
-    right: v-bind(arrowRight);
     padding: 1em;
     color: var(--sign-up-black);
     cursor: pointer;
 }
 
 .drop-icon-open {
+    right: v-bind(arrowRight);
     transform: rotateZ(-180deg);
 }
 
-.option,
-.placeholder {
+.option{
     max-width: 1em;
     padding: 0.5em;
     color: var(--black1a);

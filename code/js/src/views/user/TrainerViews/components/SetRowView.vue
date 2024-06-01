@@ -2,7 +2,7 @@
     <div class="set-row">
         <div class="set-row-name">{{ props.set.name }}</div>
        <div class="set-row-info-container">
-           <Textarea v-model="props.set.notes" rows="3" cols="30" disabled auto-resize/>
+           <Textarea class="text-area" v-model="props.set.notes" rows="3" cols="30" disabled auto-resize/>
            <div class="set-row-info">{{ props.set.type }}</div>
            <LikeSet :set-id="props.set.id"></LikeSet>
        </div>
@@ -32,7 +32,6 @@ const props = defineProps<{
     align-items: center;
     padding: 10px;
     gap: 1em;
-
 }
 
 .set-row-name{
@@ -55,6 +54,11 @@ const props = defineProps<{
     background-color: var(--main-primary-color);
     color: whitesmoke;
     border: 1px solid var(--main-secundary-color);
+}
+
+.text-area{
+    max-height: 5em;
+    overflow-y: auto!important;
 }
 
 </style>

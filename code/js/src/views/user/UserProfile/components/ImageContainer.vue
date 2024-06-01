@@ -1,6 +1,6 @@
 <template>
     <div class="image-container">
-        <img class="image" :src="props.src" alt="User Image" />
+        <img class="image" :src="props.src" alt="User container" />
     </div>
 </template>
 
@@ -31,4 +31,5 @@ const props = defineProps({
     font-weight: bold;
     color: whitesmoke;
 }
+
 </style>

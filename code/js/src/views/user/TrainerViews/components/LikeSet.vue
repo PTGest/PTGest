@@ -50,5 +50,4 @@ const handleLike = () => {
 .heart-icon-active{
     color: red;
 }
-
 </style>

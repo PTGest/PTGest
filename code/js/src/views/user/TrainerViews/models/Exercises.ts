@@ -4,9 +4,9 @@ class Exercises {
     exercises: Exercise[];
     nOfExercises: number;
 
-    constructor(exercises: Exercise[]){
+    constructor(exercises: Exercise[], nOfExercises: number){
         this.exercises = exercises;
-        this.nOfExercises = exercises.length;
+        this.nOfExercises = nOfExercises;
     }
 }
 

@@ -1,8 +1,8 @@
 <template>
-    <h2>Register {{ text }}</h2>
+    <h2>{{ text }}</h2>
     <div v-if="!isLoading" class="trainee-register">
-        <input-bar @value="update('name', $event)" padding="0em 0.5em 0 0.5em" is_password width="18em" class-name="trainee-input" text="Trainee Name" placeholder="Enter Trainee Name" height="3em" />
-        <input-bar
+        <InputBar @value="update('name', $event)" padding="0em 0.5em 0 0.5em" is_password width="18em" class-name="trainee-input" text="Trainee Name" placeholder="Enter Trainee Name" height="3em"  />
+        <InputBar
             @value="update('email', $event)"
             padding="0em 0.5em 0 0.5em"
             is_password
@@ -18,28 +18,28 @@
         </div>
         <div class="birth-text">
             Gender
-            <dropdown-menu class="menu" @gender="update('gender', $event)" size="16em" arrowRight="-11em" />
+            <dropdown-menu class="menu" @gender="update('gender', $event)" size="15em"  />
         </div>
 
         <div class="phone-container">
             <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
-            <input-bar
+            <InputBar
                 class="trainee-phone-input"
                 @value="updatePhone('country', $event)"
                 padding="0em 0.5em 0 0.5em"
                 is_password
-                width="2em"
+                width="3em"
                 class-name="trainee-input"
                 text=""
                 height="3em"
                 placeholder=""
              />
-            <input-bar
+            <InputBar
                 class="trainee-phone-input"
                 @value="updatePhone('phone', $event)"
                 padding="0em 0.5em 0 0.5em"
                 is_password
-                width="13em"
+                width="12.5em"
                 class-name="trainee-input"
                 text=""
                 height="3em"
@@ -49,10 +49,10 @@
 
         <div v-if="!isTrainee" class="capacity-text">
             Capacity
-            <input-bar   class="capacity" @value="update('capacity', $event)"
+            <InputBar  class="capacity" @value="update('capacity', $event)"
                          padding="0em 0.5em 0 0.5em"
                          is_password
-                         width="2em"
+                         width="3em"
                          class-name="trainer-capacity"
                          text=""
                          height="3em"
@@ -60,7 +60,7 @@
             />
         </div>
 
-        <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="is_disabled" />
+        <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="isDisabled" />
     </div>
 
     <div v-else class="loading">
@@ -70,20 +70,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import {ref, computed} from 'vue';
 import authenticatedSignup from '../../../services/AuthServices/AuthenticatedSignup.ts';
 import TraineeRegisterData from '../../../views/user/UserRegister/models/TraineeRegisterData.ts';
 import HiredTrainerRegisterData from '../../../models/authModels/HiredTrainerRegisterData.ts';
 import router from '../../../plugins/router.ts';
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import InputBar from "../../../components/utils/InputBar.vue";
 import DropdownMenu from "../../../components/utils/DropdownMenu.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import DefaultButton from "../../../components/utils/DefaultButton.vue";
+import InputBar from "../../../components/utils/InputBar.vue";
+
 
 let isTrainee = ref(router.currentRoute.value.params.isTrainee === 'true');
 const text = computed(() => {
-    return isTrainee.value ? 'Trainee' : 'Trainer';
+    return isTrainee.value ? 'Register Trainee' : 'Register Trainer';
 });
 
 const capacity = ref(-1);
@@ -100,18 +101,25 @@ const trainee_Data = ref<TraineeRegisterData>({
 
 const isLoading = ref(false); // Loading state variable
 
-const is_disabled = computed(() => {
-    return (
-        (!trainee_Data.value.name ||
-            !trainee_Data.value.email ||
-            !trainee_Data.value.gender ||
-            !countryNumber.value ||
-            !phoneNumber.value) &&
-        (!trainee_Data.value.birthdate && isTrainee)
-    );
-});
+const isDisabled = computed( ()=> {
+    if(isTrainee.value) {
+        return !(trainee_Data.value.name != ''
+            && trainee_Data.value.email != ''
+            && trainee_Data.value.gender != ''
+            && phoneNumber.value != ''
+            && trainee_Data.value.birthdate != '')
+    }else{
+        return !(trainee_Data.value.name != ''
+            && trainee_Data.value.email != ''
+            && trainee_Data.value.gender != ''
+            && phoneNumber.value != ''
+            && capacity.value != -1
+        )
+    }
+})
 
 function updatePhone(type: string, value: string) {
+
     switch (type) {
         case 'country':
             countryNumber.value = value;
@@ -132,6 +140,7 @@ function update(paramName: string, value: any) {
             break;
         case 'gender':
             trainee_Data.value.gender = value.toUpperCase();
+            console.log(trainee_Data.value.gender);
             break;
         case 'capacity':
             capacity.value = value;
@@ -178,11 +187,12 @@ const authSign = async () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: var(--sign-up-blue);
+    background-color: var(--main-primary-color);
     width: 20em;
     height: 33em;
     gap: 0.5em;
     border-radius: 10px;
+    padding:0.5em;
 }
 
 .trainee-birth {

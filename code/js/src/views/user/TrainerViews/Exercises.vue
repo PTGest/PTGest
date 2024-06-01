@@ -2,7 +2,7 @@
     <div class="exercises-container">
         <div class="title-row">
             <h1 class="title">Exercises</h1>
-            <button @click="openAddExercise" class="add-exercise-button">
+            <button @click="openAddExercise" class="add-btn">
                 <font-awesome-icon :icon="faPlus"/>
                 Add Exercise
             </button>
@@ -15,15 +15,16 @@
             <input-bar class="bar" class-name="search-bar" height="2.5em" width="100%" padding="0.5em"
                        placeholder="Search exercise name">
             </input-bar>
-            <button class="filters">
+            <button class="filters" @click="handleFiltersView">
                 <font-awesome-icon :icon="faFilter"/>
                 Filters
             </button>
 
-            <Filters v-if="filtersOpen"/>
+            <Filters v-if="filtersOpen" @visible="handleFiltersView"/>
         </div>
 
-        <ExercisesTable :exercises="exercises"/>
+        <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises"/>
+        <div v-else class="not-found">Does not found any exercise</div>
 
     </div>
 
@@ -33,24 +34,41 @@
 
 
 import {Ref, ref, UnwrapRef} from "vue";
-import Exercise from "../../../views/user/TrainerViews/models/Exercise.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
 import InputBar from "../../../components/utils/InputBar.vue";
 import Filters from "../../../views/user/CompaniesViews/Components/Filters.vue";
 import ExercisesTable from "../../../views/user/TrainerViews/components/ExercisesTable.vue";
-import AddExercise from "@/views/user/TrainerViews/components/AddExercise.vue";
+import AddExercise from "../../../views/user/TrainerViews/components/AddExercise.vue";
+import Exercises from "../../../views/user/TrainerViews/models/Exercises.ts";
+import getExercises from "../../../services/TrainerServices/getExercises.ts";
+import Exercise from "@/views/user/TrainerViews/models/Exercise.ts";
 
 const isAddExerciseOpen = ref(false);
 const filtersOpen = ref(false);
-const exercises : Ref<UnwrapRef<Exercise[]>> = ref([
-    new Exercise(1,"Bench Press", "Chest", "3x10"),
-    new Exercise(1,"Bench Press", "Chest", "3x10"),
-]);
 
+const exercises : Ref<Exercises> = ref({
+    exercises: [],
+    nOfExercises: 0
+});
+const handleFiltersView = () => {
+    console.log("openFilters", filtersOpen.value)
+    filtersOpen.value = !filtersOpen.value;
+}
 const openAddExercise = () => {
     isAddExerciseOpen.value = !isAddExerciseOpen.value;
 }
+
+
+(async () => {
+    try {
+       exercises.value = await getExercises(new Array<string>());
+       console.log(exercises.value)
+    } catch (error) {
+        console.error("Error getting user info:", error)
+    }
+})()
+
 
 </script>
 
@@ -58,6 +76,7 @@ const openAddExercise = () => {
 <style scoped>
 
 .exercises-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -84,17 +103,16 @@ const openAddExercise = () => {
     color: whitesmoke;
 }
 
-.add-exercise-button{
+.add-btn{
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
-    font-family: Poppins, sans-serif;
-    font-size: 1rem;
-    color : whitesmoke;
-    background-color: var(--light-blue);
-    white-space: nowrap;
+    gap: 0.5em;
+    border-radius: 5px;
+    background-color: var(--sign-up-blue);
+    color: whitesmoke;
+    cursor: pointer;
+    font-size: 15px;
 }
 
 .input-row{
@@ -133,6 +151,18 @@ const openAddExercise = () => {
 .filters:hover{
     background-color: var(--light-blue);
     transition: 0.2s ease-out;
+}
+
+.not-found{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width:100%;
+    height:5em;
+    font-size: 1.5rem;
+    margin-top: 2em;
+    color: whitesmoke;
+    text-align: center;
 }
 
 </style>

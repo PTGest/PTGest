@@ -11,7 +11,7 @@ class ExerciseMapper : RowMapper<Exercise> {
     override fun map(rs: ResultSet, ctx: StatementContext?): Exercise {
         val id = rs.getInt("id")
         val name = rs.getString("name")
-        val muscleGroup = rs.getArray("muscle_group").array as List<*>
+        val muscleGroup = rs.getArray("muscle_group").array as Array<*>
         val modality = Modality.valueOf(rs.getString("modality"))
 
         val muscleGroupList: MutableList<MuscleGroup> = mutableListOf()

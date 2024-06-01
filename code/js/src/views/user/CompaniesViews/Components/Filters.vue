@@ -17,7 +17,7 @@
                   <font-awesome-icon @click="handleGender('2')" :class="[gender == '2' ?'gender-icon active' : 'gender-icon']" :icon="faPersonDress"></font-awesome-icon>
                   <font-awesome-icon @click="handleGender('3')" :class="[gender == '3' ?'gender-icon active' : 'gender-icon']" :icon="faPersonHalfDress"></font-awesome-icon>
               </div>
-            <default-button class="button" display-text="Apply Filters" :click-handler="handleApplyFilters"  ></default-button>
+            <default-button class="button" display-text="Apply Filters" :click-handler="handleApplyFilters" ></default-button>
         </div>
     </div>
 </template>
@@ -77,6 +77,7 @@ const handleApplyFilters = () => {
     background-color: var(--main-primary-color);
     width: 25em;
     height: 20em;
+    border : 1px solid var(--main-secundary-color); ;
     border-radius: 10px;
     z-index: 99;
 }
@@ -137,7 +138,7 @@ const handleApplyFilters = () => {
     cursor: pointer;
 }
 .active{
-    background-color: var(--light-blue);
+    background-color: var(--button-border-color);
     color: whitesmoke;
     border-radius: 10px;
 }
@@ -156,10 +157,17 @@ const handleApplyFilters = () => {
     width: 15em;
     height: 3em;
     border-radius: 5px;
-    background-color: whitesmoke;
-    color: var(--sign-up-black);
-    border: 0;
+    background-color: var(--main-secundary-color);
+    color: whitesmoke;
+    border : 1px solid var(--main-primary-color);
     cursor: pointer;
+    transition: 0.2s ease-in;
+}
+
+.button:hover{
+    background-color: var(--main-primary-color);
+    border : 1px solid var(--button-border-color);
+    transition: 0.2s ease-out;
 }
 
 </style>
