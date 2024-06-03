@@ -4,14 +4,14 @@
 #### Summer Semester 2023/2024
 
 
-#### Project Description
+### Project Description
 PTGest **is a platform that allows personal trainers to manage their clients'** training plans and sessions. The platform also **allows** companies to **manage the personal trainers** they have hired and the **trainees** they have registered. The platform is **divided** into **two main parts:** the **backend**, which is responsible for managing the data and the business logic, and the **frontend**, which is responsible for the user interface.
 
-#### Training Sessions Management
+### Training Sessions Management
 The platform allows personal trainers to create training plans for their clients. These training plans are composed of exercises, sets, and workouts. The platform also allows personal trainers to create sessions for their clients. These sessions are composed of training plans and additional information, such as the date, time, and location of the session.
 
 
-#### Progress Reports
+### Progress Reports
 The trainers can create progress reports for their clients. These reports are composed of the client's measurements, such as weight, body fat percentage and additional information that the trainer thinks its relevant.
 
 
