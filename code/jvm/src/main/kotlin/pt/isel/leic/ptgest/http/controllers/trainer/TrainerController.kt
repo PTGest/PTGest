@@ -17,15 +17,15 @@ import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.http.controllers.model.request.CreateCustomExerciseRequest
-import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
-import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomWorkoutRequest
 import pt.isel.leic.ptgest.http.controllers.model.response.CreateCustomResourceResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetExerciseDetailsResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetSetDetails
-import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.controllers.model.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomWorkoutRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSessionRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
@@ -102,7 +102,8 @@ class TrainerController(
 
     @PostMapping(Uris.Workout.CREATE_CUSTOM_SET)
     fun createCustomSet(
-        @RequestBody setDetails: CreateCustomSetRequest,
+        @Valid @RequestBody
+        setDetails: CreateCustomSetRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val setId = trainerService.createCustomSet(

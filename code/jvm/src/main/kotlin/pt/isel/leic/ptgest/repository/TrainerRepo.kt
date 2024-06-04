@@ -65,5 +65,5 @@ interface TrainerRepo {
         endDate: Date?,
         type: SessionType,
         notes: String?
-    ) : Int
+    ): Int
 }

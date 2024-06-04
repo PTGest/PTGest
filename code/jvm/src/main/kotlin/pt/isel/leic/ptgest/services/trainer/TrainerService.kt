@@ -15,11 +15,9 @@ import pt.isel.leic.ptgest.domain.workout.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
-import pt.isel.leic.ptgest.http.controllers.model.response.CreateCustomResourceResponse
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.trainee.TraineeError
-import pt.isel.leic.ptgest.services.utils.ExerciseValidator
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.*
 
@@ -111,16 +109,18 @@ class TrainerService(
             Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
         )
 
+        if (setType != SetType.SUPERSET) {
+            require(setExercises.size == 1) { "Only one exercise is allowed for this set type." }
+        }
+
         return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
             val workoutRepo = it.workoutRepo
             val setId = it.createSet(trainerId, name, notes, setType)
 
             setExercises.forEachIndexed { index, set ->
-                val exercise = it.getExercise(trainerId, set.exerciseId)
+                it.getExercise(trainerId, set.exerciseId)
 
-                val validator = ExerciseValidator.getValidator(setType, exercise.modality)
-                val validatedDetails = validator.validate(set.details)
-
+                val validatedDetails = Validators.validateSetDetails(set.details)
                 val jsonDetails = convertDataToJson(validatedDetails)
 
                 workoutRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
@@ -140,13 +140,11 @@ class TrainerService(
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
-            Validators.ValidationRequest(name, "Name must be a non-empty string.")
-            { (it as String).isNotEmpty() }
+            Validators.ValidationRequest(name, "Name must be a non-empty string.") { (it as String).isNotEmpty() }
         )
 
         return transactionManager.run {
             val trainerRepo = it.trainerRepo
-
 
             val sets = trainerRepo.getSets(userId, skip ?: 0, limit, type, name)
             val totalSets = trainerRepo.getTotalSets(userId, type, name)
@@ -252,8 +250,7 @@ class TrainerService(
     ): Int {
         Validators.validate(
             Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(endDate, "End date must be after begin date.")
-            { (it as Date).after(beginDate) }
+            Validators.ValidationRequest(endDate, "End date must be after begin date.") { (it as Date).after(beginDate) }
         )
 
         return transactionManager.run {

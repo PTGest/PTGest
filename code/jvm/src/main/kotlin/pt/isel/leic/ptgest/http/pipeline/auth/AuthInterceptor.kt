@@ -12,6 +12,7 @@ import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.JwtService
 
+// todo: improve
 @Component
 class AuthInterceptor(
     private val jwtService: JwtService
@@ -34,11 +35,9 @@ class AuthInterceptor(
                     sessionCookie != null && sessionCookie.name.isNotEmpty() -> {
                         processCookieValue(sessionCookie)
                     }
-
                     requestHeader != null && requestHeader.startsWith("Bearer") -> {
                         processAuthorizationHeaderValue(requestHeader)
                     }
-
                     else -> throw AuthError.UserAuthenticationError.TokenNotProvided
                 }
 

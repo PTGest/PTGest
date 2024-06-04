@@ -333,26 +333,25 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
         type: SessionType,
         notes: String?
     ): Int =
-            handle.createUpdate(
-                """
+        handle.createUpdate(
+            """
             insert into session (trainee_id, trainer_id, workout_id, begin_date, end_date, type, notes)
             values (:traineeId, :trainerId, :workoutId, :beginDate, :endDate, :type, :notes)
             returning id
             """
-            )
-                .bindMap(
-                    mapOf(
-                        "traineeId" to traineeId,
-                        "trainerId" to trainerId,
-                        "workoutId" to workoutId,
-                        "beginDate" to beginDate,
-                        "endDate" to endDate,
-                        "type" to type.name,
-                        "notes" to notes
-                    )
+        )
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "trainerId" to trainerId,
+                    "workoutId" to workoutId,
+                    "beginDate" to beginDate,
+                    "endDate" to endDate,
+                    "type" to type.name,
+                    "notes" to notes
                 )
-                .executeAndReturnGeneratedKeys("id")
-                .mapTo<Int>()
-                .one()
-
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
 }

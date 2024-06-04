@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest
 
 import org.jdbi.v3.core.Jdbi
 import org.postgresql.ds.PGSimpleDataSource
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -75,5 +76,8 @@ class CorsConfiguration : WebMvcConfigurer {
 }
 
 fun main(args: Array<String>) {
+    val logger = LoggerFactory.getLogger(PtgestApplication::class.java)
+
+    logger.info("Starting application")
     runApplication<PtgestApplication>(*args)
 }

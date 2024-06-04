@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.controllers.trainer.model.request
 
 import pt.isel.leic.ptgest.domain.common.model.SessionType
-import java.util.UUID
 import java.util.Date
+import java.util.UUID
 
 data class CreateSessionRequest(
     val traineeId: UUID,

@@ -6,6 +6,7 @@ import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.repository.AuthRepo
 import pt.isel.leic.ptgest.repository.CompanyRepo
+import pt.isel.leic.ptgest.repository.TraineeRepo
 import pt.isel.leic.ptgest.repository.TrainerRepo
 import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.WorkoutRepo
@@ -21,6 +22,7 @@ object MockRepos {
     val mockWorkoutRepo: WorkoutRepo = mock(WorkoutRepo::class.java)
     val mockCompanyRepo: CompanyRepo = mock(CompanyRepo::class.java)
     val mockTrainerRepo: TrainerRepo = mock(TrainerRepo::class.java)
+    val mockTraineeRepo: TraineeRepo = mock(TraineeRepo::class.java)
 }
 
 object MockServices {
@@ -31,6 +33,7 @@ object MockServices {
         override val workoutRepo: WorkoutRepo = MockRepos.mockWorkoutRepo
         override val companyRepo: CompanyRepo = MockRepos.mockCompanyRepo
         override val trainerRepo: TrainerRepo = MockRepos.mockTrainerRepo
+        override val traineeRepo: TraineeRepo = MockRepos.mockTraineeRepo
 
         override fun commit() {}
         override fun rollback() {}

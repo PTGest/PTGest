@@ -244,6 +244,7 @@ class AuthController(private val service: AuthService) {
         response: HttpServletResponse
     ): ResponseEntity<*> {
         val sessionCookies = request.cookies
+
         when {
             sessionCookies != null -> {
                 val refreshToken = processCookies(sessionCookies).second
