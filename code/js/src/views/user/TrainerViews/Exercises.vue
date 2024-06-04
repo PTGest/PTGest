@@ -1,5 +1,9 @@
 <template>
-    <div class="exercises-container">
+
+
+    <AddExercise class="add-exercise-container" v-if="isAddExerciseOpen" @close="openAddExercise"/>
+
+    <div v-else class="exercises-container">
         <div class="title-row">
             <h1 class="title">Exercises</h1>
             <button @click="openAddExercise" class="add-btn">
@@ -7,8 +11,6 @@
                 Add Exercise
             </button>
         </div>
-
-        <AddExercise class="add-exercise-container" v-if="isAddExerciseOpen" @close="openAddExercise"/>
 
         <div class="input-row">
             <font-awesome-icon class="search-icon" :icon="faMagnifyingGlass"/>
@@ -38,10 +40,10 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
 import InputBar from "../../../components/utils/InputBar.vue";
 import Filters from "../../../views/user/CompaniesViews/Components/Filters.vue";
-import ExercisesTable from "../../../views/user/TrainerViews/components/ExercisesTable.vue";
-import AddExercise from "../../../views/user/TrainerViews/components/AddExercise.vue";
+import ExercisesTable from "./components/exercises/ExercisesTable.vue";
+import AddExercise from "./components/exercises/AddExercise.vue";
 import Exercises from "../../../views/user/TrainerViews/models/Exercises.ts";
-import getExercises from "../../../services/TrainerServices/getExercises.ts";
+import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts";
 import Exercise from "@/views/user/TrainerViews/models/Exercise.ts";
 
 const isAddExerciseOpen = ref(false);

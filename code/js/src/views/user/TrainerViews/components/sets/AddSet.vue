@@ -35,7 +35,7 @@
                <textarea class="text-area" v-model="setNotes"/>
            </div>
            <div class="submit-row">
-               <Button @click="submitSet" label="submit" :class="isDisable ? 'submit-btn-disable' : 'submit-btn'" disabled="true">Create Set</Button>
+               <button @click="submitSet" label="submit" :class="isDisable ? 'submit-btn-disable' : 'submit-btn'" :disabled="isDisable">Create Set</button>
            </div>
        </div>
     </div>
@@ -46,14 +46,14 @@
 import {computed, Ref, ref} from "vue";
 import {faTimes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import ExercisesDropdown from "../../../../views/user/TrainerViews/components/ExercisesDropdown.vue";
-import getExercises from "../../../../services/TrainerServices/getExercises.ts";
-import Exercises from "../../../../views/user/TrainerViews/models/Exercises.ts";
+import ExercisesDropdown from "../exercises/ExercisesDropdown.vue";
+import getExercises from "../../../../../services/TrainerServices/exercises/getExercises.ts";
+import Exercises from "../../models/Exercises.ts";
 import MultiSelect from "primevue/multiselect";
-import ExercisesDetails from "../components/ExercisesDetails.vue";
-import SetExercise from "../../../../views/user/TrainerViews/models/SetExercise.ts";
-import createSet from "../../../../services/TrainerServices/createSet.ts";
-import CreateCustomSetRequest from "../../../../views/user/TrainerViews/models/CreateCustomSetRequest.ts";
+import ExercisesDetails from "../exercises/ExercisesDetails.vue";
+import SetExercise from "../../models/SetExercise.ts";
+import createSet from "../../../../../services/TrainerServices/sets/createSet.ts";
+import CreateCustomSetRequest from "../../models/CreateCustomSetRequest.ts";
 
 
 const selectedExercises : Ref<{ id: number, name: string }[]> = ref([]);
@@ -65,7 +65,7 @@ const exerciseDetailsList : Ref<SetExercise[]> = ref([]);
 const setName = ref("");
 const setNotes = ref(null);
 const typeOption = ref("");
-const setTypes = ["SIMPLESET", "DROPSET", "SUPERSET"];
+const setTypes = [{name:"SIMPLESET"}, {name:"DROPSET"}, {name:"SUPERSET"}];
 
 const isDisable = computed(() => {
     return typeOption.value === "" || selectedExercises.value.length === 0 || exerciseDetailsList.value.length === 0;
@@ -91,17 +91,18 @@ const updateSetType = (type: string) => {
     typeOption.value = type;
 }
 
-const submitSet = () => {
+const submitSet = async() => {
     console.log(setNotes.value);
-    createSet(new CreateCustomSetRequest(
-        setName.value,
-        setNotes.value,
-        typeOption.value,
-        exerciseDetailsList.value
-    ))
-    console.log("SUBMITTING SET");
+    const set = await createSet(
+        new CreateCustomSetRequest(
+            setName.value,
+            setNotes.value === null ? null : setNotes.value,
+            typeOption.value.name,
+            exerciseDetailsList.value
+        )
+    )
+    console.log("SUBMITTING SET", set);
 }
-
 
 </script>
 

@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
 import Divider from "primevue/divider";
-import Set from "../models/Set.ts";
-import SetRowView from "../../../../views/user/TrainerViews/components/SetRowView.vue";
+import Set from "../../models/Set.ts";
+import SetRowView from "./SetRowView.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
-import AddSet from "@/views/user/TrainerViews/components/AddSet.vue";
+import AddSet from "@/views/user/TrainerViews/components/sets/AddSet.vue";
 const props = defineProps<{
    sets: Set[];
 }>();

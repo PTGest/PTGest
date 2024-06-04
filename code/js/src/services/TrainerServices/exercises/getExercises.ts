@@ -1,6 +1,6 @@
-import handleFilters from "../utils/handleFilters.ts";
-import Exercises from "../../views/user/TrainerViews/models/Exercises.ts";
-import fetchData from "../utils/fetchData.ts";
+import handleFilters from "../../utils/handleFilters.ts";
+import Exercises from "../../../views/user/TrainerViews/models/Exercises.ts";
+import fetchData from "../../utils/fetchData.ts";
 export default async function getExercises(filters: string[]): Promise<Exercises> {
     const uri = "http://localhost:8080/api/trainer/exercises";
     let postFiltersUri = uri;

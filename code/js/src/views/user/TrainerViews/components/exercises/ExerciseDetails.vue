@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import SetExerciseDetailBoxes from "./SetExerciseDetailBoxes.vue";
-import SetExerciseDetails from "../../../../views/user/TrainerViews/models/setExerciseDetails.ts";
+import SetExerciseDetails from "../../models/setExerciseDetails.ts";
 
 
 const props = defineProps<{

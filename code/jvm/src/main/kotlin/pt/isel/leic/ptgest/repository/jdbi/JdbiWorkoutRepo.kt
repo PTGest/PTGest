@@ -58,7 +58,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
     override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(
             """
-            insert into set (trainer_id, name, notes, type)
+            insert into set (trainer_id, name, type, notes)
             values (:trainerId, :name, :type::set_type, :notes)
             """.trimIndent()
         )
@@ -78,7 +78,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         handle.createUpdate(
             """
             insert into set_exercise (order_id, set_id, exercise_id, details)
-            values (:orderId, :set_id, :exerciseId, :details)
+            values (:orderId, :setId, :exerciseId, cast(:details as jsonb))
             """.trimIndent()
         )
             .bindMap(

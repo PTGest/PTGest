@@ -1,4 +1,3 @@
-import Exercise from "./Exercise.ts";
 
 class Set {
 
@@ -6,15 +5,13 @@ class Set {
     name: string;
     notes: string;
     type: string;
-    exercise: Exercise;
     reps: string;
 
 
-    constructor(id: number, name: string, notes: string, type: string,reps: string, exercise: Exercise) {
+    constructor(id: number, name: string, notes: string, type: string,reps: string) {
         this.id = id;
         this.name = name;
         this.notes = notes;
-        this.exercise = exercise;
         this.type = type;
         this.reps = reps;
     }

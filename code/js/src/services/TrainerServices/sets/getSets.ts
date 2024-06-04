@@ -1,6 +1,6 @@
-import handleFilters from "../utils/handleFilters.ts";
-import fetchData from "../utils/fetchData.ts";
-import Sets from "../../views/user/TrainerViews/models/Sets.ts";
+import handleFilters from "../../utils/handleFilters.ts";
+import fetchData from "../../utils/fetchData.ts";
+import Sets from "../../../views/user/TrainerViews/models/Sets.ts";
 
 export default async function getSets(filters: string[]): Promise<Sets> {
     const uri = "http://localhost:8080/api/trainer/sets";

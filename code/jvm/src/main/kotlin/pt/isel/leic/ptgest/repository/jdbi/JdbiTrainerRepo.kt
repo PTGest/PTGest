@@ -202,7 +202,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun getSet(trainerId: UUID, setId: Int): Set? =
         handle.createQuery(
             """
-            select name, notes, type
+            select id, name, notes, type
             from set
             where id = :setId and trainer_id = :trainerId
             """.trimIndent()
@@ -231,8 +231,8 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun getSetExercises(setId: Int): List<SetExerciseDetails> =
         handle.createQuery(
             """
-            select e.id, e.name, e.muscle_group, e.type, se.details
-            from exercise e join set_exercise se on e.id = se.exercise_id
+            select e.id, e.name, e.muscle_group, e.modality, se.details
+            from exercise e join set_exercise se on e.id = se.exercise_id 
             where set_id = :setId
             order by se.order_id
             """.trimIndent()

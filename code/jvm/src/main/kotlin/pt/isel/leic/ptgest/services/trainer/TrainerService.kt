@@ -111,12 +111,9 @@ class TrainerService(
             Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
         )
 
-        val setId = transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            it.createSet(trainerId, name, notes, setType)
-        }
-
-        transactionManager.run {
+        return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
             val workoutRepo = it.workoutRepo
+            val setId = it.createSet(trainerId, name, notes, setType)
 
             setExercises.forEachIndexed { index, set ->
                 val exercise = it.getExercise(trainerId, set.exerciseId)
@@ -128,8 +125,9 @@ class TrainerService(
 
                 workoutRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
             }
+
+            setId
         }
-        return setId
     }
 
     fun getSets(

@@ -28,13 +28,13 @@
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faTimes} from "@fortawesome/free-solid-svg-icons";
-import ExercisesDropdown from "../../../../views/user/TrainerViews/components/ExercisesDropdown.vue";
+import ExercisesDropdown from "./ExercisesDropdown.vue";
 import {computed, ref} from "vue";
 import MultiSelect from 'primevue/multiselect';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
-import createExercise from "../../../../services/TrainerServices/createExercise.ts";
-import CreateCustomExerciseRequest from "../../../../views/user/TrainerViews/models/CreateCustomExerciseRequest.ts";
+import createExercise from "../../../../../services/TrainerServices/exercises/createExercise.ts";
+import CreateCustomExerciseRequest from "../../models/CreateCustomExerciseRequest.ts";
 
 const modalityOptions = [
     {name: 'BODYWEIGHT'},
@@ -65,7 +65,7 @@ const muscleGroupOptions = ref([
     {name:'MID_BACK'},
     {name:'QUADS'},
     {name:'SHOULDERS'},
-    {name:'TRIPEPS'},
+    {name:'TRICEPS'},
     {name:'UPPER_BACK_NECK'},
     {name:'UPPER_BODY'}
 ]);
@@ -79,9 +79,11 @@ const modalityDropdownOption = (option: any) => {
     console.log(modalityOption.value);
 }
 
-const submitExercise = () => {
+const emits = defineEmits(['close']);
+
+const submitExercise = async () => {
     console.log("submitting exercise");
-    createExercise(
+    const exercise = await createExercise(
         new CreateCustomExerciseRequest(
             exerciseName.value,
             modalityOption.value,
@@ -90,6 +92,7 @@ const submitExercise = () => {
             null
         )
     )
+    console.log("SUBMITTING EXERCISE", exercise);
 }
 
 
@@ -98,7 +101,7 @@ const submitExercise = () => {
 
 <style scoped>
 .add-exercise-container{
-    position: absolute;
+    position: relative;
     display:grid;
     grid-template-rows: 1fr 2fr;
     grid-template-columns: 1.3fr 1fr;

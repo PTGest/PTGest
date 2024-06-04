@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import Exercise from "../../../../views/user/TrainerViews/models/Exercise.ts";
+import Exercise from "../../models/Exercise.ts";
 
 
 const props = defineProps<{

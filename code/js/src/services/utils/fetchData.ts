@@ -1,9 +1,6 @@
 
 async function fetchData(uri: string, method: string, bodyData: any | null): Promise<any> {
     const body = bodyData ? JSON.stringify(bodyData) : null;
-    console.log("BODYDATA", bodyData)
-    console.log("BODY",body)
-
     const response = await fetch(uri, {
         method: method,
         headers: {

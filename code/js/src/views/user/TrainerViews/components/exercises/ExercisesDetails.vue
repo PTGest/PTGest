@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import ExerciseDetails from "./ExerciseDetails.vue";
-import SetExerciseDetails from "../../../../views/user/TrainerViews/models/setExerciseDetails.ts";
-import SetExercise from "../models/./SetExercise.ts";
+import SetExerciseDetails from "../../models/setExerciseDetails.ts";
+import SetExercise from "../../models/SetExercise.ts";
 import {ref, Ref} from "vue";
 const props = defineProps<{
     exercises: { id: number, name: string }[];

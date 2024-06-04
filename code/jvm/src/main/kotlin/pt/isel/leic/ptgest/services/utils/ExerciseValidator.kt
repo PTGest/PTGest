@@ -6,17 +6,18 @@ import pt.isel.leic.ptgest.domain.workout.SetType
 class ExerciseValidator {
 
     interface Validator {
-        fun validate(details: Map<String, Any>): Map<String, Any>
+        fun validate(details: Map<String, String>): Map<String, Any>
     }
 
     class SimpleSetValidators {
         class BodyWeightValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 val resultMap = mutableMapOf<String, Any>()
 
-                val reps = requireNotNull(details["reps"]) { "Reps is required" }
+                val reps = requireNotNull(details["reps"]?.toIntOrNull())
+                { "Reps is required and must be an integer" }
 
-                require(reps is Int && reps > 0) { "Reps must be a positive integer" }
+                require(reps > 0) { "Reps must be a positive integer" }
 
                 resultMap["reps"] = reps
 
@@ -25,14 +26,16 @@ class ExerciseValidator {
         }
 
         class WeightLiftValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 val resultMap = mutableMapOf<String, Any>()
 
-                val reps = requireNotNull(details["reps"]) { "Reps is required" }
-                val weight = requireNotNull(details["weight"]) { "weight is required" }
+                val reps = requireNotNull(details["reps"]?.toIntOrNull())
+                { "Reps is required and must be an integer" }
+                val weight = requireNotNull(details["weight"]?.toDoubleOrNull())
+                { "Weight is required and must be a double" }
 
-                require(reps is Int && reps > 0) { "Reps must be a positive integer" }
-                require(weight is Double && weight > 0) { "Reps must be a positive double" }
+                require(reps > 0) { "Reps must be a positive integer" }
+                require(weight > 0) { "Reps must be a positive double" }
 
                 resultMap["reps"] = reps
                 resultMap["weight"] = weight
@@ -42,7 +45,7 @@ class ExerciseValidator {
         }
 
         class OutdoorActivitiesValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 val resultMap = mutableMapOf<String, Any>()
 
                 val distance = details["distance"]
@@ -50,13 +53,17 @@ class ExerciseValidator {
 
                 when {
                     distance != null -> {
-                        require(distance is Double && distance > 0) { "Distance must be a positive double" }
-                        resultMap["distance"] = distance
+                        val distanceDouble = requireNotNull(distance.toDoubleOrNull())
+                        { "Distance must be a double" }
+                        require(distanceDouble > 0) { "Distance must be a positive double" }
+                        resultMap["distance"] = distanceDouble
                     }
 
                     time != null -> {
-                        require(time is Double && time > 0) { "Time must be a positive double" }
-                        resultMap["time"] = time
+                        val timeDouble = requireNotNull(time.toDoubleOrNull())
+                        { "Time must be a double" }
+                        require(timeDouble > 0) { "Time must be a positive double" }
+                        resultMap["time"] = timeDouble
                     }
 
                     else -> throw IllegalArgumentException("Either distance or time must be provided")
@@ -67,7 +74,7 @@ class ExerciseValidator {
         }
 
         class RunningInValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 val resultMap = mutableMapOf<String, Any>()
 
                 val distance = details["distance"]
@@ -75,21 +82,27 @@ class ExerciseValidator {
 
                 when {
                     distance != null -> {
-                        require(distance is Double && distance > 0) { "Distance must be a positive double" }
-                        resultMap["distance"] = distance
+                        val distanceDouble = requireNotNull(distance.toDoubleOrNull())
+                        { "Distance must be a double" }
+                        require(distanceDouble > 0) { "Distance must be a positive double" }
+                        resultMap["distance"] = distanceDouble
                     }
 
                     time != null -> {
-                        require(time is Double && time > 0) { "Time must be a positive double" }
-                        resultMap["time"] = time
+                        val timeDouble = requireNotNull(time.toDoubleOrNull())
+                        { "Time must be a double" }
+                        require(timeDouble > 0) { "Time must be a positive double" }
+                        resultMap["time"] = timeDouble
 
-                        val speed = requireNotNull(details["speed"]) { "Speed is required" }
-                        require(speed is Double && speed > 0) { "Speed must be a positive double" }
+                        val speed = requireNotNull(details["speed"]?.toDoubleOrNull())
+                        { "Speed is required and must be a double" }
+                        require(speed > 0) { "Speed must be a positive double" }
                         resultMap["speed"] = speed
 
                         if (details.containsKey("incline")) {
-                            val incline = requireNotNull(details["incline"]) { "Incline is required" }
-                            require(incline is Double && incline >= 0) { "Incline must be a positive double" }
+                            val incline = requireNotNull(details["incline"]?.toDoubleOrNull())
+                            { "Incline is required and must be a double" }
+                            require(incline >= 0) { "Incline must be a positive double" }
                             resultMap["incline"] = incline
                         }
                     }
@@ -102,7 +115,7 @@ class ExerciseValidator {
         }
 
         class CyclingInValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 val resultMap = mutableMapOf<String, Any>()
 
                 val distance = details["distance"]
@@ -110,16 +123,21 @@ class ExerciseValidator {
 
                 when {
                     distance != null -> {
-                        require(distance is Double && distance > 0) { "Distance must be a positive double" }
-                        resultMap["distance"] = distance
+                        val distanceDouble = requireNotNull(distance.toDoubleOrNull())
+                        { "Distance must be a double" }
+                        require(distanceDouble > 0) { "Distance must be a positive double" }
+                        resultMap["distance"] = distanceDouble
                     }
 
                     time != null -> {
-                        require(time is Double && time > 0) { "Time must be a positive double" }
-                        resultMap["time"] = time
+                        val timeDouble = requireNotNull(time.toDoubleOrNull())
+                        { "Time must be a double" }
+                        require(timeDouble > 0) { "Time must be a positive double" }
+                        resultMap["time"] = timeDouble
 
-                        val resistance = requireNotNull(details["resistance"]) { "Resistance is required" }
-                        require(resistance is Double && resistance >= 0) { "Resistance must be a positive double" }
+                        val resistance = requireNotNull(details["resistance"]?.toDoubleOrNull())
+                        { "Resistance is required and must be a double" }
+                        require(resistance >= 0) { "Resistance must be a positive double" }
                     }
 
                     else -> throw IllegalArgumentException("Either distance or time must be provided")
@@ -130,7 +148,7 @@ class ExerciseValidator {
         }
 
         class OtherValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 return emptyMap()
             }
         }
@@ -138,20 +156,22 @@ class ExerciseValidator {
 
     class DropSetValidators {
         class BodyWeightValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 return emptyMap()
             }
         }
 
         class WeightLiftValidator : Validator {
-            override fun validate(details: Map<String, Any>): Map<String, Any> {
+            override fun validate(details: Map<String, String>): Map<String, Any> {
                 val resultMap = mutableMapOf<String, Any>()
 
-                val initialWeight = requireNotNull(details["initialWeight"]) { "Initial weight is required" }
-                val finalWeight = requireNotNull(details["finalWeight"]) { "Final weight is required" }
+                val initialWeight = requireNotNull(details["initialWeight"]?.toDoubleOrNull())
+                { "Initial weight is required and must be a double" }
+                val finalWeight = requireNotNull(details["finalWeight"]?.toDoubleOrNull())
+                { "Final weight is required and must be a double" }
 
-                require(initialWeight is Double && initialWeight > 0) { "Initial weight must be a positive double" }
-                require(finalWeight is Double && finalWeight > 0) { "Final weight must be a positive double" }
+                require(initialWeight > 0) { "Initial weight must be a positive double" }
+                require(finalWeight > 0) { "Final weight must be a positive double" }
 
                 resultMap["initialWeight"] = initialWeight
                 resultMap["finalWeight"] = finalWeight

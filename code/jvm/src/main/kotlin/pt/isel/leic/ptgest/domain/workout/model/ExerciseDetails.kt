@@ -7,7 +7,7 @@ data class ExerciseDetails(
     val id: Int,
     val name: String,
     val description: String?,
-    val muscleGroup: MuscleGroup,
+    val muscleGroup: List<MuscleGroup>,
     val modality: Modality,
     val ref: String?
 )

@@ -7,7 +7,7 @@ import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 data class GetExerciseDetailsResponse(
     val name: String,
     val description: String?,
-    val muscleGroup: MuscleGroup,
+    val muscleGroup: List<MuscleGroup>,
     val type: Modality,
     val ref: String?
 ) {
