@@ -31,14 +31,14 @@ const handleLike = () => {
     width : 2.5em;
     height: 2em;
     background-color: var(--main-primary-color);
-    border: 1px solid var(--main-secundary-color);
+    border: 1px solid var(--main-secondary-color);
     border-radius: 5px;
     cursor: pointer;
     transition : background-color 0.3s;
 }
 
 .like-box:hover{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
 }
 
 .heart-icon, .heart-icon-active{

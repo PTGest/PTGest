@@ -60,6 +60,6 @@ const updateVisibility = () => {
 
 .visible-icon {
     margin-left: -2em;
-    color: var(--main-secundary-color);
+    color: var(--main-secondary-color);
 }
 </style>

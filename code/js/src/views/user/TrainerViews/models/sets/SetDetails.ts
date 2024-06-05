@@ -1,4 +1,4 @@
-import SetExerciseDetails from "./setExerciseDetails.ts";
+import SetExerciseDetails from "./SetExerciseDetails.ts";
 
 class SetDetails{
      name: string

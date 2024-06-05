@@ -1,18 +1,20 @@
 <template>
-    <div @click="openSetDetails" class="set-row">
-        <div class="set-row-name">{{ props.set.name }}</div>
-       <div class="set-row-info-container">
-           <Textarea class="text-area" v-model="props.set.notes" rows="3" cols="30" disabled auto-resize/>
-           <div class="set-row-info">{{ props.set.type }}</div>
-           <LikeSet :set-id="props.set.id"></LikeSet>
-       </div>
+    <div class="set-container">
+        <div @click="openSetDetails" class="set-row">
+            <div class="set-row-name">{{ props.set.name }}</div>
+            <div class="set-row-info-container">
+                <Textarea class="text-area" v-model="props.set.notes" rows="3" cols="30" disabled auto-resize/>
+                <div class="set-row-info">{{ props.set.type }}</div>
+            </div>
+        </div>
+        <LikeSet :set-id="props.set.id"></LikeSet>
     </div>
-    <SetDetails v-if="isSetDetailsOpen" :set-id="props.set.id"></SetDetails>
+    <SetDetails @close="handleCloseDetails" v-if="isSetDetailsOpen" :set-id="props.set.id"></SetDetails>
     <Divider />
 </template>
 
 <script setup lang="ts">
-import Set from "../../models/Set.ts";
+import Set from "../../models/sets/Set.ts";
 import Divider from "primevue/divider";
 import Textarea from "primevue/textarea";
 import LikeSet from "./LikeSet.vue";
@@ -26,6 +28,10 @@ const props = defineProps<{
 const isSetDetailsOpen = ref(false);
 const openSetDetails = () => {
     isSetDetailsOpen.value = !isSetDetailsOpen.value;
+}
+
+const handleCloseDetails = () => {
+    isSetDetailsOpen.value = false;
 }
 
 </script>
@@ -46,7 +52,7 @@ const openSetDetails = () => {
 
 .set-row:hover{
     cursor: pointer;
-    background-color: var(--main-secundary-color);
+    border: 1px solid var(--button-border-color);
 }
 
 .set-row-name{
@@ -68,7 +74,7 @@ const openSetDetails = () => {
 :global(.p-inputtextarea){
     background-color: var(--main-primary-color);
     color: whitesmoke;
-    border: 1px solid var(--main-secundary-color);
+    border: 1px solid var(--main-secondary-color);
 }
 
 .text-area{
@@ -76,4 +82,11 @@ const openSetDetails = () => {
     overflow-y: auto!important;
 }
 
+.set-container{
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    justify-content: space-between;
+    align-items: center;
+}
 </style>

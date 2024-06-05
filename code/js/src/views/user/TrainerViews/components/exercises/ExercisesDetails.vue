@@ -1,23 +1,29 @@
 <template>
     <div class="exerciseDetails-container">
-        <ExerciseDetails @exerciseDetails="handleDetails"  v-for="exercise in props.exercises" :exercise="exercise"></ExerciseDetails>
+        <ExerciseDetails @exerciseDetails="handleDetails($event)"  v-for="exercise in props.exercises" :exercise="exercise"></ExerciseDetails>
     </div>
 </template>
 
 <script setup lang="ts">
 import ExerciseDetails from "./ExerciseDetails.vue";
-import SetExerciseDetails from "../../models/setExerciseDetails.ts";
-import SetExercise from "../../models/SetExercise.ts";
+import SetExerciseDetails from "../../models/sets/SetExerciseDetails.ts";
+import SetExercise from "../../models/sets/SetExercise.ts";
 import {ref, Ref} from "vue";
 const props = defineProps<{
     exercises: { id: number, name: string }[];
 }>();
+
+console.log("Exercises",props.exercises);
 
 const emit = defineEmits(['exerciseDetails']);
 
 const exerciseDetailsList : Ref<SetExercise[]> = ref([]);
 
 const handleDetails = (details: SetExerciseDetails) => {
+
+    console.log("Details2", details)
+
+
     const exercise = exerciseDetailsList.value.findIndex((exercise) => exercise.exerciseId === details.id);
     if(exercise !== -1){
         exerciseDetailsList.value[exercise] = new SetExercise(details.id, details.details);

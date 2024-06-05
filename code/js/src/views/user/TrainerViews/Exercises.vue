@@ -42,9 +42,9 @@ import InputBar from "../../../components/utils/InputBar.vue";
 import Filters from "../../../views/user/CompaniesViews/Components/Filters.vue";
 import ExercisesTable from "./components/exercises/ExercisesTable.vue";
 import AddExercise from "./components/exercises/AddExercise.vue";
-import Exercises from "../../../views/user/TrainerViews/models/Exercises.ts";
+import Exercises from "./models/exercises/Exercises.ts";
 import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts";
-import Exercise from "@/views/user/TrainerViews/models/Exercise.ts";
+import Exercise from "@/views/user/TrainerViews/models/exercises/Exercise.js";
 
 const isAddExerciseOpen = ref(false);
 const filtersOpen = ref(false);
@@ -141,7 +141,7 @@ const openAddExercise = () => {
 }
 
 .filters{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     padding: 0.5em;
     border-radius: 5px;
     font-family: Poppins, sans-serif;

@@ -15,7 +15,7 @@
                <ExercisesDropdown :options="setTypes" placeholder="Set Type" @dropdownOption="updateSetType($event)"/>
 
                <label class="label">Exercise</label>
-               <MultiSelect v-if="typeOption === 'SUPERSET' " v-model="selectedExercises" display="chip"
+               <MultiSelect v-if="typeOption.name === 'SUPERSET' " v-model="selectedExercises" display="chip"
                             :options="
                             exercises.exercises.map(exercise => {
                                 return {
@@ -48,12 +48,12 @@ import {faTimes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import ExercisesDropdown from "../exercises/ExercisesDropdown.vue";
 import getExercises from "../../../../../services/TrainerServices/exercises/getExercises.ts";
-import Exercises from "../../models/Exercises.ts";
+import Exercises from "../../models/exercises/Exercises.ts";
 import MultiSelect from "primevue/multiselect";
 import ExercisesDetails from "../exercises/ExercisesDetails.vue";
-import SetExercise from "../../models/SetExercise.ts";
+import SetExercise from "../../models/sets/SetExercise.ts";
 import createSet from "../../../../../services/TrainerServices/sets/createSet.ts";
-import CreateCustomSetRequest from "../../models/CreateCustomSetRequest.ts";
+import CreateCustomSetRequest from "../../models/sets/CreateCustomSetRequest.ts";
 
 
 const selectedExercises : Ref<{ id: number, name: string }[]> = ref([]);
@@ -89,6 +89,7 @@ const handleExerciseDetails = (details: SetExercise[]) => {
 }
 const updateSetType = (type: string) => {
     typeOption.value = type;
+    console.log(typeOption.value);
 }
 
 const submitSet = async() => {
@@ -141,7 +142,7 @@ const submitSet = async() => {
 }
 
 .exercise-name-input:hover{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
 }
 
 input{
@@ -205,7 +206,7 @@ textarea{
 }
 
 .text-area:hover{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     transition : 0.2s ease-out;
 }
 
@@ -221,7 +222,7 @@ textarea{
 }
 
 .close-button:hover{
-   background-color: var(--main-secundary-color);
+   background-color: var(--main-secondary-color);
     border-color: var(--sign-up-blue);
     transition: 0.2s ease-out;
 }
@@ -238,11 +239,11 @@ textarea{
 
 .submit-btn-disable{
     cursor: not-allowed;
-    color: var(--main-secundary-color);
+    color: var(--main-secondary-color);
 }
 
 .submit-btn:hover{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     transition: 0.2s ease-out;
     border-color: var(--sign-up-blue);
 }
@@ -289,7 +290,7 @@ textarea{
     color: whitesmoke;
 }
 :global(.p-multiselect-item:hover){
-    background: var(--main-secundary-color);
+    background: var(--main-secondary-color);
     color: whitesmoke;
 }
 
@@ -309,7 +310,7 @@ textarea{
 }
 
 :global(.p-multiselect-close){
-    background: var(--main-secundary-color);
+    background: var(--main-secondary-color);
     color: whitesmoke;
     padding:0;
 }
@@ -322,14 +323,8 @@ textarea{
 
 }
 :global(::-webkit-scrollbar-thumb),:global( ::-webkit-scrollbar-thumb){
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     border-radius: 10px;
 }
-
-
-
-
-
-
 
 </style>

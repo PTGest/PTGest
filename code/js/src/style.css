@@ -1,8 +1,8 @@
 :root {
     --navbar-color: #1b1c1e;
     --main-primary-color: #25262a;
-    --main-secundary-color: #44494f;
-    --main-tertiary-color: rgba(110, 115, 121, 0.56);
+    --main-secondary-color: #44494f;
+    --main-tertiary-color: rgb(110, 115, 121);
     --light-blue: #3f52ab;
     --black1a: #1a1a1a;
     --sign-up-blue: #646cff;

@@ -1,12 +1,11 @@
 class ExerciseDetails {
-
-    id : string;
+    id : number;
     name : string;
     description : string;
     muscleGroup : string[];
     modality : string;
     ref : string;
-    constructor(id: string, name: string, description: string, muscleGroup: string[], modality: string, ref: string) {
+    constructor(id: number, name: string, description: string, muscleGroup: string[], modality: string, ref: string) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -14,5 +13,6 @@ class ExerciseDetails {
         this.modality = modality;
         this.ref = ref;
     }
-
 }
+
+export default ExerciseDetails;

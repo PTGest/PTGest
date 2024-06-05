@@ -195,7 +195,7 @@ header .current-date {
     background: var(--sign-up-blue);
 }
 .days li:not(.active):hover::before {
-    background: var(--main-secundary-color);
+    background: var(--main-secondary-color);
 }
 .days li:not(.active):hover {
     color: whitesmoke;

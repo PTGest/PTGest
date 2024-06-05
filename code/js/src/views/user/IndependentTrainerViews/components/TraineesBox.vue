@@ -47,7 +47,7 @@ const props = defineProps<{
     border-radius: 10px;
     margin: 0.5em;
     background-color: var(--main-primary-color);
-    border : 1px solid var(--main-secundary-color);
+    border : 1px solid var(--main-secondary-color);
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: bold;
@@ -67,7 +67,7 @@ p, h4{
 }
 
 h4{
-    text-shadow: var(--main-secundary-color) 2px 2px 2px;
+    text-shadow: var(--main-secondary-color) 2px 2px 2px;
 }
 p{
     font-size: 0.8em;

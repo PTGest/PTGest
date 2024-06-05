@@ -70,7 +70,7 @@ const updateCapacity = () => {
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: bold;
-    border : 1px solid var(--main-secundary-color);
+    border : 1px solid var(--main-secondary-color);
 }
 .icon{
     position: relative;
@@ -86,7 +86,7 @@ p, h6, h4, input{
 h4{
     position: relative;
     left : -1em;
-    text-shadow: var(--main-secundary-color) 2px 2px 2px;
+    text-shadow: var(--main-secondary-color) 2px 2px 2px;
 }
 p{
     font-size: 0.8em;
@@ -156,7 +156,7 @@ input{
     h4{
         position: relative;
         left : -1em;
-        text-shadow: var(--main-secundary-color) 2px 2px 2px;
+        text-shadow: var(--main-secondary-color) 2px 2px 2px;
     }
     p{
         font-size: 0.8em;

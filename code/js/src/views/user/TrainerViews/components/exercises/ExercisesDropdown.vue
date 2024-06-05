@@ -82,7 +82,7 @@ const openDropdown = () => {
 }
 
 .select:hover{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
 }
 
 .dropdown-icon, .dropdown-icon-rotate{
@@ -96,7 +96,7 @@ const openDropdown = () => {
 .menu, .menu-open{
     list-style-type: none;
     padding: 0 0 0 0.5em ;
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     position: absolute;

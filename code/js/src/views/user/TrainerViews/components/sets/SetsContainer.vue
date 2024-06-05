@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import Divider from "primevue/divider";
-import Set from "../../models/Set.ts";
+import Set from "../../models/sets/Set.ts";
 import SetRowView from "./SetRowView.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";

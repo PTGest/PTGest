@@ -96,7 +96,7 @@ const handleFilters = (isOpen : boolean) => {
 .add-trainee {
     color: whitesmoke;
     padding: 0.5em 1.5em 0.5em 1.5em;
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     border : 1px solid var(--main-primary-color);
     border-radius: 10px;
     transition: 0.2s ease-in;
@@ -136,7 +136,7 @@ h2{
 
 .icons-disable{
     padding: 1em;
-    color: var(--main-secundary-color);
+    color: var(--main-secondary-color);
     pointer-events: none;
 }
 </style>

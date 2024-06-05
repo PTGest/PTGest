@@ -63,6 +63,6 @@ const updateBio = () => {
 .bio-text-edit {
     color: whitesmoke;
     border: 1px solid whitesmoke;
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
 }
 </style>

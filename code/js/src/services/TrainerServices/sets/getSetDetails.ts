@@ -1,5 +1,5 @@
 import fetchData from "../../utils/fetchData.ts";
-import SetDetails from "../../../views/user/TrainerViews/models/SetDetails.ts";
+import SetDetails from "../../../views/user/TrainerViews/models/sets/SetDetails.ts";
 
 export default async function getSetDetails(setId: number): Promise<SetDetails> {
     const uri = "http://localhost:8080/api/trainer/set/" + setId;

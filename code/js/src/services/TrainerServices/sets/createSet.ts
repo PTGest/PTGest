@@ -1,5 +1,5 @@
 import fetchData from "../../utils/fetchData.ts";
-import CreateCustomSetRequest from "../../../views/user/TrainerViews/models/CreateCustomSetRequest.ts";
+import CreateCustomSetRequest from "../../../views/user/TrainerViews/models/sets/CreateCustomSetRequest.ts";
 import mapToObject from "../../utils/mapToObject.ts";
 import router from "../../../plugins/router.ts";
 

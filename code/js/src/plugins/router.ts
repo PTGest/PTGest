@@ -15,6 +15,7 @@ import store from "../store";
 import AssignTrainer from "../views/user/CompaniesViews/AssignTrainer.vue";
 import Exercises from "../views/user/TrainerViews/Exercises.vue";
 import Sets from "../views/user/TrainerViews/Sets.vue";
+import Workouts from "../views/user/TrainerViews/Workouts.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -55,6 +56,9 @@ const routes: RouteRecordRaw[] = [
             roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
     },
     { path: "/sets", name: "sets", component: Sets, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
+    { path: "/workouts", name: "workouts", component: Workouts, meta: { requiresAuth: true,
             roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
     },
 

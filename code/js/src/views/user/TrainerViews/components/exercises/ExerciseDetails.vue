@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import SetExerciseDetailBoxes from "./SetExerciseDetailBoxes.vue";
-import SetExerciseDetails from "../../models/setExerciseDetails.ts";
+import SetExerciseDetails from "../../models/sets/SetExerciseDetails.ts";
 
 
 const props = defineProps<{
@@ -23,7 +23,8 @@ const emit = defineEmits(['exerciseDetails']);
 
 
 const handleDetails = (details: Map<string, any>) => {
-    emit('exerciseDetails', new SetExerciseDetails(props.exercise.id, props.exercise.name, details));
+    emit('exerciseDetails', new SetExerciseDetails(props.exercise.id, props.exercise.name, null,null,  details));
+    console.log("Details", details);
 }
 
 

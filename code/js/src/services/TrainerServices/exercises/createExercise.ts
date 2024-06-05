@@ -1,4 +1,4 @@
-import CreateCustomExerciseRequest from "../../../views/user/TrainerViews/models/CreateCustomExerciseRequest.ts";
+import CreateCustomExerciseRequest from "../../../views/user/TrainerViews/models/exercises/CreateCustomExerciseRequest.ts";
 import fetchData from "../../utils/fetchData.ts";
 import router from "../../../plugins/router.ts";
 async function createExercise(exercise: CreateCustomExerciseRequest): Promise<void> {

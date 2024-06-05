@@ -17,14 +17,13 @@
                 {{exercise.modality}}
             </td>
         </tr>
-
     </table>
 </template>
 
 
 <script setup lang="ts">
 
-import Exercise from "../../models/Exercise.ts";
+import Exercise from "../../models/exercises/Exercise.ts";
 
 const props = defineProps<{
     exercises: Exercise[]
@@ -46,7 +45,7 @@ table{
     font-family: Poppins, sans-serif;
     font-weight: bold;
     font-size: 20px;
-    padding: 0.5em;
+    padding: 1em;
 }
 
 .normal-text{
@@ -64,7 +63,7 @@ table{
 
 .table-row:hover{
     cursor: pointer;
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     border-radius: 10px;
 }
 

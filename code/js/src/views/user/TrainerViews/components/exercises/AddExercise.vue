@@ -34,7 +34,7 @@ import MultiSelect from 'primevue/multiselect';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import createExercise from "../../../../../services/TrainerServices/exercises/createExercise.ts";
-import CreateCustomExerciseRequest from "../../models/CreateCustomExerciseRequest.ts";
+import CreateCustomExerciseRequest from "../../models/exercises/CreateCustomExerciseRequest.ts";
 
 const modalityOptions = [
     {name: 'BODYWEIGHT'},
@@ -153,7 +153,7 @@ const submitExercise = async () => {
 }
 
 .exercise-name-input:hover{
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
 }
 
 input{
@@ -206,7 +206,7 @@ input{
     color: whitesmoke;
 }
 :global(.p-multiselect-item:hover){
-    background: var(--main-secundary-color);
+    background: var(--main-secondary-color);
     color: whitesmoke;
 }
 
@@ -226,7 +226,7 @@ input{
 }
 
 :global(.p-multiselect-close){
- background: var(--main-secundary-color);
+ background: var(--main-secondary-color);
  color: whitesmoke;
     padding:0;
 }
@@ -239,7 +239,7 @@ input{
 
 }
 :global(::-webkit-scrollbar-thumb),:global( ::-webkit-scrollbar-thumb){
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     border-radius: 10px;
 }
 .label-text{
@@ -260,7 +260,7 @@ input{
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     border-radius: 5px;
     grid-column-start: 2;
     grid-column-end: 2;

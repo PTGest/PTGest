@@ -77,7 +77,7 @@ const handleApplyFilters = () => {
     background-color: var(--main-primary-color);
     width: 25em;
     height: 20em;
-    border : 1px solid var(--main-secundary-color); ;
+    border : 1px solid var(--main-secondary-color); ;
     border-radius: 10px;
     z-index: 99;
 }
@@ -157,7 +157,7 @@ const handleApplyFilters = () => {
     width: 15em;
     height: 3em;
     border-radius: 5px;
-    background-color: var(--main-secundary-color);
+    background-color: var(--main-secondary-color);
     color: whitesmoke;
     border : 1px solid var(--main-primary-color);
     cursor: pointer;

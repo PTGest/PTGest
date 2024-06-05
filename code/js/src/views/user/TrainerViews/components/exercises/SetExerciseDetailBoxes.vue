@@ -50,7 +50,7 @@ const handleDetails = (detailKey:string, value: number) => {
     width:3em;
     height: 3em;
     border-radius: 10px;
-    border: 1px solid var(--main-secundary-color);
+    border: 1px solid var(--main-secondary-color);
     color: whitesmoke;
     padding: 0.5em;
     background-color: var(--main-primary-color);

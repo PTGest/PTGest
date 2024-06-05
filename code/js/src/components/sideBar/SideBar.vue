@@ -42,6 +42,11 @@
                                  class="nav-link" :to="{ name: 'sets'}">Sets</router-link>
                 </div>
 
+                <div v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">
+                    <router-link @click="handleMenu" v-if="userData && (!is_mobile_view || (is_mobile_view && is_open))"
+                                 class="nav-link" :to="{ name: 'workouts'}">Workouts</router-link>
+                </div>
+
                 <UserIcon @click="handleMenu" class="userIcon" :isOpen="is_open" v-if="userData && (!is_mobile_view ||
                     (is_mobile_view && is_open)) " :isMobileView="is_mobile_view" />
 
