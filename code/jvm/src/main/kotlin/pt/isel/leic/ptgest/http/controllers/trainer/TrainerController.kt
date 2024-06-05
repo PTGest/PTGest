@@ -16,15 +16,18 @@ import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.http.controllers.model.request.CreateCustomExerciseRequest
-import pt.isel.leic.ptgest.http.controllers.model.response.CreateCustomResourceResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetExercisesResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetSetDetails
-import pt.isel.leic.ptgest.http.controllers.model.response.GetWorkoutDetailsResponse
-import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomSetRequest
-import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateCustomWorkoutRequest
+import pt.isel.leic.ptgest.http.controllers.common.model.request.CreateExerciseRequest
+import pt.isel.leic.ptgest.http.controllers.common.model.request.EditExerciseRequest
+import pt.isel.leic.ptgest.http.controllers.common.model.response.CreateResourceResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExerciseDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExercisesResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetSetDetails
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSessionRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSetRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateWorkoutRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.EditSetRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.EditWorkoutRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
@@ -41,7 +44,7 @@ class TrainerController(
     @PostMapping(Uris.Workout.CREATE_CUSTOM_EXERCISE)
     fun createCustomExercise(
         @Valid @RequestBody
-        exerciseDetails: CreateCustomExerciseRequest,
+        exerciseDetails: CreateExerciseRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val exerciseId = trainerService.createCustomExercise(
@@ -55,7 +58,7 @@ class TrainerController(
 
         return HttpResponse.created(
             message = "Custom exercise created successfully.",
-            details = CreateCustomResourceResponse(exerciseId)
+            details = CreateResourceResponse(exerciseId)
         )
     }
 
@@ -69,13 +72,13 @@ class TrainerController(
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (exercises, total) = trainerService.getExercises(
+            authenticatedUser.id,
+            authenticatedUser.role,
             skip,
             limit,
             name?.trim(),
             muscleGroup,
-            modality,
-            authenticatedUser.id,
-            authenticatedUser.role
+            modality
         )
 
         return HttpResponse.ok(
@@ -90,8 +93,8 @@ class TrainerController(
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val exerciseDetails = trainerService.getExerciseDetails(
-            exerciseId,
-            authenticatedUser.id
+            authenticatedUser.id,
+            exerciseId
         )
 
         return HttpResponse.ok(
@@ -100,10 +103,32 @@ class TrainerController(
         )
     }
 
+    @PutMapping(Uris.Workout.EDIT_EXERCISE)
+    fun editExercise(
+        @PathVariable exerciseId: Int,
+        @Valid @RequestBody
+        exerciseDetails: EditExerciseRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.editExercise(
+            authenticatedUser.id,
+            exerciseId,
+            exerciseDetails.name,
+            exerciseDetails.description,
+            exerciseDetails.muscleGroup,
+            exerciseDetails.modality,
+            exerciseDetails.ref
+        )
+
+        return HttpResponse.ok(
+            message = "Exercise edited successfully."
+        )
+    }
+
     @PostMapping(Uris.Workout.CREATE_CUSTOM_SET)
     fun createCustomSet(
         @Valid @RequestBody
-        setDetails: CreateCustomSetRequest,
+        setDetails: CreateSetRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val setId = trainerService.createCustomSet(
@@ -116,7 +141,7 @@ class TrainerController(
 
         return HttpResponse.created(
             message = "Custom set created successfully.",
-            details = CreateCustomResourceResponse(setId)
+            details = CreateResourceResponse(setId)
         )
     }
 
@@ -158,10 +183,31 @@ class TrainerController(
         )
     }
 
+    @PutMapping(Uris.Workout.EDIT_SET)
+    fun editSet(
+        @PathVariable setId: Int,
+        @Valid @RequestBody
+        setDetails: EditSetRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.editSet(
+            authenticatedUser.id,
+            setId,
+            setDetails.name,
+            setDetails.notes,
+            setDetails.type,
+            setDetails.setExercises
+        )
+
+        return HttpResponse.ok(
+            message = "Set edited successfully."
+        )
+    }
+
     @PostMapping(Uris.Workout.CREATE_CUSTOM_WORKOUT)
     fun createCustomWorkout(
         @Valid @RequestBody
-        workoutDetails: CreateCustomWorkoutRequest,
+        workoutDetails: CreateWorkoutRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val workoutId = trainerService.createCustomWorkout(
@@ -174,7 +220,7 @@ class TrainerController(
 
         return HttpResponse.created(
             message = "Custom workout created successfully.",
-            details = CreateCustomResourceResponse(workoutId)
+            details = CreateResourceResponse(workoutId)
         )
     }
 
@@ -216,6 +262,27 @@ class TrainerController(
         )
     }
 
+    @PutMapping(Uris.Workout.EDIT_WORKOUT)
+    fun editWorkout(
+        @PathVariable workoutId: Int,
+        @Valid @RequestBody
+        workoutDetails: EditWorkoutRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.editWorkout(
+            authenticatedUser.id,
+            workoutId,
+            workoutDetails.name,
+            workoutDetails.description,
+            workoutDetails.muscleGroup,
+            workoutDetails.sets
+        )
+
+        return HttpResponse.ok(
+            message = "Workout edited successfully."
+        )
+    }
+
     @PostMapping(Uris.Session.CREATE_SESSION)
     fun createSession(
         @RequestBody sessionDetails: CreateSessionRequest,
@@ -233,7 +300,7 @@ class TrainerController(
 
         return HttpResponse.created(
             message = "Session created successfully.",
-            details = CreateCustomResourceResponse(sessionId)
+            details = CreateResourceResponse(sessionId)
         )
     }
 
@@ -254,9 +321,10 @@ class TrainerController(
         throw NotImplementedError("Not implemented yet.")
     }
 
-    @PutMapping(Uris.Session.CHANGE_SESSION_DATE)
-    fun changeSessionDate(
+    @PutMapping(Uris.Session.EDIT_SESSION)
+    fun editSession(
         @PathVariable sessionId: String,
+        @RequestBody sessionDetails: CreateSessionRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         throw NotImplementedError("Not implemented yet.")

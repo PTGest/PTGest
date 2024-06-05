@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.http.controllers.model.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetSetDetails
-import pt.isel.leic.ptgest.http.controllers.model.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExerciseDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetSetDetails
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainee.TraineeService
 
 @RestController
-@RequestMapping(Uris.PREFIX)
+@RequestMapping(Uris.Trainee.PREFIX)
 @RequiredRole(Role.TRAINEE)
 class TraineeController(
     private val traineeService: TraineeService
@@ -28,8 +28,8 @@ class TraineeController(
     ): ResponseEntity<*> {
         val exerciseDetails =
             traineeService.getExerciseDetails(
-                exerciseId,
-                authenticatedUser.id
+                authenticatedUser.id,
+                exerciseId
             )
 
         return HttpResponse.ok(

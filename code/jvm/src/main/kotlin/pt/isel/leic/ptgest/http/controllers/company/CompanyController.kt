@@ -17,15 +17,16 @@ import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.http.controllers.common.model.request.CreateExerciseRequest
+import pt.isel.leic.ptgest.http.controllers.common.model.request.EditExerciseRequest
+import pt.isel.leic.ptgest.http.controllers.common.model.response.CreateResourceResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExerciseDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.controllers.company.model.response.GetCompanyTrainersResponse
-import pt.isel.leic.ptgest.http.controllers.model.request.CreateCustomExerciseRequest
-import pt.isel.leic.ptgest.http.controllers.model.response.CreateCustomResourceResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.controllers.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
@@ -126,6 +127,7 @@ class CompanyController(
         )
     }
 
+//  todo: implement this endpoint
     @DeleteMapping(Uris.Company.REMOVE_TRAINER)
     fun removeTrainer(
         authenticatedUser: AuthenticatedUser
@@ -137,7 +139,7 @@ class CompanyController(
     @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
     fun createCustomExercise(
         @Valid @RequestBody
-        exerciseDetails: CreateCustomExerciseRequest,
+        exerciseDetails: CreateExerciseRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val exerciseId = companyService.createCustomExercise(
@@ -151,7 +153,7 @@ class CompanyController(
 
         return HttpResponse.created(
             message = "Custom exercise created successfully.",
-            details = CreateCustomResourceResponse(exerciseId)
+            details = CreateResourceResponse(exerciseId)
         )
     }
 
@@ -194,6 +196,28 @@ class CompanyController(
         return HttpResponse.ok(
             message = "Exercise details retrieved successfully.",
             details = GetExerciseDetailsResponse(exerciseDetails)
+        )
+    }
+
+    @PutMapping(Uris.Workout.EDIT_EXERCISE)
+    fun editExercise(
+        @PathVariable exerciseId: Int,
+        @Valid @RequestBody
+        exerciseDetails: EditExerciseRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        companyService.editExercise(
+            authenticatedUser.id,
+            exerciseId,
+            exerciseDetails.name,
+            exerciseDetails.description,
+            exerciseDetails.muscleGroup,
+            exerciseDetails.modality,
+            exerciseDetails.ref
+        )
+
+        return HttpResponse.ok(
+            message = "Exercise edited successfully."
         )
     }
 }

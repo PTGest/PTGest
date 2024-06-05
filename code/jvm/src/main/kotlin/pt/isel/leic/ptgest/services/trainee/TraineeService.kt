@@ -13,19 +13,19 @@ class TraineeService(
 ) {
 
     fun getExerciseDetails(
-        exerciseId: Int,
-        userId: UUID
+        traineeId: UUID,
+        exerciseId: Int
     ): ExerciseDetails =
         transactionManager.run {
             val trainerRepo = it.trainerRepo
             val companyRepo = it.companyRepo
             val traineeRepo = it.traineeRepo
 
-            val trainerId = traineeRepo.getTrainerAssigned(userId)
+            val trainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
             val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
-            trainerRepo.getExerciseDetails(userId, exerciseId)
+            trainerRepo.getExerciseDetails(traineeId, exerciseId)
                 ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
                 ?: throw TraineeError.ExerciseNotFoundError
         }

@@ -216,4 +216,36 @@ class CompanyService(
             return@run companyRepo.getExerciseDetails(userId, exerciseId)
                 ?: throw CompanyError.ExerciseNotFoundError
         }
+
+    fun editExercise(
+        companyId: UUID,
+        exerciseId: Int,
+        name: String,
+        description: String?,
+        muscleGroup: List<MuscleGroup>,
+        modality: Modality,
+        ref: String?
+    ) {
+        Validators.validate(
+            Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() },
+            Validators.ValidationRequest(ref, "Reference must be a valid YouTube URL.") { Validators.isYoutubeUrl(it as String) }
+        )
+
+        transactionManager.run {
+            val companyRepo = it.companyRepo
+            val workoutRepo = it.workoutRepo
+
+            companyRepo.getExerciseDetails(companyId, exerciseId)
+                ?: throw CompanyError.ExerciseNotFoundError
+
+            workoutRepo.editExercise(
+                exerciseId,
+                name,
+                description,
+                muscleGroup,
+                modality,
+                ref
+            )
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.controllers.model.response
+package pt.isel.leic.ptgest.http.controllers.common.model.response
 
 import pt.isel.leic.ptgest.domain.workout.model.Exercise
 

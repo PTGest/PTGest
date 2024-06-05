@@ -3,7 +3,7 @@ package pt.isel.leic.ptgest.http.controllers.trainer.model.request
 import jakarta.validation.constraints.Size
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 
-data class CreateCustomWorkoutRequest(
+data class CreateWorkoutRequest(
     val name: String?,
     val description: String?,
     @field:Size(min = 1, max = 3, message = "Muscle group list must have at least one and at most three muscle groups.")
