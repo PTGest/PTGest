@@ -12,7 +12,8 @@ import pt.isel.leic.ptgest.domain.workout.model.Set
 import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.repository.TrainerRepo
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
 
@@ -28,6 +29,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<UUID>()
             .firstOrNull()
 
+//  Exercise related methods
     override fun getExercises(
         trainerId: UUID,
         skip: Int,
@@ -91,6 +93,69 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .one()
     }
 
+    override fun getFavoriteExercises(
+        trainerId: UUID,
+        skip: Int,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): List<Exercise> {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val modalityCondition = if (modality != null) "and type = :modality" else ""
+
+        return handle.createQuery(
+            """
+            select e.id, e.name, e.muscle_group, e.modality
+            from exercise e join trainer_favorite_exercise tfe on e.id = tfe.exercise_id
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition $modalityCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name,
+                    "modality" to modality?.name
+                )
+            )
+            .mapTo<Exercise>()
+            .list()
+    }
+
+    override fun getTotalFavoriteExercises(
+        trainerId: UUID,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): Int {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val modalityCondition = if (modality != null) "and type = :modality" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from exercise e join trainer_favorite_exercise tfe on e.id = tfe.exercise_id
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition $modalityCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name,
+                    "modality" to modality?.name
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getExerciseDetails(trainerId: UUID, exerciseId: Int): ExerciseDetails? =
         handle.createQuery(
             """
@@ -124,6 +189,53 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .execute()
     }
 
+    override fun getFavoriteExercisesByTrainerId(trainerId: UUID): List<Int> {
+        return handle.createQuery(
+            """
+            select exercise_id
+            from trainer_favorite_exercise
+            where trainer_id = :trainerId
+            """.trimIndent()
+        )
+            .bind("trainerId", trainerId)
+            .mapTo<Int>()
+            .list()
+    }
+
+    override fun favoriteExercise(trainerId: UUID, exerciseId: Int) {
+        handle.createUpdate(
+            """
+            insert into trainer_favorite_exercise (trainer_id, exercise_id)
+            values (:trainerId, :exerciseId)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "exerciseId" to exerciseId
+                )
+            )
+            .execute()
+    }
+
+    override fun unfavoriteExercise(trainerId: UUID, exerciseId: Int) {
+        handle.createUpdate(
+            """
+            delete from trainer_favorite_exercise
+            where trainer_id = :trainerId and exercise_id = :exerciseId
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "exerciseId" to exerciseId
+                )
+            )
+            .execute()
+    }
+
+//  Set related methods
+
     override fun getLastSetNameId(trainerId: UUID): Int =
         handle.createQuery(
             """
@@ -131,20 +243,6 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             from set
             where name like 'Set #%' and trainer_id = :trainerId
             order by cast(substring(name FROM '#([0-9]+)$') as int) desc
-            limit 1
-            """
-        )
-            .bind("trainerId", trainerId)
-            .mapTo<Int>()
-            .one()
-
-    override fun getLastWorkoutNameId(trainerId: UUID): Int =
-        handle.createQuery(
-            """
-            select cast(substring(name FROM '#([0-9]+)${'$'}') as int) as workout_number
-            from workout
-            where name like 'Workout #%' and trainer_id = :trainerId
-            order by cast(substring(name FROM '#([0-9]+)${'$'}') as int) desc
             limit 1
             """
         )
@@ -199,6 +297,53 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .one()
     }
 
+    override fun getFavoriteSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
+        val typeCondition = if (type != null) "and type = :type" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select s.id, s.name, s.notes, s.type
+            from set s join trainer_favorite_set tfs on s.id = tfs.set_id
+            where trainer_id = :trainerId $typeCondition $nameCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "type" to type?.name,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Set>()
+            .list()
+    }
+
+    override fun getTotalFavoriteSets(trainerId: UUID, type: SetType?, name: String?): Int {
+        val typeCondition = if (type != null) "and type = :type" else ""
+        val nameCondition = if (name != null) "and name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from set s join trainer_favorite_set tfs on s.id = tfs.set_id
+            where trainer_id = :trainerId $typeCondition $nameCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "type" to type?.name,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getSet(trainerId: UUID, setId: Int): Set? =
         handle.createQuery(
             """
@@ -216,18 +361,6 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<Set>()
             .firstOrNull()
 
-    override fun getSet(setId: Int): Set =
-        handle.createQuery(
-            """
-            select id, name, notes, type
-            from set
-            where id = :setId
-            """.trimIndent()
-        )
-            .bind("setId", setId)
-            .mapTo<Set>()
-            .one()
-
     override fun getSetExercises(setId: Int): List<SetExerciseDetails> =
         handle.createQuery(
             """
@@ -240,6 +373,66 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .bind("setId", setId)
             .mapTo<SetExerciseDetails>()
             .list()
+
+    override fun getFavoriteSetsByTrainerId(trainerId: UUID): List<Int> {
+        return handle.createQuery(
+            """
+            select set_id
+            from trainer_favorite_set
+            where trainer_id = :trainerId
+            """.trimIndent()
+        )
+            .bind("trainerId", trainerId)
+            .mapTo<Int>()
+            .list()
+    }
+
+    override fun favoriteSet(trainerId: UUID, setId: Int) {
+        handle.createUpdate(
+            """
+            insert into trainer_favorite_set (trainer_id, set_id)
+            values (:trainerId, :setId)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "setId" to setId
+                )
+            )
+            .execute()
+    }
+
+    override fun unfavoriteSet(trainerId: UUID, setId: Int) {
+        handle.createUpdate(
+            """
+            delete from trainer_favorite_set
+            where trainer_id = :trainerId and set_id = :setId
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "setId" to setId
+                )
+            )
+            .execute()
+    }
+
+//  Workout related methods
+    override fun getLastWorkoutNameId(trainerId: UUID): Int =
+        handle.createQuery(
+            """
+            select cast(substring(name FROM '#([0-9]+)${'$'}') as int) as workout_number
+            from workout
+            where name like 'Workout #%' and trainer_id = :trainerId
+            order by cast(substring(name FROM '#([0-9]+)${'$'}') as int) desc
+            limit 1
+            """
+        )
+            .bind("trainerId", trainerId)
+            .mapTo<Int>()
+            .one()
 
     override fun getWorkouts(
         trainerId: UUID,
@@ -294,6 +487,59 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .one()
     }
 
+    override fun getFavoriteWorkouts(
+        trainerId: UUID,
+        skip: Int,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?
+    ): List<Workout> {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+
+        return handle.createQuery(
+            """
+            select w.id, w.name, w.description, w.muscle_group
+            from workout w join trainer_favorite_workout tfw on w.id = tfw.workout_id
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name
+                )
+            )
+            .mapTo<Workout>()
+            .list()
+    }
+
+    override fun getTotalFavoriteWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
+        val nameCondition = if (name != null) "and name like :name" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from workout w join trainer_favorite_workout tfw on w.id = tfw.workout_id
+            where trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "name" to "%$name%",
+                    "muscleGroup" to muscleGroup?.name
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
     override fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout? =
         handle.createQuery(
             """
@@ -323,6 +569,53 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .bind("workoutId", workoutId)
             .mapTo<Int>()
             .list()
+
+    override fun getFavoriteWorkoutsByTrainerId(trainerId: UUID): List<Int> {
+        return handle.createQuery(
+            """
+            select workout_id
+            from trainer_favorite_workout
+            where trainer_id = :trainerId
+            """.trimIndent()
+        )
+            .bind("trainerId", trainerId)
+            .mapTo<Int>()
+            .list()
+    }
+
+    override fun favoriteWorkout(trainerId: UUID, workoutId: Int) {
+        handle.createUpdate(
+            """
+            insert into trainer_favorite_workout (trainer_id, workout_id)
+            values (:trainerId, :workoutId)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "workoutId" to workoutId
+                )
+            )
+            .execute()
+    }
+
+    override fun unfavoriteWorkout(trainerId: UUID, workoutId: Int) {
+        handle.createUpdate(
+            """
+            delete from trainer_favorite_workout
+            where trainer_id = :trainerId and workout_id = :workoutId
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "workoutId" to workoutId
+                )
+            )
+            .execute()
+    }
+
+//  Session related methods
 
     override fun createSession(
         trainerId: UUID,

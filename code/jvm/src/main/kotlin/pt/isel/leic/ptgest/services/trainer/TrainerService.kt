@@ -21,6 +21,7 @@ import pt.isel.leic.ptgest.services.trainee.TraineeError
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.*
 
+// todo: correct delete elements
 @Service
 class TrainerService(
     private val transactionManager: TransactionManager
@@ -63,7 +64,8 @@ class TrainerService(
         limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
+        modality: Modality?,
+        favorite: Boolean
     ): Pair<List<Exercise>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -78,7 +80,8 @@ class TrainerService(
                 limit,
                 name,
                 muscleGroup,
-                modality
+                modality,
+                favorite
             )
         }
     }
@@ -130,6 +133,62 @@ class TrainerService(
         }
     }
 
+    fun deleteExercise(trainerId: UUID, exerciseId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
+
+            trainerRepo.getExerciseDetails(trainerId, exerciseId)
+                ?: throw TrainerError.ExerciseNotFoundError
+
+            workoutRepo.deleteExercise(exerciseId)
+        }
+    }
+
+    fun favoriteExercise(trainerId: UUID, exerciseId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+            val companyRepo = it.companyRepo
+
+            val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
+
+            trainerRepo.getExerciseDetails(trainerId, exerciseId)
+                ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+                ?: throw TrainerError.ExerciseNotFoundError
+
+            val favoriteExercises = trainerRepo.getFavoriteExercisesByTrainerId(trainerId)
+
+            if (exerciseId in favoriteExercises) {
+                throw TrainerError.ResourceAlreadyFavoriteError
+            }
+
+            require(exerciseId !in favoriteExercises) { "Exercise is already favorited." }
+
+            trainerRepo.favoriteExercise(trainerId, exerciseId)
+        }
+    }
+
+    fun unfavoriteExercise(trainerId: UUID, exerciseId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+            val companyRepo = it.companyRepo
+
+            val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
+
+            trainerRepo.getExerciseDetails(trainerId, exerciseId)
+                ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+                ?: throw TrainerError.ExerciseNotFoundError
+
+            val favoriteExercises = trainerRepo.getFavoriteExercisesByTrainerId(trainerId)
+
+            if (exerciseId !in favoriteExercises) {
+                throw TrainerError.ResourceNotFavoriteError
+            }
+
+            trainerRepo.unfavoriteExercise(trainerId, exerciseId)
+        }
+    }
+
     fun createCustomSet(
         trainerId: UUID,
         name: String?,
@@ -167,7 +226,8 @@ class TrainerService(
         skip: Int?,
         limit: Int?,
         type: SetType?,
-        name: String?
+        name: String?,
+        favorite: Boolean
     ): Pair<List<Set>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -178,10 +238,17 @@ class TrainerService(
         return transactionManager.run {
             val trainerRepo = it.trainerRepo
 
-            val sets = trainerRepo.getSets(trainerId, skip ?: 0, limit, type, name)
-            val totalSets = trainerRepo.getTotalSets(trainerId, type, name)
+            return@run if (favorite) {
+                val sets = trainerRepo.getFavoriteSets(trainerId, skip ?: 0, limit, type, name)
+                val totalSets = trainerRepo.getTotalFavoriteSets(trainerId, type, name)
 
-            return@run Pair(sets, totalSets)
+                Pair(sets, totalSets)
+            } else {
+                val sets = trainerRepo.getSets(trainerId, skip ?: 0, limit, type, name)
+                val totalSets = trainerRepo.getTotalSets(trainerId, type, name)
+
+                Pair(sets, totalSets)
+            }
         }
     }
 
@@ -237,6 +304,52 @@ class TrainerService(
         }
     }
 
+    fun deleteSet(trainerId: UUID, setId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
+
+            trainerRepo.getSet(trainerId, setId)
+                ?: throw TrainerError.SetNotFoundError
+
+            workoutRepo.deleteSet(setId)
+        }
+    }
+
+    fun favoriteSet(trainerId: UUID, exerciseId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+
+            trainerRepo.getSet(trainerId, exerciseId)
+                ?: throw TrainerError.SetNotFoundError
+
+            val favoriteSets = trainerRepo.getFavoriteSetsByTrainerId(trainerId)
+
+            if (exerciseId in favoriteSets) {
+                throw TrainerError.ResourceAlreadyFavoriteError
+            }
+
+            trainerRepo.favoriteSet(trainerId, exerciseId)
+        }
+    }
+
+    fun unfavoriteSet(trainerId: UUID, exerciseId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+
+            trainerRepo.getSet(trainerId, exerciseId)
+                ?: throw TrainerError.SetNotFoundError
+
+            val favoriteSets = trainerRepo.getFavoriteSetsByTrainerId(trainerId)
+
+            if (exerciseId !in favoriteSets) {
+                throw TrainerError.ResourceNotFavoriteError
+            }
+
+            trainerRepo.unfavoriteSet(trainerId, exerciseId)
+        }
+    }
+
     fun createCustomWorkout(
         trainerId: UUID,
         name: String?,
@@ -272,7 +385,8 @@ class TrainerService(
         skip: Int?,
         limit: Int?,
         name: String?,
-        muscleGroup: MuscleGroup?
+        muscleGroup: MuscleGroup?,
+        favorite: Boolean
     ): Pair<List<Workout>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -283,10 +397,17 @@ class TrainerService(
         return transactionManager.run {
             val trainerRepo = it.trainerRepo
 
-            val workouts = trainerRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
-            val totalWorkouts = trainerRepo.getTotalWorkouts(trainerId, name, muscleGroup)
+            return@run if (favorite) {
+                val workouts = trainerRepo.getFavoriteWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+                val totalWorkouts = trainerRepo.getTotalFavoriteWorkouts(trainerId, name, muscleGroup)
 
-            return@run Pair(workouts, totalWorkouts)
+                return@run Pair(workouts, totalWorkouts)
+            } else {
+                val workouts = trainerRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+                val totalWorkouts = trainerRepo.getTotalWorkouts(trainerId, name, muscleGroup)
+
+                Pair(workouts, totalWorkouts)
+            }
         }
     }
 
@@ -300,8 +421,8 @@ class TrainerService(
             val workout = trainerRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TrainerError.WorkoutNotFoundError
 
-            val sets = trainerRepo.getWorkoutSetIds(workoutId).map { setId ->
-                val set = trainerRepo.getSet(setId)
+            val sets = trainerRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
+                val set = trainerRepo.getSet(trainerId, setId) ?: return@mapNotNull null
                 val exercises = trainerRepo.getSetExercises(setId)
                 SetDetails(set, exercises)
             }
@@ -338,6 +459,52 @@ class TrainerService(
 
                 workoutRepo.associateSetToWorkout(index + 1, setId, workoutId)
             }
+        }
+    }
+
+    fun deleteWorkout(trainerId: UUID, workoutId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
+
+            trainerRepo.getWorkoutDetails(trainerId, workoutId)
+                ?: throw TrainerError.WorkoutNotFoundError
+
+            workoutRepo.deleteWorkout(workoutId)
+        }
+    }
+
+    fun favoriteWorkout(trainerId: UUID, workoutId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+
+            trainerRepo.getWorkoutDetails(trainerId, workoutId)
+                ?: throw TrainerError.WorkoutNotFoundError
+
+            val favoriteWorkouts = trainerRepo.getFavoriteWorkoutsByTrainerId(trainerId)
+
+            if (workoutId in favoriteWorkouts) {
+                throw TrainerError.ResourceAlreadyFavoriteError
+            }
+
+            trainerRepo.favoriteWorkout(trainerId, workoutId)
+        }
+    }
+
+    fun unfavoriteWorkout(trainerId: UUID, workoutId: Int) {
+        transactionManager.run {
+            val trainerRepo = it.trainerRepo
+
+            trainerRepo.getWorkoutDetails(trainerId, workoutId)
+                ?: throw TrainerError.WorkoutNotFoundError
+
+            val favoriteWorkouts = trainerRepo.getFavoriteWorkoutsByTrainerId(trainerId)
+
+            if (workoutId !in favoriteWorkouts) {
+                throw TrainerError.ResourceNotFavoriteError
+            }
+
+            trainerRepo.unfavoriteWorkout(trainerId, workoutId)
         }
     }
 
@@ -378,33 +545,23 @@ class TrainerService(
         }
     }
 
-    fun editSession(
-        trainerId: UUID,
-        traineeId: UUID,
-        workoutId: Int,
-        beginDate: Date,
-        endDate: Date?,
-        type: SessionType,
-        notes: String?
-    ) {
-        Validators.validate(
-            Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(endDate, "End date must be after begin date.") { (it as Date).after(beginDate) }
-        )
-    }
-
     private fun Transaction.getExercises(
         trainerId: UUID,
         skip: Int?,
         limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
+        modality: Modality?,
+        favorite: Boolean
     ): Pair<List<Exercise>, Int> {
         val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
         val resultList = mutableListOf<Exercise>()
         var totalExercises = 0
+
+        if (favorite) {
+            return getFavoriteExercises(trainerId, skip, limit, name, muscleGroup, modality)
+        }
 
         getTrainerExercises(
             trainerId,
@@ -416,7 +573,6 @@ class TrainerService(
             { resultList += it },
             { totalExercises += it }
         )
-
         getCompanyExercises(
             companyId,
             skip,
@@ -429,6 +585,32 @@ class TrainerService(
         )
 
         return Pair(resultList, totalExercises)
+    }
+
+    private fun Transaction.getFavoriteExercises(
+        trainerId: UUID,
+        skip: Int?,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?
+    ): Pair<List<Exercise>, Int> {
+        val favoriteExercises = trainerRepo.getFavoriteExercises(
+            trainerId,
+            skip ?: 0,
+            limit,
+            name,
+            muscleGroup,
+            modality
+        )
+        val totalFavoriteExercises = trainerRepo.getTotalFavoriteExercises(
+            trainerId,
+            name,
+            muscleGroup,
+            modality
+        )
+
+        return Pair(favoriteExercises, totalFavoriteExercises)
     }
 
     private fun Transaction.getTrainerExercises(

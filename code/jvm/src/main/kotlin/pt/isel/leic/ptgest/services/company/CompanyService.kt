@@ -248,4 +248,19 @@ class CompanyService(
             )
         }
     }
+
+    fun deleteExercise(
+        companyId: UUID,
+        exerciseId: Int
+    ) {
+        transactionManager.run {
+            val companyRepo = it.companyRepo
+            val workoutRepo = it.workoutRepo
+
+            companyRepo.getExerciseDetails(companyId, exerciseId)
+                ?: throw CompanyError.ExerciseNotFoundError
+
+            workoutRepo.deleteExercise(exerciseId)
+        }
+    }
 }

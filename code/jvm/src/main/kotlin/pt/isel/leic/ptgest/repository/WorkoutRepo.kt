@@ -7,6 +7,8 @@ import java.util.UUID
 
 interface WorkoutRepo {
 
+//  Exercise related methods
+
     fun createExercise(
         name: String,
         description: String?,
@@ -24,6 +26,10 @@ interface WorkoutRepo {
         ref: String?
     )
 
+    fun deleteExercise(exerciseId: Int)
+
+//   Set related methods
+
     fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int
 
     fun editSet(setId: Int, name: String, notes: String?, type: SetType)
@@ -32,9 +38,15 @@ interface WorkoutRepo {
 
     fun removeExercisesFromSet(setId: Int)
 
+    fun deleteSet(setId: Int)
+
+//   Workout related methods
+
     fun createWorkout(trainerId: UUID, name: String, description: String?, muscleGroup: List<MuscleGroup>): Int
 
     fun editWorkout(workoutId: Int, name: String, description: String?, muscleGroup: List<MuscleGroup>)
+
+    fun deleteWorkout(workoutId: Int)
 
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
 

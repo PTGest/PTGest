@@ -62,8 +62,8 @@ class TraineeService(
             val workout = trainerRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TraineeError.WorkoutNotFoundError
 
-            val sets = trainerRepo.getWorkoutSetIds(workoutId).map { setId ->
-                val set = trainerRepo.getSet(setId)
+            val sets = trainerRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
+                val set = trainerRepo.getSet(trainerId, setId) ?: return@mapNotNull null
                 val exercises = trainerRepo.getSetExercises(setId)
                 SetDetails(set, exercises)
             }

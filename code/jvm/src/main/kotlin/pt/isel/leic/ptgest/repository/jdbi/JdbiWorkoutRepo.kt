@@ -10,6 +10,7 @@ import java.util.UUID
 
 class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
+//  Exercise related methods
     override fun createExercise(
         name: String,
         description: String?,
@@ -63,6 +64,18 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .execute()
     }
 
+    override fun deleteExercise(exerciseId: Int) {
+        handle.createUpdate(
+            """
+            delete from exercise
+            where id = :exerciseId
+            """.trimIndent()
+        )
+            .bind("exerciseId", exerciseId)
+            .execute()
+    }
+
+//  Set related methods
     override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(
             """
@@ -81,6 +94,25 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .executeAndReturnGeneratedKeys("id")
             .mapTo<Int>()
             .one()
+
+    override fun editSet(setId: Int, name: String, notes: String?, type: SetType) {
+        handle.createUpdate(
+            """
+            update set
+            set name = :name, notes = :notes, type = :type::set_type
+            where id = :setId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "setId" to setId,
+                    "name" to name,
+                    "notes" to notes,
+                    "type" to type.name
+                )
+            )
+            .execute()
+    }
 
     override fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String) {
         handle.createUpdate(
@@ -111,24 +143,18 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .execute()
     }
 
-    override fun editSet(setId: Int, name: String, notes: String?, type: SetType) {
+    override fun deleteSet(setId: Int) {
         handle.createUpdate(
             """
-            update set
-            set name = :name, notes = :notes, type = :type::set_type
+            delete from set
             where id = :setId
             """.trimIndent()
         )
-            .bindMap(
-                mapOf(
-                    "setId" to setId,
-                    "name" to name,
-                    "notes" to notes,
-                    "type" to type.name
-                )
-            )
+            .bind("setId", setId)
             .execute()
     }
+
+//  Workout related methods
 
     override fun createWorkout(
         trainerId: UUID,
@@ -169,6 +195,17 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
                     "muscleGroupArray" to muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
                 )
             )
+            .execute()
+    }
+
+    override fun deleteWorkout(workoutId: Int) {
+        handle.createUpdate(
+            """
+            delete from workout
+            where id = :workoutId
+            """.trimIndent()
+        )
+            .bind("workoutId", workoutId)
             .execute()
     }
 

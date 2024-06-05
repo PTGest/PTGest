@@ -220,4 +220,16 @@ class CompanyController(
             message = "Exercise edited successfully."
         )
     }
+
+    @DeleteMapping(Uris.Workout.DELETE_EXERCISE)
+    fun deleteExercise(
+        @PathVariable exerciseId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        companyService.deleteExercise(authenticatedUser.id, exerciseId)
+
+        return HttpResponse.ok(
+            message = "Exercise deleted successfully."
+        )
+    }
 }

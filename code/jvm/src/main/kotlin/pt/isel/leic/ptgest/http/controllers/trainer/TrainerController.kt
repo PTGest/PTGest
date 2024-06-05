@@ -69,6 +69,7 @@ class TrainerController(
         @RequestParam name: String?,
         @RequestParam muscleGroup: MuscleGroup?,
         @RequestParam modality: Modality?,
+        @RequestParam favorite: Boolean?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (exercises, total) = trainerService.getExercises(
@@ -78,7 +79,8 @@ class TrainerController(
             limit,
             name?.trim(),
             muscleGroup,
-            modality
+            modality,
+            favorite ?: false
         )
 
         return HttpResponse.ok(
@@ -125,6 +127,51 @@ class TrainerController(
         )
     }
 
+    @DeleteMapping(Uris.Workout.DELETE_EXERCISE)
+    fun deleteExercise(
+        @PathVariable exerciseId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.deleteExercise(
+            authenticatedUser.id,
+            exerciseId
+        )
+
+        return HttpResponse.ok(
+            message = "Exercise deleted successfully."
+        )
+    }
+
+    @PostMapping(Uris.Workout.FAVORITE_EXERCISE)
+    fun favoriteExercise(
+        @PathVariable exerciseId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.favoriteExercise(
+            authenticatedUser.id,
+            exerciseId
+        )
+
+        return HttpResponse.ok(
+            message = "Exercise favorited successfully."
+        )
+    }
+
+    @DeleteMapping(Uris.Workout.UNFAVORITE_EXERCISE)
+    fun unfavoriteExercise(
+        @PathVariable exerciseId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.unfavoriteExercise(
+            authenticatedUser.id,
+            exerciseId
+        )
+
+        return HttpResponse.ok(
+            message = "Exercise unfavorited successfully."
+        )
+    }
+
     @PostMapping(Uris.Workout.CREATE_CUSTOM_SET)
     fun createCustomSet(
         @Valid @RequestBody
@@ -151,6 +198,7 @@ class TrainerController(
         @RequestParam limit: Int?,
         @RequestParam type: SetType?,
         @RequestParam name: String?,
+        @RequestParam favorite: Boolean?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (sets, total) = trainerService.getSets(
@@ -158,7 +206,8 @@ class TrainerController(
             skip,
             limit,
             type,
-            name?.trim()
+            name?.trim(),
+            favorite ?: false
         )
 
         return HttpResponse.ok(
@@ -204,6 +253,51 @@ class TrainerController(
         )
     }
 
+    @DeleteMapping(Uris.Workout.DELETE_SET)
+    fun deleteSet(
+        @PathVariable setId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.deleteSet(
+            authenticatedUser.id,
+            setId
+        )
+
+        return HttpResponse.ok(
+            message = "Set deleted successfully."
+        )
+    }
+
+    @PostMapping(Uris.Workout.FAVORITE_SET)
+    fun favoriteSet(
+        @PathVariable setId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.favoriteSet(
+            authenticatedUser.id,
+            setId
+        )
+
+        return HttpResponse.ok(
+            message = "Set favorited successfully."
+        )
+    }
+
+    @DeleteMapping(Uris.Workout.UNFAVORITE_SET)
+    fun unfavoriteSet(
+        @PathVariable setId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.unfavoriteSet(
+            authenticatedUser.id,
+            setId
+        )
+
+        return HttpResponse.ok(
+            message = "Set unfavorited successfully."
+        )
+    }
+
     @PostMapping(Uris.Workout.CREATE_CUSTOM_WORKOUT)
     fun createCustomWorkout(
         @Valid @RequestBody
@@ -230,6 +324,7 @@ class TrainerController(
         @RequestParam limit: Int?,
         @RequestParam name: String?,
         @RequestParam muscleGroup: MuscleGroup?,
+        @RequestParam favorite: Boolean?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (workouts, total) = trainerService.getWorkouts(
@@ -237,7 +332,8 @@ class TrainerController(
             skip,
             limit,
             name?.trim(),
-            muscleGroup
+            muscleGroup,
+            favorite ?: false
         )
 
         return HttpResponse.ok(
@@ -280,6 +376,51 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Workout edited successfully."
+        )
+    }
+
+    @DeleteMapping(Uris.Workout.DELETE_WORKOUT)
+    fun deleteWorkout(
+        @PathVariable workoutId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.deleteWorkout(
+            authenticatedUser.id,
+            workoutId
+        )
+
+        return HttpResponse.ok(
+            message = "Workout deleted successfully."
+        )
+    }
+
+    @PostMapping(Uris.Workout.FAVORITE_WORKOUT)
+    fun favoriteWorkout(
+        @PathVariable workoutId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.favoriteWorkout(
+            authenticatedUser.id,
+            workoutId
+        )
+
+        return HttpResponse.ok(
+            message = "Workout favorited successfully."
+        )
+    }
+
+    @DeleteMapping(Uris.Workout.UNFAVORITE_WORKOUT)
+    fun unfavoriteWorkout(
+        @PathVariable workoutId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.unfavoriteWorkout(
+            authenticatedUser.id,
+            workoutId
+        )
+
+        return HttpResponse.ok(
+            message = "Workout unfavorited successfully."
         )
     }
 
