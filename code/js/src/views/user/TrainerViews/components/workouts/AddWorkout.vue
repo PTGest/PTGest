@@ -2,23 +2,25 @@
     <div>
         <div class="add-workout-container">
             <div class="title-row">
-                <input class="name-input" placeholder="Enter Workout Name"/>
+                <input v-model="workoutName" class="name-input" placeholder="Enter Workout Name"/>
                 <font-awesome-icon @click="closeAddWorkout" class="icon" :icon="faX"></font-awesome-icon>
             </div>
 
            <div class="dropdown-container">
                <div class="dropdowns">
                    <div class="label">Workout options</div>
-                   <MultiSelect v-model="selectedMuscleGroups" :options="muscleGroupOptions" optionLabel="name" placeholder="Select Muscle groups"
+                   <MultiSelect v-model="selectedMuscleGroups" :options="muscleGroupOptions" filter optionLabel="name" placeholder="Select Muscle groups"
                                 :maxSelectedLabels="3" class="w-full md:w-20rem" />
 
-                   <MultiSelect v-model="selectedSets" :options="options" optionLabel="name" placeholder="Select sets"
+                   <MultiSelect v-model="selectedSets" :options="availableSets.sets" optionLabel="name" filter placeholder="Select sets"
                                 :maxSelectedLabels="3" class="w-full md:w-20rem" />
                </div>
                <div class="text-area-container">
                    <div class="label">Details</div>
-                   <textarea class="text-area" placeholder="" />
+                   <textarea v-model="description" class="text-area" placeholder="" />
                </div>
+
+               <Button @click="addWorkout" class="submit" :disabled="isDisable"> Add Workout </Button>
            </div>
 
 
@@ -29,15 +31,26 @@
 <script setup lang="ts">
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import Button from "primevue/button";
 import {faX} from "@fortawesome/free-solid-svg-icons";
 import MultiSelect from "primevue/multiselect";
-import {ref} from "vue";
+import {computed, Ref, ref} from "vue";
+import Sets from "../../../../../views/user/TrainerViews/models/sets/Sets.ts";
+import getSets from "../../../../../services/TrainerServices/sets/getSets.ts";
+import createCustomWorkout from "@/services/TrainerServices/workouts/createCustomWorkout.ts";
+import CreateCustomWorkoutRequest from "@/views/user/TrainerViews/models/workouts/CreateCustomWorkoutRequest.ts";
 
 const emit = defineEmits(['closeAddWorkout']);
 
-const selectedSets = ref();
-const selectedMuscleGroups = ref();
-const options = [{name:'1'}, {name:'2'}, {name:'3'}]
+const workoutName = ref(null);
+const description = ref(null);
+const selectedSets = ref([]);
+const selectedMuscleGroups = ref([]);
+const availableSets : Ref<Sets> = ref({
+    sets: [],
+    nOfSets: 0
+});
+
 const muscleGroupOptions = ref([
     {name: 'BICEPS'},
     {name:'CHEST'},
@@ -57,6 +70,35 @@ const muscleGroupOptions = ref([
     {name:'UPPER_BACK_NECK'},
     {name:'UPPER_BODY'}
 ]);
+
+const isDisable = computed(
+    () => {
+        return !(selectedMuscleGroups.value.length != 0 && selectedSets.value.length != 0);
+    }
+);
+
+(async () => {
+    availableSets.value =  await getSets([]);
+})();
+
+
+const addWorkout = async () => {
+    console.log(workoutName.value);
+    console.log(description.value);
+    console.log(selectedSets.value);
+    console.log(selectedMuscleGroups.value);
+
+    await createCustomWorkout(
+       new CreateCustomWorkoutRequest(
+           workoutName.value,
+           description.value,
+           selectedMuscleGroups.value.map((muscleGroup) => muscleGroup.name),
+           selectedSets.value.map((set) => set.id)
+       )
+    )
+    console.log('workout added');
+}
+
 const closeAddWorkout = () => {
     emit('closeAddWorkout');
     console.log('close');
@@ -228,6 +270,12 @@ textarea{
     font-size: 0.6rem;
     width: 84%;
     text-align: left;
+}
+
+.submit{
+    background-color: #1a1a1a;
+    color: whitesmoke;
+    font-size: 1rem;
 }
 
 </style>

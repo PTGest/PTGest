@@ -16,6 +16,7 @@ import AssignTrainer from "../views/user/CompaniesViews/AssignTrainer.vue";
 import Exercises from "../views/user/TrainerViews/Exercises.vue";
 import Sets from "../views/user/TrainerViews/Sets.vue";
 import Workouts from "../views/user/TrainerViews/Workouts.vue";
+import WorkoutDetails from "../views/user/TrainerViews/components/workouts/WorkoutDetails.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -61,6 +62,9 @@ const routes: RouteRecordRaw[] = [
     { path: "/workouts", name: "workouts", component: Workouts, meta: { requiresAuth: true,
             roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
     },
+    // { path: "/workouts/:workoutId", name: "workouts", component: WorkoutDetails, meta: { requiresAuth: true,
+    //         roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    // },
 
     //Error Views
     { path: "/error", name: "error", component: Error },

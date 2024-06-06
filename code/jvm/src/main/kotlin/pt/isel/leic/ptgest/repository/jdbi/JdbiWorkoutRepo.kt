@@ -17,24 +17,27 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         muscleGroup: List<MuscleGroup>,
         modality: Modality,
         ref: String?
-    ): Int = handle.createUpdate(
-        """
+    ): Int {
+        val muscleGroupArray = muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
+
+        return handle.createUpdate(
+            """
             insert into exercise (name, description, muscle_group, modality, ref)
-            values (:name, :description, ARRAY[:muscleGroupArray], :modality::modality, :ref)
+            values (:name, :description, ARRAY[$muscleGroup], :modality::modality, :ref)
         """.trimIndent()
-    )
-        .bindMap(
-            mapOf(
-                "name" to name,
-                "description" to description,
-                "muscleGroupArray" to muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" },
-                "modality" to modality.name,
-                "ref" to ref
-            )
         )
-        .executeAndReturnGeneratedKeys("id")
-        .mapTo<Int>()
-        .one()
+            .bindMap(
+                mapOf(
+                    "name" to name,
+                    "description" to description,
+                    "modality" to modality.name,
+                    "ref" to ref
+                )
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
+    }
 
     override fun deleteExercise(exerciseId: Int) {
         handle.createUpdate(
@@ -103,23 +106,26 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         name: String,
         description: String?,
         muscleGroup: List<MuscleGroup>
-    ): Int = handle.createUpdate(
-        """
-            insert into workout (trainer_id, name, description, category)
-            values (:trainerId, :name, :description, ARRAY[:muscleGroupArray])
+    ): Int {
+        val muscleGroupArray = muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
+
+        return handle.createUpdate(
+            """
+            insert into workout (trainer_id, name, description, muscle_group)
+            values (:trainerId, :name, :description, ARRAY[$muscleGroupArray])
         """.trimIndent()
-    )
-        .bindMap(
-            mapOf(
-                "trainerId" to trainerId,
-                "name" to name,
-                "description" to description,
-                "muscleGroupArray" to muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
-            )
         )
-        .executeAndReturnGeneratedKeys("id")
-        .mapTo<Int>()
-        .one()
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "name" to name,
+                    "description" to description
+                )
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
+    }
 
     override fun deleteWorkout(workoutId: Int) {
         handle.createUpdate(

@@ -8,7 +8,7 @@
                     Add Workout
                 </button>
             </div>
-            <WorkoutsRow  :workouts="[new Workout(1, 'WK1', 'asda', ['asda'] )]"/>
+            <WorkoutsRow  :workouts="workouts.workouts"/>
         </div>
         <AddWorkout @closeAddWorkout="handleAddWorkoutVisibility" v-if="isAddWorkoutOpen"></AddWorkout>
     </div>
@@ -17,20 +17,24 @@
 <script setup lang="ts">
 
 import WorkoutsRow from "./components/workouts/WorkoutsRow.vue";
-import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import AddWorkout from "@/views/user/TrainerViews/components/workouts/AddWorkout.vue";
-import {ref} from "vue";
+import {Ref, ref} from "vue";
+import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts";
+import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts";
 
-
+const workouts : Ref<Workouts> = ref(new Workouts());
 const isAddWorkoutOpen = ref(false);
 
 const handleAddWorkoutVisibility = () => {
     isAddWorkoutOpen.value = !isAddWorkoutOpen.value;
 }
 
-
+(async () => {
+    workouts.value = await getWorkouts();
+    console.log(workouts.value);
+})()
 
 
 </script>

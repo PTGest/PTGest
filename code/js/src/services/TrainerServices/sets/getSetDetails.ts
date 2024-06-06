@@ -12,7 +12,7 @@ export default async function getSetDetails(setId: number): Promise<SetDetails> 
             response.details.type,
             response.details.setExerciseDetails);
     } catch (error) {
-        console.error("Error fetching exercises:", error);
+        console.error("Error fetching set details:", error);
         throw error;
     }
 }

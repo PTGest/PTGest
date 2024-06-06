@@ -4,10 +4,10 @@ class CreateCustomWorkoutRequest {
     muscleGroup: string[]
     sets: number[]
 
-    constructor(name: string | null, muscleGroup: string[], description: string | null, sets: number[]) {
+    constructor(name: string | null, description: string | null, muscleGroup: string[], sets: number[]) {
         this.name = name;
-        this.muscleGroup = muscleGroup;
         this.description = description;
+        this.muscleGroup = muscleGroup;
         this.sets = sets;
     }
 }

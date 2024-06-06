@@ -13,7 +13,7 @@ async function createSet(setData: CreateCustomSetRequest): Promise<number> {
         router.go(0);
         return response.resourceId;
     } catch (error) {
-        console.error("Error fetching exercises:", error);
+        console.error("Error creating set:", error);
         throw error;
     }
 }

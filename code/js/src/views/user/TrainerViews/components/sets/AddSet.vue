@@ -15,7 +15,7 @@
                <ExercisesDropdown :options="setTypes" placeholder="Set Type" @dropdownOption="updateSetType($event)"/>
 
                <label class="label">Exercise</label>
-               <MultiSelect v-if="typeOption.name === 'SUPERSET' " v-model="selectedExercises" display="chip"
+               <MultiSelect v-if="typeOption.name === 'SUPERSET' " v-model="selectedExercises" filter display="chip"
                             :options="
                             exercises.exercises.map(exercise => {
                                 return {
@@ -35,7 +35,7 @@
                <textarea class="text-area" v-model="setNotes"/>
            </div>
            <div class="submit-row">
-               <button @click="submitSet" label="submit" :class="isDisable ? 'submit-btn-disable' : 'submit-btn'" :disabled="isDisable">Create Set</button>
+               <Button @click="submitSet" label="submit" :class="isDisable ? 'submit-btn-disable' : 'submit-btn'" :disabled="isDisable">Create Set</Button>
            </div>
        </div>
     </div>
