@@ -101,38 +101,6 @@ class TrainerService(
                 ?: throw TrainerError.ExerciseNotFoundError
         }
 
-    fun editExercise(
-        trainerId: UUID,
-        exerciseId: Int,
-        name: String,
-        description: String?,
-        muscleGroup: List<MuscleGroup>,
-        modality: Modality,
-        ref: String?
-    ) {
-        Validators.validate(
-            Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(ref, "Reference must be a valid YouTube URL.") { Validators.isYoutubeUrl(it as String) }
-        )
-
-        transactionManager.run {
-            val trainerRepo = it.trainerRepo
-            val workoutRepo = it.workoutRepo
-
-            trainerRepo.getExerciseDetails(trainerId, exerciseId)
-                ?: throw TrainerError.ExerciseNotFoundError
-
-            workoutRepo.editExercise(
-                exerciseId,
-                name,
-                description,
-                muscleGroup,
-                modality,
-                ref
-            )
-        }
-    }
-
     fun deleteExercise(trainerId: UUID, exerciseId: Int) {
         transactionManager.run {
             val trainerRepo = it.trainerRepo
@@ -266,44 +234,6 @@ class TrainerService(
             return@run SetDetails(set, exercises)
         }
 
-    fun editSet(
-        trainerId: UUID,
-        setId: Int,
-        name: String,
-        notes: String?,
-        setType: SetType,
-        setExercises: List<SetExercise>
-    ) {
-        Validators.validate(
-            Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
-        )
-
-        if (setType != SetType.SUPERSET) {
-            require(setExercises.size == 1) { "Only one exercise is allowed for this set type." }
-        }
-
-        transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            val workoutRepo = it.workoutRepo
-            val trainerRepo = it.trainerRepo
-
-            trainerRepo.getSet(trainerId, setId)
-                ?: throw TrainerError.SetNotFoundError
-
-            workoutRepo.editSet(setId, name, notes, setType)
-
-            workoutRepo.removeExercisesFromSet(setId)
-
-            setExercises.forEachIndexed { index, set ->
-                it.getExercise(trainerId, set.exerciseId)
-
-                val validatedDetails = Validators.validateSetDetails(set.details)
-                val jsonDetails = convertDataToJson(validatedDetails)
-
-                workoutRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
-            }
-        }
-    }
-
     fun deleteSet(trainerId: UUID, setId: Int) {
         transactionManager.run {
             val trainerRepo = it.trainerRepo
@@ -429,38 +359,6 @@ class TrainerService(
 
             return@run WorkoutDetails(workout, sets)
         }
-
-    fun editWorkout(
-        trainerId: UUID,
-        workoutId: Int,
-        name: String,
-        description: String?,
-        muscleGroup: List<MuscleGroup>,
-        sets: List<Int>
-    ) {
-        Validators.validate(
-            Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() }
-        )
-
-        transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            val workoutRepo = it.workoutRepo
-            val trainerRepo = it.trainerRepo
-
-            trainerRepo.getWorkoutDetails(trainerId, workoutId)
-                ?: throw TrainerError.WorkoutNotFoundError
-
-            workoutRepo.editWorkout(workoutId, name, description, muscleGroup)
-
-            workoutRepo.removeSetsFromWorkout(workoutId)
-
-            sets.forEachIndexed { index, setId ->
-                trainerRepo.getSet(trainerId, setId)
-                    ?: throw TrainerError.SetNotFoundError
-
-                workoutRepo.associateSetToWorkout(index + 1, setId, workoutId)
-            }
-        }
-    }
 
     fun deleteWorkout(trainerId: UUID, workoutId: Int) {
         transactionManager.run {

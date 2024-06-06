@@ -105,28 +105,6 @@ class TrainerController(
         )
     }
 
-    @PutMapping(Uris.Workout.EDIT_EXERCISE)
-    fun editExercise(
-        @PathVariable exerciseId: Int,
-        @Valid @RequestBody
-        exerciseDetails: EditExerciseRequest,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        trainerService.editExercise(
-            authenticatedUser.id,
-            exerciseId,
-            exerciseDetails.name,
-            exerciseDetails.description,
-            exerciseDetails.muscleGroup,
-            exerciseDetails.modality,
-            exerciseDetails.ref
-        )
-
-        return HttpResponse.ok(
-            message = "Exercise edited successfully."
-        )
-    }
-
     @DeleteMapping(Uris.Workout.DELETE_EXERCISE)
     fun deleteExercise(
         @PathVariable exerciseId: Int,
@@ -232,27 +210,6 @@ class TrainerController(
         )
     }
 
-    @PutMapping(Uris.Workout.EDIT_SET)
-    fun editSet(
-        @PathVariable setId: Int,
-        @Valid @RequestBody
-        setDetails: EditSetRequest,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        trainerService.editSet(
-            authenticatedUser.id,
-            setId,
-            setDetails.name,
-            setDetails.notes,
-            setDetails.type,
-            setDetails.setExercises
-        )
-
-        return HttpResponse.ok(
-            message = "Set edited successfully."
-        )
-    }
-
     @DeleteMapping(Uris.Workout.DELETE_SET)
     fun deleteSet(
         @PathVariable setId: Int,
@@ -355,27 +312,6 @@ class TrainerController(
         return HttpResponse.ok(
             message = "Workout details retrieved successfully.",
             details = GetWorkoutDetailsResponse(workoutDetails)
-        )
-    }
-
-    @PutMapping(Uris.Workout.EDIT_WORKOUT)
-    fun editWorkout(
-        @PathVariable workoutId: Int,
-        @Valid @RequestBody
-        workoutDetails: EditWorkoutRequest,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        trainerService.editWorkout(
-            authenticatedUser.id,
-            workoutId,
-            workoutDetails.name,
-            workoutDetails.description,
-            workoutDetails.muscleGroup,
-            workoutDetails.sets
-        )
-
-        return HttpResponse.ok(
-            message = "Workout edited successfully."
         )
     }
 
