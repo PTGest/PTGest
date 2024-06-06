@@ -34,5 +34,4 @@ interface WorkoutRepo {
     fun deleteWorkout(workoutId: Int)
 
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
-
 }

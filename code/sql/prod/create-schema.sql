@@ -96,14 +96,20 @@ create table if not exists prod.trainee_data
     primary key (trainee_id, date)
 );
 
+create table if not exists prod.report_trainer
+(
+    reportId   int references prod.report (id) on delete cascade,
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    primary key (reportId, trainer_id)
+);
+
 create table if not exists prod.report
 (
+    id        serial primary key,
     trainee_id uuid references prod.trainee (id) on delete cascade,
-    trainer_id uuid references prod.trainer (id) on delete cascade,
     date       date                  not null,
     report     text                  not null,
-    visibility boolean default false not null,
-    primary key (trainee_id, trainer_id, date)
+    visibility boolean default false not null
 );
 
 -- Trainee's workout plan

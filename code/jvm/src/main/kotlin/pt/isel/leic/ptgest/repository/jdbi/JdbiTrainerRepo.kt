@@ -3,6 +3,8 @@ package pt.isel.leic.ptgest.repository.jdbi
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.common.model.SessionType
+import pt.isel.leic.ptgest.domain.trainer.model.Report
+import pt.isel.leic.ptgest.domain.trainer.model.ReportDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
@@ -29,7 +31,146 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<UUID>()
             .firstOrNull()
 
-//  Exercise related methods
+    override fun createReport(traineeId: UUID, date: Date, report: String, visibility: Boolean): Int =
+        handle.createUpdate(
+            """
+            insert into report (trainee_id, date, report, visibility)
+            values (:traineeId, :date, :report, :visibility)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "date" to date,
+                    "report" to report,
+                    "visibility" to visibility
+                )
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
+
+    override fun associateTrainerToReport(trainerId: UUID, reportId: Int) {
+        handle.createUpdate(
+            """
+            insert into report_trainer (report_id, trainer_id)
+            values (:reportId, :trainerId)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "reportId" to reportId,
+                    "trainerId" to trainerId
+                )
+            )
+            .execute()
+    }
+
+    override fun getTraineeIdByName(name: String): UUID? {
+        return handle.createQuery(
+            """
+            select id
+            from "user" join trainee on id = trainee_id
+            where name = :name
+            """.trimIndent()
+        )
+            .bind("name", name)
+            .mapTo<UUID>()
+            .firstOrNull()
+    }
+
+    override fun getReports(trainerId: UUID, skip: Int, limit: Int?, traineeId: UUID?): List<Report> {
+        val traineeCondition = if (traineeId != null) "and trainee_id = :traineeId" else ""
+
+        return handle.createQuery(
+            """
+            select id, date, report, visibility
+            from report_trainer rt join report r on rt.report_id = r.id
+            where trainer_id = :trainerId $traineeCondition
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "traineeId" to traineeId
+                )
+            )
+            .mapTo<Report>()
+            .list()
+    }
+
+    override fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int {
+        val traineeCondition = if (traineeId != null) "and trainee_id = :traineeId" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from report_trainer rt join report r on rt.report_id = r.id
+            where trainer_id = :trainerId $traineeCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "traineeId" to traineeId
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
+
+    override fun getReportDetails(trainerId: UUID, reportId: Int): ReportDetails? =
+        handle.createQuery(
+            """
+            select u.name as trainee, r.date, r.report, r.visibility
+            from report_trainer rt 
+            join report r on rt.report_id = r.id
+            join "user" u on r.trainee_id = u.id
+            where trainer_id = :trainerId and report_id = :reportId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "reportId" to reportId
+                )
+            )
+            .mapTo<ReportDetails>()
+            .firstOrNull()
+
+    override fun editReport(reportId: Int, report: String, visibility: Boolean) {
+        handle.createUpdate(
+            """
+            update report
+            set report = :report, visibility = :visibility
+            where id = :reportId
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "reportId" to reportId,
+                    "report" to report,
+                    "visibility" to visibility
+                )
+            )
+            .execute()
+    }
+
+    override fun deleteReport(reportId: Int) {
+        handle.createUpdate(
+            """
+            delete from report
+            where id = :reportId
+            """
+        )
+            .bind("reportId", reportId)
+            .execute()
+    }
+
+    //  Exercise related methods
     override fun getExercises(
         trainerId: UUID,
         skip: Int,

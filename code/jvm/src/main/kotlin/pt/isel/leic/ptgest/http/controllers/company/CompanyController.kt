@@ -18,7 +18,6 @@ import pt.isel.leic.ptgest.domain.common.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.http.controllers.common.model.request.CreateExerciseRequest
-import pt.isel.leic.ptgest.http.controllers.common.model.request.EditExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.common.model.response.CreateResourceResponse
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExerciseDetailsResponse
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExercisesResponse
@@ -196,28 +195,6 @@ class CompanyController(
         return HttpResponse.ok(
             message = "Exercise details retrieved successfully.",
             details = GetExerciseDetailsResponse(exerciseDetails)
-        )
-    }
-
-    @PutMapping(Uris.Workout.EDIT_EXERCISE)
-    fun editExercise(
-        @PathVariable exerciseId: Int,
-        @Valid @RequestBody
-        exerciseDetails: EditExerciseRequest,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        companyService.editExercise(
-            authenticatedUser.id,
-            exerciseId,
-            exerciseDetails.name,
-            exerciseDetails.description,
-            exerciseDetails.muscleGroup,
-            exerciseDetails.modality,
-            exerciseDetails.ref
-        )
-
-        return HttpResponse.ok(
-            message = "Exercise edited successfully."
         )
     }
 

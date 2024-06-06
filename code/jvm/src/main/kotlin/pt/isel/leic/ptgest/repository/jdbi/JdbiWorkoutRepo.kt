@@ -36,34 +36,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         .mapTo<Int>()
         .one()
 
-    override fun editExercise(
-        exerciseId: Int,
-        name: String,
-        description: String?,
-        muscleGroup: List<MuscleGroup>,
-        modality: Modality,
-        ref: String?
-    ) {
-        handle.createUpdate(
-            """
-            update exercise
-            set name = :name, description = :description, muscle_group = ARRAY[:muscleGroupArray], modality = :modality::modality, ref = :ref
-            where id = :exerciseId
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "exerciseId" to exerciseId,
-                    "name" to name,
-                    "description" to description,
-                    "muscleGroupArray" to muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" },
-                    "modality" to modality.name,
-                    "ref" to ref
-                )
-            )
-            .execute()
-    }
-
     override fun deleteExercise(exerciseId: Int) {
         handle.createUpdate(
             """
@@ -95,25 +67,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Int>()
             .one()
 
-    override fun editSet(setId: Int, name: String, notes: String?, type: SetType) {
-        handle.createUpdate(
-            """
-            update set
-            set name = :name, notes = :notes, type = :type::set_type
-            where id = :setId
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "setId" to setId,
-                    "name" to name,
-                    "notes" to notes,
-                    "type" to type.name
-                )
-            )
-            .execute()
-    }
-
     override fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String) {
         handle.createUpdate(
             """
@@ -129,17 +82,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
                     "details" to details
                 )
             )
-            .execute()
-    }
-
-    override fun removeExercisesFromSet(setId: Int) {
-        handle.createUpdate(
-            """
-            delete from set_exercise
-            where set_id = :setId
-            """.trimIndent()
-        )
-            .bind("setId", setId)
             .execute()
     }
 
@@ -179,25 +121,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         .mapTo<Int>()
         .one()
 
-    override fun editWorkout(workoutId: Int, name: String, description: String?, muscleGroup: List<MuscleGroup>) {
-        handle.createUpdate(
-            """
-            update workout
-            set name = :name, description = :description, category = ARRAY[:muscleGroupArray]
-            where id = :workoutId
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "workoutId" to workoutId,
-                    "name" to name,
-                    "description" to description,
-                    "muscleGroupArray" to muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
-                )
-            )
-            .execute()
-    }
-
     override fun deleteWorkout(workoutId: Int) {
         handle.createUpdate(
             """
@@ -223,17 +146,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
                     "setId" to setId
                 )
             )
-            .execute()
-    }
-
-    override fun removeSetsFromWorkout(workoutId: Int) {
-        handle.createUpdate(
-            """
-            delete from workout_set
-            where workout_id = :workoutId
-            """.trimIndent()
-        )
-            .bind("workoutId", workoutId)
             .execute()
     }
 }

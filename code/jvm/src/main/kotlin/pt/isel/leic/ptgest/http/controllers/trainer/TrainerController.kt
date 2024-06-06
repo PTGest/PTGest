@@ -17,23 +17,26 @@ import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.http.controllers.common.model.request.CreateExerciseRequest
-import pt.isel.leic.ptgest.http.controllers.common.model.request.EditExerciseRequest
 import pt.isel.leic.ptgest.http.controllers.common.model.response.CreateResourceResponse
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExerciseDetailsResponse
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetSetDetails
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSessionRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSetRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateWorkoutRequest
-import pt.isel.leic.ptgest.http.controllers.trainer.model.request.EditSetRequest
-import pt.isel.leic.ptgest.http.controllers.trainer.model.request.EditWorkoutRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.EditReportRequest
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetReportDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetReportsResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.controllers.trainer.model.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
+import java.util.Date
+import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.Trainer.PREFIX)
@@ -41,6 +44,100 @@ import pt.isel.leic.ptgest.services.trainer.TrainerService
 class TrainerController(
     private val trainerService: TrainerService
 ) {
+    @PostMapping(Uris.Trainer.CREATE_REPORT)
+    fun createReport(
+        @Valid @RequestBody
+        reportDetails: CreateReportRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val reportId = trainerService.createReport(
+            authenticatedUser.id,
+            reportDetails.traineeId,
+            Date(),
+            reportDetails.report,
+            reportDetails.visibility
+        )
+
+        return HttpResponse.created(
+            message = "Report created successfully.",
+            details = CreateResourceResponse(reportId)
+        )
+    }
+
+//  todo: verify if this method
+    @GetMapping(Uris.Trainer.GET_REPORTS)
+    fun getReports(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam traineeId: UUID?,
+        @RequestParam traineeName: String?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (reports, total) = trainerService.getReports(
+            authenticatedUser.id,
+            skip,
+            limit,
+            traineeId,
+            traineeName?.trim()
+        )
+
+        return HttpResponse.ok(
+            message = "Reports retrieved successfully.",
+            details = GetReportsResponse(reports, total)
+        )
+    }
+
+    @GetMapping(Uris.Trainer.GET_REPORT_DETAILS)
+    fun getReportDetails(
+        @PathVariable reportId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val reportDetails = trainerService.getReportDetails(
+            authenticatedUser.id,
+            reportId
+        )
+
+        return HttpResponse.ok(
+            message = "Report details retrieved successfully.",
+            details = GetReportDetailsResponse(reportDetails)
+        )
+    }
+
+    @PutMapping(Uris.Trainer.EDIT_REPORT)
+    fun editReport(
+        @PathVariable reportId: Int,
+        @Valid @RequestBody
+        reportDetails: EditReportRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.editReport(
+            authenticatedUser.id,
+            reportId,
+            Date(),
+            reportDetails.report,
+            reportDetails.visibility
+        )
+
+        return HttpResponse.ok(
+            message = "Report edited successfully."
+        )
+    }
+
+    @DeleteMapping(Uris.Trainer.DELETE_REPORT)
+    fun deleteReport(
+        @PathVariable reportId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.deleteReport(
+            authenticatedUser.id,
+            reportId
+        )
+
+        return HttpResponse.ok(
+            message = "Report deleted successfully."
+        )
+    }
+
     @PostMapping(Uris.Workout.CREATE_CUSTOM_EXERCISE)
     fun createCustomExercise(
         @Valid @RequestBody

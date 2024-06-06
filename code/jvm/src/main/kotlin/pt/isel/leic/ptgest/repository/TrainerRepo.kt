@@ -1,6 +1,8 @@
 package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.common.model.SessionType
+import pt.isel.leic.ptgest.domain.trainer.model.Report
+import pt.isel.leic.ptgest.domain.trainer.model.ReportDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
@@ -14,6 +16,27 @@ import java.util.*
 interface TrainerRepo {
 
     fun getCompanyAssignedTrainer(trainerId: UUID): UUID?
+
+    fun createReport(
+        traineeId: UUID,
+        date: Date,
+        report: String,
+        visibility: Boolean
+    ): Int
+
+    fun associateTrainerToReport(trainerId: UUID, reportId: Int)
+
+    fun getTraineeIdByName(name: String): UUID?
+
+    fun getReports(trainerId: UUID, skip: Int, limit: Int?, traineeId: UUID?): List<Report>
+
+    fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int
+
+    fun getReportDetails(trainerId: UUID, reportId: Int): ReportDetails?
+
+    fun editReport(reportId: Int, report: String, visibility: Boolean)
+
+    fun deleteReport(reportId: Int)
 
 //  Exercise related methods
 
