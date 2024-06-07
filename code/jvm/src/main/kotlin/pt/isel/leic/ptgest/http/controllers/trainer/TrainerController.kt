@@ -22,6 +22,7 @@ import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExerciseDet
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetSetDetails
 import pt.isel.leic.ptgest.http.controllers.common.model.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.controllers.trainer.model.request.AddTraineeDataRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSessionRequest
 import pt.isel.leic.ptgest.http.controllers.trainer.model.request.CreateSetRequest
@@ -35,7 +36,6 @@ import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
-import java.util.Date
 import java.util.UUID
 
 @RestController
@@ -44,7 +44,31 @@ import java.util.UUID
 class TrainerController(
     private val trainerService: TrainerService
 ) {
-    @PostMapping(Uris.Trainer.CREATE_REPORT)
+//  Trainee data related endpoints
+    @PostMapping(Uris.Trainer.TraineeData.ADD_TRAINEE_DATA)
+    fun addTraineeData(
+        @RequestBody traineeData: AddTraineeDataRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val dataId = trainerService.addTraineeData(
+            authenticatedUser.id,
+            traineeData.traineeId,
+            traineeData.gender,
+            traineeData.weight,
+            traineeData.height,
+            traineeData.bodyCircumferences,
+            traineeData.bodyFatPercentage,
+            traineeData.skinFold
+        )
+
+        return HttpResponse.created(
+            message = "Trainee data added successfully.",
+            details = CreateResourceResponse(dataId)
+        )
+    }
+
+//  Report related endpoints
+    @PostMapping(Uris.Trainer.Report.CREATE_REPORT)
     fun createReport(
         @Valid @RequestBody
         reportDetails: CreateReportRequest,
@@ -53,7 +77,6 @@ class TrainerController(
         val reportId = trainerService.createReport(
             authenticatedUser.id,
             reportDetails.traineeId,
-            Date(),
             reportDetails.report,
             reportDetails.visibility
         )
@@ -65,7 +88,7 @@ class TrainerController(
     }
 
 //  todo: verify if this method
-    @GetMapping(Uris.Trainer.GET_REPORTS)
+    @GetMapping(Uris.Trainer.Report.GET_REPORTS)
     fun getReports(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -87,7 +110,7 @@ class TrainerController(
         )
     }
 
-    @GetMapping(Uris.Trainer.GET_REPORT_DETAILS)
+    @GetMapping(Uris.Trainer.Report.GET_REPORT_DETAILS)
     fun getReportDetails(
         @PathVariable reportId: Int,
         authenticatedUser: AuthenticatedUser
@@ -103,7 +126,7 @@ class TrainerController(
         )
     }
 
-    @PutMapping(Uris.Trainer.EDIT_REPORT)
+    @PutMapping(Uris.Trainer.Report.EDIT_REPORT)
     fun editReport(
         @PathVariable reportId: Int,
         @Valid @RequestBody
@@ -113,7 +136,6 @@ class TrainerController(
         trainerService.editReport(
             authenticatedUser.id,
             reportId,
-            Date(),
             reportDetails.report,
             reportDetails.visibility
         )
@@ -123,7 +145,7 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Trainer.DELETE_REPORT)
+    @DeleteMapping(Uris.Trainer.Report.DELETE_REPORT)
     fun deleteReport(
         @PathVariable reportId: Int,
         authenticatedUser: AuthenticatedUser
@@ -138,7 +160,8 @@ class TrainerController(
         )
     }
 
-    @PostMapping(Uris.Workout.CREATE_CUSTOM_EXERCISE)
+//  Exercise related endpoints
+    @PostMapping(Uris.Exercise.CREATE_CUSTOM_EXERCISE)
     fun createCustomExercise(
         @Valid @RequestBody
         exerciseDetails: CreateExerciseRequest,
@@ -159,7 +182,7 @@ class TrainerController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_EXERCISES)
+    @GetMapping(Uris.Exercise.GET_EXERCISES)
     fun getExercises(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -186,7 +209,7 @@ class TrainerController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_EXERCISE_DETAILS)
+    @GetMapping(Uris.Exercise.GET_EXERCISE_DETAILS)
     fun getExerciseDetails(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
@@ -202,7 +225,7 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Workout.DELETE_EXERCISE)
+    @DeleteMapping(Uris.Exercise.DELETE_EXERCISE)
     fun deleteExercise(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
@@ -217,7 +240,7 @@ class TrainerController(
         )
     }
 
-    @PostMapping(Uris.Workout.FAVORITE_EXERCISE)
+    @PostMapping(Uris.Exercise.FAVORITE_EXERCISE)
     fun favoriteExercise(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
@@ -232,7 +255,7 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Workout.UNFAVORITE_EXERCISE)
+    @DeleteMapping(Uris.Exercise.UNFAVORITE_EXERCISE)
     fun unfavoriteExercise(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
@@ -247,7 +270,8 @@ class TrainerController(
         )
     }
 
-    @PostMapping(Uris.Workout.CREATE_CUSTOM_SET)
+//  Set related endpoints
+    @PostMapping(Uris.Set.CREATE_CUSTOM_SET)
     fun createCustomSet(
         @Valid @RequestBody
         setDetails: CreateSetRequest,
@@ -267,7 +291,7 @@ class TrainerController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_SETS)
+    @GetMapping(Uris.Set.GET_SETS)
     fun getSets(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -291,7 +315,7 @@ class TrainerController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_SET_DETAILS)
+    @GetMapping(Uris.Set.GET_SET_DETAILS)
     fun getSetDetails(
         @PathVariable setId: Int,
         authenticatedUser: AuthenticatedUser
@@ -307,7 +331,7 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Workout.DELETE_SET)
+    @DeleteMapping(Uris.Set.DELETE_SET)
     fun deleteSet(
         @PathVariable setId: Int,
         authenticatedUser: AuthenticatedUser
@@ -322,7 +346,7 @@ class TrainerController(
         )
     }
 
-    @PostMapping(Uris.Workout.FAVORITE_SET)
+    @PostMapping(Uris.Set.FAVORITE_SET)
     fun favoriteSet(
         @PathVariable setId: Int,
         authenticatedUser: AuthenticatedUser
@@ -337,7 +361,7 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Workout.UNFAVORITE_SET)
+    @DeleteMapping(Uris.Set.UNFAVORITE_SET)
     fun unfavoriteSet(
         @PathVariable setId: Int,
         authenticatedUser: AuthenticatedUser
@@ -352,6 +376,7 @@ class TrainerController(
         )
     }
 
+//  Workout related endpoints
     @PostMapping(Uris.Workout.CREATE_CUSTOM_WORKOUT)
     fun createCustomWorkout(
         @Valid @RequestBody
@@ -457,6 +482,7 @@ class TrainerController(
         )
     }
 
+//  Session related endpoints
     @PostMapping(Uris.Session.CREATE_SESSION)
     fun createSession(
         @RequestBody sessionDetails: CreateSessionRequest,

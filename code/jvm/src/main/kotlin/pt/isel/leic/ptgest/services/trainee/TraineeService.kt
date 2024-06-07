@@ -11,7 +11,6 @@ import java.util.UUID
 class TraineeService(
     private val transactionManager: TransactionManager
 ) {
-
     fun getExerciseDetails(
         traineeId: UUID,
         exerciseId: Int

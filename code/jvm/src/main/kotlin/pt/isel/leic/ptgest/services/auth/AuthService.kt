@@ -21,7 +21,6 @@ class AuthService(
     private val mailService: MailService,
     private val transactionManager: TransactionManager
 ) {
-
     fun signUpCompany(
         name: String,
         email: String,
@@ -309,21 +308,6 @@ class AuthService(
         }
     }
 
-    private fun Transaction.createUser(
-        name: String,
-        email: String,
-        password: String,
-        role: Role
-    ): UUID {
-        if (userRepo.getUserDetails(email) != null) {
-            throw AuthError.UserRegistrationError.UserAlreadyExists
-        }
-
-        val passwordHash = authDomain.hashPassword(password)
-
-        return authRepo.createUser(name, email, passwordHash, role)
-    }
-
     private fun createTokens(currentDate: Date, userId: UUID, userRole: Role): TokenPair {
         val accessExpirationDate = authDomain.createAccessTokenExpirationDate(currentDate)
         val refreshExpirationDate = authDomain.createRefreshTokenExpirationDate(currentDate)
@@ -347,6 +331,21 @@ class AuthService(
                 refreshExpirationDate
             )
         )
+    }
+
+    private fun Transaction.createUser(
+        name: String,
+        email: String,
+        password: String,
+        role: Role
+    ): UUID {
+        if (userRepo.getUserDetails(email) != null) {
+            throw AuthError.UserRegistrationError.UserAlreadyExists
+        }
+
+        val passwordHash = authDomain.hashPassword(password)
+
+        return authRepo.createUser(name, email, passwordHash, role)
     }
 
     private fun Transaction.getRefreshTokenDetails(tokenHash: String, userId: UUID): TokenDetails {

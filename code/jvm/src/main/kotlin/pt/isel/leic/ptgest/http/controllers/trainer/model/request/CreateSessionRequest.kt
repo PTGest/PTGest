@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.http.controllers.trainer.model.request
 
-import pt.isel.leic.ptgest.domain.common.model.SessionType
+import pt.isel.leic.ptgest.domain.common.SessionType
 import java.util.Date
 import java.util.UUID
 

@@ -9,7 +9,6 @@ import java.util.UUID
 
 @Service
 class UserService(private val transactionManager: TransactionManager) {
-
     fun getTraineeDetails(userId: UUID): TraineeDetails =
         transactionManager.run {
             val userRepo = it.userRepo

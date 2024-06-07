@@ -2,7 +2,7 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.common.model.SessionType
+import pt.isel.leic.ptgest.domain.common.SessionType
 import pt.isel.leic.ptgest.domain.trainer.model.Report
 import pt.isel.leic.ptgest.domain.trainer.model.ReportDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
@@ -18,6 +18,23 @@ import java.util.Date
 import java.util.UUID
 
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
+    override fun addTraineeData(traineeId: UUID, date: Date, bodyData: String): Int =
+        handle.createUpdate(
+            """
+            insert into trainee_data (trainee_id, date, body_data)
+            values (:traineeId, :date, :bodyData)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "date" to date,
+                    "bodyData" to bodyData
+                )
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
 
     override fun getCompanyAssignedTrainer(trainerId: UUID): UUID? =
         handle.createQuery(
@@ -141,16 +158,17 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .mapTo<ReportDetails>()
             .firstOrNull()
 
-    override fun editReport(reportId: Int, report: String, visibility: Boolean) {
+    override fun editReport(reportId: Int, date: Date, report: String, visibility: Boolean) {
         handle.createUpdate(
             """
             update report
-            set report = :report, visibility = :visibility
+            set date = :date, report = :report, visibility = :visibility
             where id = :reportId
             """
         )
             .bindMap(
                 mapOf(
+                    "date" to date,
                     "reportId" to reportId,
                     "report" to report,
                     "visibility" to visibility

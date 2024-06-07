@@ -3,8 +3,14 @@ package pt.isel.leic.ptgest.services.trainer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
+import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.common.MeasurementTechnique
 import pt.isel.leic.ptgest.domain.common.Role
-import pt.isel.leic.ptgest.domain.common.model.SessionType
+import pt.isel.leic.ptgest.domain.common.SessionType
+import pt.isel.leic.ptgest.domain.common.SkinFold
+import pt.isel.leic.ptgest.domain.common.model.BodyCircumferences
+import pt.isel.leic.ptgest.domain.common.model.BodyComposition
+import pt.isel.leic.ptgest.domain.common.model.BodyData
 import pt.isel.leic.ptgest.domain.trainer.model.Report
 import pt.isel.leic.ptgest.domain.trainer.model.ReportDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
@@ -27,27 +33,79 @@ import java.util.*
 class TrainerService(
     private val transactionManager: TransactionManager
 ) {
+    //  Trainee data related Services
+    fun addTraineeData(
+        trainerId: UUID,
+        traineeId: UUID,
+        traineeGender: Gender,
+        weight: Double,
+        height: Double,
+        bodyCircumferences: BodyCircumferences,
+        bodyFatPercentage: Double?,
+        skinFold: Map<SkinFold, Double>?
+    ): Int {
+        val requestDate = Date()
+
+        require(weight > 0) { "Weight must be a positive number." }
+        require(height > 0) { "Height must be a positive number." }
+
+        return transactionManager.run {
+            val traineeRepo = it.traineeRepo
+            val userRepo = it.userRepo
+            val trainerRepo = it.trainerRepo
+
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssigned
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            val traineeBirthdate = userRepo.getTraineeDetails(traineeId)?.birthdate
+                ?: throw TraineeError.TraineeNotFound
+
+            val bodyData = getBodyData(
+                traineeGender,
+                calculateAge(traineeBirthdate),
+                weight,
+                height,
+                bodyCircumferences,
+                bodyFatPercentage,
+                skinFold
+            )
+
+            return@run trainerRepo.addTraineeData(
+                traineeId,
+                requestDate,
+                convertDataToJson(bodyData)
+            )
+        }
+    }
+
+    //  Report related Services
     fun createReport(
         trainerId: UUID,
         traineeId: UUID,
-        date: Date,
         report: String,
         visibility: Boolean
-    ): Int = transactionManager.run {
-        val traineeRepo = it.traineeRepo
-        val trainerRepo = it.trainerRepo
+    ): Int {
+        val requestDate = Date()
+        return transactionManager.run {
+            val traineeRepo = it.traineeRepo
+            val trainerRepo = it.trainerRepo
 
-        val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
-            ?: throw TraineeError.TraineeNotAssigned
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssigned
 
-        if (traineeTrainerId != trainerId) {
-            throw TrainerError.TraineeNotAssignedToTrainerError
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            val reportId = trainerRepo.createReport(traineeId, requestDate, report, visibility)
+
+            trainerRepo.associateTrainerToReport(trainerId, reportId)
+            return@run reportId
         }
-
-        val reportId = trainerRepo.createReport(traineeId, date, report, visibility)
-
-        trainerRepo.associateTrainerToReport(trainerId, reportId)
-        return@run reportId
     }
 
     fun getReports(
@@ -102,17 +160,18 @@ class TrainerService(
     fun editReport(
         trainerId: UUID,
         reportId: Int,
-        date: Date,
         report: String,
         visibility: Boolean
     ) {
+        val requestDate = Date()
+
         transactionManager.run {
             val trainerRepo = it.trainerRepo
 
             trainerRepo.getReportDetails(trainerId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            trainerRepo.editReport(reportId, report, visibility)
+            trainerRepo.editReport(reportId, requestDate, report, visibility)
         }
     }
 
@@ -127,6 +186,7 @@ class TrainerService(
         }
     }
 
+    //  Exercise related Services
     fun createCustomExercise(
         trainerId: UUID,
         name: String,
@@ -137,7 +197,10 @@ class TrainerService(
     ): Int {
         Validators.validate(
             Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(ref, "Reference must be a valid YouTube URL.") { Validators.isYoutubeUrl(it as String) }
+            Validators.ValidationRequest(
+                ref,
+                "Reference must be a valid YouTube URL."
+            ) { Validators.isYoutubeUrl(it as String) }
         )
 
         return transactionManager.run {
@@ -258,6 +321,7 @@ class TrainerService(
         }
     }
 
+    //  Set related Services
     fun createCustomSet(
         trainerId: UUID,
         name: String?,
@@ -381,6 +445,7 @@ class TrainerService(
         }
     }
 
+    //  Workout related Services
     fun createCustomWorkout(
         trainerId: UUID,
         name: String?,
@@ -507,6 +572,7 @@ class TrainerService(
         }
     }
 
+    //  Session related Services
     fun createSession(
         trainerId: UUID,
         traineeId: UUID,
@@ -518,7 +584,10 @@ class TrainerService(
     ): Int {
         Validators.validate(
             Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(endDate, "End date must be after begin date.") { (it as Date).after(beginDate) }
+            Validators.ValidationRequest(
+                endDate,
+                "End date must be after begin date."
+            ) { (it as Date).after(beginDate) }
         )
 
         return transactionManager.run {
@@ -542,6 +611,57 @@ class TrainerService(
                 notes
             )
         }
+    }
+
+    private fun convertDataToJson(data: Any): String {
+        val jsonMapper = jacksonObjectMapper()
+
+        return jsonMapper.writeValueAsString(data)
+    }
+
+    private fun getBodyData(
+        traineeGender: Gender,
+        traineeAge: Int,
+        weight: Double,
+        height: Double,
+        bodyCircumferences: BodyCircumferences,
+        bodyFatPercentage: Double?,
+        skinFold: Map<SkinFold, Double>?
+    ): BodyData =
+        when {
+            bodyFatPercentage != null -> {
+                require(bodyFatPercentage > 0) { "Body fat percentage must be a positive number." }
+                val bodyComposition = BodyComposition(weight, height, bodyFatPercentage)
+                BodyData(weight, height, bodyCircumferences, bodyComposition)
+            }
+            skinFold != null -> {
+                val bodyFatPercentageResult = MeasurementTechnique.getTechnique(skinFold.size)
+                    .bodyFatCalculator(
+                        traineeGender,
+                        skinFold,
+                        traineeAge
+                    )
+
+                val bodyComposition = BodyComposition(weight, height, bodyFatPercentageResult)
+
+                BodyData(weight, height, bodyCircumferences, bodyComposition, skinFold)
+            }
+            else -> {
+                val bodyComposition = BodyComposition(weight, height)
+                BodyData(weight, height, bodyCircumferences, bodyComposition)
+            }
+        }
+
+    private fun calculateAge(birthdate: Date): Int {
+        val birthdateCalendar = Calendar.getInstance().apply { time = birthdate }
+        val currentCalendar = Calendar.getInstance()
+
+        var age = currentCalendar.get(Calendar.YEAR) - birthdateCalendar.get(Calendar.YEAR)
+        if (currentCalendar.get(Calendar.DAY_OF_YEAR) < birthdateCalendar.get(Calendar.DAY_OF_YEAR)) {
+            age--
+        }
+
+        return age
     }
 
     private fun Transaction.getExercises(
@@ -670,12 +790,6 @@ class TrainerService(
             addExercises(companyExercises)
             addTotalExercises(totalCompanyExercises)
         }
-    }
-
-    private fun convertDataToJson(data: Map<String, Any>): String {
-        val jsonMapper = jacksonObjectMapper()
-
-        return jsonMapper.writeValueAsString(data)
     }
 
     private fun Transaction.createSet(

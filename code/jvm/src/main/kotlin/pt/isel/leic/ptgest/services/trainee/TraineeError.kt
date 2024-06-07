@@ -9,6 +9,11 @@ sealed class TraineeError : BaseError() {
         override val message: String get() = "Trainee not assigned to any trainer."
     }
 
+    data object TraineeNotFound : TraineeError() {
+        private fun readResolve(): Any = TraineeNotFound
+        override val message: String get() = "Trainee not found."
+    }
+
     data object ExerciseNotFoundError : TraineeError() {
         private fun readResolve(): Any = ExerciseNotFoundError
         override val message: String get() = "Exercise not found."

@@ -17,7 +17,6 @@ class JwtService(
     private val secret: JWTSecret,
     private val transactionManager: TransactionManager
 ) {
-
     fun generateToken(
         userId: UUID,
         role: Role,
@@ -58,16 +57,6 @@ class JwtService(
         return accessTokenDetails
     }
 
-    private fun Transaction.validateUser(userId: UUID, role: Role) {
-        val userDetails =
-            userRepo.getUserDetails(userId)
-                ?: throw AuthError.UserAuthenticationError.UserNotFound
-
-        if (userDetails.role != role) {
-            throw AuthError.UserAuthenticationError.InvalidUserRoleException
-        }
-    }
-
     private fun getAllClaimsFromToken(token: String): Claims =
         Jwts.parser().setSigningKey(secret.value).parseClaimsJws(token).body
 
@@ -82,4 +71,14 @@ class JwtService(
             .setSubject(role.name)
             .setExpiration(expirationDate)
             .signWith(SignatureAlgorithm.HS256, secret.value).compact()
+
+    private fun Transaction.validateUser(userId: UUID, role: Role) {
+        val userDetails =
+            userRepo.getUserDetails(userId)
+                ?: throw AuthError.UserAuthenticationError.UserNotFound
+
+        if (userDetails.role != role) {
+            throw AuthError.UserAuthenticationError.InvalidUserRoleException
+        }
+    }
 }

@@ -38,7 +38,6 @@ import java.util.UUID
 class CompanyController(
     private val companyService: CompanyService
 ) {
-
     @GetMapping(Uris.Company.COMPANY_TRAINERS)
     fun getCompanyTrainers(
         @RequestParam skip: Int?,
@@ -134,7 +133,7 @@ class CompanyController(
         throw NotImplementedError()
     }
 
-    @PostMapping(Uris.Workout.CREATE_CUSTOM_EXERCISE)
+    @PostMapping(Uris.Exercise.CREATE_CUSTOM_EXERCISE)
     @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
     fun createCustomExercise(
         @Valid @RequestBody
@@ -156,7 +155,7 @@ class CompanyController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_EXERCISES)
+    @GetMapping(Uris.Exercise.GET_EXERCISES)
     fun getExercises(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -181,7 +180,7 @@ class CompanyController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_EXERCISE_DETAILS)
+    @GetMapping(Uris.Exercise.GET_EXERCISE_DETAILS)
     fun getExerciseDetails(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
@@ -198,7 +197,7 @@ class CompanyController(
         )
     }
 
-    @DeleteMapping(Uris.Workout.DELETE_EXERCISE)
+    @DeleteMapping(Uris.Exercise.DELETE_EXERCISE)
     fun deleteExercise(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser

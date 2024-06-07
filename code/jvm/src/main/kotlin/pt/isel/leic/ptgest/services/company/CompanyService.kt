@@ -17,7 +17,6 @@ import java.util.UUID
 class CompanyService(
     private val transactionManager: TransactionManager
 ) {
-
     fun getCompanyTrainers(
         skip: Int?,
         limit: Int?,
@@ -217,6 +216,7 @@ class CompanyService(
                 ?: throw CompanyError.ExerciseNotFoundError
         }
 
+//  TODO: check if the exercise is not used
     fun deleteExercise(
         companyId: UUID,
         exerciseId: Int

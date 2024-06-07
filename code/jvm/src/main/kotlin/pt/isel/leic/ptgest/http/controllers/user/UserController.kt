@@ -14,7 +14,6 @@ import pt.isel.leic.ptgest.services.user.UserService
 @RestController
 @RequestMapping(Uris.PREFIX)
 class UserController(private val service: UserService) {
-
     @GetMapping(Uris.User.PROFILE)
     fun getProfile(
         authenticatedUser: AuthenticatedUser

@@ -21,7 +21,7 @@ import pt.isel.leic.ptgest.services.trainee.TraineeService
 class TraineeController(
     private val traineeService: TraineeService
 ) {
-    @GetMapping(Uris.Workout.GET_EXERCISE_DETAILS)
+    @GetMapping(Uris.Exercise.GET_EXERCISE_DETAILS)
     fun getExerciseDetails(
         @PathVariable exerciseId: Int,
         authenticatedUser: AuthenticatedUser
@@ -38,7 +38,7 @@ class TraineeController(
         )
     }
 
-    @GetMapping(Uris.Workout.GET_SET_DETAILS)
+    @GetMapping(Uris.Set.GET_SET_DETAILS)
     fun getSetDetails(
         @PathVariable setId: Int,
         authenticatedUser: AuthenticatedUser

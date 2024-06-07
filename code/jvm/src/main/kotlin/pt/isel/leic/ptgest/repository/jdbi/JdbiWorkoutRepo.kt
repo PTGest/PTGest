@@ -23,8 +23,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         return handle.createUpdate(
             """
             insert into exercise (name, description, muscle_group, modality, ref)
-            values (:name, :description, ARRAY[$muscleGroup], :modality::modality, :ref)
-        """.trimIndent()
+            values (:name, :description, ARRAY[$muscleGroupArray], :modality::modality, :ref)
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -113,7 +113,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             """
             insert into workout (trainer_id, name, description, muscle_group)
             values (:trainerId, :name, :description, ARRAY[$muscleGroupArray])
-        """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(

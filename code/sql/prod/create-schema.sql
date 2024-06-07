@@ -86,14 +86,12 @@ create table if not exists prod.trainer_trainee
     primary key (trainer_id, trainee_id)
 );
 
--- TODO: to be checked
-
 create table if not exists prod.trainee_data
 (
+    id       serial primary key,
     trainee_id uuid references prod.trainee (id) on delete cascade,
     date       date  not null,
-    body_data  jsonb not null,
-    primary key (trainee_id, date)
+    body_data  jsonb not null
 );
 
 create table if not exists prod.report_trainer
@@ -175,7 +173,6 @@ create table if not exists prod.workout_set
     primary key (order_id, workout_id, set_id)
 );
 
--- TODO: check if we let other use details null
 create table if not exists prod.set_exercise
 (
     order_id    int not null,

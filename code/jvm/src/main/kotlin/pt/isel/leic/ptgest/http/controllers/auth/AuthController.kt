@@ -36,7 +36,6 @@ import java.util.Date
 @RestController
 @RequestMapping(Uris.PREFIX)
 class AuthController(private val service: AuthService) {
-
     @PostMapping(Uris.Auth.SIGNUP)
     fun signup(
         @Valid @RequestBody
