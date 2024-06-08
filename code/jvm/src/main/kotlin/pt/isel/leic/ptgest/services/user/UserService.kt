@@ -9,21 +9,21 @@ import java.util.UUID
 
 @Service
 class UserService(private val transactionManager: TransactionManager) {
-    fun getTraineeDetails(userId: UUID): TraineeDetails =
-        transactionManager.run {
-            val userRepo = it.userRepo
-            return@run userRepo.getTraineeDetails(userId) ?: throw UserError.UserNotFound
-        }
-
-    fun getTrainerDetails(userId: UUID): TrainerDetails =
-        transactionManager.run {
-            val userRepo = it.userRepo
-            return@run userRepo.getTrainerDetails(userId) ?: throw UserError.UserNotFound
-        }
-
-    fun getCompanyDetails(userId: UUID): UserDetails =
+    fun getUserDetails(userId: UUID): UserDetails =
         transactionManager.run {
             val userRepo = it.userRepo
             return@run userRepo.getUserDetails(userId) ?: throw UserError.UserNotFound
+        }
+
+    fun getTraineeDetails(traineeId: UUID): TraineeDetails =
+        transactionManager.run {
+            val userRepo = it.userRepo
+            return@run userRepo.getTraineeDetails(traineeId) ?: throw UserError.UserNotFound
+        }
+
+    fun getTrainerDetails(trainerId: UUID): TrainerDetails =
+        transactionManager.run {
+            val userRepo = it.userRepo
+            return@run userRepo.getTrainerDetails(trainerId) ?: throw UserError.UserNotFound
         }
 }

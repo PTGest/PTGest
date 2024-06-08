@@ -16,7 +16,7 @@ object Uris {
     }
 
     object User {
-        const val PROFILE = "/profile"
+        const val USER_DETAILS = "user/{id}"
     }
 
     object Company {

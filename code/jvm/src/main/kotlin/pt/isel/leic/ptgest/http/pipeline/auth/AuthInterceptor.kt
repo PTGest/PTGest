@@ -41,15 +41,11 @@ class AuthInterceptor(
                     else -> throw AuthError.UserAuthenticationError.TokenNotProvided
                 }
 
-            if (handler.beanType.isAnnotationPresent(RequiredRole::class.java) &&
-                !handler.beanType.getAnnotation(RequiredRole::class.java).role.contains(user.role)
-            ) {
-                throw AuthError.UserAuthenticationError.UnauthorizedRole
-            }
+            val requiredRoleFromClass = handler.beanType.getAnnotation(RequiredRole::class.java)?.role
+            val requiredRoleFromMethod = handler.method.getAnnotation(RequiredRole::class.java)?.role
 
-            if (handler.method.isAnnotationPresent(RequiredRole::class.java) &&
-                !handler.method.getAnnotation(RequiredRole::class.java).role.contains(user.role)
-            ) {
+            if ((requiredRoleFromClass != null && !requiredRoleFromClass.contains(user.role)) ||
+                (requiredRoleFromMethod != null && !requiredRoleFromMethod.contains(user.role))) {
                 throw AuthError.UserAuthenticationError.UnauthorizedRole
             }
 

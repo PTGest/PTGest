@@ -15,7 +15,7 @@ interface UserRepo {
 
     fun getUserDetails(userId: UUID): UserDetails?
 
-    fun getTraineeDetails(userId: UUID): TraineeDetails?
+    fun getTraineeDetails(traineeId: UUID): TraineeDetails?
 
-    fun getTrainerDetails(userId: UUID): TrainerDetails?
+    fun getTrainerDetails(trainerId: UUID): TrainerDetails?
 }

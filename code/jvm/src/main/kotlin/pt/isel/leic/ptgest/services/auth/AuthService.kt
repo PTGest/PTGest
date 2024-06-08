@@ -6,8 +6,8 @@ import pt.isel.leic.ptgest.domain.auth.model.AuthenticationDetails
 import pt.isel.leic.ptgest.domain.auth.model.Token
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
-import pt.isel.leic.ptgest.domain.common.Gender
-import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.Gender
+import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
@@ -241,6 +241,7 @@ class AuthService(
         }
 
         return AuthenticationDetails(
+            id = userDetails.id,
             role = userDetails.role,
             tokens = tokens
         )

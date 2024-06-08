@@ -1,10 +1,10 @@
 package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.common.Gender
+import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.common.Order
-import pt.isel.leic.ptgest.domain.company.model.Trainee
-import pt.isel.leic.ptgest.domain.company.model.Trainer
+import pt.isel.leic.ptgest.domain.trainee.model.Trainee
+import pt.isel.leic.ptgest.domain.trainer.model.Trainer
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.model.Exercise

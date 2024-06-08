@@ -64,27 +64,27 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .mapTo<UserDetails>()
             .firstOrNull()
 
-    override fun getTraineeDetails(userId: UUID): TraineeDetails? =
+    override fun getTraineeDetails(traineeId: UUID): TraineeDetails? =
         handle.createQuery(
             """
-                select name, email, gender, birthdate, phone_number
-                from trainee join "user" on trainee.id = "user".id
-                where trainee.id = :userId
+                select gender, birthdate, phone_number
+                from trainee
+                where trainee.id = :traineeId
             """.trimIndent()
         )
-            .bind("userId", userId)
+            .bind("traineeId", traineeId)
             .mapTo<TraineeDetails>()
             .firstOrNull()
 
-    override fun getTrainerDetails(userId: UUID): TrainerDetails? =
+    override fun getTrainerDetails(trainerId: UUID): TrainerDetails? =
         handle.createQuery(
             """
-                select name, email, gender, phone_number
-                from trainer join "user" on trainer.id = "user".id
-                where trainer.id = :userId
+                select gender, phone_number
+                from trainer 
+                where trainer.id = :trainerId
             """.trimIndent()
         )
-            .bind("userId", userId)
+            .bind("trainerId", trainerId)
             .mapTo<TrainerDetails>()
             .firstOrNull()
 }

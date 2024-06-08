@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.domain.user.model
 
-import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.Role
 import java.util.UUID
 
 data class UserDetails(

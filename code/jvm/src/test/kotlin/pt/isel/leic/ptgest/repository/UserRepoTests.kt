@@ -4,8 +4,8 @@ import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.springframework.boot.test.context.SpringBootTest
-import pt.isel.leic.ptgest.domain.common.Gender
-import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.Gender
+import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.jdbi.JdbiAuthRepo
 import pt.isel.leic.ptgest.repository.jdbi.JdbiUserRepo
 import java.util.Calendar

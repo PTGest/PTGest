@@ -6,7 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
-import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.Date

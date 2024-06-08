@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.common.SessionType
-import pt.isel.leic.ptgest.domain.trainer.model.Report
-import pt.isel.leic.ptgest.domain.trainer.model.ReportDetails
+import pt.isel.leic.ptgest.domain.session.SessionType
+import pt.isel.leic.ptgest.domain.report.model.Report
+import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType

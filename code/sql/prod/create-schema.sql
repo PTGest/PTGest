@@ -114,7 +114,6 @@ create table if not exists prod.report
 create table if not exists prod.workout
 (
     id           serial primary key,
-    trainer_id   uuid references prod.trainer (id) on delete cascade,
     name         varchar(50)        not null,
     description  text,
     muscle_group prod.muscle_group[] not null
@@ -123,7 +122,6 @@ create table if not exists prod.workout
 create table if not exists prod.set
 (
     id         serial primary key,
-    trainer_id uuid references prod.trainer (id) on delete cascade,
     name       varchar(50)  not null,
     notes      text,
     type       prod.set_type not null
@@ -143,7 +141,6 @@ create table if not exists prod.session
 (
     id         serial primary key,
     trainee_id uuid references prod.trainee (id) on delete cascade,
-    trainer_id uuid references prod.trainer (id) on delete cascade,
     workout_id int references prod.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
     end_date   timestamp check ( end_date > begin_date and end_date > now() )   not null,
@@ -163,6 +160,27 @@ create table if not exists prod.exercise_trainer
     trainer_id  uuid references prod.trainer (id) on delete cascade,
     exercise_id int references prod.exercise (id) on delete cascade,
     primary key (trainer_id, exercise_id)
+);
+
+create table if not exists prod.set_trainer
+(
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    exercise_id int references prod.exercise (id) on delete cascade,
+    primary key (trainer_id, exercise_id)
+);
+
+create table if not exists prod.workout_trainer
+(
+    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    workout_id int references prod.workout (id) on delete cascade,
+    primary key (trainer_id, workout_id)
+);
+
+create table if not exists prod.session_trainer
+(
+    session_id  uuid references prod.session (id) on delete cascade,
+    workout_id int references prod.workout (id) on delete cascade,
+    primary key (session_id, workout_id)
 );
 
 create table if not exists prod.workout_set

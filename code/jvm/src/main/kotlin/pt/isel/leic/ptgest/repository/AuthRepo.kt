@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
-import pt.isel.leic.ptgest.domain.common.Gender
-import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.Gender
+import pt.isel.leic.ptgest.domain.user.Role
 import java.util.Date
 import java.util.UUID
 

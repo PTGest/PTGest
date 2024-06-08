@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.domain.auth.model
 
-import pt.isel.leic.ptgest.domain.common.Role
+import pt.isel.leic.ptgest.domain.user.Role
 import java.util.Date
 import java.util.UUID
 
