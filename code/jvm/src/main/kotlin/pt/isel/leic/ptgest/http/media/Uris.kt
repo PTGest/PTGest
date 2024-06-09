@@ -31,7 +31,7 @@ object Uris {
 
     object Trainer {
         const val PREFIX = "${Uris.PREFIX}/trainer"
-        const val TRAINER_TRAINEES = "/trainees"
+        const val TRAINEES = "/trainees"
     }
 
     object Trainee {

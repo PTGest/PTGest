@@ -2,10 +2,10 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.exercise.model.Exercise
+import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.model.Exercise
-import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.ExerciseRepo
 import java.util.*
 

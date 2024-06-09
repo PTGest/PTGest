@@ -2,11 +2,66 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
+import pt.isel.leic.ptgest.domain.trainee.model.Trainee
+import pt.isel.leic.ptgest.domain.trainer.model.TrainerDetails
+import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.repository.TrainerRepo
 import java.util.*
 
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
+
+    override fun getTrainees(trainerId: UUID, skip: Int, limit: Int?, gender: Gender?, name: String?): List<Trainee> {
+        val genderCondition = if (gender != null) "and gender = :gender" else ""
+        val nameCondition = if (name != null) "and ut.name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select t.id as trainee_id, ut.name as trainee_name, t.gender, upt.id as trainer_id, upt.name as trainer_name
+            from trainee t
+            join "user" ut on t.id = ut.id
+            left join trainer_trainee tt on t.id = tt.trainee_id
+            left join "user" upt on tt.trainer_id = upt.id
+            where tt.trainer_id = :trainerId $genderCondition $nameCondition
+            limit :limit offset :skip;
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "skip" to skip,
+                    "limit" to limit,
+                    "gender" to gender,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Trainee>()
+            .list()
+    }
+
+    override fun getTotalTrainees(trainerId: UUID, gender: Gender?, name: String?): Int {
+        val genderCondition = if (gender != null) "and gender = :gender" else ""
+        val nameCondition = if (name != null) "and ut.name like :name" else ""
+
+        return handle.createQuery(
+            """
+            select count(*)
+            from trainee t
+            join "user" ut on t.id = ut.id
+            left join trainer_trainee tt on t.id = tt.trainee_id
+            left join "user" upt on tt.trainer_id = upt.id
+            where tt.trainer_id = :trainerId $genderCondition $nameCondition
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "gender" to gender,
+                    "name" to "%$name%"
+                )
+            )
+            .mapTo<Int>()
+            .one()
+    }
 
     override fun getTrainerDetails(trainerId: UUID): TrainerDetails? =
         handle.createQuery(

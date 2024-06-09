@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.domain.user.model
+package pt.isel.leic.ptgest.domain.trainer.model
 
 import pt.isel.leic.ptgest.domain.user.Gender
 

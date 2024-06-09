@@ -4,9 +4,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.exercise.model.Exercise
+import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
+import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
+import pt.isel.leic.ptgest.domain.set.model.Set
+import pt.isel.leic.ptgest.domain.set.model.SetDetails
+import pt.isel.leic.ptgest.domain.set.model.SetExercise
+import pt.isel.leic.ptgest.domain.trainee.model.Trainee
 import pt.isel.leic.ptgest.domain.traineeData.MeasurementTechnique
 import pt.isel.leic.ptgest.domain.traineeData.SkinFold
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyCircumferences
@@ -19,11 +26,6 @@ import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.Exercise
-import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
-import pt.isel.leic.ptgest.domain.workout.model.Set
-import pt.isel.leic.ptgest.domain.workout.model.SetDetails
-import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.Transaction
@@ -38,6 +40,30 @@ import java.util.UUID
 class TrainerService(
     private val transactionManager: TransactionManager
 ) {
+
+    fun getTrainerTrainees(
+        trainerId: UUID,
+        skip: Int?,
+        limit: Int?,
+        gender: Gender?,
+        name: String?
+    ): Pair<List<Trainee>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(name, "Name must not be blank.") { (it as String).isNotBlank() }
+        )
+
+        return transactionManager.run {
+            val trainerRepo = it.trainerRepo
+
+            val trainees = trainerRepo.getTrainees(trainerId, skip ?: 0, limit, gender, name)
+            val totalTrainees = trainerRepo.getTotalTrainees(trainerId, gender, name)
+
+            return@run Pair(trainees, totalTrainees)
+        }
+    }
+
     //  Trainee data related Services
     fun addTraineeData(
         trainerId: UUID,
@@ -398,7 +424,7 @@ class TrainerService(
             setExercises.forEachIndexed { index, set ->
                 it.getExercise(trainerId, set.exerciseId)
 
-                val validatedDetails = Validators.validateSetDetails(set.details)
+                val validatedDetails = ExerciseDetailsType.validateSetDetails(set.details)
                 val jsonDetails = convertDataToJson(validatedDetails)
 
                 setRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)

@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.model.common.response
 
+import pt.isel.leic.ptgest.domain.set.model.SetDetails
+import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.SetDetails
-import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 
 data class GetSetDetails(
     val name: String,

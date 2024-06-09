@@ -8,7 +8,7 @@ import java.util.UUID
 
 interface CompanyRepo {
 
-    fun getCompanyTrainers(
+    fun getTrainers(
         companyId: UUID,
         skip: Int,
         limit: Int?,
@@ -18,14 +18,14 @@ interface CompanyRepo {
         excludeTraineeTrainer: UUID?
     ): List<Trainer>
 
-    fun getTotalCompanyTrainers(
+    fun getTotalTrainers(
         companyId: UUID,
         gender: Gender?,
         name: String?,
         excludeTraineeTrainer: UUID?
     ): Int
 
-    fun getCompanyTrainees(
+    fun getTrainees(
         companyId: UUID,
         skip: Int,
         limit: Int?,
@@ -33,9 +33,9 @@ interface CompanyRepo {
         name: String?
     ): List<Trainee>
 
-    fun getTotalCompanyTrainees(companyId: UUID, gender: Gender?, name: String?): Int
+    fun getTotalTrainees(companyId: UUID, gender: Gender?, name: String?): Int
 
-    fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer?
+    fun getTrainer(trainerId: UUID, companyId: UUID): Trainer?
 
     fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID)
 

@@ -2,13 +2,13 @@ package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.exercise.model.Exercise
+import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.trainee.model.Trainee
 import pt.isel.leic.ptgest.domain.trainer.model.Trainer
 import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.model.Exercise
-import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.*
@@ -35,8 +35,8 @@ class CompanyService(
         return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalCompanyTrainers(companyId, gender, name, excludeTraineeTrainer)
-            val trainers = companyRepo.getCompanyTrainers(
+            val totalResults = companyRepo.getTotalTrainers(companyId, gender, name, excludeTraineeTrainer)
+            val trainers = companyRepo.getTrainers(
                 companyId,
                 skip ?: 0,
                 limit,
@@ -66,10 +66,10 @@ class CompanyService(
         return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalCompanyTrainees(companyId, gender, name)
-            val trainees = companyRepo.getCompanyTrainees(companyId, skip ?: 0, limit, gender, name)
+            val trainees = companyRepo.getTrainees(companyId, skip ?: 0, limit, gender, name)
+            val totalTrainees = companyRepo.getTotalTrainees(companyId, gender, name)
 
-            return@run Pair(trainees, totalResults)
+            return@run Pair(trainees, totalTrainees)
         }
     }
 
@@ -82,7 +82,7 @@ class CompanyService(
         transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val trainer = companyRepo.getCompanyTrainer(trainerId, companyId)
+            val trainer = companyRepo.getTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
             if (trainer.assignedTrainees >= trainer.capacity) {
@@ -103,7 +103,7 @@ class CompanyService(
             val companyRepo = it.companyRepo
             val traineeRepo = it.traineeRepo
 
-            val newTrainer = companyRepo.getCompanyTrainer(trainerId, companyId)
+            val newTrainer = companyRepo.getTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
             if (newTrainer.assignedTrainees >= newTrainer.capacity) {
@@ -130,7 +130,7 @@ class CompanyService(
         transactionManager.run {
             val companyRepo = it.companyRepo
 
-            companyRepo.getCompanyTrainer(trainerId, companyId)
+            companyRepo.getTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
             companyRepo.updateTrainerCapacity(companyId, trainerId, capacity)

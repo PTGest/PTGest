@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
@@ -26,6 +27,7 @@ import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
 import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.ListResponse
+import pt.isel.leic.ptgest.http.model.company.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.AddTraineeDataRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSessionRequest
@@ -33,7 +35,6 @@ import pt.isel.leic.ptgest.http.model.trainer.request.CreateSetRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateWorkoutRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
-import pt.isel.leic.ptgest.http.model.trainer.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.model.trainer.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
@@ -46,6 +47,28 @@ import java.util.UUID
 class TrainerController(
     private val trainerService: TrainerService
 ) {
+    @GetMapping(Uris.Trainer.TRAINEES)
+    fun getTrainerTrainees(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam gender: Gender?,
+        @RequestParam name: String?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (trainees, total) = trainerService.getTrainerTrainees(
+            authenticatedUser.id,
+            skip,
+            limit,
+            gender,
+            name?.trim()
+        )
+
+        return HttpResponse.ok(
+            message = "Company trainees retrieved successfully.",
+            details = GetCompanyTraineesResponse(trainees, total)
+        )
+    }
+
     //  Trainee data related endpoints
     @PostMapping(Uris.TraineeData.ADD_TRAINEE_DATA)
     fun addTraineeData(
@@ -340,7 +363,7 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Sets retrieved successfully.",
-            details = GetSetsResponse(sets, total)
+            details = ListResponse(sets, total)
         )
     }
 

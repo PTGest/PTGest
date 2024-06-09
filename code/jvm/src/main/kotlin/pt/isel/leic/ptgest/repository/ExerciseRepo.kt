@@ -1,9 +1,9 @@
 package pt.isel.leic.ptgest.repository
 
+import pt.isel.leic.ptgest.domain.exercise.model.Exercise
+import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.model.Exercise
-import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import java.util.*
 
 interface ExerciseRepo {

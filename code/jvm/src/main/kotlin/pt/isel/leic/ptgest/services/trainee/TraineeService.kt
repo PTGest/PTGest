@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.services.trainee
 
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
-import pt.isel.leic.ptgest.domain.workout.model.SetDetails
+import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import java.util.*

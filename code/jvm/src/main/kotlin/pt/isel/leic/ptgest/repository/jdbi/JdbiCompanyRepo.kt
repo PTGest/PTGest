@@ -11,7 +11,7 @@ import java.util.*
 
 class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
 
-    override fun getCompanyTrainers(
+    override fun getTrainers(
         companyId: UUID,
         skip: Int,
         limit: Int?,
@@ -58,7 +58,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .list()
     }
 
-    override fun getTotalCompanyTrainers(
+    override fun getTotalTrainers(
         companyId: UUID,
         gender: Gender?,
         name: String?,
@@ -99,7 +99,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .one()
     }
 
-    override fun getCompanyTrainees(
+    override fun getTrainees(
         companyId: UUID,
         skip: Int,
         limit: Int?,
@@ -134,7 +134,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .list()
     }
 
-    override fun getTotalCompanyTrainees(companyId: UUID, gender: Gender?, name: String?): Int {
+    override fun getTotalTrainees(companyId: UUID, gender: Gender?, name: String?): Int {
         val genderCondition = if (gender != null) "and gender = :gender" else ""
         val nameCondition = if (name != null) "and ut.name like :name" else ""
 
@@ -160,7 +160,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .one()
     }
 
-    override fun getCompanyTrainer(trainerId: UUID, companyId: UUID): Trainer? =
+    override fun getTrainer(trainerId: UUID, companyId: UUID): Trainer? =
         handle.createQuery(
             """
             select id, name, gender, capacity, assigned_trainees

@@ -1,5 +1,6 @@
 package pt.isel.leic.ptgest.domain.workout.model
 
+import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 
 data class WorkoutDetails(

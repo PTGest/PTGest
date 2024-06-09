@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.domain.workout.model
+package pt.isel.leic.ptgest.domain.exercise.model
 
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup

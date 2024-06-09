@@ -1,6 +1,6 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
+import pt.isel.leic.ptgest.domain.trainee.model.TraineeDetails
 import java.util.*
 
 interface TraineeRepo {

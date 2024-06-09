@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.model.user.response
 
+import pt.isel.leic.ptgest.domain.trainee.model.TraineeDetails
+import pt.isel.leic.ptgest.domain.trainer.model.TrainerDetails
 import pt.isel.leic.ptgest.domain.user.Gender
-import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
-import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
 import pt.isel.leic.ptgest.domain.user.model.UserDetails
 import java.util.Date
 

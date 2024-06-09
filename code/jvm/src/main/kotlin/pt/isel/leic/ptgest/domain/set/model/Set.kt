@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.domain.workout.model
+package pt.isel.leic.ptgest.domain.set.model
 
 import pt.isel.leic.ptgest.domain.workout.SetType
 

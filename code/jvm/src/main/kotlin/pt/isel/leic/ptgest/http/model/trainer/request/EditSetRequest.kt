@@ -2,8 +2,8 @@ package pt.isel.leic.ptgest.http.model.trainer.request
 
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Size
+import pt.isel.leic.ptgest.domain.set.model.SetExercise
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 
 data class EditSetRequest(
     @field:NotEmpty(message = "Set name must not be empty.")

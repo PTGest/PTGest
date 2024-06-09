@@ -2,9 +2,9 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.set.model.Set
+import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.Set
-import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 import pt.isel.leic.ptgest.repository.SetRepo
 import java.util.*
 

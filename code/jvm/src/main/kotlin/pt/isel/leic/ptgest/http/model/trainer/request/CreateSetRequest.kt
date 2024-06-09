@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.http.model.trainer.request
 
 import jakarta.validation.constraints.Size
+import pt.isel.leic.ptgest.domain.set.model.SetExercise
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.SetExercise
 
 data class CreateSetRequest(
     val name: String?,

@@ -1,7 +1,7 @@
 package pt.isel.leic.ptgest.http.model.common.response
 
+import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 
 data class GetWorkoutDetailsResponse(

@@ -1,8 +1,8 @@
 package pt.isel.leic.ptgest.repository
 
+import pt.isel.leic.ptgest.domain.set.model.Set
+import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.Set
-import pt.isel.leic.ptgest.domain.workout.model.SetExerciseDetails
 import java.util.*
 
 interface SetRepo {
