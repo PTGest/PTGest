@@ -26,6 +26,8 @@ interface WorkoutRepo {
 
     fun getTotalFavoriteWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int
 
+    fun isWorkoutFavorite(trainerId: UUID, workoutId: Int): Boolean
+
     fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout?
 
     fun getWorkoutSetIds(workoutId: Int): List<Int>

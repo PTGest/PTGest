@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.exercise.model.Exercise
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
-import pt.isel.leic.ptgest.domain.set.model.Set
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.set.model.SetExercise
+import pt.isel.leic.ptgest.domain.set.model.TrainerSet
 import pt.isel.leic.ptgest.domain.trainee.model.Trainee
 import pt.isel.leic.ptgest.domain.traineeData.MeasurementTechnique
 import pt.isel.leic.ptgest.domain.traineeData.SkinFold
@@ -26,7 +27,7 @@ import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
-import pt.isel.leic.ptgest.domain.workout.model.Workout
+import pt.isel.leic.ptgest.domain.workout.model.TrainerWorkout
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
@@ -321,7 +322,7 @@ class TrainerService(
         muscleGroup: MuscleGroup?,
         modality: Modality?,
         favorite: Boolean
-    ): Pair<List<Exercise>, Int> {
+    ): Pair<List<TrainerExercise>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -329,7 +330,9 @@ class TrainerService(
         )
 
         return transactionManager.run {
-            return@run it.getExercises(
+            val exerciseRepo = it.exerciseRepo
+
+            val (exercises, total) = it.getExercises(
                 trainerId,
                 skip,
                 limit,
@@ -338,6 +341,13 @@ class TrainerService(
                 modality,
                 favorite
             )
+
+            val trainerExercises = exercises.map { exercise ->
+                val isFavorite = exerciseRepo.isFavoriteExercise(trainerId, exercise.id)
+                TrainerExercise(exercise, isFavorite)
+            }
+
+            return@run Pair(trainerExercises, total)
         }
     }
 
@@ -441,7 +451,7 @@ class TrainerService(
         type: SetType?,
         name: String?,
         favorite: Boolean
-    ): Pair<List<Set>, Int> {
+    ): Pair<List<TrainerSet>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -453,11 +463,19 @@ class TrainerService(
 
             return@run if (favorite) {
                 val sets = setRepo.getFavoriteSets(trainerId, skip ?: 0, limit, type, name)
+                    .map { set ->
+                        val isFavorite = setRepo.isSetFavorite(trainerId, set.id)
+                        TrainerSet(set.id, set.name, set.notes, set.type, isFavorite)
+                    }
                 val totalSets = setRepo.getTotalFavoriteSets(trainerId, type, name)
 
                 Pair(sets, totalSets)
             } else {
                 val sets = setRepo.getSets(trainerId, skip ?: 0, limit, type, name)
+                    .map { set ->
+                        val isFavorite = setRepo.isSetFavorite(trainerId, set.id)
+                        TrainerSet(set.id, set.name, set.notes, set.type, isFavorite)
+                    }
                 val totalSets = setRepo.getTotalSets(trainerId, type, name)
 
                 Pair(sets, totalSets)
@@ -551,7 +569,7 @@ class TrainerService(
         name: String?,
         muscleGroup: MuscleGroup?,
         favorite: Boolean
-    ): Pair<List<Workout>, Int> {
+    ): Pair<List<TrainerWorkout>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -563,11 +581,19 @@ class TrainerService(
 
             return@run if (favorite) {
                 val workouts = workoutRepo.getFavoriteWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+                    .map { workout ->
+                        val isFavorite = workoutRepo.isWorkoutFavorite(trainerId, workout.id)
+                        TrainerWorkout(workout.id, workout.name, workout.description, workout.muscleGroup, isFavorite)
+                    }
                 val totalWorkouts = workoutRepo.getTotalFavoriteWorkouts(trainerId, name, muscleGroup)
 
                 return@run Pair(workouts, totalWorkouts)
             } else {
                 val workouts = workoutRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+                    .map { workout ->
+                        val isFavorite = workoutRepo.isWorkoutFavorite(trainerId, workout.id)
+                        TrainerWorkout(workout.id, workout.name, workout.description, workout.muscleGroup, isFavorite)
+                    }
                 val totalWorkouts = workoutRepo.getTotalWorkouts(trainerId, name, muscleGroup)
 
                 Pair(workouts, totalWorkouts)

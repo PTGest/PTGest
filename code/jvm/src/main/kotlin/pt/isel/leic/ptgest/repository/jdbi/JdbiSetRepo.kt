@@ -155,6 +155,25 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .one()
     }
 
+    override fun isSetFavorite(trainerId: UUID, setId: Int): Boolean =
+        handle.createQuery(
+            """
+            select exists(
+                select 1
+                from trainer_favorite_set
+                where trainer_id = :trainerId and set_id = :setId
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "setId" to setId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
+
     override fun getSet(trainerId: UUID, setId: Int): Set? =
         handle.createQuery(
             """

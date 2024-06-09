@@ -26,8 +26,6 @@ import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.company.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.UpdateTrainerCapacityRequest
-import pt.isel.leic.ptgest.http.model.company.response.GetCompanyTraineesResponse
-import pt.isel.leic.ptgest.http.model.company.response.GetCompanyTrainersResponse
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.company.CompanyService
 import java.util.UUID
@@ -60,7 +58,7 @@ class CompanyController(
 
         return HttpResponse.ok(
             message = "Company trainers retrieved successfully.",
-            details = GetCompanyTrainersResponse(trainers, total)
+            details = ListResponse(trainers, total)
         )
     }
 
@@ -82,7 +80,7 @@ class CompanyController(
 
         return HttpResponse.ok(
             message = "Company trainees retrieved successfully.",
-            details = GetCompanyTraineesResponse(trainees, total)
+            details = ListResponse(trainees, total)
         )
     }
 

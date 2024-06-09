@@ -27,7 +27,6 @@ import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
 import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.ListResponse
-import pt.isel.leic.ptgest.http.model.company.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.AddTraineeDataRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSessionRequest
@@ -35,7 +34,6 @@ import pt.isel.leic.ptgest.http.model.trainer.request.CreateSetRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateWorkoutRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
-import pt.isel.leic.ptgest.http.model.trainer.response.GetWorkoutsResponse
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 import java.util.Date
@@ -65,7 +63,7 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Company trainees retrieved successfully.",
-            details = GetCompanyTraineesResponse(trainees, total)
+            details = ListResponse(trainees, total)
         )
     }
 
@@ -454,7 +452,7 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Workouts retrieved successfully.",
-            details = GetWorkoutsResponse(workouts, total)
+            details = ListResponse(workouts, total)
         )
     }
 

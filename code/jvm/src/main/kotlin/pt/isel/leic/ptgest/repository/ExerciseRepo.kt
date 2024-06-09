@@ -54,6 +54,8 @@ interface ExerciseRepo {
 
     fun unfavoriteExercise(trainerId: UUID, exerciseId: Int)
 
+    fun isFavoriteExercise(trainerId: UUID, exerciseId: Int): Boolean
+
     fun getFavoriteExercises(trainerId: UUID): List<Int>
 
     fun getFavoriteExercises(

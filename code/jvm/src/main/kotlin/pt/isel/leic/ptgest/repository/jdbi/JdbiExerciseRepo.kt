@@ -214,6 +214,25 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
             .execute()
     }
 
+    override fun isFavoriteExercise(trainerId: UUID, exerciseId: Int): Boolean =
+        handle.createQuery(
+            """
+            select exists(
+                select 1
+                from trainer_favorite_exercise
+                where trainer_id = :trainerId and exercise_id = :exerciseId
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "exerciseId" to exerciseId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
+
     override fun getFavoriteExercises(trainerId: UUID): List<Int> {
         return handle.createQuery(
             """

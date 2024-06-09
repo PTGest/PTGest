@@ -21,6 +21,8 @@ interface SetRepo {
 
     fun getTotalFavoriteSets(trainerId: UUID, type: SetType?, name: String?): Int
 
+    fun isSetFavorite(trainerId: UUID, setId: Int): Boolean
+
     fun getSet(trainerId: UUID, setId: Int): Set?
 
     fun getSetExercises(setId: Int): List<SetExerciseDetails>
