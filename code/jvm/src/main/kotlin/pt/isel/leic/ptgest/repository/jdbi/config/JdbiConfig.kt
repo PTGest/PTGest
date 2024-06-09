@@ -6,6 +6,7 @@ import org.jdbi.v3.postgres.PostgresPlugin
 import pt.isel.leic.ptgest.repository.jdbi.config.mappers.DateMapper
 import pt.isel.leic.ptgest.repository.jdbi.config.mappers.JsonbMapper
 import pt.isel.leic.ptgest.repository.jdbi.config.mappers.MuscleGroupListMapper
+import pt.isel.leic.ptgest.repository.jdbi.config.mappers.TraineeDataDetailsMapper
 
 fun Jdbi.configureWithAppRequirements(): Jdbi {
     installPlugin(KotlinPlugin())
@@ -14,5 +15,6 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerColumnMapper(DateMapper())
     registerColumnMapper(JsonbMapper())
     registerColumnMapper(MuscleGroupListMapper())
+    registerColumnMapper(TraineeDataDetailsMapper())
     return this
 }

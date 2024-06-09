@@ -2,11 +2,9 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
-import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
 import pt.isel.leic.ptgest.domain.user.model.UserDetails
 import pt.isel.leic.ptgest.repository.UserRepo
-import java.util.UUID
+import java.util.*
 
 class JdbiUserRepo(private val handle: Handle) : UserRepo {
 
@@ -62,29 +60,5 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
         )
             .bind("userId", userId)
             .mapTo<UserDetails>()
-            .firstOrNull()
-
-    override fun getTraineeDetails(traineeId: UUID): TraineeDetails? =
-        handle.createQuery(
-            """
-                select gender, birthdate, phone_number
-                from trainee
-                where trainee.id = :traineeId
-            """.trimIndent()
-        )
-            .bind("traineeId", traineeId)
-            .mapTo<TraineeDetails>()
-            .firstOrNull()
-
-    override fun getTrainerDetails(trainerId: UUID): TrainerDetails? =
-        handle.createQuery(
-            """
-                select gender, phone_number
-                from trainer 
-                where trainer.id = :trainerId
-            """.trimIndent()
-        )
-            .bind("trainerId", trainerId)
-            .mapTo<TrainerDetails>()
             .firstOrNull()
 }

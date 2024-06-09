@@ -3,16 +3,19 @@ package pt.isel.leic.ptgest.services.trainer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.user.Gender
-import pt.isel.leic.ptgest.domain.traineeData.MeasurementTechnique
-import pt.isel.leic.ptgest.domain.user.Role
+import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.report.model.Report
+import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
+import pt.isel.leic.ptgest.domain.traineeData.MeasurementTechnique
 import pt.isel.leic.ptgest.domain.traineeData.SkinFold
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyCircumferences
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyComposition
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyData
-import pt.isel.leic.ptgest.domain.report.model.Report
-import pt.isel.leic.ptgest.domain.report.model.ReportDetails
+import pt.isel.leic.ptgest.domain.traineeData.model.TraineeData
+import pt.isel.leic.ptgest.domain.traineeData.model.TraineeDataDetails
+import pt.isel.leic.ptgest.domain.user.Gender
+import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
@@ -27,7 +30,9 @@ import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.trainee.TraineeError
 import pt.isel.leic.ptgest.services.utils.Validators
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.UUID
 
 @Service
 class TrainerService(
@@ -51,8 +56,7 @@ class TrainerService(
 
         return transactionManager.run {
             val traineeRepo = it.traineeRepo
-            val userRepo = it.userRepo
-            val trainerRepo = it.trainerRepo
+            val traineeDataRepo = it.traineeDataRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
@@ -61,7 +65,7 @@ class TrainerService(
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            val traineeBirthdate = userRepo.getTraineeDetails(traineeId)?.birthdate
+            val traineeBirthdate = traineeRepo.getTraineeDetails(traineeId)?.birthdate
                 ?: throw TraineeError.TraineeNotFound
 
             val bodyData = getBodyData(
@@ -74,13 +78,72 @@ class TrainerService(
                 skinFold
             )
 
-            return@run trainerRepo.addTraineeData(
+            return@run traineeDataRepo.addTraineeData(
                 traineeId,
                 requestDate,
                 convertDataToJson(bodyData)
             )
         }
     }
+
+    fun getTraineeDataHistory(
+        trainerId: UUID,
+        traineeId: UUID,
+        skip: Int?,
+        limit: Int?,
+        order: Order?,
+        date: Date?
+    ): Pair<List<TraineeData>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
+            Validators.ValidationRequest(date, "Date must be before the current date.") { (it as Date).before(Date()) }
+        )
+
+        return transactionManager.run {
+            val traineeRepo = it.traineeRepo
+            val traineeDataRepo = it.traineeDataRepo
+
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssigned
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            val traineeData = traineeDataRepo.getTraineeData(
+                traineeId,
+                skip ?: 0,
+                limit,
+                order ?: Order.DESC,
+                date
+            )
+
+            val totalTraineeData = traineeDataRepo.getTotalTraineeData(traineeId, date)
+
+            return@run Pair(traineeData, totalTraineeData)
+        }
+    }
+
+    fun getTraineeDataDetails(
+        trainerId: UUID,
+        traineeId: UUID,
+        dataId: Int
+    ): TraineeDataDetails =
+        transactionManager.run {
+            val traineeRepo = it.traineeRepo
+            val traineeDataRepo = it.traineeDataRepo
+
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssigned
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            return@run traineeDataRepo.getTraineeBodyDataDetails(traineeId, dataId)
+                ?: throw TrainerError.ResourceNotFoundError
+        }
 
     //  Report related Services
     fun createReport(
@@ -93,6 +156,7 @@ class TrainerService(
         return transactionManager.run {
             val traineeRepo = it.traineeRepo
             val trainerRepo = it.trainerRepo
+            val reportRepo = it.reportRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
@@ -101,7 +165,7 @@ class TrainerService(
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            val reportId = trainerRepo.createReport(traineeId, requestDate, report, visibility)
+            val reportId = reportRepo.createReport(traineeId, requestDate, report, visibility)
 
             trainerRepo.associateTrainerToReport(trainerId, reportId)
             return@run reportId
@@ -127,6 +191,7 @@ class TrainerService(
         return transactionManager.run {
             val trainerRepo = it.trainerRepo
             val traineeRepo = it.traineeRepo
+            val reportRepo = it.reportRepo
 
             val searchTraineeId = traineeId ?: traineeName?.let { trainerRepo.getTraineeIdByName(it) }
 
@@ -139,8 +204,8 @@ class TrainerService(
                 }
             }
 
-            val reports = trainerRepo.getReports(trainerId, skip ?: 0, limit, searchTraineeId)
-            val totalReports = trainerRepo.getTotalReports(trainerId, searchTraineeId)
+            val reports = reportRepo.getReports(trainerId, skip ?: 0, limit, searchTraineeId)
+            val totalReports = reportRepo.getTotalReports(trainerId, searchTraineeId)
 
             return@run Pair(reports, totalReports)
         }
@@ -151,9 +216,9 @@ class TrainerService(
         reportId: Int
     ): ReportDetails =
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val reportRepo = it.reportRepo
 
-            return@run trainerRepo.getReportDetails(trainerId, reportId)
+            return@run reportRepo.getReportDetails(trainerId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
         }
 
@@ -166,23 +231,23 @@ class TrainerService(
         val requestDate = Date()
 
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val reportRepo = it.reportRepo
 
-            trainerRepo.getReportDetails(trainerId, reportId)
+            reportRepo.getReportDetails(trainerId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            trainerRepo.editReport(reportId, requestDate, report, visibility)
+            reportRepo.editReport(reportId, requestDate, report, visibility)
         }
     }
 
     fun deleteReport(trainerId: UUID, reportId: Int) {
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val reportRepo = it.reportRepo
 //          todo: check error
-            trainerRepo.getReportDetails(trainerId, reportId)
+            reportRepo.getReportDetails(trainerId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            trainerRepo.deleteReport(reportId)
+            reportRepo.deleteReport(reportId)
         }
     }
 
@@ -205,9 +270,9 @@ class TrainerService(
 
         return transactionManager.run {
             val trainerRepo = it.trainerRepo
-            val workoutRepo = it.workoutRepo
+            val exerciseRepo = it.exerciseRepo
 
-            val exerciseId = workoutRepo.createExercise(
+            val exerciseId = exerciseRepo.createExercise(
                 name,
                 description,
                 muscleGroup,
@@ -255,69 +320,57 @@ class TrainerService(
         exerciseId: Int
     ): ExerciseDetails =
         transactionManager.run {
-            val companyRepo = it.companyRepo
             val trainerRepo = it.trainerRepo
+            val exerciseRepo = it.exerciseRepo
 
             val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
-            return@run trainerRepo.getExerciseDetails(trainerId, exerciseId)
-                ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+            return@run exerciseRepo.getTrainerExerciseDetails(trainerId, exerciseId)
+                ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
                 ?: throw TrainerError.ResourceNotFoundError
         }
-
-    fun deleteExercise(trainerId: UUID, exerciseId: Int) {
-        transactionManager.run {
-            val trainerRepo = it.trainerRepo
-            val workoutRepo = it.workoutRepo
-
-            trainerRepo.getExerciseDetails(trainerId, exerciseId)
-                ?: throw TrainerError.ResourceNotFoundError
-
-            workoutRepo.deleteExercise(exerciseId)
-        }
-    }
 
     fun favoriteExercise(trainerId: UUID, exerciseId: Int) {
         transactionManager.run {
             val trainerRepo = it.trainerRepo
-            val companyRepo = it.companyRepo
+            val exerciseRepo = it.exerciseRepo
 
             val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
-            trainerRepo.getExerciseDetails(trainerId, exerciseId)
-                ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+            exerciseRepo.getTrainerExerciseDetails(trainerId, exerciseId)
+                ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteExercises = trainerRepo.getFavoriteExercisesByTrainerId(trainerId)
+            val favoriteExercises = exerciseRepo.getFavoriteExercises(trainerId)
 
             if (exerciseId in favoriteExercises) {
                 throw TrainerError.ResourceAlreadyFavoriteError
             }
-
+//          todo: verify error
             require(exerciseId !in favoriteExercises) { "Exercise is already favorited." }
 
-            trainerRepo.favoriteExercise(trainerId, exerciseId)
+            exerciseRepo.favoriteExercise(trainerId, exerciseId)
         }
     }
 
     fun unfavoriteExercise(trainerId: UUID, exerciseId: Int) {
         transactionManager.run {
             val trainerRepo = it.trainerRepo
-            val companyRepo = it.companyRepo
+            val exerciseRepo = it.exerciseRepo
 
             val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
-            trainerRepo.getExerciseDetails(trainerId, exerciseId)
-                ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+            exerciseRepo.getTrainerExerciseDetails(trainerId, exerciseId)
+                ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteExercises = trainerRepo.getFavoriteExercisesByTrainerId(trainerId)
+            val favoriteExercises = exerciseRepo.getFavoriteExercises(trainerId)
 
             if (exerciseId !in favoriteExercises) {
                 throw TrainerError.ResourceNotFavoriteError
             }
 
-            trainerRepo.unfavoriteExercise(trainerId, exerciseId)
+            exerciseRepo.unfavoriteExercise(trainerId, exerciseId)
         }
     }
 
@@ -338,7 +391,8 @@ class TrainerService(
         }
 
         return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            val workoutRepo = it.workoutRepo
+            val setRepo = it.setRepo
+
             val setId = it.createSet(trainerId, name, notes, setType)
 
             setExercises.forEachIndexed { index, set ->
@@ -347,7 +401,7 @@ class TrainerService(
                 val validatedDetails = Validators.validateSetDetails(set.details)
                 val jsonDetails = convertDataToJson(validatedDetails)
 
-                workoutRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
+                setRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
             }
 
             setId
@@ -369,16 +423,16 @@ class TrainerService(
         )
 
         return transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val setRepo = it.setRepo
 
             return@run if (favorite) {
-                val sets = trainerRepo.getFavoriteSets(trainerId, skip ?: 0, limit, type, name)
-                val totalSets = trainerRepo.getTotalFavoriteSets(trainerId, type, name)
+                val sets = setRepo.getFavoriteSets(trainerId, skip ?: 0, limit, type, name)
+                val totalSets = setRepo.getTotalFavoriteSets(trainerId, type, name)
 
                 Pair(sets, totalSets)
             } else {
-                val sets = trainerRepo.getSets(trainerId, skip ?: 0, limit, type, name)
-                val totalSets = trainerRepo.getTotalSets(trainerId, type, name)
+                val sets = setRepo.getSets(trainerId, skip ?: 0, limit, type, name)
+                val totalSets = setRepo.getTotalSets(trainerId, type, name)
 
                 Pair(sets, totalSets)
             }
@@ -390,58 +444,46 @@ class TrainerService(
         setId: Int
     ): SetDetails =
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val setRepo = it.setRepo
 
-            val set = trainerRepo.getSet(trainerId, setId)
+            val set = setRepo.getSet(trainerId, setId)
                 ?: throw TrainerError.ResourceNotFoundError
-            val exercises = trainerRepo.getSetExercises(setId)
+            val exercises = setRepo.getSetExercises(setId)
 
             return@run SetDetails(set, exercises)
         }
 
-    fun deleteSet(trainerId: UUID, setId: Int) {
-        transactionManager.run {
-            val trainerRepo = it.trainerRepo
-            val workoutRepo = it.workoutRepo
-
-            trainerRepo.getSet(trainerId, setId)
-                ?: throw TrainerError.ResourceNotFoundError
-
-            workoutRepo.deleteSet(setId)
-        }
-    }
-
     fun favoriteSet(trainerId: UUID, exerciseId: Int) {
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val setRepo = it.setRepo
 
-            trainerRepo.getSet(trainerId, exerciseId)
+            setRepo.getSet(trainerId, exerciseId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteSets = trainerRepo.getFavoriteSetsByTrainerId(trainerId)
+            val favoriteSets = setRepo.getFavoriteSetsByTrainerId(trainerId)
 
             if (exerciseId in favoriteSets) {
                 throw TrainerError.ResourceAlreadyFavoriteError
             }
 
-            trainerRepo.favoriteSet(trainerId, exerciseId)
+            setRepo.favoriteSet(trainerId, exerciseId)
         }
     }
 
     fun unfavoriteSet(trainerId: UUID, exerciseId: Int) {
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val setRepo = it.setRepo
 
-            trainerRepo.getSet(trainerId, exerciseId)
+            setRepo.getSet(trainerId, exerciseId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteSets = trainerRepo.getFavoriteSetsByTrainerId(trainerId)
+            val favoriteSets = setRepo.getFavoriteSetsByTrainerId(trainerId)
 
             if (exerciseId !in favoriteSets) {
                 throw TrainerError.ResourceNotFavoriteError
             }
 
-            trainerRepo.unfavoriteSet(trainerId, exerciseId)
+            setRepo.unfavoriteSet(trainerId, exerciseId)
         }
     }
 
@@ -463,10 +505,10 @@ class TrainerService(
 
         transactionManager.run {
             val workoutRepo = it.workoutRepo
-            val trainerRepo = it.trainerRepo
+            val setRepo = it.setRepo
 
             sets.forEachIndexed { index, setId ->
-                trainerRepo.getSet(trainerId, setId)
+                setRepo.getSet(trainerId, setId)
                     ?: throw TrainerError.ResourceNotFoundError
 
                 workoutRepo.associateSetToWorkout(index + 1, setId, workoutId)
@@ -491,16 +533,16 @@ class TrainerService(
         )
 
         return transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
 
             return@run if (favorite) {
-                val workouts = trainerRepo.getFavoriteWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
-                val totalWorkouts = trainerRepo.getTotalFavoriteWorkouts(trainerId, name, muscleGroup)
+                val workouts = workoutRepo.getFavoriteWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+                val totalWorkouts = workoutRepo.getTotalFavoriteWorkouts(trainerId, name, muscleGroup)
 
                 return@run Pair(workouts, totalWorkouts)
             } else {
-                val workouts = trainerRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
-                val totalWorkouts = trainerRepo.getTotalWorkouts(trainerId, name, muscleGroup)
+                val workouts = workoutRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
+                val totalWorkouts = workoutRepo.getTotalWorkouts(trainerId, name, muscleGroup)
 
                 Pair(workouts, totalWorkouts)
             }
@@ -512,63 +554,52 @@ class TrainerService(
         workoutId: Int
     ): WorkoutDetails =
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
+            val setRepo = it.setRepo
 
-            val workout = trainerRepo.getWorkoutDetails(trainerId, workoutId)
+            val workout = workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val sets = trainerRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
-                val set = trainerRepo.getSet(trainerId, setId) ?: return@mapNotNull null
-                val exercises = trainerRepo.getSetExercises(setId)
+            val sets = workoutRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
+                val set = setRepo.getSet(trainerId, setId) ?: return@mapNotNull null
+                val exercises = setRepo.getSetExercises(setId)
                 SetDetails(set, exercises)
             }
 
             return@run WorkoutDetails(workout, sets)
         }
 
-    fun deleteWorkout(trainerId: UUID, workoutId: Int) {
-        transactionManager.run {
-            val trainerRepo = it.trainerRepo
-            val workoutRepo = it.workoutRepo
-
-            trainerRepo.getWorkoutDetails(trainerId, workoutId)
-                ?: throw TrainerError.ResourceNotFoundError
-
-            workoutRepo.deleteWorkout(workoutId)
-        }
-    }
-
     fun favoriteWorkout(trainerId: UUID, workoutId: Int) {
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
 
-            trainerRepo.getWorkoutDetails(trainerId, workoutId)
+            workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteWorkouts = trainerRepo.getFavoriteWorkoutsByTrainerId(trainerId)
+            val favoriteWorkouts = workoutRepo.getFavoriteWorkoutsByTrainerId(trainerId)
 
             if (workoutId in favoriteWorkouts) {
                 throw TrainerError.ResourceAlreadyFavoriteError
             }
 
-            trainerRepo.favoriteWorkout(trainerId, workoutId)
+            workoutRepo.favoriteWorkout(trainerId, workoutId)
         }
     }
 
     fun unfavoriteWorkout(trainerId: UUID, workoutId: Int) {
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
+            val workoutRepo = it.workoutRepo
 
-            trainerRepo.getWorkoutDetails(trainerId, workoutId)
+            workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteWorkouts = trainerRepo.getFavoriteWorkoutsByTrainerId(trainerId)
+            val favoriteWorkouts = workoutRepo.getFavoriteWorkoutsByTrainerId(trainerId)
 
             if (workoutId !in favoriteWorkouts) {
                 throw TrainerError.ResourceNotFavoriteError
             }
 
-            trainerRepo.unfavoriteWorkout(trainerId, workoutId)
+            workoutRepo.unfavoriteWorkout(trainerId, workoutId)
         }
     }
 
@@ -592,7 +623,7 @@ class TrainerService(
 
         return transactionManager.run {
             val traineeRepo = it.traineeRepo
-            val trainerRepo = it.trainerRepo
+            val sessionRepo = it.sessionRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
@@ -601,7 +632,7 @@ class TrainerService(
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            return@run trainerRepo.createSession(
+            return@run sessionRepo.createSession(
                 trainerId,
                 traineeId,
                 workoutId,
@@ -634,6 +665,7 @@ class TrainerService(
                 val bodyComposition = BodyComposition(weight, height, bodyFatPercentage)
                 BodyData(weight, height, bodyCircumferences, bodyComposition)
             }
+
             skinFold != null -> {
                 val bodyFatPercentageResult = MeasurementTechnique.getTechnique(skinFold.size)
                     .bodyFatCalculator(
@@ -646,6 +678,7 @@ class TrainerService(
 
                 BodyData(weight, height, bodyCircumferences, bodyComposition, skinFold)
             }
+
             else -> {
                 val bodyComposition = BodyComposition(weight, height)
                 BodyData(weight, height, bodyCircumferences, bodyComposition)
@@ -714,7 +747,7 @@ class TrainerService(
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): Pair<List<Exercise>, Int> {
-        val favoriteExercises = trainerRepo.getFavoriteExercises(
+        val favoriteExercises = exerciseRepo.getFavoriteExercises(
             trainerId,
             skip ?: 0,
             limit,
@@ -722,7 +755,7 @@ class TrainerService(
             muscleGroup,
             modality
         )
-        val totalFavoriteExercises = trainerRepo.getTotalFavoriteExercises(
+        val totalFavoriteExercises = exerciseRepo.getTotalFavoriteExercises(
             trainerId,
             name,
             muscleGroup,
@@ -742,7 +775,7 @@ class TrainerService(
         addExercises: (List<Exercise>) -> Unit,
         addTotalExercises: (Int) -> Unit
     ) {
-        val trainerExercises = trainerRepo.getExercises(
+        val trainerExercises = exerciseRepo.getTrainerExercises(
             trainerId,
             skip ?: 0,
             limit,
@@ -750,7 +783,7 @@ class TrainerService(
             muscleGroup,
             modality
         )
-        val totalTrainerExercises = trainerRepo.getTotalExercises(
+        val totalTrainerExercises = exerciseRepo.getTotalTrainerExercises(
             trainerId,
             name,
             muscleGroup,
@@ -772,7 +805,7 @@ class TrainerService(
         addTotalExercises: (Int) -> Unit
     ) {
         companyId?.let {
-            val companyExercises = companyRepo.getExercises(
+            val companyExercises = exerciseRepo.getCompanyExercises(
                 companyId,
                 skip ?: 0,
                 limit,
@@ -780,7 +813,7 @@ class TrainerService(
                 muscleGroup,
                 modality
             )
-            val totalCompanyExercises = companyRepo.getTotalExercises(
+            val totalCompanyExercises = exerciseRepo.getTotalCompanyExercises(
                 companyId,
                 name,
                 muscleGroup,
@@ -800,18 +833,18 @@ class TrainerService(
     ): Int =
         if (name != null) {
             require(name.isNotEmpty()) { "Name must not be empty." }
-            workoutRepo.createSet(trainerId, name, notes, setType)
+            setRepo.createSet(trainerId, name, notes, setType)
         } else {
-            val lastSetNameId = trainerRepo.getLastSetNameId(trainerId)
+            val lastSetNameId = setRepo.getLastSetNameId(trainerId)
             val nextSetName = "Set #${lastSetNameId + 1}"
-            workoutRepo.createSet(trainerId, nextSetName, notes, setType)
+            setRepo.createSet(trainerId, nextSetName, notes, setType)
         }
 
     private fun Transaction.getExercise(userId: UUID, exerciseId: Int): ExerciseDetails {
         val companyId = trainerRepo.getCompanyAssignedTrainer(userId)
 
-        return trainerRepo.getExerciseDetails(userId, exerciseId)
-            ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+        return exerciseRepo.getTrainerExerciseDetails(userId, exerciseId)
+            ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
             ?: throw TrainerError.ResourceNotFoundError
     }
 
@@ -825,7 +858,7 @@ class TrainerService(
             require(name.isNotEmpty()) { "Name must not be empty." }
             workoutRepo.createWorkout(trainerId, name, description, muscleGroup)
         } else {
-            val lastWorkoutNameId = trainerRepo.getLastWorkoutNameId(trainerId)
+            val lastWorkoutNameId = workoutRepo.getLastWorkoutNameId(trainerId)
             val nextWorkoutName = "Workout #${lastWorkoutNameId + 1}"
             workoutRepo.createWorkout(trainerId, nextWorkoutName, description, muscleGroup)
         }

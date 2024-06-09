@@ -6,8 +6,7 @@ import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.AuthRepo
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
 class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
 

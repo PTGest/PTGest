@@ -12,16 +12,20 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.http.media.HttpResponse
+import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.model.common.request.CreateExerciseRequest
 import pt.isel.leic.ptgest.http.model.common.response.CreateResourceResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.model.common.response.GetExercisesResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
+import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.AddTraineeDataRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSessionRequest
@@ -29,13 +33,11 @@ import pt.isel.leic.ptgest.http.model.trainer.request.CreateSetRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateWorkoutRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
-import pt.isel.leic.ptgest.http.model.trainer.response.GetReportsResponse
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSetsResponse
 import pt.isel.leic.ptgest.http.model.trainer.response.GetWorkoutsResponse
-import pt.isel.leic.ptgest.http.media.HttpResponse
-import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
+import java.util.Date
 import java.util.UUID
 
 @RestController
@@ -44,11 +46,11 @@ import java.util.UUID
 class TrainerController(
     private val trainerService: TrainerService
 ) {
-//  Trainee data related endpoints
-    @PostMapping(Uris.Trainer.TraineeData.ADD_TRAINEE_DATA)
+    //  Trainee data related endpoints
+    @PostMapping(Uris.TraineeData.ADD_TRAINEE_DATA)
     fun addTraineeData(
-    @RequestBody traineeData: AddTraineeDataRequest,
-    authenticatedUser: AuthenticatedUser
+        @RequestBody traineeData: AddTraineeDataRequest,
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val dataId = trainerService.addTraineeData(
             authenticatedUser.id,
@@ -67,12 +69,54 @@ class TrainerController(
         )
     }
 
-//  Report related endpoints
-    @PostMapping(Uris.Trainer.Report.CREATE_REPORT)
+    @GetMapping(Uris.TraineeData.GET_TRAINEE_DATA_HISTORY)
+    fun getTraineeDataHistory(
+        @PathVariable traineeId: UUID,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam order: Order?,
+        @RequestParam date: Date?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (traineeData, total) = trainerService.getTraineeDataHistory(
+            authenticatedUser.id,
+            traineeId,
+            skip,
+            limit,
+            order,
+            date
+        )
+
+        return HttpResponse.ok(
+            message = "Trainee data retrieved successfully.",
+            details = ListResponse(traineeData, total)
+        )
+    }
+
+    @GetMapping(Uris.TraineeData.GET_TRAINEE_DATA_DETAILS)
+    fun getTraineeDataDetails(
+        @PathVariable traineeId: UUID,
+        @PathVariable dataId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val traineeDataDetails = trainerService.getTraineeDataDetails(
+            authenticatedUser.id,
+            traineeId,
+            dataId
+        )
+
+        return HttpResponse.ok(
+            message = "Trainee data details retrieved successfully.",
+            details = GetTraineeDataDetailsResponse(traineeDataDetails)
+        )
+    }
+
+    //  Report related endpoints
+    @PostMapping(Uris.Report.CREATE_REPORT)
     fun createReport(
-    @Valid @RequestBody
+        @Valid @RequestBody
         reportDetails: CreateReportRequest,
-    authenticatedUser: AuthenticatedUser
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val reportId = trainerService.createReport(
             authenticatedUser.id,
@@ -87,8 +131,8 @@ class TrainerController(
         )
     }
 
-//  todo: verify if this method
-    @GetMapping(Uris.Trainer.Report.GET_REPORTS)
+    //  todo: verify if this method
+    @GetMapping(Uris.Report.GET_REPORTS)
     fun getReports(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -106,11 +150,11 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Reports retrieved successfully.",
-            details = GetReportsResponse(reports, total)
+            details = ListResponse(reports, total)
         )
     }
 
-    @GetMapping(Uris.Trainer.Report.GET_REPORT_DETAILS)
+    @GetMapping(Uris.Report.GET_REPORT_DETAILS)
     fun getReportDetails(
         @PathVariable reportId: Int,
         authenticatedUser: AuthenticatedUser
@@ -126,7 +170,7 @@ class TrainerController(
         )
     }
 
-    @PutMapping(Uris.Trainer.Report.EDIT_REPORT)
+    @PutMapping(Uris.Report.EDIT_REPORT)
     fun editReport(
         @PathVariable reportId: Int,
         @Valid @RequestBody
@@ -145,7 +189,7 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Trainer.Report.DELETE_REPORT)
+    @DeleteMapping(Uris.Report.DELETE_REPORT)
     fun deleteReport(
         @PathVariable reportId: Int,
         authenticatedUser: AuthenticatedUser
@@ -160,12 +204,12 @@ class TrainerController(
         )
     }
 
-//  Exercise related endpoints
+    //  Exercise related endpoints
     @PostMapping(Uris.Exercise.CREATE_CUSTOM_EXERCISE)
     fun createCustomExercise(
-    @Valid @RequestBody
+        @Valid @RequestBody
         exerciseDetails: CreateExerciseRequest,
-    authenticatedUser: AuthenticatedUser
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val exerciseId = trainerService.createCustomExercise(
             authenticatedUser.id,
@@ -205,7 +249,7 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Exercises retrieved successfully.",
-            details = GetExercisesResponse(exercises, total)
+            details = ListResponse(exercises, total)
         )
     }
 
@@ -222,21 +266,6 @@ class TrainerController(
         return HttpResponse.ok(
             message = "Exercise details retrieved successfully.",
             details = GetExerciseDetailsResponse(exerciseDetails)
-        )
-    }
-
-    @DeleteMapping(Uris.Exercise.DELETE_EXERCISE)
-    fun deleteExercise(
-        @PathVariable exerciseId: Int,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        trainerService.deleteExercise(
-            authenticatedUser.id,
-            exerciseId
-        )
-
-        return HttpResponse.ok(
-            message = "Exercise deleted successfully."
         )
     }
 
@@ -270,12 +299,12 @@ class TrainerController(
         )
     }
 
-//  Set related endpoints
+    //  Set related endpoints
     @PostMapping(Uris.Set.CREATE_CUSTOM_SET)
     fun createCustomSet(
-    @Valid @RequestBody
+        @Valid @RequestBody
         setDetails: CreateSetRequest,
-    authenticatedUser: AuthenticatedUser
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val setId = trainerService.createCustomSet(
             authenticatedUser.id,
@@ -331,21 +360,6 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Set.DELETE_SET)
-    fun deleteSet(
-        @PathVariable setId: Int,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        trainerService.deleteSet(
-            authenticatedUser.id,
-            setId
-        )
-
-        return HttpResponse.ok(
-            message = "Set deleted successfully."
-        )
-    }
-
     @PostMapping(Uris.Set.FAVORITE_SET)
     fun favoriteSet(
         @PathVariable setId: Int,
@@ -376,12 +390,12 @@ class TrainerController(
         )
     }
 
-//  Workout related endpoints
+    //  Workout related endpoints
     @PostMapping(Uris.Workout.CREATE_CUSTOM_WORKOUT)
     fun createCustomWorkout(
-    @Valid @RequestBody
+        @Valid @RequestBody
         workoutDetails: CreateWorkoutRequest,
-    authenticatedUser: AuthenticatedUser
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val workoutId = trainerService.createCustomWorkout(
             authenticatedUser.id,
@@ -437,21 +451,6 @@ class TrainerController(
         )
     }
 
-    @DeleteMapping(Uris.Workout.DELETE_WORKOUT)
-    fun deleteWorkout(
-        @PathVariable workoutId: Int,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        trainerService.deleteWorkout(
-            authenticatedUser.id,
-            workoutId
-        )
-
-        return HttpResponse.ok(
-            message = "Workout deleted successfully."
-        )
-    }
-
     @PostMapping(Uris.Workout.FAVORITE_WORKOUT)
     fun favoriteWorkout(
         @PathVariable workoutId: Int,
@@ -482,11 +481,11 @@ class TrainerController(
         )
     }
 
-//  Session related endpoints
+    //  Session related endpoints
     @PostMapping(Uris.Session.CREATE_SESSION)
     fun createSession(
-    @RequestBody sessionDetails: CreateSessionRequest,
-    authenticatedUser: AuthenticatedUser
+        @RequestBody sessionDetails: CreateSessionRequest,
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val sessionId = trainerService.createSession(
             authenticatedUser.id,

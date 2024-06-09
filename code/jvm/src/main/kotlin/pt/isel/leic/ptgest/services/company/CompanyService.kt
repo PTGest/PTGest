@@ -1,30 +1,30 @@
 package pt.isel.leic.ptgest.services.company
 
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.trainee.model.Trainee
 import pt.isel.leic.ptgest.domain.trainer.model.Trainer
+import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.model.Exercise
 import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.utils.Validators
-import java.util.UUID
+import java.util.*
 
 @Service
 class CompanyService(
     private val transactionManager: TransactionManager
 ) {
     fun getCompanyTrainers(
+        companyId: UUID,
         skip: Int?,
         limit: Int?,
         gender: Gender?,
         availability: Order,
         name: String?,
-        excludeTraineeTrainer: UUID?,
-        companyId: UUID
+        excludeTraineeTrainer: UUID?
     ): Pair<List<Trainer>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -51,11 +51,11 @@ class CompanyService(
     }
 
     fun getCompanyTrainees(
+        companyId: UUID,
         skip: Int?,
         limit: Int?,
         gender: Gender?,
-        name: String?,
-        companyId: UUID
+        name: String?
     ): Pair<List<Trainee>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -73,11 +73,11 @@ class CompanyService(
         }
     }
 
-//  TODO: check if the trainee already exists or is from the same company
+    //  TODO: check if the trainee already exists or is from the same company
     fun assignTrainerToTrainee(
+        companyId: UUID,
         trainerId: UUID,
-        traineeId: UUID,
-        companyId: UUID
+        traineeId: UUID
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo
@@ -93,11 +93,11 @@ class CompanyService(
         }
     }
 
-//  TODO: check if the trainee already exists or is from the same company
+    //  TODO: check if the trainee already exists or is from the same company
     fun reassignTrainer(
+        companyId: UUID,
         trainerId: UUID,
-        traineeId: UUID,
-        companyId: UUID
+        traineeId: UUID
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo
@@ -121,8 +121,8 @@ class CompanyService(
     }
 
     fun updateTrainerCapacity(
-        trainerId: UUID,
         companyId: UUID,
+        trainerId: UUID,
         capacity: Int
     ) {
         require(capacity >= 0) { "Capacity must be a positive number." }
@@ -147,14 +147,17 @@ class CompanyService(
     ): Int {
         Validators.validate(
             Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(ref, "Reference must be a valid YouTube URL.") { Validators.isYoutubeUrl(it as String) }
+            Validators.ValidationRequest(
+                ref,
+                "Reference must be a valid YouTube URL."
+            ) { Validators.isYoutubeUrl(it as String) }
         )
 
         return transactionManager.run {
             val companyRepo = it.companyRepo
-            val workoutRepo = it.workoutRepo
+            val exerciseRepo = it.exerciseRepo
 
-            val exerciseId = workoutRepo.createExercise(
+            val exerciseId = exerciseRepo.createExercise(
                 name,
                 description,
                 muscleGroup,
@@ -169,12 +172,12 @@ class CompanyService(
     }
 
     fun getExercises(
+        companyId: UUID,
         skip: Int?,
         limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?,
-        trainerId: UUID
+        modality: Modality?
     ): Pair<List<Exercise>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -183,10 +186,10 @@ class CompanyService(
         )
 
         return transactionManager.run {
-            val companyRepo = it.companyRepo
+            val exerciseRepo = it.exerciseRepo
 
-            val exercises = companyRepo.getExercises(
-                trainerId,
+            val exercises = exerciseRepo.getCompanyExercises(
+                companyId,
                 skip ?: 0,
                 limit,
                 name,
@@ -194,8 +197,8 @@ class CompanyService(
                 modality
             )
 
-            val totalExercises = companyRepo.getTotalExercises(
-                trainerId,
+            val totalExercises = exerciseRepo.getTotalCompanyExercises(
+                companyId,
                 name,
                 muscleGroup,
                 modality
@@ -206,29 +209,13 @@ class CompanyService(
     }
 
     fun getExerciseDetails(
-        exerciseId: Int,
-        userId: UUID
-    ): ExerciseDetails =
-        transactionManager.run {
-            val companyRepo = it.companyRepo
-
-            return@run companyRepo.getExerciseDetails(userId, exerciseId)
-                ?: throw CompanyError.ExerciseNotFoundError
-        }
-
-//  TODO: check if the exercise is not used
-    fun deleteExercise(
         companyId: UUID,
         exerciseId: Int
-    ) {
+    ): ExerciseDetails =
         transactionManager.run {
-            val companyRepo = it.companyRepo
-            val workoutRepo = it.workoutRepo
+            val exerciseRepo = it.exerciseRepo
 
-            companyRepo.getExerciseDetails(companyId, exerciseId)
+            return@run exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId)
                 ?: throw CompanyError.ExerciseNotFoundError
-
-            workoutRepo.deleteExercise(exerciseId)
         }
-    }
 }

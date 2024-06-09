@@ -35,9 +35,11 @@ class AuthInterceptor(
                     sessionCookie != null && sessionCookie.name.isNotEmpty() -> {
                         processCookieValue(sessionCookie)
                     }
+
                     requestHeader != null && requestHeader.startsWith("Bearer") -> {
                         processAuthorizationHeaderValue(requestHeader)
                     }
+
                     else -> throw AuthError.UserAuthenticationError.TokenNotProvided
                 }
 
@@ -45,7 +47,8 @@ class AuthInterceptor(
             val requiredRoleFromMethod = handler.method.getAnnotation(RequiredRole::class.java)?.role
 
             if ((requiredRoleFromClass != null && !requiredRoleFromClass.contains(user.role)) ||
-                (requiredRoleFromMethod != null && !requiredRoleFromMethod.contains(user.role))) {
+                (requiredRoleFromMethod != null && !requiredRoleFromMethod.contains(user.role))
+            ) {
                 throw AuthError.UserAuthenticationError.UnauthorizedRole
             }
 

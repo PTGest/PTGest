@@ -2,7 +2,10 @@ package pt.isel.leic.ptgest.domain.traineeData
 
 import pt.isel.leic.ptgest.domain.user.Gender
 
-enum class MeasurementTechnique(val totalFolds: Int, val bodyFatCalculator: (Gender?, Map<SkinFold, Double>, Int) -> Double) {
+enum class MeasurementTechnique(
+    val totalFolds: Int,
+    val bodyFatCalculator: (Gender?, Map<SkinFold, Double>, Int) -> Double
+) {
     THREE_SKIN_FOLDS(3, { gender, skinFolds, age ->
         when (gender) {
             Gender.MALE -> {

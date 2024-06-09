@@ -12,5 +12,11 @@ data class GetWorkoutDetailsResponse(
     val sets: List<SetDetails>
 ) {
     constructor(workoutDetails: WorkoutDetails) :
-        this(workoutDetails.id, workoutDetails.name, workoutDetails.description, workoutDetails.muscleGroup, workoutDetails.sets)
+        this(
+            workoutDetails.id,
+            workoutDetails.name,
+            workoutDetails.description,
+            workoutDetails.muscleGroup,
+            workoutDetails.sets
+        )
 }

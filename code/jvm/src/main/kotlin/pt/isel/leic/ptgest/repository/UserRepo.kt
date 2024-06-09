@@ -1,9 +1,7 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.user.model.TraineeDetails
-import pt.isel.leic.ptgest.domain.user.model.TrainerDetails
 import pt.isel.leic.ptgest.domain.user.model.UserDetails
-import java.util.UUID
+import java.util.*
 
 interface UserRepo {
 
@@ -14,8 +12,4 @@ interface UserRepo {
     fun getUserDetails(email: String): UserDetails?
 
     fun getUserDetails(userId: UUID): UserDetails?
-
-    fun getTraineeDetails(traineeId: UUID): TraineeDetails?
-
-    fun getTrainerDetails(trainerId: UUID): TrainerDetails?
 }

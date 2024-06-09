@@ -1,13 +1,9 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.trainee.model.Trainee
 import pt.isel.leic.ptgest.domain.trainer.model.Trainer
-import pt.isel.leic.ptgest.domain.workout.Modality
-import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.model.Exercise
-import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.user.Gender
 import java.util.UUID
 
 interface CompanyRepo {
@@ -48,22 +44,4 @@ interface CompanyRepo {
     fun updateTrainerCapacity(companyId: UUID, trainerId: UUID, capacity: Int)
 
     fun associateCompanyToExercise(companyId: UUID, exerciseId: Int)
-
-    fun getExercises(
-        companyId: UUID,
-        skip: Int,
-        limit: Int?,
-        name: String?,
-        muscleGroup: MuscleGroup?,
-        modality: Modality?
-    ): List<Exercise>
-
-    fun getTotalExercises(
-        companyId: UUID,
-        name: String?,
-        muscleGroup: MuscleGroup?,
-        modality: Modality?
-    ): Int
-
-    fun getExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails?
 }

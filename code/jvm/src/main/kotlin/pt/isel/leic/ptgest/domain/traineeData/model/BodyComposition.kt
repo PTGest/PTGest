@@ -20,7 +20,9 @@ data class BodyComposition(
 
     companion object {
         private fun calculateBMI(weight: Double, height: Double): Double = weight / (height * height)
-        private fun calculateBodyFatMass(weight: Double, bodyFatPercentage: Double): Double = weight * (bodyFatPercentage / 100)
+        private fun calculateBodyFatMass(weight: Double, bodyFatPercentage: Double): Double =
+            weight * (bodyFatPercentage / 100)
+
         private fun calculateFatFreeMass(weight: Double, bodyFatMass: Double): Double = weight - bodyFatMass
     }
 }

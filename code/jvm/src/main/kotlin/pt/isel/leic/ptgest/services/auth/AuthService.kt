@@ -11,8 +11,7 @@ import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.MailService
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
 @Service
 class AuthService(
@@ -368,12 +367,14 @@ class AuthService(
                     companyId = userId
                 )
             }
+
             Role.INDEPENDENT_TRAINER -> {
                 userRepo.associateTraineeToTrainer(
                     traineeId = traineeId,
                     trainerId = traineeId
                 )
             }
+
             else -> throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
     }

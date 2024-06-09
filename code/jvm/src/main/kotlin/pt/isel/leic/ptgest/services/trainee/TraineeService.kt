@@ -5,27 +5,28 @@ import pt.isel.leic.ptgest.domain.workout.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import java.util.UUID
+import java.util.*
 
 @Service
 class TraineeService(
     private val transactionManager: TransactionManager
 ) {
+
     fun getExerciseDetails(
         traineeId: UUID,
         exerciseId: Int
     ): ExerciseDetails =
         transactionManager.run {
             val trainerRepo = it.trainerRepo
-            val companyRepo = it.companyRepo
             val traineeRepo = it.traineeRepo
+            val exerciseRepo = it.exerciseRepo
 
             val trainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
             val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
-            trainerRepo.getExerciseDetails(traineeId, exerciseId)
-                ?: companyId?.let { companyRepo.getExerciseDetails(companyId, exerciseId) }
+            exerciseRepo.getTrainerExerciseDetails(traineeId, exerciseId)
+                ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
                 ?: throw TraineeError.ExerciseNotFoundError
         }
 
@@ -34,15 +35,15 @@ class TraineeService(
         setId: Int
     ): SetDetails =
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
             val traineeRepo = it.traineeRepo
+            val setRepo = it.setRepo
 
             val trainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
 
-            val set = trainerRepo.getSet(trainerId, setId)
+            val set = setRepo.getSet(trainerId, setId)
                 ?: throw TraineeError.SetNotFoundError
-            val exercises = trainerRepo.getSetExercises(setId)
+            val exercises = setRepo.getSetExercises(setId)
 
             return@run SetDetails(set, exercises)
         }
@@ -52,18 +53,19 @@ class TraineeService(
         workoutId: Int
     ): WorkoutDetails =
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
             val traineeRepo = it.traineeRepo
+            val workoutRepo = it.workoutRepo
+            val setRepo = it.setRepo
 
             val trainerId = traineeRepo.getTrainerAssigned(traineeId)
                 ?: throw TraineeError.TraineeNotAssigned
 
-            val workout = trainerRepo.getWorkoutDetails(trainerId, workoutId)
+            val workout = workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TraineeError.WorkoutNotFoundError
 
-            val sets = trainerRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
-                val set = trainerRepo.getSet(trainerId, setId) ?: return@mapNotNull null
-                val exercises = trainerRepo.getSetExercises(setId)
+            val sets = workoutRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
+                val set = setRepo.getSet(trainerId, setId) ?: return@mapNotNull null
+                val exercises = setRepo.getSetExercises(setId)
                 SetDetails(set, exercises)
             }
 

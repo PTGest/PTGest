@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.user.Role
+import pt.isel.leic.ptgest.http.media.HttpResponse
+import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.model.auth.request.AuthenticatedSignupRequest
 import pt.isel.leic.ptgest.http.model.auth.request.ForgetPasswordRequest
 import pt.isel.leic.ptgest.http.model.auth.request.LoginRequest
@@ -24,8 +26,6 @@ import pt.isel.leic.ptgest.http.model.auth.request.SignupRequest
 import pt.isel.leic.ptgest.http.model.auth.response.AuthenticatedSignupResponse
 import pt.isel.leic.ptgest.http.model.auth.response.LoginResponse
 import pt.isel.leic.ptgest.http.model.auth.response.RefreshTokenResponse
-import pt.isel.leic.ptgest.http.media.HttpResponse
-import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
@@ -89,6 +89,7 @@ class AuthController(private val service: AuthService) {
                     details = AuthenticatedSignupResponse(traineeId)
                 )
             }
+
             is AuthenticatedSignupRequest.HiredTrainer -> {
                 val trainerId = service.signUpHiredTrainer(
                     authenticatedUser.id,

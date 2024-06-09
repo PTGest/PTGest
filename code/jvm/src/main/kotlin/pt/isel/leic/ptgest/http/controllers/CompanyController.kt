@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.http.media.HttpResponse
+import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.model.common.request.CreateExerciseRequest
 import pt.isel.leic.ptgest.http.model.common.response.CreateResourceResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.model.common.response.GetExercisesResponse
+import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.company.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.model.company.response.GetCompanyTraineesResponse
 import pt.isel.leic.ptgest.http.model.company.response.GetCompanyTrainersResponse
-import pt.isel.leic.ptgest.http.media.HttpResponse
-import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.company.CompanyService
 import java.util.UUID
@@ -38,7 +38,7 @@ import java.util.UUID
 class CompanyController(
     private val companyService: CompanyService
 ) {
-    @GetMapping(Uris.Company.COMPANY_TRAINERS)
+    @GetMapping(Uris.Company.TRAINERS)
     fun getCompanyTrainers(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -49,13 +49,13 @@ class CompanyController(
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (trainers, total) = companyService.getCompanyTrainers(
+            authenticatedUser.id,
             skip,
             limit,
             gender,
             availability,
             name?.trim(),
-            excludeTraineeTrainer,
-            authenticatedUser.id
+            excludeTraineeTrainer
         )
 
         return HttpResponse.ok(
@@ -64,7 +64,7 @@ class CompanyController(
         )
     }
 
-    @GetMapping(Uris.Company.COMPANY_TRAINEES)
+    @GetMapping(Uris.Company.TRAINEES)
     fun getCompanyTrainees(
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
@@ -73,11 +73,11 @@ class CompanyController(
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (trainees, total) = companyService.getCompanyTrainees(
+            authenticatedUser.id,
             skip,
             limit,
             gender,
-            name?.trim(),
-            authenticatedUser.id
+            name?.trim()
         )
 
         return HttpResponse.ok(
@@ -125,7 +125,7 @@ class CompanyController(
         )
     }
 
-//  todo: implement this endpoint
+    //  todo: implement this endpoint
     @DeleteMapping(Uris.Company.REMOVE_TRAINER)
     fun removeTrainer(
         authenticatedUser: AuthenticatedUser
@@ -166,17 +166,17 @@ class CompanyController(
     ): ResponseEntity<*> {
         val (exercises, total) =
             companyService.getExercises(
+                authenticatedUser.id,
                 skip,
                 limit,
                 name?.trim(),
                 muscleGroup,
-                modality,
-                authenticatedUser.id
+                modality
             )
 
         return HttpResponse.ok(
             message = "Exercises retrieved successfully.",
-            details = GetExercisesResponse(exercises, total)
+            details = ListResponse(exercises, total)
         )
     }
 
@@ -187,25 +187,13 @@ class CompanyController(
     ): ResponseEntity<*> {
         val exerciseDetails =
             companyService.getExerciseDetails(
-                exerciseId,
-                authenticatedUser.id
+                authenticatedUser.id,
+                exerciseId
             )
 
         return HttpResponse.ok(
             message = "Exercise details retrieved successfully.",
             details = GetExerciseDetailsResponse(exerciseDetails)
-        )
-    }
-
-    @DeleteMapping(Uris.Exercise.DELETE_EXERCISE)
-    fun deleteExercise(
-        @PathVariable exerciseId: Int,
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        companyService.deleteExercise(authenticatedUser.id, exerciseId)
-
-        return HttpResponse.ok(
-            message = "Exercise deleted successfully."
         )
     }
 }

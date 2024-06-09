@@ -1,37 +1,38 @@
 package pt.isel.leic.ptgest.repository
 
-import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
-import pt.isel.leic.ptgest.domain.workout.SetType
-import java.util.UUID
+import pt.isel.leic.ptgest.domain.workout.model.Workout
+import java.util.*
 
 interface WorkoutRepo {
 
-//  Exercise related methods
-
-    fun createExercise(
-        name: String,
-        description: String?,
-        muscleGroup: List<MuscleGroup>,
-        modality: Modality,
-        ref: String?
-    ): Int
-
-    fun deleteExercise(exerciseId: Int)
-
-//   Set related methods
-
-    fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int
-
-    fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String)
-
-    fun deleteSet(setId: Int)
-
-//   Workout related methods
-
     fun createWorkout(trainerId: UUID, name: String, description: String?, muscleGroup: List<MuscleGroup>): Int
 
-    fun deleteWorkout(workoutId: Int)
-
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
+
+    fun getLastWorkoutNameId(trainerId: UUID): Int
+
+    fun getWorkouts(trainerId: UUID, skip: Int, limit: Int?, name: String?, muscleGroup: MuscleGroup?): List<Workout>
+
+    fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int
+
+    fun getFavoriteWorkouts(
+        trainerId: UUID,
+        skip: Int,
+        limit: Int?,
+        name: String?,
+        muscleGroup: MuscleGroup?
+    ): List<Workout>
+
+    fun getTotalFavoriteWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int
+
+    fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout?
+
+    fun getWorkoutSetIds(workoutId: Int): List<Int>
+
+    fun getFavoriteWorkoutsByTrainerId(trainerId: UUID): List<Int>
+
+    fun favoriteWorkout(trainerId: UUID, workoutId: Int)
+
+    fun unfavoriteWorkout(trainerId: UUID, workoutId: Int)
 }

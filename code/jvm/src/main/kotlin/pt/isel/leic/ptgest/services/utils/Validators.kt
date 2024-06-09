@@ -5,7 +5,7 @@ class Validators {
 
     companion object {
 
-//      TODO: check duration fields
+        //      TODO: check duration fields
         private val detailsValidators = mapOf(
             "reps" to { it: String ->
                 val intValue = requireNotNull(it.toIntOrNull()) { "Reps must be an integer" }
