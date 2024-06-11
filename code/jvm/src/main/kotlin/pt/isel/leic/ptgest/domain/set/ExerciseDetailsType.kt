@@ -14,9 +14,9 @@ enum class ExerciseDetailsType(val validator: (String) -> Number) {
 
 //  TODO: Implement the DURATION ExerciseDetails
     DURATION({ value: String ->
-        val intValue = requireNotNull(value.toIntOrNull()) { "Duration must be an integer" }
-        require(intValue > 0) { "Duration must be a positive integer" }
-        intValue
+        val doubleValue = requireNotNull(value.toDoubleOrNull()) { "Duration must be an double" }
+        require(doubleValue > 0) { "Duration must be a positive double" }
+        doubleValue
     }),
     DISTANCE({ value: String ->
         val doubleValue = requireNotNull(value.toDoubleOrNull()) { "Distance must be a double" }

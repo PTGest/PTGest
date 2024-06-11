@@ -22,7 +22,7 @@ class TraineeService(
             val exerciseRepo = it.exerciseRepo
 
             val trainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
             val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
             exerciseRepo.getTrainerExerciseDetails(traineeId, exerciseId)
@@ -39,7 +39,7 @@ class TraineeService(
             val setRepo = it.setRepo
 
             val trainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             val set = setRepo.getSet(trainerId, setId)
                 ?: throw TraineeError.SetNotFoundError
@@ -58,7 +58,7 @@ class TraineeService(
             val setRepo = it.setRepo
 
             val trainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             val workout = workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TraineeError.WorkoutNotFoundError

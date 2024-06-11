@@ -1,11 +1,9 @@
 package pt.isel.leic.ptgest.http.model.trainer.request
 
 import pt.isel.leic.ptgest.domain.session.SessionType
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
-data class CreateSessionRequest(
-    val traineeId: UUID,
+data class EditSessionRequest(
     val workoutId: Int,
     val beginDate: Date,
     val endDate: Date?,

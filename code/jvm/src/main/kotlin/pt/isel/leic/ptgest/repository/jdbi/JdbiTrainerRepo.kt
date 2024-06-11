@@ -131,4 +131,20 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             )
             .execute()
     }
+
+    override fun associateSessionToTrainer(trainerId: UUID, sessionId: Int) {
+        handle.createUpdate(
+            """
+            insert into session_trainer (trainer_id, session_id)
+            values (:trainerId, :sessionId)
+            """
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "sessionId" to sessionId
+                )
+            )
+            .execute()
+    }
 }

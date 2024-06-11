@@ -79,6 +79,7 @@ object Uris {
     object Session {
         const val CREATE_SESSION = "/session"
         const val GET_SESSIONS = "/sessions"
+        const val GET_TRAINEE_SESSIONS = "/trainee/{traineeId}/sessions"
         const val GET_SESSION_DETAILS = "/session/{sessionId}"
         const val EDIT_SESSION = "/session/{sessionId}/edit"
         const val CANCEL_SESSION = "/session/{sessionId}/cancel"

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.workout.Modality
@@ -28,12 +29,14 @@ import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsRespo
 import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.AddTraineeDataRequest
+import pt.isel.leic.ptgest.http.model.trainer.request.CancelSessionRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSessionRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSetRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateWorkoutRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
+import pt.isel.leic.ptgest.http.model.trainer.response.GetSessionDetails
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 import java.util.Date
@@ -514,6 +517,7 @@ class TrainerController(
             sessionDetails.workoutId,
             sessionDetails.beginDate,
             sessionDetails.endDate,
+            sessionDetails.location,
             sessionDetails.type,
             sessionDetails.notes
         )
@@ -530,32 +534,92 @@ class TrainerController(
         @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        throw NotImplementedError("Not implemented yet.")
+        val (sessions, total) = trainerService.getSessions(
+            authenticatedUser.id,
+            skip,
+            limit
+        )
+
+        return HttpResponse.ok(
+            message = "Sessions retrieved successfully.",
+            details = ListResponse(sessions, total)
+        )
+    }
+
+    @GetMapping(Uris.Session.GET_TRAINEE_SESSIONS)
+    fun getTraineeSessions(
+        @PathVariable traineeId: UUID,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        @RequestParam sessionType: SessionType?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (sessions, total) = trainerService.getTraineeSessions(
+            authenticatedUser.id,
+            traineeId,
+            skip,
+            limit,
+            sessionType
+        )
+
+        return HttpResponse.ok(
+            message = "Trainee sessions retrieved successfully.",
+            details = ListResponse(sessions, total)
+        )
     }
 
     @GetMapping(Uris.Session.GET_SESSION_DETAILS)
     fun getSessionDetails(
-        @PathVariable sessionId: String,
+        @PathVariable sessionId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        throw NotImplementedError("Not implemented yet.")
+        val sessionDetails = trainerService.getSessionDetails(
+            authenticatedUser.id,
+            sessionId
+        )
+
+        return HttpResponse.ok(
+            message = "Session details retrieved successfully.",
+            details = GetSessionDetails(sessionDetails)
+        )
     }
 
     @PutMapping(Uris.Session.EDIT_SESSION)
     fun editSession(
-        @PathVariable sessionId: String,
+        @PathVariable sessionId: Int,
         @RequestBody sessionDetails: CreateSessionRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        throw NotImplementedError("Not implemented yet.")
+        trainerService.editSession(
+            authenticatedUser.id,
+            sessionId,
+            sessionDetails.workoutId,
+            sessionDetails.beginDate,
+            sessionDetails.endDate,
+            sessionDetails.location,
+            sessionDetails.type,
+            sessionDetails.notes
+        )
+
+        return HttpResponse.ok(
+            message = "Session edited successfully."
+        )
     }
 
-    //  TODO: check if we should delete the session or just cancel it in the database
-    @DeleteMapping(Uris.Session.CANCEL_SESSION)
+    @PostMapping(Uris.Session.CANCEL_SESSION)
     fun cancelSession(
-        @PathVariable sessionId: String,
+        @PathVariable sessionId: Int,
+        @RequestBody cancelReason: CancelSessionRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        throw NotImplementedError("Not implemented yet.")
+        trainerService.cancelSession(
+            authenticatedUser.id,
+            sessionId,
+            cancelReason.reason
+        )
+
+        return HttpResponse.ok(
+            message = "Session canceled successfully."
+        )
     }
 }

@@ -10,6 +10,9 @@ import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
+import pt.isel.leic.ptgest.domain.session.model.Session
+import pt.isel.leic.ptgest.domain.session.model.TrainerSession
+import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.set.model.SetExercise
@@ -86,14 +89,14 @@ class TrainerService(
             val traineeDataRepo = it.traineeDataRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             if (traineeTrainerId != trainerId) {
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
             val traineeBirthdate = traineeRepo.getTraineeDetails(traineeId)?.birthdate
-                ?: throw TraineeError.TraineeNotFound
+                ?: throw TraineeError.TraineeNotFoundError
 
             val bodyData = getBodyData(
                 traineeGender,
@@ -132,7 +135,7 @@ class TrainerService(
             val traineeDataRepo = it.traineeDataRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             if (traineeTrainerId != trainerId) {
                 throw TrainerError.TraineeNotAssignedToTrainerError
@@ -162,7 +165,7 @@ class TrainerService(
             val traineeDataRepo = it.traineeDataRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             if (traineeTrainerId != trainerId) {
                 throw TrainerError.TraineeNotAssignedToTrainerError
@@ -186,7 +189,7 @@ class TrainerService(
             val reportRepo = it.reportRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             if (traineeTrainerId != trainerId) {
                 throw TrainerError.TraineeNotAssignedToTrainerError
@@ -224,7 +227,7 @@ class TrainerService(
 
             if (searchTraineeId != null) {
                 val traineeTrainerId = traineeRepo.getTrainerAssigned(searchTraineeId)
-                    ?: throw TraineeError.TraineeNotAssigned
+                    ?: throw TraineeError.TraineeNotAssignedError
 
                 if (traineeTrainerId != trainerId) {
                     throw TrainerError.TraineeNotAssignedToTrainerError
@@ -662,37 +665,172 @@ class TrainerService(
         workoutId: Int,
         beginDate: Date,
         endDate: Date?,
+        location: String?,
         type: SessionType,
         notes: String?
     ): Int {
+        require(beginDate.after(Date())) { "Begin date must be after the current date." }
+
         Validators.validate(
-            Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() },
-            Validators.ValidationRequest(
-                endDate,
-                "End date must be after begin date."
-            ) { (it as Date).after(beginDate) }
+            Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
         )
+
+        validateSessionDataLocation(beginDate, endDate, location, type)
 
         return transactionManager.run {
             val traineeRepo = it.traineeRepo
+            val trainerRepo = it.trainerRepo
             val sessionRepo = it.sessionRepo
 
             val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssigned
+                ?: throw TraineeError.TraineeNotAssignedError
 
             if (traineeTrainerId != trainerId) {
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            return@run sessionRepo.createSession(
-                trainerId,
+            val sessionId = sessionRepo.createSession(
                 traineeId,
                 workoutId,
                 beginDate,
                 endDate,
+                location,
                 type,
                 notes
             )
+
+            if (type == SessionType.TRAINER_GUIDED) {
+                trainerRepo.associateSessionToTrainer(trainerId, sessionId)
+            }
+
+            return@run sessionId
+        }
+    }
+
+    fun getSessions(
+        trainerId: UUID,
+        skip: Int?,
+        limit: Int?
+    ): Pair<List<TrainerSession>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
+        )
+
+        return transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val sessions = sessionRepo.getTrainerSessions(trainerId, skip ?: 0, limit)
+            val totalSessions = sessionRepo.getTotalTrainerSessions(trainerId)
+
+            return@run Pair(sessions, totalSessions)
+        }
+    }
+
+    fun getTraineeSessions(
+        trainerId: UUID,
+        traineeId: UUID,
+        skip: Int?,
+        limit: Int?,
+        sessionType: SessionType?
+    ): Pair<List<Session>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
+        )
+
+        return transactionManager.run {
+            val sessionRepo = it.sessionRepo
+            val traineeRepo = it.traineeRepo
+
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            val sessions = sessionRepo.getTraineeSessions(traineeId, skip ?: 0, limit, sessionType)
+            val totalSessions = sessionRepo.getTotalTraineeSessions(traineeId, sessionType)
+
+            return@run Pair(sessions, totalSessions)
+        }
+    }
+
+    fun getSessionDetails(
+        trainerId: UUID,
+        sessionId: Int
+    ): TrainerSessionDetails =
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            return@run sessionRepo.getTrainerSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+        }
+
+//  todo: send mail to trainee
+    fun editSession(
+        trainerId: UUID,
+        sessionId: Int,
+        workoutId: Int,
+        beginDate: Date,
+        endDate: Date?,
+        location: String?,
+        type: SessionType,
+        notes: String?
+    ) {
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(isCurrentDate24BeforeDate(session.beginDate)) { "Session can be edited only 24 hours before the begin date." }
+            require(beginDate.after(Date())) { "Begin date must be after the current date." }
+
+            validateSessionDataLocation(beginDate, endDate, location, type)
+
+            sessionRepo.updateSession(sessionId, workoutId, beginDate, endDate, location, type, notes)
+        }
+    }
+
+    fun cancelSession(trainerId: UUID, sessionId: Int, reason: String?) {
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(isCurrentDate24BeforeDate(session.beginDate)) { "Session can be canceled only 24 hours before the begin date." }
+
+            sessionRepo.cancelSession(sessionId, reason)
         }
     }
 
@@ -747,6 +885,32 @@ class TrainerService(
         }
 
         return age
+    }
+
+    private fun validateSessionDataLocation(
+        beginDate: Date,
+        endDate: Date?,
+        location: String?,
+        type: SessionType
+    ) {
+        if (type == SessionType.TRAINER_GUIDED) {
+            requireNotNull(endDate) { "End date must be provided for predefined sessions." }
+            require(endDate.after(beginDate)) { "End date must be after the begin date." }
+            requireNotNull(location) { "Location must be provided for predefined sessions." }
+            require(location.isNotEmpty()) { "Location must not be empty." }
+        }
+    }
+
+    private fun isCurrentDate24BeforeDate(date: Date): Boolean {
+        val calendar = Calendar.getInstance()
+
+        val currentDate = calendar.time
+
+        calendar.time = date
+        calendar.add(Calendar.HOUR, -24)
+        val date24HoursBefore = calendar.time
+
+        return currentDate.before(date24HoursBefore)
     }
 
     private fun Transaction.getExercises(

@@ -24,6 +24,11 @@ create table if not exists prod."user"
     role          prod.role                                                          not null
 );
 
+create table if not exists prod.deactivated_user
+(
+    id uuid primary key references prod."user" (id) on delete cascade
+);
+
 -- Auth tables
 create table if not exists prod.token
 (
@@ -88,10 +93,19 @@ create table if not exists prod.trainer_trainee
 
 create table if not exists prod.trainee_data
 (
-    id       serial primary key,
+    id         serial primary key,
     trainee_id uuid references prod.trainee (id) on delete cascade,
     date       date  not null,
     body_data  jsonb not null
+);
+
+create table if not exists prod.report
+(
+    id         serial primary key,
+    trainee_id uuid references prod.trainee (id) on delete cascade,
+    date       date                  not null,
+    report     text                  not null,
+    visibility boolean default false not null
 );
 
 create table if not exists prod.report_trainer
@@ -99,15 +113,6 @@ create table if not exists prod.report_trainer
     reportId   int references prod.report (id) on delete cascade,
     trainer_id uuid references prod.trainer (id) on delete cascade,
     primary key (reportId, trainer_id)
-);
-
-create table if not exists prod.report
-(
-    id        serial primary key,
-    trainee_id uuid references prod.trainee (id) on delete cascade,
-    date       date                  not null,
-    report     text                  not null,
-    visibility boolean default false not null
 );
 
 -- Trainee's workout plan
@@ -121,10 +126,10 @@ create table if not exists prod.workout
 
 create table if not exists prod.set
 (
-    id         serial primary key,
-    name       varchar(50)  not null,
-    notes      text,
-    type       prod.set_type not null
+    id    serial primary key,
+    name  varchar(50)  not null,
+    notes text,
+    type  prod.set_type not null
 );
 
 create table if not exists prod.exercise
@@ -144,8 +149,15 @@ create table if not exists prod.session
     workout_id int references prod.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
     end_date   timestamp check ( end_date > begin_date and end_date > now() )   not null,
+    location   varchar(50)                                                     ,
     type       prod.session_type                                                 not null,
     notes      text
+);
+
+create table if not exists prod.cancelled_session
+(
+    session_id int primary key references prod.session (id) on delete cascade,
+    reason     text
 );
 
 create table if not exists prod.exercise_company
@@ -165,22 +177,22 @@ create table if not exists prod.exercise_trainer
 create table if not exists prod.set_trainer
 (
     trainer_id  uuid references prod.trainer (id) on delete cascade,
-    exercise_id int references prod.exercise (id) on delete cascade,
-    primary key (trainer_id, exercise_id)
+    set_id int references prod.set (id) on delete cascade,
+    primary key (trainer_id, set_id)
 );
 
 create table if not exists prod.workout_trainer
 (
-    trainer_id  uuid references prod.trainer (id) on delete cascade,
+    trainer_id uuid references prod.trainer (id) on delete cascade,
     workout_id int references prod.workout (id) on delete cascade,
     primary key (trainer_id, workout_id)
 );
 
 create table if not exists prod.session_trainer
 (
-    session_id  uuid references prod.session (id) on delete cascade,
-    workout_id int references prod.workout (id) on delete cascade,
-    primary key (session_id, workout_id)
+    trainer_id uuid references prod.trainer (id) on delete cascade,
+    session_id int references prod.session (id) on delete cascade,
+    primary key (trainer_id, session_id)
 );
 
 create table if not exists prod.workout_set
@@ -193,11 +205,11 @@ create table if not exists prod.workout_set
 
 create table if not exists prod.set_exercise
 (
-    order_id    int not null,
+    order_id    int   not null,
     set_id      int references prod.set (id) on delete cascade,
     exercise_id int references prod.exercise (id) on delete cascade,
-    details     jsonb,
-    primary key (order_id, set_id, exercise_id)
+    details     jsonb not null,
+    primary key (order_id, set_id, exercise_id, details)
 );
 
 create table if not exists prod.trainer_favorite_workout

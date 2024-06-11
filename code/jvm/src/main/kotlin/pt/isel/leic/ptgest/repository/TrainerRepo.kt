@@ -26,4 +26,6 @@ interface TrainerRepo {
     fun getTraineeIdByName(name: String): UUID?
 
     fun associateTrainerToExercise(trainerId: UUID, exerciseId: Int)
+
+    fun associateSessionToTrainer(trainerId: UUID, sessionId: Int)
 }

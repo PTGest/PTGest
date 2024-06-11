@@ -4,13 +4,13 @@ import pt.isel.leic.ptgest.domain.utils.BaseError
 
 sealed class TraineeError : BaseError() {
 
-    data object TraineeNotAssigned : TraineeError() {
-        private fun readResolve(): Any = TraineeNotAssigned
+    data object TraineeNotAssignedError : TraineeError() {
+        private fun readResolve(): Any = TraineeNotAssignedError
         override val message: String get() = "Trainee not assigned to any trainer."
     }
 
-    data object TraineeNotFound : TraineeError() {
-        private fun readResolve(): Any = TraineeNotFound
+    data object TraineeNotFoundError : TraineeError() {
+        private fun readResolve(): Any = TraineeNotFoundError
         override val message: String get() = "Trainee not found."
     }
 
