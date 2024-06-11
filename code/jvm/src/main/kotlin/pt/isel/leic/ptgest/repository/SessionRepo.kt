@@ -1,5 +1,6 @@
 package pt.isel.leic.ptgest.repository
 
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
@@ -52,6 +53,11 @@ interface SessionRepo {
         sessionId: Int
     ): Session?
 
+    fun getSessionDetails(
+        traineeId: UUID,
+        sessionId: Int
+    ): Session?
+
     fun updateSession(
         sessionId: Int,
         workoutId: Int,
@@ -62,5 +68,5 @@ interface SessionRepo {
         notes: String?
     )
 
-    fun cancelSession(sessionId: Int, reason: String?)
+    fun cancelSession(sessionId: Int, source: Source, reason: String?)
 }

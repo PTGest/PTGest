@@ -149,7 +149,7 @@ create table if not exists dev.session
     workout_id int references dev.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
     end_date   timestamp check ( end_date > begin_date and end_date > now() )   not null,
-    location   varchar(50)                                                     ,
+    location   varchar(50),
     type       dev.session_type                                                 not null,
     notes      text
 );
@@ -157,6 +157,7 @@ create table if not exists dev.session
 create table if not exists dev.cancelled_session
 (
     session_id int primary key references dev.session (id) on delete cascade,
+    source     dev.source not null,
     reason     text
 );
 
@@ -176,8 +177,8 @@ create table if not exists dev.exercise_trainer
 
 create table if not exists dev.set_trainer
 (
-    trainer_id  uuid references dev.trainer (id) on delete cascade,
-    set_id int references dev.set (id) on delete cascade,
+    trainer_id uuid references dev.trainer (id) on delete cascade,
+    set_id     int references dev.set (id) on delete cascade,
     primary key (trainer_id, set_id)
 );
 
@@ -236,8 +237,9 @@ create table if not exists dev.trainer_favorite_exercise
 create table if not exists dev.feedback
 (
     id       serial primary key,
-    source   dev.source not null,
-    feedback text
+    source   dev.source                       not null,
+    feedback text,
+    date     timestamp check ( date < now() ) not null
 );
 
 create table if not exists dev.session_feedback
@@ -247,6 +249,16 @@ create table if not exists dev.session_feedback
     primary key (feedback_id, session_id)
 );
 
--- TODO: implement set feedback
+create table if not exists dev.set_feedback
+(
+    feedback_id  int references dev.feedback (id) on delete cascade,
+    session_id   int,
+    workout_id   int,
+    set_order_id int,
+    set_id       int,
+    foreign key (set_order_id, workout_id, set_id)
+        references dev.workout_set (order_id, workout_id, set_id) on delete cascade,
+    primary key (feedback_id, session_id, workout_id, set_order_id, set_id)
+);
 
 end work

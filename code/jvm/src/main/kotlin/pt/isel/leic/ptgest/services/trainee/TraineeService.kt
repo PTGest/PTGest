@@ -1,10 +1,15 @@
 package pt.isel.leic.ptgest.services.trainee
 
 import org.springframework.stereotype.Service
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.session.SessionType
+import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.trainer.TrainerError
+import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.*
 
 @Service
@@ -71,4 +76,68 @@ class TraineeService(
 
             return@run WorkoutDetails(workout, sets)
         }
+
+    fun getSessions(
+        traineeId: UUID,
+        skip: Int?,
+        limit: Int?,
+        sessionType: SessionType?
+    ): Pair<List<Session>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
+        )
+
+        return transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val sessions = sessionRepo.getTraineeSessions(traineeId, skip ?: 0, limit, sessionType)
+            val total = sessionRepo.getTotalTraineeSessions(traineeId, sessionType)
+
+            return@run Pair(sessions, total)
+        }
+    }
+
+    fun getSessionDetails(
+        traineeId: UUID,
+        sessionId: Int
+    ): Session =
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            return@run sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+        }
+
+    fun cancelSession(
+        traineeId: UUID,
+        sessionId: Int,
+        reason: String?
+    ) {
+        Validators.validate(
+            Validators.ValidationRequest(reason, "Reason must be a non-empty string.") { it is String && it.isNotBlank() }
+        )
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(isCurrentDate24BeforeDate(session.beginDate)) { "Session can be canceled only 24 hours before the begin date." }
+
+            sessionRepo.cancelSession(sessionId, Source.TRAINEE, reason)
+        }
+    }
+
+    private fun isCurrentDate24BeforeDate(date: Date): Boolean {
+        val calendar = Calendar.getInstance()
+
+        val currentDate = calendar.time
+
+        calendar.time = date
+        calendar.add(Calendar.HOUR, -24)
+        val date24HoursBefore = calendar.time
+
+        return currentDate.before(date24HoursBefore)
+    }
 }

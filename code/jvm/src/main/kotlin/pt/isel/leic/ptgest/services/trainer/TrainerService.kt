@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.exercise.model.Exercise
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
@@ -830,7 +831,7 @@ class TrainerService(
 
             require(isCurrentDate24BeforeDate(session.beginDate)) { "Session can be canceled only 24 hours before the begin date." }
 
-            sessionRepo.cancelSession(sessionId, reason)
+            sessionRepo.cancelSession(sessionId, Source.TRAINER, reason)
         }
     }
 

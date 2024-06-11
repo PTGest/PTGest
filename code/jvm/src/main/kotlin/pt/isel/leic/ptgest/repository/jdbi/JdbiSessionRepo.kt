@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
@@ -161,6 +162,23 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .mapTo<Session>()
             .one()
 
+    override fun getSessionDetails(traineeId: UUID, sessionId: Int): Session? =
+        handle.createQuery(
+            """
+            select id, begin_date, end_date, location, type, notes
+            from session 
+            where id = :sessionId and trainee_id = :traineeId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "sessionId" to sessionId,
+                    "traineeId" to traineeId
+                )
+            )
+            .mapTo<Session>()
+            .one()
+
     override fun updateSession(
         sessionId: Int,
         workoutId: Int,
@@ -191,16 +209,17 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .execute()
     }
 
-    override fun cancelSession(sessionId: Int, reason: String?) {
+    override fun cancelSession(sessionId: Int, source: Source, reason: String?) {
         handle.createUpdate(
             """
-            insert into cancelled_session (session_id, reason)
-            values (:sessionId, :reason)
+            insert into cancelled_session (session_id, source, reason)
+            values (:sessionId, :source::source, :reason)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "sessionId" to sessionId,
+                    "source" to source.name,
                     "reason" to reason
                 )
             )
