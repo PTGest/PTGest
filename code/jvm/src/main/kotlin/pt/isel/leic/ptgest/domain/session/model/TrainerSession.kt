@@ -8,5 +8,6 @@ data class TrainerSession(
     val traineeName: String,
     val beginDate: Date,
     val endDate: Date?,
-    val type: SessionType
+    val type: SessionType,
+    val cancelled: Boolean = false
 )

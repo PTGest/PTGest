@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.repository
 import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
+import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import java.util.*
@@ -51,12 +52,12 @@ interface SessionRepo {
 
     fun getSessionDetails(
         sessionId: Int
-    ): Session?
+    ): SessionDetails?
 
     fun getSessionDetails(
         traineeId: UUID,
         sessionId: Int
-    ): Session?
+    ): SessionDetails?
 
     fun updateSession(
         sessionId: Int,

@@ -5,6 +5,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
+import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.repository.SessionRepo
@@ -45,10 +46,12 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getTrainerSessions(trainerId: UUID, skip: Int, limit: Int?): List<TrainerSession> =
         handle.createQuery(
             """
-            select s.id, u.name as trainee_name, s.begin_date, s.end_date, s.type
+            select s.id, u.name as trainee_name, s.begin_date, s.end_date, s.type,
+                case when cs.session_id is not null then true else false end as cancelled
             from session s
             join session_trainer st on s.id = st.session_id
             join "user" u on s.trainee_id = u.id
+            left join dev.cancelled_session cs on s.id = cs.session_id
             where trainer_id = :trainerId
             order by s.begin_date
             limit :limit offset :skip
@@ -89,8 +92,10 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     ): List<Session> =
         handle.createQuery(
             """
-            select id, begin_date, end_date, type
+            select id, begin_date, end_date, type,
+                case when cs.session_id is not null then true else false end as cancelled
             from session
+            left join dev.cancelled_session cs on s.id = cs.session_id
             where trainee_id = :traineeId ${sessionType?.let { "and type = :type" } ?: ""}
             order by begin_date
             limit :limit offset :skip
@@ -140,8 +145,10 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getTrainerSessionDetails(sessionId: Int): TrainerSessionDetails? =
         handle.createQuery(
             """
-            select s.id, u.name as trainee_name, s.workout_id, s.begin_date, s.end_date, s.location, s.type, s.notes
+            select s.id, u.name as trainee_name, s.workout_id, s.begin_date, s.end_date, s.location, s.type, s.notes,
+                case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
             from session s
+            left join dev.cancelled_session cs on s.id = cs.session_id
             join "user" u on s.trainee_id = u.id
             where s.id = :sessionId
             """.trimIndent()
@@ -150,23 +157,27 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .mapTo<TrainerSessionDetails>()
             .firstOrNull()
 
-    override fun getSessionDetails(sessionId: Int): Session? =
+    override fun getSessionDetails(sessionId: Int): SessionDetails? =
         handle.createQuery(
             """
-            select id, begin_date, end_date, location, type, notes
+            select id, workout_id, begin_date, end_date, location, type, notes,
+                case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
             from session
+            left join dev.cancelled_session cs on s.id = cs.session_id
             where id = :sessionId
             """.trimIndent()
         )
             .bind("sessionId", sessionId)
-            .mapTo<Session>()
-            .one()
+            .mapTo<SessionDetails>()
+            .firstOrNull()
 
-    override fun getSessionDetails(traineeId: UUID, sessionId: Int): Session? =
+    override fun getSessionDetails(traineeId: UUID, sessionId: Int): SessionDetails? =
         handle.createQuery(
             """
-            select id, begin_date, end_date, location, type, notes
+            select id, workout_id, begin_date, end_date, location, type, notes,
+                case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
             from session 
+            left join dev.cancelled_session cs on s.id = cs.session_id
             where id = :sessionId and trainee_id = :traineeId
             """.trimIndent()
         )
@@ -176,8 +187,8 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     "traineeId" to traineeId
                 )
             )
-            .mapTo<Session>()
-            .one()
+            .mapTo<SessionDetails>()
+            .firstOrNull()
 
     override fun updateSession(
         sessionId: Int,

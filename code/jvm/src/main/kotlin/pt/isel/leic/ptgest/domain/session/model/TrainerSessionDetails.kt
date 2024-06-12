@@ -1,5 +1,6 @@
 package pt.isel.leic.ptgest.domain.session.model
 
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import java.util.*
 
@@ -11,5 +12,8 @@ data class TrainerSessionDetails(
     val endDate: Date?,
     val location: String?,
     val type: SessionType,
-    val notes: String?
+    val notes: String?,
+    val cancelled: Boolean = false,
+    val reason: String?,
+    val source: Source
 )
