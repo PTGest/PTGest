@@ -5,6 +5,7 @@ import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
+import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
@@ -101,7 +102,7 @@ class TraineeService(
     fun getSessionDetails(
         traineeId: UUID,
         sessionId: Int
-    ): Session =
+    ): SessionDetails =
         transactionManager.run {
             val sessionRepo = it.sessionRepo
 
@@ -126,6 +127,95 @@ class TraineeService(
             require(isCurrentDate24BeforeDate(session.beginDate)) { "Session can be canceled only 24 hours before the begin date." }
 
             sessionRepo.cancelSession(sessionId, Source.TRAINEE, reason)
+        }
+    }
+
+    fun createSessionFeedback(
+        traineeId: UUID,
+        sessionId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(requestDate.after(session.beginDate)) { "Feedback can be created only after the session begin date." }
+
+            sessionRepo.createFeedback(Source.TRAINEE, feedback, requestDate).also { feedbackId ->
+                sessionRepo.createSessionFeedback(feedbackId, sessionId)
+            }
+        }
+    }
+
+    fun editSessionFeedback(
+        traineeId: UUID,
+        sessionId: Int,
+        feedbackId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(requestDate.after(session.beginDate)) { "Feedback can be edited only after the session begin date." }
+
+            sessionRepo.getSessionFeedback(feedbackId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            sessionRepo.editFeedback(feedbackId, feedback, requestDate)
+        }
+    }
+
+    fun createSessionSetFeedback(
+        traineeId: UUID,
+        sessionId: Int,
+        setOrderId: Int,
+        setId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(requestDate.after(session.beginDate)) { "Feedback can be created only after the session begin date." }
+
+            sessionRepo.createFeedback(Source.TRAINEE, feedback, requestDate).also { feedbackId ->
+                sessionRepo.createSessionSetFeedback(feedbackId, sessionId, session.workoutId, setOrderId, setId)
+            }
+        }
+    }
+
+    fun editSessionSetFeedback(
+        traineeId: UUID,
+        sessionId: Int,
+        feedbackId: Int,
+        setOrderId: Int,
+        setId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            require(requestDate.after(session.beginDate)) { "Feedback can be edited only after the session begin date." }
+            require(sessionRepo.validateSessionSet(sessionId, setOrderId, setId)) { "Set must be part of the session." }
+
+            sessionRepo.getSetSessionFeedback(feedbackId, sessionId, session.workoutId, setOrderId, setId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
     }
 

@@ -6,6 +6,8 @@ import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.repository.SessionRepo
@@ -232,6 +234,151 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     "sessionId" to sessionId,
                     "source" to source.name,
                     "reason" to reason
+                )
+            )
+            .execute()
+    }
+
+    override fun createFeedback(source: Source, feedback: String, date: Date): Int =
+        handle.createUpdate(
+            """
+            insert into feedback (source, feedback, date)
+            values (:source::source, :feedback, :date)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "source" to source.name,
+                    "feedback" to feedback,
+                    "date" to date
+                )
+            )
+            .executeAndReturnGeneratedKeys("id")
+            .mapTo<Int>()
+            .one()
+
+    override fun getSessionFeedback(feedbackId: Int, sessionId: Int): SessionFeedback? =
+        handle.createQuery(
+            """
+            select id, source, feedback, date
+            from feedback
+            join session_feedback sf on feedback.id = sf.feedback_id
+            where feedback.id = :feedbackId and sf.session_id = :sessionId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "feedbackId" to feedbackId,
+                    "sessionId" to sessionId
+                )
+            )
+            .mapTo<SessionFeedback>()
+            .firstOrNull()
+
+    override fun getSetSessionFeedback(
+        feedbackId: Int,
+        sessionId: Int,
+        workoutId: Int,
+        setOrderId: Int,
+        setId: Int
+    ): SetSessionFeedback? =
+        handle.createQuery(
+            """
+            select id, set_order_id, set_id source, feedback, date
+            from feedback
+            join session_set_feedback ssf on feedback.id = ssf.feedback_id
+            where feedback.id = :feedbackId and ssf.session_id = :sessionId and ssf.workout_id = :workoutId 
+            and ssf.set_order_id = :setOrderId and ssf.set_id = :setId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "feedbackId" to feedbackId,
+                    "sessionId" to sessionId,
+                    "workoutId" to workoutId,
+                    "setOrderId" to setOrderId,
+                    "setId" to setId
+                )
+            )
+            .mapTo<SetSessionFeedback>()
+            .firstOrNull()
+
+    override fun createSessionFeedback(feedbackId: Int, sessionId: Int) {
+        handle.createUpdate(
+            """
+            insert into session_feedback (feedback_id, session_id)
+            values (:feedbackId, :sessionId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "feedbackId" to feedbackId,
+                    "sessionId" to sessionId
+                )
+            )
+            .execute()
+    }
+
+    override fun validateSessionSet(sessionId: Int, setOrderId: Int, setId: Int): Boolean {
+        return handle.createQuery(
+            """
+            select exists (select 1
+               from dev.session s
+                        join dev.workout_set ws on s.workout_id = ws.workout_id
+               where s.id = :sessionId
+                 and ws.order_id = :setOrderId
+                 and ws.set_id = :setId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "sessionId" to sessionId,
+                    "setOrderId" to setOrderId,
+                    "setId" to setId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
+    }
+
+    override fun createSessionSetFeedback(
+        feedbackId: Int,
+        sessionId: Int,
+        workoutId: Int,
+        setOrderId: Int,
+        setId: Int
+    ) {
+        handle.createUpdate(
+            """
+            insert into session_set_feedback (feedback_id, session_id, workout_id, set_order_id, set_id)
+            values (:feedbackId, :sessionId, :workoutId, :setOrderId, :setId)
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "feedbackId" to feedbackId,
+                    "sessionId" to sessionId,
+                    "workoutId" to workoutId,
+                    "setOrderId" to setOrderId,
+                    "setId" to setId
+                )
+            )
+            .execute()
+    }
+
+    override fun editFeedback(feedbackId: Int, feedback: String, date: Date) {
+        handle.createUpdate(
+            """
+            update feedback
+            set feedback = :feedback and date = :date
+            where id = :feedbackId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "feedbackId" to feedbackId,
+                    "feedback" to feedback,
+                    "date" to date
                 )
             )
             .execute()

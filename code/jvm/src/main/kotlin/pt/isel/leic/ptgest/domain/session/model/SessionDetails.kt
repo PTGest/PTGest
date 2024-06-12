@@ -12,7 +12,7 @@ data class SessionDetails(
     val location: String?,
     val type: SessionType,
     val notes: String?,
-    val cancelled: Boolean = false,
+    val cancelled: Boolean,
     val reason: String?,
     val source: Source
 )

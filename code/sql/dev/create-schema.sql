@@ -238,7 +238,7 @@ create table if not exists dev.feedback
 (
     id       serial primary key,
     source   dev.source                       not null,
-    feedback text,
+    feedback text                             not null,
     date     timestamp check ( date < now() ) not null
 );
 
@@ -249,7 +249,7 @@ create table if not exists dev.session_feedback
     primary key (feedback_id, session_id)
 );
 
-create table if not exists dev.set_feedback
+create table if not exists dev.session_set_feedback
 (
     feedback_id  int references dev.feedback (id) on delete cascade,
     session_id   int,

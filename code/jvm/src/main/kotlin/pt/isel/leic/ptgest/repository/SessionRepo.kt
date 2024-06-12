@@ -4,6 +4,8 @@ import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import java.util.*
@@ -70,4 +72,48 @@ interface SessionRepo {
     )
 
     fun cancelSession(sessionId: Int, source: Source, reason: String?)
+
+    fun createFeedback(
+        source: Source,
+        feedback: String,
+        date: Date
+    ): Int
+
+    fun getSessionFeedback(
+        feedbackId: Int,
+        sessionId: Int
+    ): SessionFeedback?
+
+    fun getSetSessionFeedback(
+        feedbackId: Int,
+        sessionId: Int,
+        workoutId: Int,
+        setOrderId: Int,
+        setId: Int
+    ): SetSessionFeedback?
+
+    fun createSessionFeedback(
+        feedbackId: Int,
+        sessionId: Int
+    )
+
+    fun validateSessionSet(
+        sessionId: Int,
+        setOrderId: Int,
+        setId: Int
+    ): Boolean
+
+    fun createSessionSetFeedback(
+        feedbackId: Int,
+        sessionId: Int,
+        workoutId: Int,
+        setOrderId: Int,
+        setId: Int
+    )
+
+    fun editFeedback(
+        feedbackId: Int,
+        feedback: String,
+        date: Date
+    )
 }

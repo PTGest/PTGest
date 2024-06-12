@@ -30,6 +30,7 @@ import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.AddTraineeDataRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CancelSessionRequest
+import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSessionRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSetRequest
@@ -620,6 +621,90 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Session canceled successfully."
+        )
+    }
+
+    @PostMapping(Uris.Session.CREATE_SESSION_FEEDBACK)
+    fun createSessionFeedback(
+        @PathVariable sessionId: Int,
+        @Valid @RequestBody
+        feedbackDetails: CreateFeedbackRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.createSessionFeedback(
+            authenticatedUser.id,
+            sessionId,
+            feedbackDetails.feedback
+        )
+
+        return HttpResponse.ok(
+            message = "Session feedback created successfully."
+        )
+    }
+
+    @PutMapping(Uris.Session.EDIT_SESSION_FEEDBACK)
+    fun editSessionFeedback(
+        @PathVariable sessionId: Int,
+        @PathVariable feedbackId: Int,
+        @Valid @RequestBody
+        feedbackDetails: CreateFeedbackRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.editSessionFeedback(
+            authenticatedUser.id,
+            sessionId,
+            feedbackId,
+            feedbackDetails.feedback
+        )
+
+        return HttpResponse.ok(
+            message = "Session feedback edited successfully."
+        )
+    }
+
+    @PostMapping(Uris.Session.CREATE_SESSION_SET_FEEDBACK)
+    fun createSessionSetFeedback(
+        @PathVariable sessionId: Int,
+        @PathVariable setOrderId: Int,
+        @PathVariable setId: Int,
+        @Valid @RequestBody
+        feedbackDetails: CreateFeedbackRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.createSessionSetFeedback(
+            authenticatedUser.id,
+            sessionId,
+            setOrderId,
+            setId,
+            feedbackDetails.feedback
+        )
+
+        return HttpResponse.ok(
+            message = "Session set feedback created successfully."
+        )
+    }
+
+    @PutMapping(Uris.Session.EDIT_SESSION_SET_FEEDBACK)
+    fun editSessionSetFeedback(
+        @PathVariable sessionId: Int,
+        @PathVariable setOrderId: Int,
+        @PathVariable setId: Int,
+        @PathVariable feedbackId: Int,
+        @Valid @RequestBody
+        feedbackDetails: CreateFeedbackRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        trainerService.editSessionSetFeedback(
+            authenticatedUser.id,
+            sessionId,
+            setOrderId,
+            setId,
+            feedbackId,
+            feedbackDetails.feedback
+        )
+
+        return HttpResponse.ok(
+            message = "Session set feedback edited successfully."
         )
     }
 }

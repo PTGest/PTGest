@@ -835,6 +835,127 @@ class TrainerService(
         }
     }
 
+    fun createSessionFeedback(
+        trainerId: UUID,
+        sessionId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
+
+            sessionRepo.createFeedback(Source.TRAINER, feedback, requestDate).also { feedbackId ->
+                sessionRepo.createSessionFeedback(feedbackId, session.id)
+            }
+        }
+    }
+
+    fun editSessionFeedback(
+        trainerId: UUID,
+        sessionId: Int,
+        feedbackId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
+
+            sessionRepo.getSessionFeedback(sessionId, feedbackId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            sessionRepo.editFeedback(sessionId, feedback, requestDate)
+        }
+    }
+
+    fun createSessionSetFeedback(
+        trainerId: UUID,
+        sessionId: Int,
+        setOrderId: Int,
+        setId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
+            require(sessionRepo.validateSessionSet(sessionId, setOrderId, setId)) { "Set must be part of the session." }
+
+            val feedbackId = sessionRepo.createFeedback(Source.TRAINER, feedback, requestDate)
+            sessionRepo.createSessionSetFeedback(feedbackId, session.id, session.workoutId, setOrderId, setId)
+        }
+    }
+
+    fun editSessionSetFeedback(
+        trainerId: UUID,
+        sessionId: Int,
+        setOrderId: Int,
+        setId: Int,
+        feedbackId: Int,
+        feedback: String
+    ) {
+        val requestDate = Date()
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
+            require(sessionRepo.validateSessionSet(sessionId, setOrderId, setId)) { "Set must be part of the session." }
+
+            sessionRepo.getSetSessionFeedback(feedbackId, sessionId, session.workoutId, setOrderId, setId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            sessionRepo.editFeedback(sessionId, feedback, requestDate)
+        }
+    }
+
     private fun convertDataToJson(data: Any): String {
         val jsonMapper = jacksonObjectMapper()
 
