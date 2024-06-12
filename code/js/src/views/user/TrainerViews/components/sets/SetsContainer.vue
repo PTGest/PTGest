@@ -1,6 +1,5 @@
 <template>
-    <div v-if="!isAddSetOpen" class="sets-container">
-
+    <div class="sets-container">
         <div class="title-row">
             Sets
             <button @click="openAddSet" class="add-btn">
@@ -16,7 +15,6 @@
         <Divider/>
         <SetRowView v-for="set in props.sets" :key="set.id" :set="set"/>
     </div>
-    <AddSet v-if="isAddSetOpen" @close="openAddSet"/>
 </template>
 
 <script setup lang="ts">
@@ -27,14 +25,13 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {ref} from "vue";
 import AddSet from "@/views/user/TrainerViews/components/sets/AddSet.vue";
+import router from "@/plugins/router.ts";
 const props = defineProps<{
    sets: Set[];
 }>();
-const isAddSetOpen = ref(false);
 
 const openAddSet = () => {
-    isAddSetOpen.value = !isAddSetOpen.value;
-    console.log("Add Set");
+   router.push({name: 'addSet'});
 }
 </script>
 

@@ -75,9 +75,9 @@ class CompanyService(
 
     //  TODO: check if the trainee already exists or is from the same company
     fun assignTrainerToTrainee(
-        companyId: UUID,
         trainerId: UUID,
-        traineeId: UUID
+        traineeId: UUID,
+        companyId: UUID,
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo
@@ -95,9 +95,9 @@ class CompanyService(
 
     //  TODO: check if the trainee already exists or is from the same company
     fun reassignTrainer(
-        companyId: UUID,
         trainerId: UUID,
-        traineeId: UUID
+        traineeId: UUID,
+        companyId: UUID
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo

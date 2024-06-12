@@ -1,10 +1,16 @@
-function handleFilters(inputString: string, filters:string[]): string{
-    console.log(filters)
-    console.log(filters.length)
+function handleFilters(inputString: string, filters: Map<string, any> ): string {
+    console.log(filters);
     let url = inputString;
-    filters.forEach((filter) => {
-        url += `&${filter}`;
-    });
+    const filterEntries = Array.from(filters.entries());
+
+    if (filterEntries.length > 0) {
+        url += "?";
+        url += filterEntries.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join("&");
+    }
+
+    console.log("url", url);
     return url;
 }
+
 export default handleFilters;
+

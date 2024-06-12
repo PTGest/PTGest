@@ -19,9 +19,9 @@ const handleAssignTrainer = async () => {
         console.log("reassigning trainer")
         console.log(props.trainerId)
         console.log(props.traineeId)
-        await assignOrReassignTrainer(props.trainerId, props.traineeId, true)
+        await assignOrReassignTrainer(props.traineeId,props.trainerId, true)
     } else {
-        await assignOrReassignTrainer(props.trainerId, props.traineeId,false)
+        await assignOrReassignTrainer(props.traineeId,props.trainerId,false)
 
     }
 }

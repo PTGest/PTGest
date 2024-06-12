@@ -28,12 +28,14 @@ const selected = ref(props.placeholder);
 
 
 const selectOption = (option: any) => {
-    selected.value = option.name;
-    isDropdownOpen.value = false;
     if (option === props.placeholder){
+        selected.value = props.placeholder;
+        isDropdownOpen.value = false;
         emit('dropdownOption', '')
     }
     else{
+        selected.value = option.name;
+        isDropdownOpen.value = false;
         emit('dropdownOption', option);
     }
 
@@ -143,6 +145,7 @@ const openDropdown = () => {
     height: 15em;
     transition: 300ms cubic-bezier(0.77, 0, 0.18, 1);
 }
+
 @keyframes text-fade-in {
     0%{
        transform: translateX(-1em);

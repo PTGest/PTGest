@@ -49,7 +49,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
     ): List<Exercise> {
         val nameCondition = if (name != null) "and name like :name" else ""
         val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and type = :modality" else ""
+        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
             """
@@ -81,7 +81,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
     ): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
         val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and type = :modality" else ""
+        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
             """
@@ -129,7 +129,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
     ): List<Exercise> {
         val nameCondition = if (name != null) "and name like :name" else ""
         val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and type = :modality" else ""
+        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
             """
@@ -161,7 +161,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
     ): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
         val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and type = :modality" else ""
+        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
             """

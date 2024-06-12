@@ -9,7 +9,6 @@
         </div>
         <LikeSet :set-id="props.set.id"></LikeSet>
     </div>
-    <SetDetails @close="handleCloseDetails" v-if="isSetDetailsOpen" :set-id="props.set.id"></SetDetails>
     <Divider />
 </template>
 
@@ -20,19 +19,16 @@ import Textarea from "primevue/textarea";
 import LikeSet from "./LikeSet.vue";
 import SetDetails from "@/views/user/TrainerViews/components/sets/SetDetails.vue";
 import {ref} from "vue";
+import router from "@/plugins/router.ts";
 
 const props = defineProps<{
     set: Set;
 }>();
 
-const isSetDetailsOpen = ref(false);
 const openSetDetails = () => {
-    isSetDetailsOpen.value = !isSetDetailsOpen.value;
+   router.push({name: 'setDetails', params: {setId: props.set.id}});
 }
 
-const handleCloseDetails = () => {
-    isSetDetailsOpen.value = false;
-}
 
 </script>
 

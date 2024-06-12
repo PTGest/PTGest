@@ -3,7 +3,7 @@
        <div class="add-set-container">
            <div class="set-header-row">
                <input v-model="setName" class="exercise-name-input" placeholder="Name your set" />
-                <button @click="$emit('close')" class="close-button">
+                <button @click="$router.go(-1)" class="close-button">
                      <FontAwesomeIcon :icon="faTimes"/>
                 </button>
            </div>
@@ -54,6 +54,10 @@ import ExercisesDetails from "../exercises/ExercisesDetails.vue";
 import SetExercise from "../../models/sets/SetExercise.ts";
 import createSet from "../../../../../services/TrainerServices/sets/createSet.ts";
 import CreateCustomSetRequest from "../../models/sets/CreateCustomSetRequest.ts";
+import router from "@/plugins/router.ts";
+
+
+
 
 
 const selectedExercises : Ref<{ id: number, name: string }[]> = ref([]);
@@ -102,6 +106,7 @@ const submitSet = async() => {
             exerciseDetailsList.value
         )
     )
+    router.go(-1)
     console.log("SUBMITTING SET", set);
 }
 

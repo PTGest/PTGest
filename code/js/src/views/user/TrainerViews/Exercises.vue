@@ -1,9 +1,5 @@
 <template>
-
-
-    <AddExercise class="add-exercise-container" v-if="isAddExerciseOpen" @close="openAddExercise"/>
-
-    <div v-else class="exercises-container">
+    <div v-if="!filtersOpen" class="exercises-container">
         <div class="title-row">
             <h1 class="title">Exercises</h1>
             <button @click="openAddExercise" class="add-btn">
@@ -14,41 +10,36 @@
 
         <div class="input-row">
             <font-awesome-icon class="search-icon" :icon="faMagnifyingGlass"/>
-            <input-bar class="bar" class-name="search-bar" height="2.5em" width="100%" padding="0.5em"
-                       placeholder="Search exercise name">
-            </input-bar>
+            <input v-model="searchBar" class="bar" placeholder="Search exercise name"/>
             <button class="filters" @click="handleFiltersView">
                 <font-awesome-icon :icon="faFilter"/>
                 Filters
             </button>
-
-            <Filters v-if="filtersOpen" @visible="handleFiltersView"/>
         </div>
 
-        <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises"/>
+        <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises.filter(exercise => exercise.name.includes(searchBar))"/>
         <div v-else class="not-found">Does not found any exercise</div>
-
     </div>
+    <ExerciseFilters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false"/>
 
 </template>
 
 <script setup lang="ts">
 
 
-import {Ref, ref, UnwrapRef} from "vue";
+import {Ref, ref} from "vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
-import InputBar from "../../../components/utils/InputBar.vue";
-import Filters from "../../../views/user/CompaniesViews/Components/Filters.vue";
 import ExercisesTable from "./components/exercises/ExercisesTable.vue";
-import AddExercise from "./components/exercises/AddExercise.vue";
 import Exercises from "./models/exercises/Exercises.ts";
 import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts";
-import Exercise from "@/views/user/TrainerViews/models/exercises/Exercise.js";
+import router from "@/plugins/router.ts";
+import ExerciseFilters from "@/views/user/TrainerViews/components/exercises/exerciseFilters.vue";
 
-const isAddExerciseOpen = ref(false);
+
+
 const filtersOpen = ref(false);
-
+const searchBar = ref("");
 const exercises : Ref<Exercises> = ref({
     exercises: [],
     nOfExercises: 0
@@ -57,20 +48,23 @@ const handleFiltersView = () => {
     console.log("openFilters", filtersOpen.value)
     filtersOpen.value = !filtersOpen.value;
 }
-const openAddExercise = () => {
-    isAddExerciseOpen.value = !isAddExerciseOpen.value;
-}
 
+const applyFilters = (newExercises:any) => {
+    console.log("Filters applied", newExercises);
+    exercises.value = newExercises;
+}
+const openAddExercise = () => {
+    router.push({name: 'addExercise'});
+}
 
 (async () => {
     try {
-       exercises.value = await getExercises(new Array<string>());
+       exercises.value = await getExercises(null);
        console.log(exercises.value)
     } catch (error) {
         console.error("Error getting user info:", error)
     }
 })()
-
 
 </script>
 
@@ -133,6 +127,13 @@ const openAddExercise = () => {
 .bar{
     margin-left: 1em;
     margin-bottom: 0;
+    height: 2.5em;
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 5px;
+    font-family: Poppins, sans-serif;
+    font-size: 0.9rem;
+    border:none;
 }
 
 .search-icon{
@@ -141,11 +142,15 @@ const openAddExercise = () => {
 }
 
 .filters{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     background-color: var(--main-secondary-color);
     padding: 0.5em;
     border-radius: 5px;
     font-family: Poppins, sans-serif;
-    font-size: 1rem;
+    font-size: 1.05rem;
     color : whitesmoke;
     transition: 0.2s ease-in;
 }

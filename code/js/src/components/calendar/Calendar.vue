@@ -18,7 +18,7 @@
                 <li>Sat</li>
             </ul>
             <ul class="days">
-                <li v-for="day in getDaysInMonth()" :class="day.class">{{ day.day }}</li>
+                <li @click="getDate(day)" v-for="day in getDaysInMonth()" :class="day.class">{{ day.day }}</li>
             </ul>
         </div>
     </div>
@@ -27,12 +27,15 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons"
-import { ref } from "vue"
+import {Ref, ref} from "vue"
 import Day from "../calendar/Day.ts"
+import {da} from "vuetify/locale";
+
+const emit = defineEmits(["getDate"])
 
 // daysTag = document.getElementById("days"),
 const icons = document.querySelectorAll(".icon")
-console.log(icons)
+
 
 // getting new date, current year and month
 let date = new Date(),
@@ -40,7 +43,7 @@ let date = new Date(),
     currMonth = date.getMonth()
 
 const currDateString = ref("")
-const trainDays = [20, 25, 27]
+let trainDays : Ref<string[]> = ref([])
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
@@ -51,7 +54,6 @@ const getDaysInMonth = () => {
         lastDayofNextMonth = new Date(currYear, currMonth, lastDayofMonth).getDay(), // getting last day of month
         lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate() // getting last date of previous month
 
-    console.log(firstDayofMonth, lastDayofNextMonth, lastDayofMonth, lastDateofLastMonth)
 
     const currentMonthDays = [] // creating an empty array for current month days
     //lastMonthDays = []; // creating an empty array for last month days
@@ -62,17 +64,15 @@ const getDaysInMonth = () => {
     for (let i = 1; i <= lastDayofMonth; i++) {
         // loop through all days of current month
         if (i === new Date().getDate() && currMonth === new Date().getMonth()) {
-            if (trainDays.includes(i)) {
+            if (trainDays.value.includes(`${i}`)) {
                 currentMonthDays.push(new Day(`${i}`, "active-train"))
             } else {
                 currentMonthDays.push(new Day(`${i}`, "active"))
             }
+        } else if (trainDays.value.includes(`${i}`) && currMonth === new Date().getMonth()) {
+            currentMonthDays.push(new Day(`${i}`, "train"))
         } else {
-            if (trainDays.includes(i) && currMonth === new Date().getMonth()) {
-                currentMonthDays.push(new Day(`${i}`, "train"))
-            } else {
-                currentMonthDays.push(new Day(`${i}`, "normal"))
-            }
+            currentMonthDays.push(new Day(`${i}`, "normal"))
         }
     }
 
@@ -82,7 +82,6 @@ const getDaysInMonth = () => {
     }
 
     currDateString.value = `${months[currMonth]} ${currYear}` // setting current month and year in current date string
-    console.log(currentMonthDays)
     return currentMonthDays
 }
 
@@ -112,6 +111,17 @@ icons.forEach((icon) => {
         currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1
     })
 })
+
+const getDate = (day: Day) => {
+    trainDays.value = []
+    const date = `${currYear}-${months.findIndex((month) => month === currDateString.value.split(" ")[0]) + 1}-${day.day}`
+    trainDays.value.push(day.day)
+    console.log(trainDays)
+    emit('getDate',date)
+}
+
+
+
 </script>
 
 <style scoped>

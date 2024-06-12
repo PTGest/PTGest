@@ -1,5 +1,6 @@
 
 async function fetchData(uri: string, method: string, bodyData: any | null): Promise<any> {
+    console.log("fetchData uri", uri);
     const body = bodyData ? JSON.stringify(bodyData) : null;
     const response = await fetch(uri, {
         method: method,

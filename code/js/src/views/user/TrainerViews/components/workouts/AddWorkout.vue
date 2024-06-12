@@ -14,33 +14,39 @@
 
                    <MultiSelect v-model="selectedSets" :options="availableSets.sets" optionLabel="name" filter placeholder="Select sets"
                                 :maxSelectedLabels="3" class="w-full md:w-20rem" />
+                   <router-link :to="{ name: 'addSet'}" class="link">
+                       <Button @click="handleAddSetVisibility" class="add-set">
+                           <font-awesome-icon :icon="faPlus"/>
+                           Add Set
+                       </Button>
+                   </router-link>
+
                </div>
                <div class="text-area-container">
                    <div class="label">Details</div>
                    <textarea v-model="description" class="text-area" placeholder="" />
                </div>
-
                <Button @click="addWorkout" class="submit" :disabled="isDisable"> Add Workout </Button>
+
            </div>
-
-
         </div>
     </div>
+
 </template>
 
 <script setup lang="ts">
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import Button from "primevue/button";
-import {faX} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faX} from "@fortawesome/free-solid-svg-icons";
 import MultiSelect from "primevue/multiselect";
 import {computed, Ref, ref} from "vue";
 import Sets from "../../../../../views/user/TrainerViews/models/sets/Sets.ts";
 import getSets from "../../../../../services/TrainerServices/sets/getSets.ts";
 import createCustomWorkout from "@/services/TrainerServices/workouts/createCustomWorkout.ts";
 import CreateCustomWorkoutRequest from "@/views/user/TrainerViews/models/workouts/CreateCustomWorkoutRequest.ts";
-
-const emit = defineEmits(['closeAddWorkout']);
+import AddSet from "@/views/user/TrainerViews/components/sets/AddSet.vue";
+import router from "@/plugins/router.ts";
 
 const workoutName = ref(null);
 const description = ref(null);
@@ -50,6 +56,10 @@ const availableSets : Ref<Sets> = ref({
     sets: [],
     nOfSets: 0
 });
+
+const handleAddSetVisibility = () => {
+    addSetOpen.value = !addSetOpen.value;
+}
 
 const muscleGroupOptions = ref([
     {name: 'BICEPS'},
@@ -100,8 +110,7 @@ const addWorkout = async () => {
 }
 
 const closeAddWorkout = () => {
-    emit('closeAddWorkout');
-    console.log('close');
+   router.go(-1);
 }
 
 </script>
@@ -277,5 +286,28 @@ textarea{
     color: whitesmoke;
     font-size: 1rem;
 }
+
+.add-set{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    border: 1px solid var(--main-secondary-color);
+    transition: 0.3s ease-out;
+}
+
+.add-set:hover{
+    cursor: pointer;
+    border: 1px solid var(--button-border-color);
+    background-color: var(--main-secondary-color);
+}
+
+.link{
+    width: 84%;
+}
+
+
 
 </style>

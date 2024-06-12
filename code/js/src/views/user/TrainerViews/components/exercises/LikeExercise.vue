@@ -10,20 +10,23 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {ref} from "vue";
 import likeSet from "@/services/TrainerServices/sets/likeSet.js";
 import unlikeSet from "@/services/TrainerServices/sets/unlikeSet.ts";
+import likeExercise from "@/services/TrainerServices/exercises/likeExercise.ts";
+import unlikeExercise from "@/services/TrainerServices/exercises/unlikeExercise.ts";
 
 const props = defineProps<{
-    setId: number;
+    exerciseId: number;
 }>();
 
 const isLiked = ref(false);
 
 const handleLike = () => {
-
+console.log('Liked', isLiked.value);
     if(!isLiked.value) {
-        likeSet(props.setId);
+        likeExercise(props.exerciseId);
         isLiked.value = true;
-    }else{
-        unlikeSet(props.setId);
+    }
+    else{
+        unlikeExercise(props.exerciseId);
         isLiked.value = false;
     }
     console.log('Liked', isLiked.value);
@@ -39,6 +42,7 @@ const handleLike = () => {
     align-items: center;
     width : 2.5em;
     height: 2em;
+    margin-left: 1em;
     background-color: var(--main-primary-color);
     border: 1px solid var(--main-secondary-color);
     border-radius: 5px;

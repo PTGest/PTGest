@@ -12,7 +12,7 @@ export default async function getSets(filters: string[]): Promise<Sets> {
 
     try {
         const response = await fetchData( postFiltersUri, "GET", null );
-        return new Sets(response.details.sets, response.details.total);
+        return new Sets(response.details.items, response.details.total);
     } catch (error) {
         console.error("Error fetching set:", error);
         throw error;

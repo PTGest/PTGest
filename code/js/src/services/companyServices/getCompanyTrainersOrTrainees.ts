@@ -46,14 +46,14 @@ export default async function getCompanyTrainersOrTrainees(
                         console.log(data.details.trainees);
                         console.log(data.details.total);
                         const trainees = new CompanyTrainees(
-                            data.details.trainees,
+                            data.details.items,
                             data.details.total
                         );
                         console.log(trainees);
                         return trainees;
                     }else{
                         const trainers = new CompanyTrainers(
-                            data.details.trainers,
+                            data.details.items,
                             data.details.total
                         );
                         console.log(trainers);

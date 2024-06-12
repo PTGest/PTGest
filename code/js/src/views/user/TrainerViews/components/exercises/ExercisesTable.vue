@@ -16,14 +16,19 @@
             <td>
                 {{exercise.modality}}
             </td>
+            <td class="like-button-box">
+                <LikeExercise :exercise-id="exercise.id"></LikeExercise>
+            </td>
         </tr>
     </table>
+
 </template>
 
 
 <script setup lang="ts">
 
 import Exercise from "../../models/exercises/Exercise.ts";
+import LikeExercise from "@/views/user/TrainerViews/components/exercises/LikeExercise.vue";
 
 const props = defineProps<{
     exercises: Exercise[]
@@ -61,10 +66,6 @@ table{
     border-radius: 10px;
 }
 
-.table-row:hover{
-    cursor: pointer;
-    background-color: var(--main-secondary-color);
-    border-radius: 10px;
-}
+
 
 </style>

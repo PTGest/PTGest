@@ -13,13 +13,10 @@
             <div class="gender-text">{{props.trainee.traineeName}}</div>
         </div>
 
-        <router-link :to="{ name: 'assignTrainer', params: {traineeId: trainee.traineeId, assignTrainer : 'reassignTrainer'}}">
+        <router-link v-if="RBAC.isCompany()" :to="{ name: 'assignTrainer', params: {traineeId: trainee.traineeId, assignTrainer : 'reassignTrainer'}}">
             <button class="reassign-btn">Reassign Trainer</button>
         </router-link>
 
-
-
-        <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
     </div>
 </template>
 
@@ -27,7 +24,10 @@
 
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
-import Trainee from "../../../../views/user/CompaniesViews/models/Trainee.ts";;
+import Trainee from "../../../CompaniesViews/models/Trainee.ts";
+import RBAC from "@/services/utils/RBAC/RBAC.js";
+
+;
 
 const props = defineProps<{
     trainee: Trainee

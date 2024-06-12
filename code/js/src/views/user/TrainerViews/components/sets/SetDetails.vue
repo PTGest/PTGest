@@ -6,7 +6,7 @@
                 <SetDetailsExerciseDetails :exercise="exercise"></SetDetailsExerciseDetails>
             </div>
         </div>
-        <font-awesome-icon class="x-icon" :icon="faX" @click="$emit('close')"/>
+        <font-awesome-icon class="x-icon" :icon="faX" @click="$router.go(-1)"/>
     </div>
 </template>
 
@@ -18,15 +18,13 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
 import SetExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue";
 import SetDetailsExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue";
-const props = defineProps<{
-  setId: number;
-}>();
+import router from "@/plugins/router.ts";
 
 const setDetails : Ref<SetDetails>= ref({});
 
 
 (async() => {
-   setDetails.value = await getSetDetails(props.setId);
+   setDetails.value = await getSetDetails(router.currentRoute.value.params.setId);
 })();
 
 </script>
@@ -34,9 +32,8 @@ const setDetails : Ref<SetDetails>= ref({});
 <style scoped>
 .set-details-container{
     position : absolute;
-    top: 0;
-    right: 0;
-    left: 0;
+    top: 25%;
+    left: 25%;
     background-color: var(--main-primary-color);
     padding: 1em;
     border-radius: 10px;

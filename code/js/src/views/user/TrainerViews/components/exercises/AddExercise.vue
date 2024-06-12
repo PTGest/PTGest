@@ -3,13 +3,15 @@
 
         <div class="add-exercise-header">
             <input v-model="exerciseName" class="exercise-name-input" placeholder="Name your exercise" />
-            <font-awesome-icon class="close-button" @click="$emit('close')" :icon="faTimes"/>
+            <font-awesome-icon @click="$router.go(-1)" class="close-button" :icon="faTimes"/>
         </div>
         <div class="dropdowns-container">
             <div class="label-text">Primary Focus</div>
             <ExercisesDropdown :options="modalityOptions" placeholder="Modality" @dropdownOption="modalityDropdownOption($event)"/>
             <MultiSelect v-model="selectedMuscleGroups" display="chip" :options="muscleGroupOptions" optionLabel="name" placeholder="Select Muscle Groups"
                          :maxSelectedLabels="3" class="w-full md:w-20rem" />
+            <div class="label-text">Ref</div>
+            <input v-model="reference" class="ref"/>
         </div>
 
         <div class="exercise-instructions">
@@ -49,6 +51,7 @@ const modalityOptions = [
 const exerciseName = ref("");
 const modalityOption = ref("");
 const exerciseInstructions = ref(null);
+const reference = ref(null);
 const selectedMuscleGroups = ref<string[]>([]);
 const muscleGroupOptions = ref([
     {name: 'BICEPS'},
@@ -89,7 +92,7 @@ const submitExercise = async () => {
             modalityOption.value,
             selectedMuscleGroups.value.map((muscleGroup) => muscleGroup.name),
             exerciseInstructions.value,
-            null
+            reference.value
         )
     )
     console.log("SUBMITTING EXERCISE", exercise);
@@ -299,6 +302,22 @@ label{
 ::placeholder{
     color: rgba(245, 245, 245, 0.4);
 }
+
+.ref{
+    width: 100%;
+    height: 2em;
+    padding: 0.7em;
+    font-family: Poppins, sans-serif;
+    font-size: 1em;
+    border-radius: 5px;
+    color: whitesmoke;
+    background-color: var(--main-primary-color);
+    border: 1px solid rgba(245, 245, 245, 0.2);
+    margin-top: 0.5em;
+    outline: none;
+    transition: 0.3s;
+}
+
 
 </style>
 

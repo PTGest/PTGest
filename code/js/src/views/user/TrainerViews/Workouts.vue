@@ -1,16 +1,16 @@
 <template>
     <div>
-        <div v-if="!isAddWorkoutOpen" class="workouts-container">
+        <div class="workouts-container">
             <div class="title-row">
                 Workouts
-                <button @click="handleAddWorkoutVisibility" class="add-workout">
+                <button @click="openAddWorkout" class="add-workout">
                     <font-awesome-icon :icon="faPlus"/>
                     Add Workout
                 </button>
             </div>
             <WorkoutsRow  :workouts="workouts.workouts"/>
         </div>
-        <AddWorkout @closeAddWorkout="handleAddWorkoutVisibility" v-if="isAddWorkoutOpen"></AddWorkout>
+        <AddWorkout @closeAddWorkout="openAddWorkout" v-if="isAddWorkoutOpen"></AddWorkout>
     </div>
 </template>
 
@@ -23,12 +23,13 @@ import AddWorkout from "@/views/user/TrainerViews/components/workouts/AddWorkout
 import {Ref, ref} from "vue";
 import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts";
 import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts";
+import router from "@/plugins/router.ts";
 
 const workouts : Ref<Workouts> = ref(new Workouts());
 const isAddWorkoutOpen = ref(false);
 
-const handleAddWorkoutVisibility = () => {
-    isAddWorkoutOpen.value = !isAddWorkoutOpen.value;
+const openAddWorkout = () => {
+    router.push({name: 'addWorkout'});
 }
 
 (async () => {

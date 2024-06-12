@@ -4,17 +4,17 @@
         <router-link v-if="canEdit" :to="{ name: 'registerTrainee',  params: { isTrainee: true }}" class="add-trainee">
             <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
         </router-link>
-        <font-awesome-icon v-if="companyTraineesRef.trainees.length != 0" @click="handleFilters(true)" :icon="faFilter" class="filter-icon"></font-awesome-icon>
-        <div v-for="trainee in companyTraineesRef.trainees" class="trainee">
+        <font-awesome-icon v-if="traineesRef.trainees.length != 0" @click="handleFilters(true)" :icon="faFilter" class="filter-icon"></font-awesome-icon>
+        <div v-for="trainee in traineesRef.trainees" class="trainee">
             <TraineesBox :trainee="trainee"></TraineesBox>
         </div>
-        <h2 v-if="companyTraineesRef.trainees.length == 0"> No More Trainees Available</h2>
+        <h2 v-if="traineesRef.trainees.length == 0"> No More Trainees Available</h2>
         <div class="pagination">
             <font-awesome-icon @click="handlePage(false)"
                                :class="[skip == 0 ? 'icons-disable': 'icons']"
                                :icon="faChevronLeft"></font-awesome-icon>
             <font-awesome-icon @click="handlePage(true)"
-                               :class="[companyTraineesRef.trainees.length > 0 ?'icons' :'icons-disable' ]"
+                               :class="[traineesRef.trainees.length > 0 ?'icons' :'icons-disable' ]"
                                :icon="faChevronRight"></font-awesome-icon>
         </div>
         <Filters v-if="areFiltersVisible" @visible="handleFilters($event)"></Filters>
@@ -28,26 +28,37 @@ import store from "../../../store";
 import router from "../../../plugins/router.ts";
 import getCompanyTrainersOrTrainees from "../../../services/companyServices/getCompanyTrainersOrTrainees.ts";
 import {ref} from "vue";
-import CompanyTrainees from "../../../views/user/CompaniesViews/models/CompanyTrainees.ts";
-import TraineesBox from "../../../views/user/IndependentTrainerViews/components/TraineesBox.vue";
+import CompanyTrainees from "../CompaniesViews/models/CompanyTrainees.ts";
+import TraineesBox from "./components/trainees/TraineesBox.vue";
 import Filters from "@/views/user/CompaniesViews/Components/Filters.vue";
+import RBAC from "@/services/utils/RBAC/RBAC.ts";
+import TrainerTrainees from "../TrainerViews/models/trainees/TrainerTrainees.ts";
+import getTrainerTrainees from "@/services/TrainerServices/trainees/getTrainerTrainees.ts";
 
 const skip = ref(0);
 const areFiltersVisible = ref(false);
 const role = store.getters.userData.role;
 const route = router.currentRoute.value.meta.canEdit as string[];
 const canEdit = route.includes(role);
-const companyTraineesRef = ref<CompanyTrainees>({
+const traineesRef = ref<CompanyTrainees| TrainerTrainees>({
     trainees: [],
     total: 0
 });
 
 (async () => {
     try {
-        companyTraineesRef.value =
-            <CompanyTrainees>await getCompanyTrainersOrTrainees(skip.value, null, null, null, true);
-        console.log(companyTraineesRef.value)
-        console.log(companyTraineesRef.value)
+        if(RBAC.isCompany()){
+            traineesRef.value =
+                <CompanyTrainees>await getCompanyTrainersOrTrainees(skip.value, null, null, null, true);
+            console.log(traineesRef.value)
+            console.log(traineesRef.value)
+        }else{
+            traineesRef.value =
+                <TrainerTrainees>await getTrainerTrainees(skip.value, null, null, null);
+            console.log(traineesRef.value)
+        }
+
+
     } catch (error) {
         console.error("Error getting user info:", error)
     }
@@ -55,7 +66,10 @@ const companyTraineesRef = ref<CompanyTrainees>({
 
 const getTrainees = async (skip: number) => {
     try {
-        companyTraineesRef.value = <CompanyTrainees>await getCompanyTrainersOrTrainees(skip, null, null, null, true);
+        if (RBAC.isCompany())
+            traineesRef.value = <CompanyTrainees>await getCompanyTrainersOrTrainees(skip, null, null, null, true);
+        else
+            traineesRef.value = <TrainerTrainees>await getTrainerTrainees(skip, null, null, null);
     } catch (error) {
         console.error("Error getting user info:", error)
     }
@@ -65,7 +79,7 @@ const handlePage = (isNext: boolean) => {
         skip.value += 4;
         getTrainees(skip.value)
         console.log(skip.value)
-        console.log(companyTraineesRef.value)
+        console.log(traineesRef.value)
     } else {
         console.log(skip.value)
         if (skip.value - 4 >= 0)

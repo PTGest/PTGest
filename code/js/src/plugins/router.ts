@@ -8,7 +8,7 @@ import Error from "../views/Error.vue"
 import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue"
 import UserProfile from "../views/user/UserProfile/UserProfile.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
-import Students from "../views/user/IndependentTrainerViews/Trainees.vue"
+import Students from "../views/user/TrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue";
 import RBAC from "../services/utils/RBAC/RBAC.ts";
 import store from "../store";
@@ -17,6 +17,11 @@ import Exercises from "../views/user/TrainerViews/Exercises.vue";
 import Sets from "../views/user/TrainerViews/Sets.vue";
 import Workouts from "../views/user/TrainerViews/Workouts.vue";
 import WorkoutDetails from "../views/user/TrainerViews/components/workouts/WorkoutDetails.vue";
+import AddSet from "../views/user/TrainerViews/components/sets/AddSet.vue";
+import AddExercise from "../views/user/TrainerViews/components/exercises/AddExercise.vue";
+import AddWorkout from "../views/user/TrainerViews/components/workouts/AddWorkout.vue";
+import SetDetails from "../views/user/TrainerViews/components/sets/SetDetails.vue";
+import Sessions from "../views/user/TrainerViews/components/sessions/Sessions.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -43,10 +48,10 @@ const routes: RouteRecordRaw[] = [
     { path: "/trainers", name: "trainers", component: Trainers, meta: { requiresAuth: true,
             roleNeeded : ['COMPANY']}
     },
-    { path: "/trainee/:traineeId/:assignTrainer", name: "assignTrainer", component: AssignTrainer, meta: { requiresAuth: true,
+    { path: "/trainees/:traineeId/:assignTrainer", name: "assignTrainer", component: AssignTrainer, meta: { requiresAuth: true,
             roleNeeded : ['COMPANY']}
     },
-    { path: "/register-trainee/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true,
+    { path: "/register-trainees/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true,
             roleNeeded : ['COMPANY', 'TRAINER']}
     },
     { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true,
@@ -65,6 +70,23 @@ const routes: RouteRecordRaw[] = [
     // { path: "/workouts/:workoutId", name: "workouts", component: WorkoutDetails, meta: { requiresAuth: true,
     //         roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
     // },
+    { path: "/sets/custom-set", name: "addSet", component: AddSet, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
+    { path: "/workouts/add-exercise", name: "addExercise", component: AddExercise, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
+    { path: "/workouts/add-workout", name: "addWorkout", component: AddWorkout, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
+
+    { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
+
+    { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true,
+            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+    },
 
     //Error Views
     { path: "/error", name: "error", component: Error },
