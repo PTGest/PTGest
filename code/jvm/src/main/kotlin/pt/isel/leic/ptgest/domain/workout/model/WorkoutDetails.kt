@@ -8,8 +8,8 @@ data class WorkoutDetails(
     val name: String,
     val description: String?,
     val muscleGroup: List<MuscleGroup>,
-    val sets: List<SetDetails>
+    val sets: List<WorkoutSetDetails>
 ) {
-    constructor(workout: Workout, sets: List<SetDetails>) :
+    constructor(workout: Workout, sets: List<WorkoutSetDetails>) :
         this(workout.id, workout.name, workout.description, workout.muscleGroup, sets)
 }

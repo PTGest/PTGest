@@ -22,6 +22,7 @@ import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.trainee.request.CancelSessionRequest
 import pt.isel.leic.ptgest.http.model.trainee.response.GetSessionDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
+import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainee.TraineeService
 
@@ -105,14 +106,14 @@ class TraineeController(
         @PathVariable sessionId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val sessionDetails = traineeService.getSessionDetails(
+        val (sessionDetails, feedbacks) = traineeService.getSessionDetails(
             authenticatedUser.id,
             sessionId
         )
 
         return HttpResponse.ok(
             message = "Session details retrieved successfully.",
-            details = GetSessionDetailsResponse(sessionDetails)
+            details = GetSessionDetailsResponse(sessionDetails, feedbacks)
         )
     }
 
@@ -210,6 +211,22 @@ class TraineeController(
 
         return HttpResponse.ok(
             message = "Session set feedback edited successfully."
+        )
+    }
+
+    @GetMapping(Uris.Session.GET_SET_SESSION_FEEDBACKS)
+    fun getSetSessionFeedbacks(
+        @PathVariable sessionId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val setSessionFeedbacks = traineeService.getSetSessionFeedbacks(
+            authenticatedUser.id,
+            sessionId
+        )
+
+        return HttpResponse.ok(
+            message = "Set session feedbacks retrieved successfully.",
+            details = GetSetSessionFeedbacks(setSessionFeedbacks)
         )
     }
 }

@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.repository
 import pt.isel.leic.ptgest.domain.set.model.Set
 import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.domain.workout.model.WorkoutSet
 import java.util.*
 
 interface SetRepo {
@@ -24,6 +25,8 @@ interface SetRepo {
     fun isSetFavorite(trainerId: UUID, setId: Int): Boolean
 
     fun getSet(trainerId: UUID, setId: Int): Set?
+
+    fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet?
 
     fun getSetExercises(setId: Int): List<SetExerciseDetails>
 

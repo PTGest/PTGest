@@ -1,6 +1,8 @@
 package pt.isel.leic.ptgest.http.model.trainer.response
 
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import java.util.*
 
@@ -12,9 +14,13 @@ data class GetSessionDetails(
     val endDate: Date?,
     val location: String?,
     val type: SessionType,
-    val notes: String?
+    val notes: String?,
+    val cancelled: Boolean,
+    val reason: String?,
+    val source: Source,
+    val feedbacks: List<SessionFeedback>
 ) {
-    constructor(trainerSessionDetails: TrainerSessionDetails) : this(
+    constructor(trainerSessionDetails: TrainerSessionDetails, feedbacks: List<SessionFeedback>) : this(
         trainerSessionDetails.id,
         trainerSessionDetails.traineeName,
         trainerSessionDetails.workoutId,
@@ -22,6 +28,10 @@ data class GetSessionDetails(
         trainerSessionDetails.endDate,
         trainerSessionDetails.location,
         trainerSessionDetails.type,
-        trainerSessionDetails.notes
+        trainerSessionDetails.notes,
+        trainerSessionDetails.cancelled,
+        trainerSessionDetails.reason,
+        trainerSessionDetails.source,
+        feedbacks
     )
 }

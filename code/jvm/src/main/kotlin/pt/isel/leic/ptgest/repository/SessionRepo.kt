@@ -79,10 +79,18 @@ interface SessionRepo {
         date: Date
     ): Int
 
+    fun getSessionFeedbacks(
+        sessionId: Int
+    ): List<SessionFeedback>
+
     fun getSessionFeedback(
         feedbackId: Int,
         sessionId: Int
     ): SessionFeedback?
+
+    fun getSetSessionFeedbacks(
+        sessionId: Int,
+    ): List<SetSessionFeedback>
 
     fun getSetSessionFeedback(
         feedbackId: Int,

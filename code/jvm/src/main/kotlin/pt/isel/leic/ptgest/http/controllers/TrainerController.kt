@@ -38,6 +38,7 @@ import pt.isel.leic.ptgest.http.model.trainer.request.CreateWorkoutRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSessionDetails
+import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.utils.RequiredRole
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 import java.util.Date
@@ -574,14 +575,14 @@ class TrainerController(
         @PathVariable sessionId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val sessionDetails = trainerService.getSessionDetails(
+        val (sessionDetails, feedbacks) = trainerService.getSessionDetails(
             authenticatedUser.id,
             sessionId
         )
 
         return HttpResponse.ok(
             message = "Session details retrieved successfully.",
-            details = GetSessionDetails(sessionDetails)
+            details = GetSessionDetails(sessionDetails, feedbacks)
         )
     }
 
@@ -705,6 +706,22 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Session set feedback edited successfully."
+        )
+    }
+
+    @GetMapping(Uris.Session.GET_SET_SESSION_FEEDBACKS)
+    fun getSetSessionFeedbacks(
+        @PathVariable sessionId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val setSessionFeedbacks = trainerService.getSetSessionFeedbacks(
+            authenticatedUser.id,
+            sessionId
+        )
+
+        return HttpResponse.ok(
+            message = "Set session feedbacks retrieved successfully.",
+            details = GetSetSessionFeedbacks(setSessionFeedbacks)
         )
     }
 }

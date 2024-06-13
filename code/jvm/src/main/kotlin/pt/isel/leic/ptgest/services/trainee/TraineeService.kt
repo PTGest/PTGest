@@ -6,8 +6,11 @@ import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
+import pt.isel.leic.ptgest.domain.workout.model.WorkoutSetDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.trainer.TrainerError
 import pt.isel.leic.ptgest.services.utils.Validators
@@ -70,9 +73,9 @@ class TraineeService(
                 ?: throw TraineeError.WorkoutNotFoundError
 
             val sets = workoutRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
-                val set = setRepo.getSet(trainerId, setId) ?: return@mapNotNull null
+                val set = setRepo.getWorkoutSet(workoutId, setId) ?: return@mapNotNull null
                 val exercises = setRepo.getSetExercises(setId)
-                SetDetails(set, exercises)
+                WorkoutSetDetails(set, exercises)
             }
 
             return@run WorkoutDetails(workout, sets)
@@ -102,12 +105,16 @@ class TraineeService(
     fun getSessionDetails(
         traineeId: UUID,
         sessionId: Int
-    ): SessionDetails =
+    ): Pair<SessionDetails, List<SessionFeedback>> =
         transactionManager.run {
             val sessionRepo = it.sessionRepo
 
-            return@run sessionRepo.getSessionDetails(traineeId, sessionId)
+            val sessionDetails = sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw TrainerError.ResourceNotFoundError
+
+            val feedbacks = sessionRepo.getSessionFeedbacks(sessionId)
+
+            return@run Pair(sessionDetails, feedbacks)
         }
 
     fun cancelSession(
@@ -218,6 +225,20 @@ class TraineeService(
             sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
     }
+
+    fun getSetSessionFeedbacks(
+        traineeId: UUID,
+        sessionId: Int
+    ): List<SetSessionFeedback> =
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            sessionRepo.getSessionDetails(traineeId, sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+
+            sessionRepo.getSetSessionFeedbacks(sessionId)
+        }
+
 
     private fun isCurrentDate24BeforeDate(date: Date): Boolean {
         val calendar = Calendar.getInstance()

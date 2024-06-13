@@ -257,6 +257,19 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .mapTo<Int>()
             .one()
 
+    override fun getSessionFeedbacks(sessionId: Int): List<SessionFeedback> =
+        handle.createQuery(
+            """
+            select id, source, feedback, date
+            from feedback
+            join session_feedback sf on feedback.id = sf.feedback_id
+            where sf.session_id = :sessionId
+            """.trimIndent()
+        )
+            .bind("sessionId", sessionId)
+            .mapTo<SessionFeedback>()
+            .list()
+
     override fun getSessionFeedback(feedbackId: Int, sessionId: Int): SessionFeedback? =
         handle.createQuery(
             """
@@ -274,6 +287,20 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             )
             .mapTo<SessionFeedback>()
             .firstOrNull()
+
+    override fun getSetSessionFeedbacks(sessionId: Int): List<SetSessionFeedback> =
+        handle.createQuery(
+            """
+            select id, set_order_id, set_id source, feedback, date
+            from feedback
+            join session_set_feedback ssf on feedback.id = ssf.feedback_id
+            where ssf.session_id = :sessionId
+            """.trimIndent()
+        )
+            .bind("sessionId", sessionId)
+            .mapTo<SetSessionFeedback>()
+            .list()
+
 
     override fun getSetSessionFeedback(
         feedbackId: Int,

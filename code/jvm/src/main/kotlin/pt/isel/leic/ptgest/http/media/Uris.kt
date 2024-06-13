@@ -88,5 +88,6 @@ object Uris {
         const val EDIT_SESSION_FEEDBACK = "/session/{sessionId}/edit-feedback/{feedbackId}"
         const val CREATE_SESSION_SET_FEEDBACK = "/session/{sessionId}/set/{setOrderId}/{setId}/feedback"
         const val EDIT_SESSION_SET_FEEDBACK = "/session/{sessionId}/set/{setOrderId}/{setId}/edit-feedback/{feedbackId}"
+        const val GET_SET_SESSION_FEEDBACKS = "/session/{sessionId}/sets/feedback"
     }
 }

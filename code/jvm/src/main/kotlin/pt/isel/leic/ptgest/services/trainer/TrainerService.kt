@@ -11,9 +11,7 @@ import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
-import pt.isel.leic.ptgest.domain.session.model.Session
-import pt.isel.leic.ptgest.domain.session.model.TrainerSession
-import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
+import pt.isel.leic.ptgest.domain.session.model.*
 import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.set.model.SetExercise
@@ -33,6 +31,7 @@ import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.domain.workout.model.TrainerWorkout
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
+import pt.isel.leic.ptgest.domain.workout.model.WorkoutSetDetails
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.trainee.TraineeError
@@ -617,9 +616,9 @@ class TrainerService(
                 ?: throw TrainerError.ResourceNotFoundError
 
             val sets = workoutRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
-                val set = setRepo.getSet(trainerId, setId) ?: return@mapNotNull null
+                val set = setRepo.getWorkoutSet(workoutId, setId) ?: return@mapNotNull null
                 val exercises = setRepo.getSetExercises(setId)
-                SetDetails(set, exercises)
+                WorkoutSetDetails(set, exercises)
             }
 
             return@run WorkoutDetails(workout, sets)
@@ -761,7 +760,7 @@ class TrainerService(
     fun getSessionDetails(
         trainerId: UUID,
         sessionId: Int
-    ): TrainerSessionDetails =
+    ): Pair<TrainerSessionDetails, List<SessionFeedback>> =
         transactionManager.run {
             val sessionRepo = it.sessionRepo
 
@@ -774,8 +773,12 @@ class TrainerService(
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            return@run sessionRepo.getTrainerSessionDetails(sessionId)
+            val sessionDetails = sessionRepo.getTrainerSessionDetails(sessionId)
                 ?: throw TrainerError.ResourceNotFoundError
+
+            val feedback = sessionRepo.getSessionFeedbacks(sessionId)
+
+            return@run Pair(sessionDetails, feedback)
         }
 
 //  todo: send mail to trainee
@@ -955,6 +958,25 @@ class TrainerService(
             sessionRepo.editFeedback(sessionId, feedback, requestDate)
         }
     }
+
+    fun getSetSessionFeedbacks(trainerId: UUID, sessionId: Int): List<SetSessionFeedback> =
+        transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            sessionRepo.getSessionDetails(sessionId)
+                ?: throw TrainerError.ResourceNotFoundError
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val traineeTrainerId = it.traineeRepo.getTrainerAssigned(sessionTrainee)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            sessionRepo.getSetSessionFeedbacks(sessionId)
+        }
+
 
     private fun convertDataToJson(data: Any): String {
         val jsonMapper = jacksonObjectMapper()

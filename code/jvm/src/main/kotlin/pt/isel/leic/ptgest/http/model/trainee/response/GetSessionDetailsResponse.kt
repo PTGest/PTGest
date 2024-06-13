@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.http.model.trainee.response
 import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
 import java.util.*
 
 data class GetSessionDetailsResponse(
@@ -15,9 +16,10 @@ data class GetSessionDetailsResponse(
     val notes: String?,
     val cancelled: Boolean,
     val reason: String?,
-    val source: Source
+    val source: Source,
+    val feedbacks: List<SessionFeedback>
 ) {
-    constructor(session: SessionDetails) : this(
+    constructor(session: SessionDetails, feedbacks: List<SessionFeedback>) : this(
         session.id,
         session.workoutId,
         session.beginDate,
@@ -27,6 +29,7 @@ data class GetSessionDetailsResponse(
         session.notes,
         session.cancelled,
         session.reason,
-        session.source
+        session.source,
+        feedbacks
     )
 }
