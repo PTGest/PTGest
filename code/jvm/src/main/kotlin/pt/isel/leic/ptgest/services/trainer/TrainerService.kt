@@ -11,7 +11,11 @@ import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
-import pt.isel.leic.ptgest.domain.session.model.*
+import pt.isel.leic.ptgest.domain.session.model.Session
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.TrainerSession
+import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.set.model.SetExercise
@@ -432,7 +436,18 @@ class TrainerService(
         return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
             val setRepo = it.setRepo
 
-            val setId = it.createSet(trainerId, name, notes, setType)
+            setRepo.getSetByExercises(setExercises.map { it.exerciseId })?.let { setId ->
+                val validSet = setExercises.all { exercise ->
+                    val jsonDetails = convertDataToJson(exercise.details)
+                    setRepo.validateSetExerciseDetails(setId, exercise.exerciseId, jsonDetails)
+                }
+
+                if (validSet) {
+                    return@runWithLevel setId
+                }
+            }
+
+            val newSetId = it.createSet(trainerId, name, notes, setType)
 
             setExercises.forEachIndexed { index, set ->
                 it.getExercise(trainerId, set.exerciseId)
@@ -440,10 +455,10 @@ class TrainerService(
                 val validatedDetails = ExerciseDetailsType.validateSetDetails(set.details)
                 val jsonDetails = convertDataToJson(validatedDetails)
 
-                setRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
+                setRepo.associateExerciseToSet(index + 1, set.exerciseId, newSetId, jsonDetails)
             }
 
-            setId
+            newSetId
         }
     }
 
@@ -976,7 +991,6 @@ class TrainerService(
 
             sessionRepo.getSetSessionFeedbacks(sessionId)
         }
-
 
     private fun convertDataToJson(data: Any): String {
         val jsonMapper = jacksonObjectMapper()

@@ -35,4 +35,8 @@ interface SetRepo {
     fun favoriteSet(trainerId: UUID, setId: Int)
 
     fun unfavoriteSet(trainerId: UUID, setId: Int)
+
+    fun getSetByExercises(exerciseIds: List<Int>): Int?
+
+    fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean
 }

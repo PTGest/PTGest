@@ -5,6 +5,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.set.model.Set
 import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.domain.workout.model.WorkoutSet
 import pt.isel.leic.ptgest.repository.SetRepo
 import java.util.*
 
@@ -191,6 +192,24 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .mapTo<Set>()
             .firstOrNull()
 
+    override fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet? {
+        return handle.createQuery(
+            """
+            select s.id, ws.order_id, s.name, s.notes, s.type
+            from workout_set ws join set s on ws.set_id = s.id
+            where ws.workout_id = :workoutId and s.set_id = :setId
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "workoutId" to workoutId,
+                    "setId" to setId
+                )
+            )
+            .mapTo<WorkoutSet>()
+            .firstOrNull()
+    }
+
     override fun getSetExercises(setId: Int): List<SetExerciseDetails> =
         handle.createQuery(
             """
@@ -247,5 +266,43 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
                 )
             )
             .execute()
+    }
+
+    override fun getSetByExercises(exerciseIds: List<Int>): Int? {
+        val exerciseIdsArray = exerciseIds.joinToString(",") { "'$it'" }
+        return handle.createQuery(
+            """
+            select set_id
+            from dev.set_exercise
+            group by set_id
+            having array_agg(exercise_id ORDER BY order_id) = ARRAY[$exerciseIdsArray];
+            """.trimIndent()
+        )
+            .mapTo<Int>()
+            .firstOrNull()
+    }
+
+    override fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean {
+        return handle.createQuery(
+            """
+            select exists(
+                select 1
+                from set_exercise
+                where set_id = :setId and exercise_id = :exerciseId and (
+                    select jsonb_object_agg(key, value)
+                    from jsonb_each_text(details)
+                ) = :details::jsonb
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "setId" to setId,
+                    "exerciseId" to exerciseId,
+                    "details" to details
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
     }
 }

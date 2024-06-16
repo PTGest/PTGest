@@ -301,7 +301,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .mapTo<SetSessionFeedback>()
             .list()
 
-
     override fun getSetSessionFeedback(
         feedbackId: Int,
         sessionId: Int,
