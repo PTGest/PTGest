@@ -1,6 +1,5 @@
 <template>
     <MainTextContainer v-if="!is_logged_in" class="home-container" />
-    <Calendar v-if="is_logged_in" />
 </template>
 
 <script setup lang="ts">

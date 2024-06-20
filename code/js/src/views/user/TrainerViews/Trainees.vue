@@ -49,7 +49,7 @@ const traineesRef = ref<CompanyTrainees| TrainerTrainees>({
     try {
         if(RBAC.isCompany()){
             traineesRef.value =
-                <CompanyTrainees>await getCompanyTrainersOrTrainees(skip.value, null, null, null, true);
+                <CompanyTrainees>await getCompanyTrainersOrTrainees(skip.value, null, null, null,true, null);
             console.log(traineesRef.value)
             console.log(traineesRef.value)
         }else{

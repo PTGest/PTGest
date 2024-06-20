@@ -94,25 +94,22 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     ): List<Session> =
         handle.createQuery(
             """
-            select id, begin_date, end_date, type,
-                case when cs.session_id is not null then true else false end as cancelled
-            from session
-            left join dev.cancelled_session cs on s.id = cs.session_id
-            where trainee_id = :traineeId ${sessionType?.let { "and type = :type" } ?: ""}
-            order by begin_date
-            limit :limit offset :skip
-            """.trimIndent()
+        select s.id, s.begin_date, s.end_date, s.type,
+            case when cs.session_id is not null then true else false end as cancelled
+        from session s
+        left join dev.cancelled_session cs on s.id = cs.session_id
+        where s.trainee_id = :traineeId ${sessionType?.let { "and s.type = :type" } ?: ""}
+        order by s.begin_date
+        limit :limit offset :skip
+        """.trimIndent()
         )
-            .bindMap(
-                mapOf(
-                    "traineeId" to traineeId,
-                    "skip" to skip,
-                    "limit" to limit,
-                    "type" to sessionType?.name
-                )
-            )
+            .bind("traineeId", traineeId)
+            .bind("skip", skip)
+            .bind("limit", limit)
+            .apply { sessionType?.let { bind("type", it.name) } }
             .mapTo<Session>()
             .list()
+
 
     override fun getTotalTraineeSessions(traineeId: UUID?, sessionType: SessionType?): Int =
         handle.createQuery(

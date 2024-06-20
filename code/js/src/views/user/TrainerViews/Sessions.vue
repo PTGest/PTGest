@@ -2,7 +2,7 @@
     <div>
         <h1>Sessions</h1>
         <div class="sessions-container">
-            <Calendar @get-date="dateClicked($event)"></Calendar>
+            <Calendar @get-date="dateClicked" :train-days="trainerSessions.sessions"></Calendar>
             <div class="session-info-container">
                <div v-for="session in daySessions" class="teste">
                      <p>{{session.traineeName}}</p>
@@ -10,61 +10,51 @@
                      <p>{{ session.endDate }}</p>
                      <p>{{ session.type }}</p>
                </div>
-                <button class="btn">Add Session</button>
+<!--                <button class="btn">Add Session</button>-->
+                <div class="no-sessions" v-if="trainerSessions.total==0">No Sessions Today</div>
             </div>
-
         </div>
-
-
-
     </div>
 </template>
 
 <script setup lang="ts">
-import Calendar from "../../../../../components/calendar/Calendar.vue";
+import Calendar from "../../../components/calendar/Calendar.vue";
 
-import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSessions.ts";
+import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.js";
 import {Ref, ref} from "vue";
-import formattedDate from "@/components/utils/formatDate.ts";
+import formattedDate from "@/components/utils/formatDate.js";
+import TrainerSessions from "@/views/user/TrainerViews/models/sessions/TrainerSessions.ts";
+import sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts";
+import getTrainerSessions from "@/services/TrainerServices/sessions/getTrainerSessions.ts";
+
 const selectedDay : Ref<string> = ref(formattedDate(new Date( new Date().getFullYear(), new Date().getMonth(), new Date().getDate())))
 const daySessions: Ref<TrainerSession[]> = ref([]);
 
-const sessions : Ref<TrainerSession[]> = ref([
-    new TrainerSession("1", "Manel", "2024-6-12", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("2", "Joca", "2024-6-12", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("3", "Manel", "2024-6-12", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("4", "Manel", "2024-6-13", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("5", "Manel", "2024-6-13", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("6", "Manel", "2024-6-13", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("7", "Manel", "2024-6-14", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("8", "Manel", "2024-6-14", "10:00", "BODYWEIGHT",false),
-    new TrainerSession("9", "Manel", "2024-6-14", "10:00", "BODYWEIGHT",false),
-]);
+const trainerSessions : Ref<TrainerSessions> = ref({
+    sessions: [],
+    total: 0
+});
 
+(async () => {
+    trainerSessions.value.sessions =  await getTrainerSessions(null);
+    console.log(sessions.value);
 
-
-(function(){
-    for (const element of sessions.value) {
-        if (element.beginDate.trim() == selectedDay.value.trim()) { // Trim the session date too
-            daySessions.value.push(element)
-        }
-    }
-})()
+})();
 
 console.log(selectedDay.value)
 
 const dateClicked = (date: string) => {
-    daySessions.value = []
+    daySessions.value = [];
     selectedDay.value = date.trim(); // Trim any extra spaces
-    for (const element of sessions.value) {
-        if (element.beginDate.trim() == selectedDay.value.trim()) { // Trim the session date too
-            daySessions.value.push(element)
-        }
-    }
+    //filter Sessions by date
+
+    // trainerSessions.value.sessions.forEach((session: TrainerSession) => {
+    //     if (session.beginDate.trim() === selectedDay.value.trim()) { // Trim the session date too
+    //         daySessions.value.push(session);
+    //     }
+    // });
+    console.log(daySessions.value);
 }
-
-
-
 </script>
 
 
@@ -117,5 +107,10 @@ const dateClicked = (date: string) => {
 .btn:hover{
     border: 1px solid var(--button-border-color);
 }
-
+.no-sessions{
+    margin-top: 1em;
+    color: whitesmoke;
+    font-size: 1.5em;
+    font-weight: 500;
+}
 </style>

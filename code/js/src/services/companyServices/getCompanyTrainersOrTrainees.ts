@@ -7,7 +7,7 @@ export default async function getCompanyTrainersOrTrainees(
     availability: string | null,
     gender: string | null,
     isTrainees: boolean,
-    //name: string | null
+    name: string | null
 ): Promise<CompanyTrainers | CompanyTrainees> {
     let url = `http://localhost:8080/api/company/`;
     if (isTrainees) {
@@ -27,6 +27,9 @@ export default async function getCompanyTrainersOrTrainees(
     }
     if (gender != null) {
         url += `&gender=${gender}`;
+    }
+    if (name != null) {
+        url += `&name=${name}`;
     }
 
     // Make the API call

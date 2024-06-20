@@ -1,5 +1,5 @@
 <template>
-    <div class="trainer">
+    <div @click="handleInfo" class="trainer">
         <div class="text">
             <h4>{{props.trainee.traineeName}}</h4>
         </div>
@@ -10,13 +10,12 @@
 
         <div class="text">
             <p>Trainer</p>
-            <div class="gender-text">{{props.trainee.traineeName}}</div>
+            <div class="gender-text">{{props.trainee.trainerName}}</div>
         </div>
 
         <router-link v-if="RBAC.isCompany()" :to="{ name: 'assignTrainer', params: {traineeId: trainee.traineeId, assignTrainer : 'reassignTrainer'}}">
             <button class="reassign-btn">Reassign Trainer</button>
         </router-link>
-
     </div>
 </template>
 
@@ -26,12 +25,22 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
 import Trainee from "../../../CompaniesViews/models/Trainee.ts";
 import RBAC from "@/services/utils/RBAC/RBAC.js";
+import router from "@/plugins/router.ts";
 
 ;
 
 const props = defineProps<{
     trainee: Trainee
 }>()
+
+const handleInfo = () => {
+    if(RBAC.isCompany()){
+        // router.push({name: 'traineeInfo', params: {traineeId: props.trainee.traineeId}})
+    }else{
+        console.log(props.trainee.traineeId)
+        router.push({name: 'traineeSessions', params: {traineeId: props.trainee.traineeId}})
+    }
+}
 
 
 </script>

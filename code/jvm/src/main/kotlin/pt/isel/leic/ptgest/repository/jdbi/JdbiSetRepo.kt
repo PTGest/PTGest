@@ -5,6 +5,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.set.model.Set
 import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
+import pt.isel.leic.ptgest.domain.workout.model.WorkoutSet
 import pt.isel.leic.ptgest.repository.SetRepo
 import java.util.*
 
@@ -190,6 +191,10 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             )
             .mapTo<Set>()
             .firstOrNull()
+
+    override fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet? {
+        TODO("Not yet implemented")
+    }
 
     override fun getSetExercises(setId: Int): List<SetExerciseDetails> =
         handle.createQuery(

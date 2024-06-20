@@ -1,6 +1,7 @@
 import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeRegisterData.ts"
 import router from "../../plugins/router.ts"
 import HiredTrainerRegisterData from "../../models/authModels/HiredTrainerRegisterData.ts";
+import RBAC from "../utils/RBAC/RBAC.ts";
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up
@@ -15,11 +16,17 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
         switch (response.status) {
             case 201:
                 if(userRegisterData instanceof TraineeRegisterData){
-                   response.json().then((data) => {
-                        const userId = data.details.userId
-                        router.push({name: "assignTrainer", params: {traineeId: userId, assignTrainer: "assignTrainer"}})
-                        return
-                    })
+                    if(RBAC.isCompany()) {
+                        response.json().then((data) => {
+                            const userId = data.details.userId
+                            router.push({
+                                name: "assignTrainer",
+                                params: {traineeId: userId, assignTrainer: "assignTrainer"}
+                            })
+                        })
+                    }else{
+                        router.push("/trainees")
+                    }
                 }else{
                     router.push("/trainers")
                 }

@@ -371,7 +371,7 @@ class AuthService(
             Role.INDEPENDENT_TRAINER -> {
                 userRepo.associateTraineeToTrainer(
                     traineeId = traineeId,
-                    trainerId = traineeId
+                    trainerId = userId
                 )
             }
 

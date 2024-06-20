@@ -4,7 +4,7 @@ import TrainerTrainees from "../../../views/user/TrainerViews/models/trainees/Tr
 async function getTrainerTrainees(
     skip: number | null,
     limit: number | null,
-    availability: string | null,
+    name: string | null,
     gender: string | null,
 ): Promise<TrainerTrainees> {
 
@@ -16,8 +16,8 @@ async function getTrainerTrainees(
     if (limit != null) {
         url += `&limit=${limit}`;
     }
-    if (availability != null) {
-        url += `&availability=${availability}`;
+    if (name != null) {
+        url += `&name=${name}`;
     }
     if (gender != null) {
         url += `&gender=${gender}`;
