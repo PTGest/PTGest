@@ -68,10 +68,12 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
 
         return handle.createQuery(
             """
-            select id, name, notes, type
-            from set
-            where trainer_id = :trainerId $typeCondition $nameCondition
-            limit :limit offset :skip
+                select id, name, notes, type
+                from set s join set_trainer st on s.id = st.set_id
+                where st.trainer_id = :trainerId
+                $typeCondition
+                $nameCondition
+                limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
@@ -94,8 +96,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         return handle.createQuery(
             """
             select count(*)
-            from set
-            where trainer_id = :trainerId $typeCondition $nameCondition
+            from set s join set_trainer st on s.id = st.set_id
+            where st.trainer_id = :trainerId $typeCondition $nameCondition
             """.trimIndent()
         )
             .bindMap(

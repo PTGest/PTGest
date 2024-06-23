@@ -23,6 +23,7 @@ import AddWorkout from "../views/user/TrainerViews/components/workouts/AddWorkou
 import SetDetails from "../views/user/TrainerViews/components/sets/SetDetails.vue";
 import Sessions from "../views/user/TrainerViews/Sessions.vue";
 import TraineeSessions from "../views/user/TrainerViews/components/sessions/TraineeSessions.vue";
+import AddTraineeSession from "../views/user/TrainerViews/components/sessions/AddTraineeSession.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -92,8 +93,9 @@ const routes: RouteRecordRaw[] = [
     { path: "/sessions/:traineeId", name: "traineeSessions", component: TraineeSessions, meta: { requiresAuth: true,
             roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
-
-
+    { path: "/sessions/:traineeId/add-session", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true,
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
+    },
 
     //Error Views
     { path: "/error", name: "error", component: Error },

@@ -1,7 +1,8 @@
 <template>
-    <div>
-        <h1>Trainee Sessions</h1>
-        <Calendar :train-days="traineeTrainDays.sessions"></Calendar>
+    <h1>Trainee Sessions</h1>
+    <div class="sessions-container">
+        <Calendar :train-days="traineeTrainDays.sessions.map((session:Session) => session.beginDate)"></Calendar>
+        <SessionInfoContainer :day-sessions="traineeTrainDays.sessions" is-trainee-sessions/>
     </div>
 </template>
 
@@ -11,21 +12,27 @@ import getTraineeSessions from "@/services/TrainerServices/sessions/getTraineeSe
 import router from "@/plugins/router.ts";
 import {Ref, ref} from "vue";
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts";
+import Session from "@/views/user/TrainerViews/models/sessions/Session.ts";
+import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue";
 
-const traineeTrainDays : Ref<Sessions> = ref({
-    traineeSessions: [],
-    total: 0
-});
+const traineeTrainDays : Ref<Sessions> = ref (new Sessions());
 
 
 ( async () => {
     traineeTrainDays.value = await getTraineeSessions(router.currentRoute.value.params.traineeId)
-
 })();
 </script>
 
 
 
 <style scoped>
-
+.sessions-container{
+    height: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1em;
+    gap : 1em;
+}
 </style>

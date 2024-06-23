@@ -34,12 +34,10 @@ import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSes
 const emit = defineEmits(["getDate"])
 
 const props = defineProps<{
-    trainDays: TrainerSession[]
+    trainDays: string[]
 }>()
 
-const trainDays = ref(props.trainDays)
-
-console.log("CALENDAR",props.trainDays.map((day) => day.beginDate))
+const trainDays = ref(props.trainDays);
 
 // daysTag = document.getElementById("days"),
 const icons = document.querySelectorAll(".icon")
@@ -51,7 +49,7 @@ let date = new Date(),
     currMonth = date.getMonth()
 
 const currDateString = ref("")
-let currDay : Ref<string> = ref('')
+let currDay = ref('')
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
@@ -71,22 +69,14 @@ const getDaysInMonth = () => {
     }
     for (let i = 1; i <= lastDayofMonth; i++) {
         const isEmpty = props.trainDays.length == 0
+        let classString = "normal"
         // loop through all days of current month
         if (i === new Date().getDate() && currMonth === new Date().getMonth()) {
-            if (!isEmpty && currDay.value == `${i}`) {
-                if(props.trainDays.includes(`${i}`)){
-                    currentMonthDays.push(new Day(`${i}`, "active-train"))
-                }else {
-                    currentMonthDays.push(new Day(`${i}`, "active"))
-                }
-            } else {
-                currentMonthDays.push(new Day(`${i}`, "active"))
-            }
-        } else if (!isEmpty && props.trainDays.includes(`${i}`) && currMonth === new Date().getMonth()) {
-            currentMonthDays.push(new Day(`${i}`, "train"))
-        } else {
-            currentMonthDays.push(new Day(`${i}`, "normal"))
+            classString = (currDay.value == `${i}`) ? "active-train" :  "active"
+        } else if (!isEmpty && trainDays.value.includes(`${i}`) && currMonth === new Date().getMonth()) {
+            classString = "train"
         }
+        currentMonthDays.push(new Day(`${i}`, classString))
     }
 
     for (let i = 1; i <= 6 - lastDayofNextMonth; i++) {

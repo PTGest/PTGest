@@ -67,7 +67,7 @@ const traineesRef = ref<CompanyTrainees| TrainerTrainees>({
 const getTrainees = async (skip: number) => {
     try {
         if (RBAC.isCompany())
-            traineesRef.value = <CompanyTrainees>await getCompanyTrainersOrTrainees(skip, null, null, null, true);
+            traineesRef.value = <CompanyTrainees>await getCompanyTrainersOrTrainees(skip, null, null, null,true,null);
         else
             traineesRef.value = <TrainerTrainees>await getTrainerTrainees(skip, null, null, null);
     } catch (error) {

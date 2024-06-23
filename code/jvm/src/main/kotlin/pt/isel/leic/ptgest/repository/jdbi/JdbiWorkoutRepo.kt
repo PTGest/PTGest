@@ -80,8 +80,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         return handle.createQuery(
             """
             select id, name, description, muscle_group
-            from workout
-            where trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            from workout w join workout_trainer wt on w.id = wt.workout_id
+            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition
             limit :limit offset :skip
             """.trimIndent()
         )
@@ -105,8 +105,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         return handle.createQuery(
             """
             select count(*)
-            from workout
-            where trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            from workout w join workout_trainer wt on w.id = wt.workout_id
+            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition
             """.trimIndent()
         )
             .bindMap(
@@ -196,8 +196,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         handle.createQuery(
             """
             select id, name, description, muscle_group
-            from workout
-            where id = :workoutId and trainer_id = :trainerId
+            from workout w join workout_trainer wt on w.id = wt.workout_id
+            where w.id = :workoutId and wt.trainer_id = :trainerId
             """.trimIndent()
         )
             .bindMap(
