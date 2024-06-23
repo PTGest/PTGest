@@ -21,11 +21,11 @@ const emit = defineEmits(['details']);
 const handleDetails = (detailKey:string, value: number) => {
     switch (detailKey) {
         case 'weight':
-            details.value.set('weight', value);
+            details.value.set('WEIGHT', value);
            emit('details', details.value);
             break;
         case 'reps':
-            details.value.set('reps', value);
+            details.value.set('REPS', value);
             emit('details', details.value);
             break;
         default:

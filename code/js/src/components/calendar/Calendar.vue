@@ -29,7 +29,6 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons"
 import {Ref, ref} from "vue"
 import Day from "../calendar/Day.ts"
-import {da} from "vuetify/locale";
 
 const emit = defineEmits(["getDate"])
 

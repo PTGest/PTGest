@@ -10,7 +10,7 @@ class RBAC {
         return this.getUserRole() === "TRAINEE"
     }
     static isTrainer(): boolean {
-        return this.getUserRole() === "TRAINER"
+        return this.getUserRole() === "INDEPENDENT_TRAINER"
     }
     static isHiredTrainer(): boolean {
         return this.getUserRole() === "HIRED_TRAINER"

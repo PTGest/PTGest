@@ -27,5 +27,9 @@ interface TrainerRepo {
 
     fun associateTrainerToExercise(trainerId: UUID, exerciseId: Int)
 
+    fun associateTrainerToSet(trainerId: UUID, setId: Int)
+
+    fun associateTrainerToWorkout(trainerId: UUID, workoutId: Int)
+
     fun associateSessionToTrainer(trainerId: UUID, sessionId: Int)
 }

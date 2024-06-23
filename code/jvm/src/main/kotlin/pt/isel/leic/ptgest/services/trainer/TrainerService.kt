@@ -435,6 +435,7 @@ class TrainerService(
 
         return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
             val setRepo = it.setRepo
+            val trainerRepo = it.trainerRepo
 
             setRepo.getSetByExercises(setExercises.map { it.exerciseId })?.let { setId ->
                 val validSet = setExercises.all { exercise ->
@@ -457,6 +458,8 @@ class TrainerService(
 
                 setRepo.associateExerciseToSet(index + 1, set.exerciseId, newSetId, jsonDetails)
             }
+
+            trainerRepo.associateTrainerToSet(trainerId, newSetId)
 
             newSetId
         }
@@ -561,13 +564,12 @@ class TrainerService(
             Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() }
         )
 
-        val workoutId = transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            it.createWorkout(trainerId, name, description, muscleGroup)
-        }
-
-        transactionManager.run {
+        return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
             val workoutRepo = it.workoutRepo
             val setRepo = it.setRepo
+            val trainerRepo = it.trainerRepo
+
+            val workoutId = it.createWorkout(trainerId, name, description, muscleGroup)
 
             sets.forEachIndexed { index, setId ->
                 setRepo.getSet(trainerId, setId)
@@ -575,9 +577,11 @@ class TrainerService(
 
                 workoutRepo.associateSetToWorkout(index + 1, setId, workoutId)
             }
-        }
 
-        return workoutId
+            trainerRepo.associateTrainerToWorkout(trainerId, workoutId)
+
+            return@runWithLevel workoutId
+        }
     }
 
     fun getWorkouts(
@@ -1207,11 +1211,11 @@ class TrainerService(
     ): Int =
         if (name != null) {
             require(name.isNotEmpty()) { "Name must not be empty." }
-            setRepo.createSet(trainerId, name, notes, setType)
+            setRepo.createSet(name, notes, setType)
         } else {
             val lastSetNameId = setRepo.getLastSetNameId(trainerId)
             val nextSetName = "Set #${lastSetNameId + 1}"
-            setRepo.createSet(trainerId, nextSetName, notes, setType)
+            setRepo.createSet(nextSetName, notes, setType)
         }
 
     private fun Transaction.getExercise(userId: UUID, exerciseId: Int): ExerciseDetails {
@@ -1230,10 +1234,10 @@ class TrainerService(
     ): Int =
         if (name != null) {
             require(name.isNotEmpty()) { "Name must not be empty." }
-            workoutRepo.createWorkout(trainerId, name, description, muscleGroup)
+            workoutRepo.createWorkout(name, description, muscleGroup)
         } else {
             val lastWorkoutNameId = workoutRepo.getLastWorkoutNameId(trainerId)
             val nextWorkoutName = "Workout #${lastWorkoutNameId + 1}"
-            workoutRepo.createWorkout(trainerId, nextWorkoutName, description, muscleGroup)
+            workoutRepo.createWorkout(nextWorkoutName, description, muscleGroup)
         }
 }

@@ -11,16 +11,15 @@ import java.util.*
 
 class JdbiSetRepo(private val handle: Handle) : SetRepo {
 
-    override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
+    override fun createSet(name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(
             """
-            insert into set (trainer_id, name, type, notes)
-            values (:trainerId, :name, :type::set_type, :notes)
+            insert into set (name, type, notes)
+            values (:name, :type::set_type, :notes)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
                     "name" to name,
                     "type" to type.name,
                     "notes" to notes
@@ -52,7 +51,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         handle.createQuery(
             """
             select cast(substring(name FROM '#([0-9]+)$') as int) as set_number
-            from set
+            from set s
+            join set_trainer st on st.set_id = s.id 
             where name like 'Set #%' and trainer_id = :trainerId
             order by cast(substring(name FROM '#([0-9]+)$') as int) desc
             limit 1
@@ -68,10 +68,12 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
 
         return handle.createQuery(
             """
-            select id, name, notes, type
-            from set
-            where trainer_id = :trainerId $typeCondition $nameCondition
-            limit :limit offset :skip
+                select id, name, notes, type
+                from set s join set_trainer st on s.id = st.set_id
+                where st.trainer_id = :trainerId
+                $typeCondition
+                $nameCondition
+                limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
@@ -94,8 +96,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         return handle.createQuery(
             """
             select count(*)
-            from set
-            where trainer_id = :trainerId $typeCondition $nameCondition
+            from set s join set_trainer st on s.id = st.set_id
+            where st.trainer_id = :trainerId $typeCondition $nameCondition
             """.trimIndent()
         )
             .bindMap(
@@ -179,7 +181,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         handle.createQuery(
             """
             select id, name, notes, type
-            from set
+            from set s
+            join set_trainer st on st.set_id = s.id
             where id = :setId and trainer_id = :trainerId
             """.trimIndent()
         )
@@ -197,7 +200,7 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             """
             select s.id, ws.order_id, s.name, s.notes, s.type
             from workout_set ws join set s on ws.set_id = s.id
-            where ws.workout_id = :workoutId and s.set_id = :setId
+            where ws.workout_id = :workoutId and ws.set_id = :setId
             """.trimIndent()
         )
             .bindMap(
@@ -269,15 +272,15 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     }
 
     override fun getSetByExercises(exerciseIds: List<Int>): Int? {
-        val exerciseIdsArray = exerciseIds.joinToString(",") { "'$it'" }
         return handle.createQuery(
             """
-            select set_id
-            from dev.set_exercise
-            group by set_id
-            having array_agg(exercise_id ORDER BY order_id) = ARRAY[$exerciseIdsArray];
-            """.trimIndent()
+        select set_id
+        from dev.set_exercise
+        group by set_id
+        having array_agg(exercise_id ORDER BY order_id) = :exerciseIdsArray::integer[];
+        """.trimIndent()
         )
+            .bind("exerciseIdsArray", exerciseIds.toTypedArray())
             .mapTo<Int>()
             .firstOrNull()
     }

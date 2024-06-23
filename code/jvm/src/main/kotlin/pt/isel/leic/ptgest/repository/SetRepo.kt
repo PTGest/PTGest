@@ -8,7 +8,7 @@ import java.util.*
 
 interface SetRepo {
 
-    fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int
+    fun createSet(name: String, notes: String?, type: SetType): Int
 
     fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String)
 

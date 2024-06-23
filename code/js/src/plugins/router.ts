@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
     },
     //UserServices Views
     { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINEE', 'COMPANY', 'TRAINER', 'HIRED_TRAINER'] } },
+            roleNeeded : ['TRAINEE', 'COMPANY', 'INDEPENDENT_TRAINER', 'HIRED_TRAINER'] } },
     //Company and Independent Trainer Views
     { path: "/trainees", name: "trainees", component: Students, meta: { requiresAuth: true ,
         roleNeeded : ['COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER'], canEdit:['COMPANY', 'INDEPENDENT_TRAINER']}
@@ -52,40 +52,40 @@ const routes: RouteRecordRaw[] = [
             roleNeeded : ['COMPANY']}
     },
     { path: "/register-trainees/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true,
-            roleNeeded : ['COMPANY', 'TRAINER']}
+            roleNeeded : ['COMPANY', 'INDEPENDENT_TRAINER']}
     },
     { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true,
         roleNeeded : ['COMPANY']}
     },
     //Trainers Views
     { path: "/exercises", name: "exercises", component: Exercises, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
     { path: "/sets", name: "sets", component: Sets, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
     { path: "/workouts", name: "workouts", component: Workouts, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
     // { path: "/workouts/:workoutId", name: "workouts", component: WorkoutDetails, meta: { requiresAuth: true,
     //         roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
     // },
     { path: "/sets/custom-set", name: "addSet", component: AddSet, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
     { path: "/workouts/add-exercise", name: "addExercise", component: AddExercise, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
     { path: "/workouts/add-workout", name: "addWorkout", component: AddWorkout, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
 
     { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
 
     { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
 
     //Error Views
