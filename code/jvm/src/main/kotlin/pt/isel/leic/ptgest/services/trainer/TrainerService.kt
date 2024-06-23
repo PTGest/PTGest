@@ -440,7 +440,40 @@ class TrainerService(
             Pair(it.exerciseId, jsonDetails)
         }
 
-        val setId = transactionManager.run {
+        return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
+                val setRepo = it.setRepo
+                val trainerRepo = it.trainerRepo
+
+                val setId = it.createSet(trainerId, name, notes, setType)
+
+                jsonDetails.forEachIndexed { index, pair ->
+                    val (exerciseId, details) = pair
+
+                    it.getExercise(trainerId, exerciseId)
+                    setRepo.associateExerciseToSet(index + 1, exerciseId, setId, details)
+                }
+
+                trainerRepo.associateTrainerToSet(trainerId, setId)
+
+                return@runWithLevel setId
+        }
+    }
+
+    fun searchSet(
+        setType: SetType,
+        setExercises: List<SetExercise>
+    ): Int? {
+        if (setType != SetType.SUPERSET) {
+            require(setExercises.size == 1) { "Only one exercise is allowed for this set type." }
+        }
+
+        val jsonDetails = setExercises.map {
+            val validatedDetails = ExerciseDetailsType.validateSetDetails(it.details)
+            val jsonDetails = convertDataToJson(validatedDetails)
+            Pair(it.exerciseId, jsonDetails)
+        }
+
+        return transactionManager.run {
             val setRepo = it.setRepo
 
             val sets = setRepo.getSetByExercises(setExercises.map { it.exerciseId })
@@ -457,28 +490,6 @@ class TrainerService(
             }
 
             return@run null
-        }
-
-        return if (setId != null) {
-            setId
-        } else {
-            transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-                val setRepo = it.setRepo
-                val trainerRepo = it.trainerRepo
-
-                val newSetId = it.createSet(trainerId, name, notes, setType)
-
-                jsonDetails.forEachIndexed { index, pair ->
-                    val (exerciseId, details) = pair
-
-                    it.getExercise(trainerId, exerciseId)
-                    setRepo.associateExerciseToSet(index + 1, exerciseId, newSetId, details)
-                }
-
-                trainerRepo.associateTrainerToSet(trainerId, newSetId)
-
-                return@runWithLevel newSetId
-            }
         }
     }
 

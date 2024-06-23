@@ -332,18 +332,30 @@ class TrainerController(
         setDetails: CreateSetRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val setId = trainerService.createCustomSet(
-            authenticatedUser.id,
-            setDetails.name,
-            setDetails.notes,
+        val setId = trainerService.searchSet(
             setDetails.type,
             setDetails.setExercises
         )
 
-        return HttpResponse.created(
-            message = "Custom set created successfully.",
-            details = CreateResourceResponse(setId)
-        )
+        return if (setId != null) {
+            HttpResponse.ok(
+                message = "Custom set already exists.",
+                details = CreateResourceResponse(setId)
+            )
+        } else {
+            val newSet = trainerService.createCustomSet(
+                authenticatedUser.id,
+                setDetails.name,
+                setDetails.notes,
+                setDetails.type,
+                setDetails.setExercises
+            )
+
+            HttpResponse.created(
+                message = "Custom set created successfully.",
+                details = CreateResourceResponse(newSet)
+            )
+        }
     }
 
     @GetMapping(Uris.Set.GET_SETS)
