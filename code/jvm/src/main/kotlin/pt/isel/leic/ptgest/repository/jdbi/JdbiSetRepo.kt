@@ -11,16 +11,15 @@ import java.util.*
 
 class JdbiSetRepo(private val handle: Handle) : SetRepo {
 
-    override fun createSet(trainerId: UUID, name: String, notes: String?, type: SetType): Int =
+    override fun createSet(name: String, notes: String?, type: SetType): Int =
         handle.createUpdate(
             """
-            insert into set (trainer_id, name, type, notes)
-            values (:trainerId, :name, :type::set_type, :notes)
+            insert into set (name, type, notes)
+            values (:name, :type::set_type, :notes)
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
                     "name" to name,
                     "type" to type.name,
                     "notes" to notes
@@ -52,7 +51,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         handle.createQuery(
             """
             select cast(substring(name FROM '#([0-9]+)$') as int) as set_number
-            from set
+            from set s
+            join set_trainer st on st.set_id = s.id 
             where name like 'Set #%' and trainer_id = :trainerId
             order by cast(substring(name FROM '#([0-9]+)$') as int) desc
             limit 1
@@ -181,7 +181,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         handle.createQuery(
             """
             select id, name, notes, type
-            from set
+            from set s
+            join set_trainer st on st.set_id = s.id
             where id = :setId and trainer_id = :trainerId
             """.trimIndent()
         )
@@ -194,9 +195,21 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .mapTo<Set>()
             .firstOrNull()
 
-    override fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet? {
-        TODO("Not yet implemented")
-    }
+    override fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet? = handle.createQuery(
+        """
+            select s.id, ws.order_id, s.name, s.notes, s.type
+            from workout_set ws join set s on ws.set_id = s.id
+            where ws.workout_id = :workoutId and ws.set_id = :setId
+        """.trimIndent()
+    )
+        .bindMap(
+            mapOf(
+                "workoutId" to workoutId,
+                "setId" to setId
+            )
+        )
+        .mapTo<WorkoutSet>()
+        .firstOrNull()
 
     override fun getSetExercises(setId: Int): List<SetExerciseDetails> =
         handle.createQuery(
@@ -254,5 +267,45 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
                 )
             )
             .execute()
+    }
+
+    override fun getSetByExercises(exerciseIds: List<Int>): List<Int> =
+        handle.createQuery(
+            """
+            select set_id
+            from set_exercise
+            group by set_id
+            having array_agg(exercise_id ORDER BY order_id) = :exerciseIdsArray::integer[];
+            """.trimIndent()
+        )
+            .bind("exerciseIdsArray", exerciseIds.toTypedArray())
+            .mapTo<Int>()
+            .list()
+
+    override fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean {
+        return handle.createQuery(
+            """
+            select exists(
+                select 1
+                from set_exercise
+                where set_id = :setId and exercise_id = :exerciseId and (
+                    select jsonb_object_agg(key, value)
+                    from jsonb_each_text(details)
+                ) = (
+                    select jsonb_object_agg(key, value)
+                    from jsonb_each_text(:details::jsonb)
+                )
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "setId" to setId,
+                    "exerciseId" to exerciseId,
+                    "details" to details
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
     }
 }

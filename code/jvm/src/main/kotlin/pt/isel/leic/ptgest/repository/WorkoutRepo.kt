@@ -6,7 +6,7 @@ import java.util.*
 
 interface WorkoutRepo {
 
-    fun createWorkout(trainerId: UUID, name: String, description: String?, muscleGroup: List<MuscleGroup>): Int
+    fun createWorkout(name: String, description: String?, muscleGroup: List<MuscleGroup>): Int
 
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
 

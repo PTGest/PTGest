@@ -10,7 +10,6 @@ import java.util.*
 class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
     override fun createWorkout(
-        trainerId: UUID,
         name: String,
         description: String?,
         muscleGroup: List<MuscleGroup>
@@ -19,13 +18,12 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
         return handle.createUpdate(
             """
-            insert into workout (trainer_id, name, description, muscle_group)
-            values (:trainerId, :name, :description, ARRAY[$muscleGroupArray])
+            insert into workout (name, description, muscle_group)
+            values (:name, :description, ARRAY[$muscleGroupArray])
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
                     "name" to name,
                     "description" to description
                 )
@@ -80,7 +78,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         return handle.createQuery(
             """
             select id, name, description, muscle_group
-            from workout w join workout_trainer wt on w.id = wt.workout_id
+            from workout w join workout_trainer wt on wt.workout_id = w.id
             where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition
             limit :limit offset :skip
             """.trimIndent()
@@ -105,7 +103,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         return handle.createQuery(
             """
             select count(*)
-            from workout w join workout_trainer wt on w.id = wt.workout_id
+            from workout w join workout_trainer wt on wt.workout_id = w.id
             where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition
             """.trimIndent()
         )
@@ -196,8 +194,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         handle.createQuery(
             """
             select id, name, description, muscle_group
-            from workout w join workout_trainer wt on w.id = wt.workout_id
-            where w.id = :workoutId and wt.trainer_id = :trainerId
+            from workout w join workout_trainer wt on wt.workout_id = w.id
+            where id = :workoutId and trainer_id = :trainerId
             """.trimIndent()
         )
             .bindMap(

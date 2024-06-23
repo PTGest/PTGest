@@ -239,7 +239,6 @@ class TraineeService(
             sessionRepo.getSetSessionFeedbacks(sessionId)
         }
 
-
     private fun isCurrentDate24BeforeDate(date: Date): Boolean {
         val calendar = Calendar.getInstance()
 

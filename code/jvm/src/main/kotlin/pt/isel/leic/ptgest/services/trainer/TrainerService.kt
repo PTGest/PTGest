@@ -11,7 +11,11 @@ import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
-import pt.isel.leic.ptgest.domain.session.model.*
+import pt.isel.leic.ptgest.domain.session.model.Session
+import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.TrainerSession
+import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.set.model.SetExercise
@@ -422,6 +426,7 @@ class TrainerService(
         setExercises: List<SetExercise>
     ): Int {
         Validators.validate(
+            Validators.ValidationRequest(name, "Name must not be empty.") { (it as String).isNotEmpty() },
             Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
         )
 
@@ -429,21 +434,51 @@ class TrainerService(
             require(setExercises.size == 1) { "Only one exercise is allowed for this set type." }
         }
 
-        return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
+        val jsonDetails = setExercises.map {
+            val validatedDetails = ExerciseDetailsType.validateSetDetails(it.details)
+            val jsonDetails = convertDataToJson(validatedDetails)
+            Pair(it.exerciseId, jsonDetails)
+        }
+
+        val setId = transactionManager.run {
             val setRepo = it.setRepo
 
-            val setId = it.createSet(trainerId, name, notes, setType)
+            val sets = setRepo.getSetByExercises(setExercises.map { it.exerciseId })
 
-            setExercises.forEachIndexed { index, set ->
-                it.getExercise(trainerId, set.exerciseId)
+            sets.forEach { set ->
+                val validSet = jsonDetails.all { pair ->
+                    val (exerciseId, details) = pair
+                    setRepo.validateSetExerciseDetails(set, exerciseId, details)
+                }
 
-                val validatedDetails = ExerciseDetailsType.validateSetDetails(set.details)
-                val jsonDetails = convertDataToJson(validatedDetails)
-
-                setRepo.associateExerciseToSet(index + 1, set.exerciseId, setId, jsonDetails)
+                if (validSet) {
+                    return@run set
+                }
             }
 
+            return@run null
+        }
+
+        return if (setId != null) {
             setId
+        } else {
+            transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
+                val setRepo = it.setRepo
+                val trainerRepo = it.trainerRepo
+
+                val newSetId = it.createSet(trainerId, name, notes, setType)
+
+                jsonDetails.forEachIndexed { index, pair ->
+                    val (exerciseId, details) = pair
+
+                    it.getExercise(trainerId, exerciseId)
+                    setRepo.associateExerciseToSet(index + 1, exerciseId, newSetId, details)
+                }
+
+                trainerRepo.associateTrainerToSet(trainerId, newSetId)
+
+                return@runWithLevel newSetId
+            }
         }
     }
 
@@ -546,13 +581,12 @@ class TrainerService(
             Validators.ValidationRequest(description, "Description must not be empty.") { (it as String).isNotEmpty() }
         )
 
-        val workoutId = transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
-            it.createWorkout(trainerId, name, description, muscleGroup)
-        }
-
-        transactionManager.run {
+        return transactionManager.runWithLevel(TransactionIsolationLevel.SERIALIZABLE) {
             val workoutRepo = it.workoutRepo
             val setRepo = it.setRepo
+            val trainerRepo = it.trainerRepo
+
+            val workoutId = it.createWorkout(trainerId, name, description, muscleGroup)
 
             sets.forEachIndexed { index, setId ->
                 setRepo.getSet(trainerId, setId)
@@ -560,9 +594,11 @@ class TrainerService(
 
                 workoutRepo.associateSetToWorkout(index + 1, setId, workoutId)
             }
-        }
 
-        return workoutId
+            trainerRepo.associateTrainerToWorkout(trainerId, workoutId)
+
+            return@runWithLevel workoutId
+        }
     }
 
     fun getWorkouts(
@@ -977,7 +1013,6 @@ class TrainerService(
             sessionRepo.getSetSessionFeedbacks(sessionId)
         }
 
-
     private fun convertDataToJson(data: Any): String {
         val jsonMapper = jacksonObjectMapper()
 
@@ -1193,11 +1228,11 @@ class TrainerService(
     ): Int =
         if (name != null) {
             require(name.isNotEmpty()) { "Name must not be empty." }
-            setRepo.createSet(trainerId, name, notes, setType)
+            setRepo.createSet(name, notes, setType)
         } else {
             val lastSetNameId = setRepo.getLastSetNameId(trainerId)
             val nextSetName = "Set #${lastSetNameId + 1}"
-            setRepo.createSet(trainerId, nextSetName, notes, setType)
+            setRepo.createSet(nextSetName, notes, setType)
         }
 
     private fun Transaction.getExercise(userId: UUID, exerciseId: Int): ExerciseDetails {
@@ -1216,10 +1251,10 @@ class TrainerService(
     ): Int =
         if (name != null) {
             require(name.isNotEmpty()) { "Name must not be empty." }
-            workoutRepo.createWorkout(trainerId, name, description, muscleGroup)
+            workoutRepo.createWorkout(name, description, muscleGroup)
         } else {
             val lastWorkoutNameId = workoutRepo.getLastWorkoutNameId(trainerId)
             val nextWorkoutName = "Workout #${lastWorkoutNameId + 1}"
-            workoutRepo.createWorkout(trainerId, nextWorkoutName, description, muscleGroup)
+            workoutRepo.createWorkout(nextWorkoutName, description, muscleGroup)
         }
 }

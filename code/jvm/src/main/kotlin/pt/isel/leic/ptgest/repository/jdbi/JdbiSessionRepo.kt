@@ -101,7 +101,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         where s.trainee_id = :traineeId ${sessionType?.let { "and s.type = :type" } ?: ""}
         order by s.begin_date
         limit :limit offset :skip
-        """.trimIndent()
+            """.trimIndent()
         )
             .bind("traineeId", traineeId)
             .bind("skip", skip)
@@ -109,7 +109,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .apply { sessionType?.let { bind("type", it.name) } }
             .mapTo<Session>()
             .list()
-
 
     override fun getTotalTraineeSessions(traineeId: UUID?, sessionType: SessionType?): Int =
         handle.createQuery(
@@ -297,7 +296,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .bind("sessionId", sessionId)
             .mapTo<SetSessionFeedback>()
             .list()
-
 
     override fun getSetSessionFeedback(
         feedbackId: Int,

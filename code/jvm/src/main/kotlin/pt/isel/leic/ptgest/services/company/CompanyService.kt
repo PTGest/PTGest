@@ -77,7 +77,7 @@ class CompanyService(
     fun assignTrainerToTrainee(
         trainerId: UUID,
         traineeId: UUID,
-        companyId: UUID,
+        companyId: UUID
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo
