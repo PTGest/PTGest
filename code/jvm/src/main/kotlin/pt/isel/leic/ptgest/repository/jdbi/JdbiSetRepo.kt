@@ -275,10 +275,10 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             select set_id
             from set_exercise
             group by set_id
-            having array_agg(exercise_id ORDER BY order_id) = :exerciseIdsArray::integer[];
+            having array_agg(exercise_id ORDER BY order_id) = :exercises::integer[]
             """.trimIndent()
         )
-            .bind("exerciseIdsArray", exerciseIds.toTypedArray())
+            .bind("exercisesArray", exerciseIds.toTypedArray())
             .mapTo<Int>()
             .list()
 

@@ -343,7 +343,7 @@ class TrainerController(
                 details = CreateResourceResponse(setId)
             )
         } else {
-            val newSet = trainerService.createCustomSet(
+            val newSetId = trainerService.createCustomSet(
                 authenticatedUser.id,
                 setDetails.name,
                 setDetails.notes,
@@ -353,7 +353,7 @@ class TrainerController(
 
             HttpResponse.created(
                 message = "Custom set created successfully.",
-                details = CreateResourceResponse(newSet)
+                details = CreateResourceResponse(newSetId)
             )
         }
     }
@@ -435,18 +435,29 @@ class TrainerController(
         workoutDetails: CreateWorkoutRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val workoutId = trainerService.createCustomWorkout(
-            authenticatedUser.id,
-            workoutDetails.name,
-            workoutDetails.description,
-            workoutDetails.muscleGroup,
+        val workoutId = trainerService.searchWorkout(
             workoutDetails.sets
         )
 
-        return HttpResponse.created(
-            message = "Custom workout created successfully.",
-            details = CreateResourceResponse(workoutId)
-        )
+        return if (workoutId != null) {
+            HttpResponse.ok(
+                message = "Custom workout already exists.",
+                details = CreateResourceResponse(workoutId)
+            )
+        } else {
+            val newWorkoutId = trainerService.createCustomWorkout(
+                authenticatedUser.id,
+                workoutDetails.name,
+                workoutDetails.description,
+                workoutDetails.muscleGroup,
+                workoutDetails.sets
+            )
+
+            HttpResponse.created(
+                message = "Custom workout created successfully.",
+                details = CreateResourceResponse(newWorkoutId)
+            )
+        }
     }
 
     @GetMapping(Uris.Workout.GET_WORKOUTS)

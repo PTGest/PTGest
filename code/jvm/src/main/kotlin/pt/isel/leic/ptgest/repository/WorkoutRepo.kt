@@ -8,6 +8,8 @@ interface WorkoutRepo {
 
     fun createWorkout(name: String, description: String?, muscleGroup: List<MuscleGroup>): Int
 
+    fun getWorkoutBySets(sets: List<Int>): Int?
+
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
 
     fun getLastWorkoutNameId(trainerId: UUID): Int
