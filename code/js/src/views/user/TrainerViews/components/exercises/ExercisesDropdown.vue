@@ -7,7 +7,7 @@
 
         <ul :class="[isDropdownOpen ? 'menu-open' : 'menu']">
             <li :class="{'active': selected === placeholder}" @click="selectOption(`${props.placeholder}`)">-</li>
-            <li :class="{'active': selected === option}" v-for="option in props.options" :key="option.name" @click="selectOption(option)">{{ option.name }}</li>
+            <li :class="{'active': selected === option.name}" v-for="option in props.options" :key="option.name" @click="selectOption(option)">{{ option.name }}</li>
         </ul>
     </div>
 </template>

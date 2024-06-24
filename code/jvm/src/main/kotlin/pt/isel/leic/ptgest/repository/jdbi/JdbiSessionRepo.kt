@@ -27,7 +27,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         return handle.createUpdate(
             """
             insert into session (trainee_id, workout_id, begin_date, end_date, location, type, notes)
-            values (:traineeId, :workoutId, :beginDate, :endDate, :location, :type, :notes)
+            values (:traineeId, :workoutId, :beginDate, :endDate, :location, :type::session_type, :notes)
             """.trimIndent()
         )
             .bindMap(
@@ -36,6 +36,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     "workoutId" to workoutId,
                     "beginDate" to beginDate,
                     "endDate" to endDate,
+                    "location" to location,
                     "type" to type.name,
                     "notes" to notes
                 )
@@ -143,31 +144,71 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getTrainerSessionDetails(sessionId: Int): TrainerSessionDetails? =
         handle.createQuery(
             """
-            select s.id, u.name as trainee_name, s.workout_id, s.begin_date, s.end_date, s.location, s.type, s.notes,
-                case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
-            from session s
-            left join dev.cancelled_session cs on s.id = cs.session_id
-            join "user" u on s.trainee_id = u.id
-            where s.id = :sessionId
-            """.trimIndent()
+        select s.id, 
+               u.name as trainee_name, 
+               s.workout_id, 
+               s.begin_date, 
+               s.end_date, 
+               s.location, 
+               s.type, 
+               s.notes,
+               case when cs.session_id is not null then true else false end as cancelled, 
+               cs.reason, 
+               cs.source
+        from session s
+        left join dev.cancelled_session cs on s.id = cs.session_id
+        join "user" u on s.trainee_id = u.id
+        where s.id = :sessionId
+        """.trimIndent()
         )
             .bind("sessionId", sessionId)
-            .mapTo<TrainerSessionDetails>()
+            .map { rs, _ ->
+                TrainerSessionDetails(
+                    rs.getInt("id"),
+                    rs.getString("trainee_name"),
+                    rs.getInt("workout_id"),
+                    rs.getDate("begin_date"),
+                    rs.getDate("end_date"),
+                    rs.getString("location"),
+                    SessionType.valueOf(rs.getString("type")),  // Supondo que 'type' é uma string que pode ser convertida para SessionType
+                    rs.getString("notes"),
+                    rs.getBoolean("cancelled"),
+                    rs.getString("reason"),
+                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE  // Tratar null para 'source'
+                )
+            }
             .firstOrNull()
+
 
     override fun getSessionDetails(sessionId: Int): SessionDetails? =
         handle.createQuery(
             """
-            select id, workout_id, begin_date, end_date, location, type, notes,
-                case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
-            from session
-            left join dev.cancelled_session cs on s.id = cs.session_id
-            where id = :sessionId
-            """.trimIndent()
+        select id, workout_id, begin_date, end_date, location, type, notes,
+            case when cs.session_id is not null then true else false end as cancelled, 
+            cs.reason, 
+            cs.source -- Ensure 'source' is included in the query result
+        from session s
+        left join dev.cancelled_session cs on s.id = cs.session_id
+        where s.id = :sessionId
+        """.trimIndent()
         )
             .bind("sessionId", sessionId)
-            .mapTo<SessionDetails>()
+            .map { rs, _ ->
+                SessionDetails(
+                    id = rs.getInt("id"),
+                    workoutId = rs.getInt("workout_id"),
+                    beginDate = rs.getDate("begin_date"),
+                    endDate = rs.getDate("end_date"),
+                    location = rs.getString("location"),
+                    type = SessionType.valueOf(rs.getString("type")), // Assuming type is stored as a string
+                    notes = rs.getString("notes"),
+                    cancelled = rs.getBoolean("cancelled"),
+                    reason = rs.getString("reason"),
+                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE// Assuming source is stored as a string
+                )
+            }
             .firstOrNull()
+
 
     override fun getSessionDetails(traineeId: UUID, sessionId: Int): SessionDetails? =
         handle.createQuery(

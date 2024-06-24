@@ -1248,7 +1248,7 @@ class TrainerService(
             require(name.isNotEmpty()) { "Name must not be empty." }
             setRepo.createSet(name, notes, setType)
         } else {
-            val lastSetNameId = setRepo.getLastSetNameId(trainerId)
+            val lastSetNameId = setRepo.getLastSetNameId(trainerId) ?:0
             val nextSetName = "Set #${lastSetNameId + 1}"
             setRepo.createSet(nextSetName, notes, setType)
         }

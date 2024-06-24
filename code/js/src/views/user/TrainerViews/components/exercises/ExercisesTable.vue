@@ -17,7 +17,7 @@
                 {{exercise.modality}}
             </td>
             <td class="like-button-box">
-                <LikeExercise :exercise-id="exercise.id"></LikeExercise>
+                <LikeExercise :exercise-id="exercise.id" :is-liked="exercise.isFavorite"></LikeExercise>
             </td>
         </tr>
     </table>

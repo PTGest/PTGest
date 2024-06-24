@@ -21,11 +21,11 @@
 
 <script setup lang="ts">
 
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faX} from "@fortawesome/free-solid-svg-icons";
 import Trainee from "../../../CompaniesViews/models/Trainee.ts";
 import RBAC from "@/services/utils/RBAC/RBAC.js";
 import router from "@/plugins/router.ts";
+import store from "@/store";
+import TraineeInfo from "@/views/user/TrainerViews/models/trainees/TraineeInfo.ts";
 
 ;
 
@@ -38,6 +38,8 @@ const handleInfo = () => {
         // router.push({name: 'traineeInfo', params: {traineeId: props.trainee.traineeId}})
     }else{
         console.log(props.trainee.traineeId)
+        const traineeInfo = new TraineeInfo(props.trainee.traineeId, props.trainee.traineeName);
+        store.commit('setTraineeInfo', traineeInfo);
         router.push({name: 'traineeSessions', params: {traineeId: props.trainee.traineeId}})
     }
 }

@@ -1,20 +1,20 @@
 <template>
-    <h2>Add new Session</h2>
+    <h2>{{ props.isEdit ? 'Edit Session' : 'Add new Session' }}</h2>
     <div class="add-session-container">
         <div class="item">
             <label for="workout">Workout</label>
-            <MultiSelect v-model="selectedWorkout" display="chip" :options="workouts.workouts.map((workout:Workout) => {
+            <ExercisesDropdown @dropdownOption="updateWorkout($event)" :options="workouts.workouts.map((workout:Workout) => {
             return {
                 id: workout.id,
                 name: workout.name
             }
-        })" optionLabel="name" filter placeholder="Select Workout" :maxSelectedLabels="3" class="w-full md:w-80" />
+        })" optionLabel="name" filter placeholder="Select Workout" />
         </div>
         <div class="item">
             <label for="workout">Begin Date</label>
             <Calendar id="calendar-24h" v-model="beginDate" showTime hourFormat="24" />
         </div>
-        <div class="item">
+        <div v-if="workoutType == 'TRAINER_GUIDED'" class="item">
             <label for="workout">End Date</label>
             <Calendar id="calendar-timeonly" v-model="endTime" timeOnly />
         </div>
@@ -24,39 +24,102 @@
                 <label for="plan-based" class="ml-1">Plan Based</label>
             </div>
             <div class="radio-btn">
-                <RadioButton v-model="workoutType" inputId="ingredient2" name="TrainerGuided" value="TRAINER_GUIDED" />
+                <RadioButton v-model="workoutType" inputId="workoutType" name="TrainerGuided" value="TRAINER_GUIDED" />
                 <label for="trainer-guided" class="ml-2">Trainer Guided</label>
             </div>
         </div>
 
         <textarea class="text-area" v-model="setNotes"/>
-        <button class="submit-btn">Add Session</button>
+        <Button @click="addSession" label="submit" class="submit" :disabled="isDisable">{{ props.isEdit ? 'Edit Session' : 'Add Session' }}</Button>
     </div>
 </template>
 
 <script setup lang="ts">
 
 
-import {Ref, ref} from "vue";
-import MultiSelect from "primevue/multiselect";
+import {computed, Ref, ref} from "vue";
 import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts";
 import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts";
 import CreateSessionRequest from "@/views/user/TrainerViews/models/sessions/CreateSessionRequest.ts";
-import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
 import Calendar from "primevue/calendar";
 import RadioButton from "primevue/radiobutton";
+import ExercisesDropdown from "@/views/user/TrainerViews/components/exercises/ExercisesDropdown.vue";
+import createSession from "@/services/TrainerServices/sessions/createSession.ts";
+import router from "@/plugins/router.ts";
+import Button from "primevue/button";
+import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
+import editSession from "@/services/TrainerServices/sessions/editSession.ts";
+import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts";
+import store from "@/store";
 
-const workoutType = ref('');
-const workouts = ref(new Workouts());
-const selectedWorkout = ref<string>('');
-const setNotes = ref<string>('');
-const beginDate : Ref<Date> = ref(new Date());
-const endTime : Ref<Date> = ref(new Date());
+const props = defineProps<{
+    isEdit: boolean
+    sessionData: TrainerSessionDetails
+}>();
+
+console.log(props.sessionData)
+
+const workoutType = ref(props.isEdit ? props.sessionData.workoutType : '');
+const workouts = ref(props.isEdit ? props.sessionData.workouts : new Workouts());
+const selectedWorkout = ref(props.isEdit ? props.sessionData.selectedWorkout : '');
+const setNotes = ref<string|null>(props.isEdit ? props.sessionData.setNotes : null);
+const beginDate: Ref<Date> = ref(props.isEdit ? props.sessionData.beginDate : new Date());
+const endTime: Ref<Date> = ref(props.isEdit ? props.sessionData.endTime : new Date());
 const sessionRequestData : Ref<CreateSessionRequest> = ref(new CreateSessionRequest());
+
+
+
 
 (async () => {
     workouts.value = await getWorkouts();
 })()
+
+
+const updateWorkout = (workout: any) => {
+    selectedWorkout.value = workout;
+    console.log(selectedWorkout.value);
+}
+
+const isDisable = computed(() => {
+        return !(selectedWorkout.value && beginDate.value && workoutType.value)
+})
+
+const addSession = async () => {
+    try{
+        if (workoutType.value == 'TRAINER_GUIDED' ) {
+            console.log(endTime.value.getHours())
+            const endDate = new Date(beginDate.value).setHours(endTime.value.getHours(), endTime.value.getMinutes(),endTime.value.getSeconds());
+            sessionRequestData.value = {
+                traineeId: store.getters.traineeInfo.id,
+                workoutId: selectedWorkout.value.id,
+                beginDate: beginDate.value,
+                endDate: new Date(),
+                location: 'Gym',
+                type: workoutType.value,
+                notes: setNotes.value
+            }
+        }else{
+            sessionRequestData.value ={
+                traineeId: store.getters.traineeInfo.id,
+                workoutId: selectedWorkout.value.id,
+                beginDate: beginDate.value,
+                endDate: null,
+                location: 'Gym',
+                type: workoutType.value,
+                notes: setNotes.value
+            }
+        }
+        if(!props.isEdit){
+            await createSession(sessionRequestData.value);
+        }else{
+            await editSession(props.sessionData.id,sessionRequestData.value);
+        }
+        router.go(-1);
+    }
+    catch (e) {
+        console.log(e)
+    }
+}
 
 </script>
 
@@ -76,23 +139,6 @@ const sessionRequestData : Ref<CreateSessionRequest> = ref(new CreateSessionRequ
 }
 
 
-:deep(.p-multiselect-trigger-icon){
-    color: whitesmoke;
-}
-:deep(.p-multiselect){
-    width: 15em;
-    background-color: var(--main-primary-color);
-    outline: var(--main-secondary-color);
-}
-:global(.p-multiselect-panel){
-    width: 15em;
-    position:relative;
-    left: 0;
-    background-color: transparent;
-}
-:global(.p-multiselect-empty-message){
-    color: whitesmoke;
-}
 
 :deep(.p-placeholder){
     color: whitesmoke;
@@ -177,7 +223,7 @@ textarea{
     transition : 0.2s ease-out;
 }
 
-.submit-btn{
+.submit{
    background-color: var(--main-secondary-color);
     color: whitesmoke;
 }

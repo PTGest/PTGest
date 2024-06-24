@@ -24,6 +24,8 @@ import SetDetails from "../views/user/TrainerViews/components/sets/SetDetails.vu
 import Sessions from "../views/user/TrainerViews/Sessions.vue";
 import TraineeSessions from "../views/user/TrainerViews/components/sessions/TraineeSessions.vue";
 import AddTraineeSession from "../views/user/TrainerViews/components/sessions/AddTraineeSession.vue";
+import SessionDetails from "../views/user/TrainerViews/components/sessions/SessionDetails.vue";
+import EditSessionDetails from "../views/user/TrainerViews/components/sessions/EditSessionDetails.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -96,7 +98,12 @@ const routes: RouteRecordRaw[] = [
     { path: "/sessions/:traineeId/add-session", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true,
             roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
     },
-
+    { path: "/sessions/session/:sessionId", name: " sessionDetails", component: SessionDetails, meta: { requiresAuth: true,
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
+    },
+    { path: "/sessions/session/:sessionId/edit", name: " editSessionDetails", component: EditSessionDetails, meta: { requiresAuth: true,
+            roleNeeded : ['INDEPENDENT_TRAINER', 'HIRED_TRAINER']}
+    },
     //Error Views
     { path: "/error", name: "error", component: Error },
     //{ path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },

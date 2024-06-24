@@ -73,7 +73,9 @@ import RBAC from "@/services/utils/RBAC/RBAC.ts";
 
 // Define a computed property to track changes to userData
 const userData = computed(() => {
-    return store.state.userData.token !== undefined
+    console.log(document.cookie.split(';'))
+     return store.state.userData.token !== undefined
+
 })
 
 // Define other reactive variables

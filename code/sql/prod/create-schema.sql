@@ -148,7 +148,7 @@ create table if not exists prod.session
     trainee_id uuid references prod.trainee (id) on delete cascade,
     workout_id int references prod.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
-    end_date   timestamp check ( end_date > begin_date and end_date > now() )   not null,
+    end_date   timestamp check ( end_date > begin_date and end_date > now() ) ,
     location   varchar(50),
     type       prod.session_type                                                not null,
     notes      text

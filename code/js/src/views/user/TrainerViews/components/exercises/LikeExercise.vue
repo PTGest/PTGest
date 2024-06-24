@@ -15,9 +15,10 @@ import unlikeExercise from "@/services/TrainerServices/exercises/unlikeExercise.
 
 const props = defineProps<{
     exerciseId: number;
+    isLiked: boolean;
 }>();
 
-const isLiked = ref(false);
+const isLiked = ref(props.isLiked);
 
 const handleLike = () => {
 console.log('Liked', isLiked.value);

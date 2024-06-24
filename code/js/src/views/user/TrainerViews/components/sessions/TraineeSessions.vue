@@ -14,9 +14,9 @@ import {Ref, ref} from "vue";
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts";
 import Session from "@/views/user/TrainerViews/models/sessions/Session.ts";
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue";
+import {getUserInfo} from "@/services/UserServices/profileServices.ts";
 
 const traineeTrainDays : Ref<Sessions> = ref (new Sessions());
-
 
 ( async () => {
     traineeTrainDays.value = await getTraineeSessions(router.currentRoute.value.params.traineeId)

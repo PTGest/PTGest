@@ -7,7 +7,7 @@
                 <div class="set-row-info">{{ props.set.type }}</div>
             </div>
         </div>
-        <LikeSet :set-id="props.set.id"></LikeSet>
+        <LikeSet :set-id="props.set.id" :is-favorite="set.isFavorite"></LikeSet>
     </div>
     <Divider />
 </template>

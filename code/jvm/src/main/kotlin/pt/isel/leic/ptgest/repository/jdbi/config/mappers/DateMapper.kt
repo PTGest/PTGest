@@ -6,7 +6,8 @@ import java.sql.ResultSet
 import java.util.*
 
 class DateMapper : ColumnMapper<Date> {
-    override fun map(r: ResultSet, columnNumber: Int, ctx: StatementContext?): Date {
-        return Date(r.getTimestamp(columnNumber).time)
+    override fun map(r: ResultSet, columnNumber: Int, ctx: StatementContext?): Date? {
+        val timestamp = r.getTimestamp(columnNumber)
+        return timestamp?.let { Date(it.time) }
     }
 }

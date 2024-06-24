@@ -16,6 +16,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/vue-fontawesome": "^3.0.6",
+    "date-fns": "^3.6.0",
     "dayspan-vuetify": "^0.4.0",
     "primevue": "^3.52.0",
     "vue": "^3.4.21",

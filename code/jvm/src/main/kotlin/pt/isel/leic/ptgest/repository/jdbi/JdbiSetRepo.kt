@@ -47,7 +47,7 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .execute()
     }
 
-    override fun getLastSetNameId(trainerId: UUID): Int =
+    override fun getLastSetNameId(trainerId: UUID): Int? =
         handle.createQuery(
             """
             select cast(substring(name FROM '#([0-9]+)$') as int) as set_number
@@ -60,7 +60,7 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         )
             .bind("trainerId", trainerId)
             .mapTo<Int>()
-            .one()
+            .firstOrNull()
 
     override fun getSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
         val typeCondition = if (type != null) "and type = :type" else ""

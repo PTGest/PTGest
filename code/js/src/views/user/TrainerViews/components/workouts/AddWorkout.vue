@@ -27,7 +27,6 @@
                    <textarea v-model="description" class="text-area" placeholder="" />
                </div>
                <Button @click="addWorkout" class="submit" :disabled="isDisable"> Add Workout </Button>
-
            </div>
         </div>
     </div>

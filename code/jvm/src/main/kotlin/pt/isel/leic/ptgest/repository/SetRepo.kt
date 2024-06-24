@@ -12,7 +12,7 @@ interface SetRepo {
 
     fun associateExerciseToSet(orderId: Int, exerciseId: Int, setId: Int, details: String)
 
-    fun getLastSetNameId(trainerId: UUID): Int
+    fun getLastSetNameId(trainerId: UUID): Int?
 
     fun getSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set>
 

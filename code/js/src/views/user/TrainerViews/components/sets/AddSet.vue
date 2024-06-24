@@ -66,7 +66,7 @@ const exercises : Ref<Exercises> = ref({
     nOfExercises: 0
 });
 const exerciseDetailsList : Ref<SetExercise[]> = ref([]);
-const setName = ref("");
+const setName = ref(null);
 const setNotes = ref(null);
 const typeOption = ref("");
 const setTypes = [{name:"SIMPLESET"}, {name:"DROPSET"}, {name:"SUPERSET"}];
@@ -100,7 +100,7 @@ const submitSet = async() => {
     console.log(setNotes.value);
     const set = await createSet(
         new CreateCustomSetRequest(
-            setName.value,
+            setName.value === null ? null : setName.value,
             setNotes.value === null ? null : setNotes.value,
             typeOption.value.name,
             exerciseDetailsList.value

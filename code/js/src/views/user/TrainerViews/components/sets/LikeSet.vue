@@ -13,9 +13,10 @@ import unlikeSet from "@/services/TrainerServices/sets/unlikeSet.ts";
 
 const props = defineProps<{
     setId: number;
+    isFavorite: boolean;
 }>();
 
-const isLiked = ref(false);
+const isLiked = ref(props.isFavorite);
 
 const handleLike = () => {
 
