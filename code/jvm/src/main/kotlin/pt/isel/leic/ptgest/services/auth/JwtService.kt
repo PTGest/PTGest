@@ -24,9 +24,19 @@ class JwtService(
     ): String {
         val claims = HashMap<String, Any>()
 
-        transactionManager.run {
+        val version = transactionManager.run {
+            val authRepo = it.authRepo
             it.validateUser(userId, role)
+
+            val version = authRepo.getTokenVersion(userId)
+            if (version == null) {
+                authRepo.createTokenVersion(userId)
+            }
+
+            return@run version ?: 1
         }
+
+        claims["version"] = version
 
         require(
             currentDate.before(expirationDate) ||
@@ -39,18 +49,23 @@ class JwtService(
     fun extractToken(token: String): AccessTokenDetails {
         val claims = getAllClaimsFromToken(token)
 
-        val userId = claims.id
-        val role = claims.subject
         val expirationDate = claims.expiration
+        val version = claims["version"] as Int
 
         val accessTokenDetails = AccessTokenDetails(
-            userId = UUID.fromString(userId),
-            role = Role.valueOf(role),
-            expirationDate = Date(expirationDate.time)
+            userId = UUID.fromString(claims.id),
+            role = Role.valueOf(claims.subject),
+            expirationDate = Date(expirationDate.time),
+            version = version
         )
 
         transactionManager.run {
+            val authRepo = it.authRepo
+
             it.validateUser(accessTokenDetails.userId, accessTokenDetails.role)
+            if (authRepo.getTokenVersion(accessTokenDetails.userId) != version) {
+                throw AuthError.TokenError.InvalidTokenVersion
+            }
         }
 
         return accessTokenDetails

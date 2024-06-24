@@ -159,7 +159,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         left join dev.cancelled_session cs on s.id = cs.session_id
         join "user" u on s.trainee_id = u.id
         where s.id = :sessionId
-        """.trimIndent()
+            """.trimIndent()
         )
             .bind("sessionId", sessionId)
             .map { rs, _ ->
@@ -170,15 +170,14 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     rs.getDate("begin_date"),
                     rs.getDate("end_date"),
                     rs.getString("location"),
-                    SessionType.valueOf(rs.getString("type")),  // Supondo que 'type' é uma string que pode ser convertida para SessionType
+                    SessionType.valueOf(rs.getString("type")), // Supondo que 'type' é uma string que pode ser convertida para SessionType
                     rs.getString("notes"),
                     rs.getBoolean("cancelled"),
                     rs.getString("reason"),
-                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE  // Tratar null para 'source'
+                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE // Tratar null para 'source'
                 )
             }
             .firstOrNull()
-
 
     override fun getSessionDetails(sessionId: Int): SessionDetails? =
         handle.createQuery(
@@ -190,7 +189,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         from session s
         left join dev.cancelled_session cs on s.id = cs.session_id
         where s.id = :sessionId
-        """.trimIndent()
+            """.trimIndent()
         )
             .bind("sessionId", sessionId)
             .map { rs, _ ->
@@ -204,11 +203,10 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     notes = rs.getString("notes"),
                     cancelled = rs.getBoolean("cancelled"),
                     reason = rs.getString("reason"),
-                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE// Assuming source is stored as a string
+                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE // Assuming source is stored as a string
                 )
             }
             .firstOrNull()
-
 
     override fun getSessionDetails(traineeId: UUID, sessionId: Int): SessionDetails? =
         handle.createQuery(

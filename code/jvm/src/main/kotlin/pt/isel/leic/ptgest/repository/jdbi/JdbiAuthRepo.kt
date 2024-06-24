@@ -120,6 +120,42 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             .execute()
     }
 
+    override fun createTokenVersion(userId: UUID): Int =
+        handle.createUpdate(
+            """
+                insert into token_version (user_id)
+                values (:userId)
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .executeAndReturnGeneratedKeys("version")
+            .mapTo<Int>()
+            .one()
+
+    override fun getTokenVersion(userId: UUID): Int? =
+        handle.createQuery(
+            """
+                select version
+                from token_version
+                where user_id = :userId
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .mapTo<Int>()
+            .firstOrNull()
+
+    override fun changeTokenVersion(userId: UUID) {
+        handle.createUpdate(
+            """
+                update token_version
+                set version = version + 1
+                where user_id = :userId
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .execute()
+    }
+
     override fun createToken(tokenHash: String, userId: UUID, expirationDate: Date) {
         handle.createUpdate(
             """

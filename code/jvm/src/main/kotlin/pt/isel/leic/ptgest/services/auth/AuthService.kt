@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticationDetails
 import pt.isel.leic.ptgest.domain.auth.model.Token
-import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.user.Role
@@ -91,7 +90,7 @@ class AuthService(
             return@run trainerId
         }
 
-        reSetPassword(email, true)
+        forgetPassword(email, true)
         return trainerId
     }
 
@@ -124,11 +123,11 @@ class AuthService(
             it.associateTrainee(userId, userRole, traineeId)
             return@run traineeId
         }
-        reSetPassword(email, true)
+        forgetPassword(email, true)
         return traineeId
     }
 
-    fun reSetPassword(email: String, setPassword: Boolean = false) {
+    fun forgetPassword(email: String, setPassword: Boolean = false) {
         val userDetails = transactionManager.run {
             val userRepo = it.userRepo
             return@run userRepo.getUserDetails(email)
@@ -201,6 +200,10 @@ class AuthService(
 
             authRepo.resetPassword(resetToken.userId, passwordHash)
 
+            if (authRepo.getTokenVersion(resetToken.userId) != null) {
+                authRepo.changeTokenVersion(resetToken.userId)
+            }
+
             return@run userDetails
         }
 
@@ -226,18 +229,6 @@ class AuthService(
         }
 
         val tokens = createTokens(currentDate, userDetails.id, userDetails.role)
-        val refreshTokenHash = authDomain.hashToken(tokens.refreshToken.token)
-
-        transactionManager.run {
-            val authRepo = it.authRepo
-
-            authRepo.createToken(
-                refreshTokenHash,
-                userDetails.id,
-                tokens.refreshToken.expirationDate
-            )
-            authRepo.createRefreshToken(refreshTokenHash)
-        }
 
         return AuthenticationDetails(
             id = userDetails.id,
@@ -246,78 +237,27 @@ class AuthService(
         )
     }
 
-    fun refreshToken(accessToken: String, refreshToken: String, currentDate: Date): TokenPair {
-        val refreshTokenHash = authDomain.hashToken(refreshToken)
-        val accessTokenDetails = jwtService.extractToken(accessToken)
-        val refreshTokenDetails = transactionManager.run {
-            it.getRefreshTokenDetails(
-                refreshTokenHash,
-                accessTokenDetails.userId
-            )
-        }
+    fun refreshToken(refreshToken: String, currentDate: Date): TokenPair {
+        val refreshTokenDetails = jwtService.extractToken(refreshToken)
 
-        if (refreshTokenDetails.expiration.before(currentDate)) {
-            throw AuthError.TokenError.TokenExpired
-        }
-
-        val tokens = createTokens(currentDate, accessTokenDetails.userId, accessTokenDetails.role)
-        val newRefreshTokenHash = authDomain.hashToken(tokens.refreshToken.token)
-
-        transactionManager.run {
-            val authRepo = it.authRepo
-            authRepo.removeToken(refreshTokenHash)
-
-            authRepo.createToken(
-                newRefreshTokenHash,
-                accessTokenDetails.userId,
-                tokens.refreshToken.expirationDate
-            )
-            authRepo.createRefreshToken(
-                newRefreshTokenHash
-            )
-        }
-        return tokens
-    }
-
-    fun validateRefreshToken(userId: UUID, refreshToken: String) {
-        require(refreshToken.isNotBlank()) { "Invalid refresh token." }
-
-        val refreshTokenHash = authDomain.hashToken(refreshToken)
-
-        transactionManager.run {
-            val authRepo = it.authRepo
-
-            val refreshTokenDetails = authRepo.getRefreshTokenDetails(refreshTokenHash)
-                ?: throw AuthError.TokenError.InvalidRefreshToken
-
-            if (refreshTokenDetails.expiration.before(Date())) {
-                throw AuthError.TokenError.TokenExpired
-            }
-
-            if (refreshTokenDetails.userId != userId) {
-                throw AuthError.TokenError.UserIdMismatch
-            }
-        }
-    }
-
-    fun logout(refreshToken: String) {
-        transactionManager.run {
-            val authRepo = it.authRepo
-
-            authRepo.removeToken(authDomain.hashToken(refreshToken))
-        }
+        return createTokens(currentDate, refreshTokenDetails.userId, refreshTokenDetails.role)
     }
 
     private fun createTokens(currentDate: Date, userId: UUID, userRole: Role): TokenPair {
         val accessExpirationDate = authDomain.createAccessTokenExpirationDate(currentDate)
         val refreshExpirationDate = authDomain.createRefreshTokenExpirationDate(currentDate)
 
-        val refreshTokenValue = authDomain.generateTokenValue()
-
         val accessTokenValue = jwtService.generateToken(
             userId = userId,
             role = userRole,
             expirationDate = accessExpirationDate,
+            currentDate = currentDate
+        )
+
+        val refreshTokenValue = jwtService.generateToken(
+            userId = userId,
+            role = userRole,
+            expirationDate = refreshExpirationDate,
             currentDate = currentDate
         )
 
@@ -346,17 +286,6 @@ class AuthService(
         val passwordHash = authDomain.hashPassword(password)
 
         return authRepo.createUser(name, email, passwordHash, role)
-    }
-
-    private fun Transaction.getRefreshTokenDetails(tokenHash: String, userId: UUID): TokenDetails {
-        val refreshToken = authRepo.getRefreshTokenDetails(tokenHash)
-            ?: throw AuthError.TokenError.InvalidRefreshToken
-
-        if (refreshToken.userId != userId) {
-            throw AuthError.TokenError.UserIdMismatch
-        }
-
-        return refreshToken
     }
 
     private fun Transaction.associateTrainee(userId: UUID, userRole: Role, traineeId: UUID) {

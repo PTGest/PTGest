@@ -21,30 +21,21 @@ create table if not exists prod."user"
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
     password_hash varchar(256) check (password_hash <> '')                          not null,
-    role          prod.role                                                         not null
+    role          prod.role                                                          not null,
+    active        boolean default true                                              not null
 );
 
-create table if not exists prod.deactivated_user
+create table if not exists prod.token_version
 (
-    id uuid primary key references prod."user" (id) on delete cascade
+    user_id  uuid primary key references prod."user" (id) on delete cascade,
+    version int default 1 not null
 );
 
--- Auth tables
-create table if not exists prod.token
+create table if not exists prod.forget_password_request
 (
     token_hash varchar(256) check (token_hash <> '') primary key,
     user_id    uuid references prod."user" (id) on delete cascade,
     expiration timestamp check ( expiration > now() ) not null
-);
-
-create table if not exists prod.password_reset_token
-(
-    token_hash varchar(256) primary key references prod.token (token_hash) on delete cascade
-);
-
-create table if not exists prod.refresh_token
-(
-    token_hash varchar(256) primary key references prod.token (token_hash) on delete cascade
 );
 
 -- User's personal data
@@ -64,7 +55,7 @@ create table if not exists prod.trainee
 (
     id           uuid primary key references prod."user" (id) on delete cascade,
     gender       prod.gender not null,
-    birthdate    date        not null,
+    birthdate    date       not null,
     phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
@@ -119,7 +110,7 @@ create table if not exists prod.report_trainer
 create table if not exists prod.workout
 (
     id           serial primary key,
-    name         varchar(50)         not null,
+    name         varchar(50)        not null,
     description  text,
     muscle_group prod.muscle_group[] not null
 );
@@ -127,7 +118,7 @@ create table if not exists prod.workout
 create table if not exists prod.set
 (
     id    serial primary key,
-    name  varchar(50)   not null,
+    name  varchar(50)  not null,
     notes text,
     type  prod.set_type not null
 );
@@ -135,7 +126,7 @@ create table if not exists prod.set
 create table if not exists prod.exercise
 (
     id           serial primary key,
-    name         varchar(50)         not null,
+    name         varchar(50)        not null,
     description  text,
     muscle_group prod.muscle_group[] not null,
     modality     prod.modality       not null,
@@ -150,7 +141,7 @@ create table if not exists prod.session
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
     end_date   timestamp check ( end_date > begin_date and end_date > now() ) ,
     location   varchar(50),
-    type       prod.session_type                                                not null,
+    type       prod.session_type                                                 not null,
     notes      text
 );
 
@@ -237,7 +228,7 @@ create table if not exists prod.trainer_favorite_exercise
 create table if not exists prod.feedback
 (
     id       serial primary key,
-    source   prod.source                      not null,
+    source   prod.source                       not null,
     feedback text                             not null,
     date     timestamp check ( date < now() ) not null
 );

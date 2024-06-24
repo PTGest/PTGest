@@ -1,6 +1,5 @@
 package pt.isel.leic.ptgest.http.controllers
 
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -20,16 +19,15 @@ import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.model.auth.request.AuthenticatedSignupRequest
 import pt.isel.leic.ptgest.http.model.auth.request.ForgetPasswordRequest
 import pt.isel.leic.ptgest.http.model.auth.request.LoginRequest
-import pt.isel.leic.ptgest.http.model.auth.request.RefreshTokenRequest
 import pt.isel.leic.ptgest.http.model.auth.request.ResetPasswordRequest
 import pt.isel.leic.ptgest.http.model.auth.request.SignupRequest
 import pt.isel.leic.ptgest.http.model.auth.response.AuthenticatedSignupResponse
 import pt.isel.leic.ptgest.http.model.auth.response.LoginResponse
 import pt.isel.leic.ptgest.http.model.auth.response.RefreshTokenResponse
 import pt.isel.leic.ptgest.http.utils.RequiredRole
+import pt.isel.leic.ptgest.http.utils.createTokensHeaders
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
-import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
 import java.util.Date
 
@@ -113,7 +111,7 @@ class AuthController(private val service: AuthService) {
         @Valid @RequestBody
         forgetInfo: ForgetPasswordRequest
     ): ResponseEntity<*> {
-        service.reSetPassword(forgetInfo.email)
+        service.forgetPassword(forgetInfo.email)
 
         return HttpResponse.ok(
             message = "Password reset email sent successfully."
@@ -133,11 +131,11 @@ class AuthController(private val service: AuthService) {
 
     @PutMapping(Uris.Auth.RESET_PASSWORD)
     fun resetPassword(
-        @PathVariable token: String,
+        @PathVariable requestToken: String,
         @Valid @RequestBody
         resetInfo: ResetPasswordRequest
     ): ResponseEntity<*> {
-        service.resetPassword(token.trim(), resetInfo.password)
+        service.resetPassword(requestToken.trim(), resetInfo.password)
 
         return HttpResponse.ok(
             message = "Password reset successfully."
@@ -162,131 +160,50 @@ class AuthController(private val service: AuthService) {
 
         return HttpResponse.ok(
             message = "User logged in successfully.",
-            details = LoginResponse(authenticationDetails)
+            details = LoginResponse(authenticationDetails),
+            headers = createTokensHeaders(authenticationDetails.tokens)
         )
     }
 
     @PostMapping(Uris.Auth.REFRESH)
     fun refreshToken(
-        @Valid
-        @RequestBody(required = false)
-        refreshTokenBody: RefreshTokenRequest?,
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {
-        val sessionCookies = request.cookies
+        val refreshTokenCookie = request.cookies.firstOrNull { it.name == "refresh_token" }?.value
+        val refreshTokenHeader = request.getHeader("Refresh-Token")?.removePrefix("Bearer ")
 
         val currentDate = Date()
 
-        val tokens = when {
-            sessionCookies != null -> {
-                val (accessToken, refreshToken) = processCookies(sessionCookies)
-                val tokens = service.refreshToken(accessToken, refreshToken, currentDate)
+        require(!refreshTokenCookie.isNullOrBlank() || !refreshTokenHeader.isNullOrBlank()) { "Refresh token not provided" }
 
-                setCookies(response, tokens, currentDate)
-                tokens
-            }
+        val refreshToken = refreshTokenCookie ?: refreshTokenHeader ?: throw BadCredentialsException("Invalid refresh token")
 
-            refreshTokenBody != null -> {
-                val accessToken = processHeader(request)
-                service.refreshToken(accessToken, refreshTokenBody.refreshToken, currentDate)
-            }
+        val tokens = service.refreshToken(
+            refreshToken,
+            currentDate
+        )
 
-            else -> {
-                throw AuthError.UserAuthenticationError.TokenNotProvided
-            }
-        }
+        setCookies(response, tokens, currentDate)
 
         return HttpResponse.ok(
             message = "Token refreshed successfully.",
-            details = RefreshTokenResponse(tokens)
-        )
-    }
-
-    @PostMapping(Uris.Auth.VALIDATE_REFRESH_TOKEN)
-    fun validateRefreshToken(
-        authenticatedUser: AuthenticatedUser,
-        @Valid
-        @RequestBody(required = false)
-        refreshTokenBody: RefreshTokenRequest?,
-        request: HttpServletRequest,
-        response: HttpServletResponse
-    ): ResponseEntity<*> {
-        val sessionCookies = request.cookies
-
-        when {
-            sessionCookies != null -> {
-                val refreshToken = processCookies(sessionCookies).second
-
-                service.validateRefreshToken(authenticatedUser.id, refreshToken)
-            }
-
-            refreshTokenBody != null -> {
-                service.validateRefreshToken(authenticatedUser.id, refreshTokenBody.refreshToken)
-            }
-
-            else -> {
-                throw AuthError.UserAuthenticationError.TokenNotProvided
-            }
-        }
-
-        return HttpResponse.ok(
-            message = "Refresh token validated successfully."
+            details = RefreshTokenResponse(tokens),
+            headers = createTokensHeaders(tokens)
         )
     }
 
     @PostMapping(Uris.Auth.LOGOUT)
     fun logout(
-        @Valid
-        @RequestBody(required = false)
-        refreshTokenBody: RefreshTokenRequest?,
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {
-        val sessionCookies = request.cookies
-
-        when {
-            sessionCookies != null -> {
-                val refreshToken = processCookies(sessionCookies).second
-
-                service.logout(refreshToken)
-
-                revokeCookies(response)
-            }
-
-            refreshTokenBody != null -> {
-                service.logout(refreshTokenBody.refreshToken)
-            }
-
-            else -> {
-                throw AuthError.UserAuthenticationError.TokenNotProvided
-            }
+        if (request.cookies != null) {
+            revokeCookies(response)
         }
 
         return HttpResponse.ok(
             message = "User logged out successfully."
         )
-    }
-
-    private fun processCookies(sessionCookies: Array<Cookie>): Pair<String, String> {
-        val accessToken = sessionCookies.firstOrNull { it.name == "access_token" }?.value
-        val refreshToken = sessionCookies.firstOrNull { it.name == "refresh_token" }?.value
-
-        if (accessToken == null || refreshToken == null) {
-            throw AuthError.UserAuthenticationError.TokenNotProvided
-        }
-
-        return Pair(accessToken, refreshToken)
-    }
-
-    private fun processHeader(request: HttpServletRequest): String {
-        val accessTokenParts = request.getHeader("Authorization")?.split(" ")
-            ?: throw AuthError.UserAuthenticationError.TokenNotProvided
-
-        if (accessTokenParts.size != 2) {
-            throw BadCredentialsException("Invalid Authorization header")
-        }
-
-        return accessTokenParts[1]
     }
 }

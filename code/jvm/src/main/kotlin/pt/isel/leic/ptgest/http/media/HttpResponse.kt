@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.http.media
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
 object HttpResponse {
@@ -34,24 +35,28 @@ object HttpResponse {
         details: T? = null,
         headers: HttpHeaders = HttpHeaders(),
         code: HttpStatusCode
-    ) =
-        hashMapOf<String, Any?>().apply {
+    ): ResponseEntity<*> {
+        headers.contentType = MediaType.APPLICATION_JSON
+        val body = hashMapOf<String, Any?>().apply {
             put("details", details)
             put("message", message ?: getDefaultMessage(code))
-        }.let {
-            ResponseEntity(it, headers, code)
         }
+
+        return ResponseEntity(body, headers, code)
+    }
 
     private fun httpResponse(
         message: String? = null,
         headers: HttpHeaders = HttpHeaders(),
         code: HttpStatusCode
-    ) =
-        hashMapOf<String, Any?>().apply {
+    ): ResponseEntity<*> {
+        headers.contentType = MediaType.APPLICATION_JSON
+        val body = hashMapOf<String, Any?>().apply {
             put("message", message ?: getDefaultMessage(code))
-        }.let {
-            ResponseEntity(it, headers, code)
         }
+
+        return ResponseEntity(body, headers, code)
+    }
 
     private fun getDefaultMessage(code: HttpStatusCode): String =
         when (code.value()) {

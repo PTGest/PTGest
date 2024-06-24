@@ -21,30 +21,21 @@ create table if not exists dev."user"
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
     password_hash varchar(256) check (password_hash <> '')                          not null,
-    role          dev.role                                                          not null
+    role          dev.role                                                          not null,
+    active        boolean default true                                              not null
 );
 
-create table if not exists dev.deactivated_user
+create table if not exists dev.token_version
 (
-    id uuid primary key references dev."user" (id) on delete cascade
+    user_id  uuid primary key references dev."user" (id) on delete cascade,
+    version int default 1 not null
 );
 
--- Auth tables
-create table if not exists dev.token
+create table if not exists dev.forget_password_request
 (
     token_hash varchar(256) check (token_hash <> '') primary key,
     user_id    uuid references dev."user" (id) on delete cascade,
     expiration timestamp check ( expiration > now() ) not null
-);
-
-create table if not exists dev.password_reset_token
-(
-    token_hash varchar(256) primary key references dev.token (token_hash) on delete cascade
-);
-
-create table if not exists dev.refresh_token
-(
-    token_hash varchar(256) primary key references dev.token (token_hash) on delete cascade
 );
 
 -- User's personal data

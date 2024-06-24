@@ -48,6 +48,11 @@ sealed class AuthError : BaseError() {
             private fun readResolve(): Any = UserIdMismatch
             override val message: String get() = "User ID in refresh token does not match the ID in the access token."
         }
+
+        data object InvalidTokenVersion : TokenError() {
+            private fun readResolve(): Any = InvalidTokenVersion
+            override val message: String get() = "Invalid token version."
+        }
     }
 
     /**

@@ -1,15 +1,20 @@
 package pt.isel.leic.ptgest.http.model.auth.response
 
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticationDetails
-import pt.isel.leic.ptgest.domain.auth.model.TokenPair
 import pt.isel.leic.ptgest.domain.user.Role
+import java.util.*
 
 internal data class LoginResponse(
+    val userId: UUID,
     val role: Role,
-    val tokens: TokenPair
+    val accessTokenExpirationDate: Date,
+    val refreshTokenExpirationDate: Date
 ) {
-    constructor(authenticationDetails: AuthenticationDetails) : this(
-        authenticationDetails.role,
-        authenticationDetails.tokens
+
+    constructor(details: AuthenticationDetails) : this(
+        details.id,
+        details.role,
+        details.tokens.accessToken.expirationDate,
+        details.tokens.refreshToken.expirationDate
     )
 }
