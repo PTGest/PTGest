@@ -11,6 +11,7 @@ import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 
 @Component
 class AuthenticatedUserResolver : HandlerMethodArgumentResolver {
+
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.parameterType == AuthenticatedUser::class.java
     }

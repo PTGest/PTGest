@@ -9,6 +9,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.utils.RequiredRole
+import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
 import pt.isel.leic.ptgest.services.auth.AuthService
@@ -30,11 +31,17 @@ class AuthInterceptor(
             handler is HandlerMethod && handler.methodParameters
                 .any { it.parameterType == AuthenticatedUser::class.java }
         ) {
-            val user = processTokens(request, response)
+            val user = try {
+                processTokens(request, response)
+            } catch (e: Exception) {
+                revokeCookies(response)
+                throw e
+            }
 
             val requiredRoleFromClass = handler.beanType.getAnnotation(RequiredRole::class.java)?.role
             val requiredRoleFromMethod = handler.method.getAnnotation(RequiredRole::class.java)?.role
 
+//          todo: check
             if ((requiredRoleFromClass != null && !requiredRoleFromClass.contains(user.role)) ||
                 (requiredRoleFromMethod != null && !requiredRoleFromMethod.contains(user.role))
             ) {
@@ -74,22 +81,26 @@ class AuthInterceptor(
                     if (refreshToken == null) {
                         throw AuthError.UserAuthenticationError.TokenNotProvided
                     } else {
-                        val tokens = authService.refreshToken(refreshToken, currentDate)
-
-                        setCookies(response, tokens, currentDate)
-
-                        jwtService.extractToken(refreshToken)
+                        refreshTokens(refreshToken, response, currentDate)
                     }
                 }
             }
             refreshToken != null -> {
-                val tokens = authService.refreshToken(refreshToken, currentDate)
-
-                setCookies(response, tokens, currentDate)
-
-                jwtService.extractToken(refreshToken)
+                refreshTokens(refreshToken, response, currentDate)
             }
             else -> throw AuthError.UserAuthenticationError.TokenNotProvided
         }
+    }
+
+    private fun refreshTokens(
+        refreshToken: String,
+        response: HttpServletResponse,
+        currentDate: Date
+    ): AccessTokenDetails {
+        val tokens = authService.refreshToken(refreshToken, currentDate)
+
+        setCookies(response, tokens, currentDate)
+
+        return jwtService.extractToken(refreshToken)
     }
 }

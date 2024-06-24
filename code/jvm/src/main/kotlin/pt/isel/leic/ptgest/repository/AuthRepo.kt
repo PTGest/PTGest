@@ -18,25 +18,17 @@ interface AuthRepo {
 
     fun createTrainee(userId: UUID, birthdate: Date, gender: Gender, phoneNumber: String?)
 
+    fun createPasswordResetToken(tokenHash: String, userId: UUID, expirationDate: Date)
+
+    fun getPasswordResetToken(tokenHash: String): TokenDetails?
+
+    fun removeOldPasswordResetTokens(userId: UUID)
+
     fun resetPassword(userId: UUID, newPasswordHash: String)
 
     fun createTokenVersion(userId: UUID): Int
 
     fun getTokenVersion(userId: UUID): Int?
 
-    fun changeTokenVersion(userId: UUID)
-
-    fun createToken(tokenHash: String, userId: UUID, expirationDate: Date)
-
-    fun removeToken(tokenHash: String)
-
-    fun createRefreshToken(tokenHash: String)
-
-    fun getRefreshTokenDetails(tokenHash: String): TokenDetails?
-
-    fun createPasswordResetToken(tokenHash: String)
-
-    fun removeOldPasswordResetTokens(userId: UUID)
-
-    fun getPasswordResetToken(tokenHash: String): TokenDetails?
+    fun updateTokenVersion(userId: UUID)
 }

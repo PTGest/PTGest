@@ -140,16 +140,8 @@ class AuthService(
 
         transactionManager.run {
             val authRepo = it.authRepo
-
             authRepo.removeOldPasswordResetTokens(userDetails.id)
-
-            authRepo.createToken(
-                tokenHash,
-                userDetails.id,
-                tokenExpiration
-            )
-
-            authRepo.createPasswordResetToken(tokenHash)
+            authRepo.createPasswordResetToken(tokenHash, userDetails.id, tokenExpiration)
         }
 
         mailService.sendMail(
@@ -189,6 +181,7 @@ class AuthService(
 
             val resetToken = authRepo.getPasswordResetToken(tokenHash)
                 ?: throw AuthError.TokenError.InvalidPasswordResetToken
+
             val userDetails = userRepo.getUserDetails(resetToken.userId)
                 ?: throw AuthError.UserAuthenticationError.UserNotFound
 
@@ -201,7 +194,7 @@ class AuthService(
             authRepo.resetPassword(resetToken.userId, passwordHash)
 
             if (authRepo.getTokenVersion(resetToken.userId) != null) {
-                authRepo.changeTokenVersion(resetToken.userId)
+                authRepo.updateTokenVersion(resetToken.userId)
             }
 
             return@run userDetails

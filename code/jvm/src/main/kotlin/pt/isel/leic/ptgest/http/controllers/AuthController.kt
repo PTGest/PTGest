@@ -193,6 +193,13 @@ class AuthController(private val service: AuthService) {
         )
     }
 
+    @GetMapping(Uris.Auth.VALIDATE_AUTHENTICATION)
+    fun validateAuthentication(): ResponseEntity<*> {
+        return HttpResponse.ok(
+            message = "User authenticated successfully."
+        )
+    }
+
     @PostMapping(Uris.Auth.LOGOUT)
     fun logout(
         request: HttpServletRequest,

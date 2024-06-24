@@ -48,6 +48,7 @@ private fun setCookie(
     cookie.maxAge = (expirationInSeconds - currentInSeconds).toInt()
     cookie.isHttpOnly = true
     cookie.secure = true
+    cookie.path = "/"
     response.addCookie(cookie)
 }
 
@@ -56,5 +57,6 @@ private fun revokeCookie(name: String, response: HttpServletResponse) {
     cookie.maxAge = 0
     cookie.isHttpOnly = true
     cookie.secure = true
+    cookie.path = "/"
     response.addCookie(cookie)
 }
