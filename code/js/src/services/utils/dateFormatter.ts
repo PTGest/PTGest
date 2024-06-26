@@ -1,7 +1,7 @@
-import {parseISO, format} from "date-fns";
+import { parseISO, format } from "date-fns"
 function DateFormatter(originalDate: string) {
-    const formattedDate = parseISO(originalDate);
-    return format(formattedDate, "MMMM dd yyyy HH:mm");
+    const formattedDate = parseISO(originalDate)
+    return format(formattedDate, "MMMM dd yyyy HH:mm")
 }
 
-export default DateFormatter;
+export default DateFormatter

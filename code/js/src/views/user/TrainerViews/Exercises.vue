@@ -3,81 +3,73 @@
         <div class="title-row">
             <h1 class="title">Exercises</h1>
             <button @click="openAddExercise" class="add-btn">
-                <font-awesome-icon :icon="faPlus"/>
+                <font-awesome-icon :icon="faPlus" />
                 Add Exercise
             </button>
         </div>
 
         <div class="input-row">
-            <font-awesome-icon class="search-icon" :icon="faMagnifyingGlass"/>
-            <input v-model="searchBar" class="bar" placeholder="Search exercise name"/>
+            <font-awesome-icon class="search-icon" :icon="faMagnifyingGlass" />
+            <input v-model="searchBar" class="bar" placeholder="Search exercise name" />
             <button class="filters" @click="handleFiltersView">
-                <font-awesome-icon :icon="faFilter"/>
+                <font-awesome-icon :icon="faFilter" />
                 Filters
             </button>
         </div>
 
-        <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises.filter(exercise => exercise.name.includes(searchBar))"/>
+        <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises.filter((exercise) => exercise.name.includes(searchBar))" />
         <div v-else class="not-found">Does not found any exercise</div>
     </div>
-    <ExerciseFilters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false"/>
-
+    <ExerciseFilters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false" />
 </template>
 
 <script setup lang="ts">
+import { Ref, ref } from "vue"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faFilter, faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons"
+import ExercisesTable from "./components/exercises/ExercisesTable.vue"
+import Exercises from "./models/exercises/Exercises.ts"
+import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts"
+import router from "@/plugins/router.ts"
+import ExerciseFilters from "@/views/user/TrainerViews/components/exercises/exerciseFilters.vue"
 
-
-import {Ref, ref} from "vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
-import ExercisesTable from "./components/exercises/ExercisesTable.vue";
-import Exercises from "./models/exercises/Exercises.ts";
-import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts";
-import router from "@/plugins/router.ts";
-import ExerciseFilters from "@/views/user/TrainerViews/components/exercises/exerciseFilters.vue";
-
-
-
-const filtersOpen = ref(false);
-const searchBar = ref("");
-const exercises : Ref<Exercises> = ref({
+const filtersOpen = ref(false)
+const searchBar = ref("")
+const exercises: Ref<Exercises> = ref({
     exercises: [],
-    nOfExercises: 0
-});
+    nOfExercises: 0,
+})
 const handleFiltersView = () => {
     console.log("openFilters", filtersOpen.value)
-    filtersOpen.value = !filtersOpen.value;
+    filtersOpen.value = !filtersOpen.value
 }
 
-const applyFilters = (newExercises:any) => {
-    console.log("Filters applied", newExercises);
-    exercises.value = newExercises;
+const applyFilters = (newExercises: any) => {
+    console.log("Filters applied", newExercises)
+    exercises.value = newExercises
 }
 const openAddExercise = () => {
-    router.push({name: 'addExercise'});
+    router.push({ name: "addExercise" })
 }
 
-(async () => {
+;(async () => {
     try {
-       exercises.value = await getExercises(null);
-       console.log(exercises.value)
+        exercises.value = await getExercises(null)
+        console.log(exercises.value)
     } catch (error) {
         console.error("Error getting user info:", error)
     }
 })()
-
 </script>
 
-
 <style scoped>
-
 .exercises-container {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: start;
-    height:90%;
+    height: 90%;
     width: 100%;
     background-color: var(--main-primary-color);
     border-radius: 10px;
@@ -99,7 +91,7 @@ const openAddExercise = () => {
     color: whitesmoke;
 }
 
-.add-btn{
+.add-btn {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -111,7 +103,7 @@ const openAddExercise = () => {
     font-size: 15px;
 }
 
-.input-row{
+.input-row {
     position: relative;
     left: -0.5em;
     display: flex;
@@ -123,8 +115,7 @@ const openAddExercise = () => {
     gap: 1em;
 }
 
-
-.bar{
+.bar {
     margin-left: 1em;
     margin-bottom: 0;
     height: 2.5em;
@@ -133,15 +124,15 @@ const openAddExercise = () => {
     border-radius: 5px;
     font-family: Poppins, sans-serif;
     font-size: 0.9rem;
-    border:none;
+    border: none;
 }
 
-.search-icon{
+.search-icon {
     position: relative;
     right: -1.5em;
 }
 
-.filters{
+.filters {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -151,25 +142,24 @@ const openAddExercise = () => {
     border-radius: 5px;
     font-family: Poppins, sans-serif;
     font-size: 1.05rem;
-    color : whitesmoke;
+    color: whitesmoke;
     transition: 0.2s ease-in;
 }
 
-.filters:hover{
+.filters:hover {
     background-color: var(--light-blue);
     transition: 0.2s ease-out;
 }
 
-.not-found{
+.not-found {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    width:100%;
-    height:5em;
+    width: 100%;
+    height: 5em;
     font-size: 1.5rem;
     margin-top: 2em;
     color: whitesmoke;
     text-align: center;
 }
-
 </style>

@@ -1,7 +1,6 @@
-
 async function fetchData(uri: string, method: string, bodyData: any | null): Promise<any> {
-    console.log("fetchData uri", uri);
-    const body = bodyData ? JSON.stringify(bodyData) : null;
+    console.log("fetchData uri", uri)
+    const body = bodyData ? JSON.stringify(bodyData) : null
     const response = await fetch(uri, {
         method: method,
         headers: {
@@ -9,20 +8,19 @@ async function fetchData(uri: string, method: string, bodyData: any | null): Pro
         },
         body: body,
         credentials: "include",
-    });
+    })
 
     if (response.ok) {
-        console.log("Operation successful");
-        return await response.json();
+        console.log("Operation successful")
+        return await response.json()
     }
 
     if (!response.ok) {
         if (response.status === 400) {
-            throw new Error("Bad request");
+            throw new Error("Bad request")
         } else {
-            throw new Error("Failed to fetchData exercises");
+            throw new Error("Failed to fetchData exercises")
         }
     }
-
 }
-export default fetchData;
+export default fetchData

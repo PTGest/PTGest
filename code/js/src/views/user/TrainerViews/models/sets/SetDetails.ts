@@ -1,18 +1,17 @@
-import SetExerciseDetails from "./SetExerciseDetails.ts";
+import SetExerciseDetails from "./SetExerciseDetails.ts"
 
-class SetDetails{
-     name: string
-     notes: string| null
-     type: string
-     setExerciseDetails: SetExerciseDetails[]
+class SetDetails {
+    name: string
+    notes: string | null
+    type: string
+    setExerciseDetails: SetExerciseDetails[]
 
-        constructor(name: string, notes: string, type: string, setExerciseDetails: SetExerciseDetails[]){
-            this.name = name;
-            this.notes = notes;
-            this.type = type;
-            this.setExerciseDetails = setExerciseDetails;
-        }
-
+    constructor(name: string, notes: string, type: string, setExerciseDetails: SetExerciseDetails[]) {
+        this.name = name
+        this.notes = notes
+        this.type = type
+        this.setExerciseDetails = setExerciseDetails
+    }
 }
 
-export default SetDetails;
+export default SetDetails

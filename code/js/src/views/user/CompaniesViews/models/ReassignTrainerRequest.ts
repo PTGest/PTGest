@@ -1,9 +1,9 @@
-class ReassignTrainerRequest{
-    newTrainerId: string;
+class ReassignTrainerRequest {
+    newTrainerId: string
 
-    constructor(newTrainerId: string){
-        this.newTrainerId = newTrainerId;
+    constructor(newTrainerId: string) {
+        this.newTrainerId = newTrainerId
     }
 }
 
-export default ReassignTrainerRequest;
+export default ReassignTrainerRequest

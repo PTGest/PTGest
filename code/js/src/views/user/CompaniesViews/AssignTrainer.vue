@@ -6,29 +6,25 @@
 </template>
 
 <script setup lang="ts">
-import TrainerBox from "../../../views/user/CompaniesViews/Components/TrainerBox.vue";
-import {Ref, ref} from "vue";
-import getCompanyTrainersOrTrainees from "../../../services/companyServices/getCompanyTrainersOrTrainees.ts";
-import CompanyTrainers from "../../../views/user/CompaniesViews/models/CompanyTrainers.ts";
+import TrainerBox from "../../../views/user/CompaniesViews/Components/TrainerBox.vue"
+import { Ref, ref } from "vue"
+import getCompanyTrainersOrTrainees from "../../../services/companyServices/getCompanyTrainersOrTrainees.ts"
+import CompanyTrainers from "../../../views/user/CompaniesViews/models/CompanyTrainers.ts"
 
-const skip = ref(0) ;
+const skip = ref(0)
 
-const companyTrainersRef : Ref<CompanyTrainers> = ref({
+const companyTrainersRef: Ref<CompanyTrainers> = ref({
     trainers: [],
-    total: 0
+    total: 0,
 });
 
 (async () => {
     try {
-        companyTrainersRef.value = <CompanyTrainers>await getCompanyTrainersOrTrainees(skip.value, null, null, null, false);
+        companyTrainersRef.value = <CompanyTrainers>await getCompanyTrainersOrTrainees(skip.value, null, null, null, false, null)
     } catch (error) {
         console.error("Error getting user info:", error)
     }
 })()
-
 </script>
 
-
-<style scoped>
-
-</style>
+<style scoped></style>

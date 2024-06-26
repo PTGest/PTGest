@@ -2,36 +2,33 @@
     <div class="set-details-container">
         <h1>Set Details</h1>
         <div class="set-details">
-            <div class="exercise-details" v-for="exercise in setDetails.setExerciseDetails">
+            <div v-bind="exercise" class="exercise-details" v-for="exercise in setDetails.setExerciseDetails">
                 <SetDetailsExerciseDetails :exercise="exercise"></SetDetailsExerciseDetails>
             </div>
         </div>
-        <font-awesome-icon class="x-icon" :icon="faX" @click="$router.go(-1)"/>
+        <font-awesome-icon class="x-icon" :icon="faX" @click="$router.go(-1)" />
     </div>
 </template>
 
 <script setup lang="ts">
-import getSetDetails from "@/services/TrainerServices/sets/getSetDetails.ts";
-import {Ref, ref} from "vue";
-import SetDetails from "@/views/user/TrainerViews/models/sets/SetDetails.js";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faX} from "@fortawesome/free-solid-svg-icons";
-import SetExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue";
-import SetDetailsExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue";
-import router from "@/plugins/router.ts";
+import getSetDetails from "@/services/TrainerServices/sets/getSetDetails.ts"
+import { Ref, ref } from "vue"
+import SetDetails from "@/views/user/TrainerViews/models/sets/SetDetails.js"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faX } from "@fortawesome/free-solid-svg-icons"
+import SetDetailsExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue"
+import router from "@/plugins/router.ts"
 
-const setDetails : Ref<SetDetails>= ref({});
+const setDetails: Ref<SetDetails> = ref({})
 
-
-(async() => {
-   setDetails.value = await getSetDetails(router.currentRoute.value.params.setId);
-})();
-
+;(async () => {
+    setDetails.value = await getSetDetails(router.currentRoute.value.params.setId)
+})()
 </script>
 
 <style scoped>
-.set-details-container{
-    position : absolute;
+.set-details-container {
+    position: absolute;
     top: 25%;
     left: 25%;
     background-color: var(--main-primary-color);
@@ -41,7 +38,7 @@ const setDetails : Ref<SetDetails>= ref({});
 }
 
 .set-details-container {
-    animation: p-component-overlay-enter-animation 0.4s ;
+    animation: p-component-overlay-enter-animation 0.4s;
 }
 
 @keyframes p-component-overlay-enter-animation {
@@ -51,25 +48,23 @@ const setDetails : Ref<SetDetails>= ref({});
     100% {
         opacity: 1;
     }
-
 }
 
-.x-icon{
-    position : absolute;
+.x-icon {
+    position: absolute;
     top: 2em;
     right: 2em;
     cursor: pointer;
 }
 
-.set-details{
+.set-details {
     display: flex;
     flex-direction: row;
     gap: 1em;
     justify-content: space-between;
     align-items: center;
 }
-.exercise-details{
+.exercise-details {
     width: 100%;
 }
-
 </style>

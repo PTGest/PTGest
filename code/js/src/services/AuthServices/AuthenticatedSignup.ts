@@ -1,7 +1,7 @@
 import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeRegisterData.ts"
 import router from "../../plugins/router.ts"
-import HiredTrainerRegisterData from "../../models/authModels/HiredTrainerRegisterData.ts";
-import RBAC from "../utils/RBAC/RBAC.ts";
+import HiredTrainerRegisterData from "../../models/authModels/HiredTrainerRegisterData.ts"
+import RBAC from "../utils/RBAC/RBAC.ts"
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up
@@ -15,22 +15,22 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
     }).then((response) => {
         switch (response.status) {
             case 201:
-                if(userRegisterData instanceof TraineeRegisterData){
-                    if(RBAC.isCompany()) {
+                if (userRegisterData instanceof TraineeRegisterData) {
+                    if (RBAC.isCompany()) {
                         response.json().then((data) => {
                             const userId = data.details.userId
                             router.push({
                                 name: "assignTrainer",
-                                params: {traineeId: userId, assignTrainer: "assignTrainer"}
+                                params: { traineeId: userId, assignTrainer: "assignTrainer" },
                             })
                         })
-                    }else{
+                    } else {
                         router.push("/trainees")
                     }
-                }else{
+                } else {
                     router.push("/trainers")
                 }
-                break;
+                break
             case 409:
                 throw new Error("Email already exists")
             default:

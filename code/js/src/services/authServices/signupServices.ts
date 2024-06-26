@@ -11,26 +11,21 @@ export async function signupUserServices(userData: SignupPTData): Promise<void> 
         },
         body: JSON.stringify(userData),
     }).then((response) => {
-        switch (response.status) {
-            case 201:
-                router.push({ name: "login" })
-                return response.json()
-
-            case 409:
-                const element = document.createElement("div")
-                element.innerHTML = "UserServices already exists"
-                element.classList.add("error-message")
-                element.style.color = "red"
-                element.style.padding = "0.5em"
-                document.getElementById("signup-container")?.appendChild(element)
-                break
-            default:
-                response.json().then((response) => {
-                    store.commit("setErrorType", { type: response.type, message: response.title })
-                    router.push({ name: "error" })
-                })
-                break
+        if (response.status === 201) {
+            router.push({name: "login"})
+            return response.json()
+        } else if (response.status === 409) {
+            const element = document.createElement("div")
+            element.innerHTML = "UserServices already exists"
+            element.classList.add("error-message")
+            element.style.color = "red"
+            element.style.padding = "0.5em"
+            document.getElementById("signup-container")?.appendChild(element)
+        } else {
+            response.json().then((response) => {
+                store.commit("setErrorType", {type: response.type, message: response.title})
+                router.push({name: "error"})
+            })
         }
     })
-    return
 }

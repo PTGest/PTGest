@@ -1,4 +1,4 @@
-import store from "../../../store";
+import store from "../../../store"
 class RBAC {
     static getUserRole(): string {
         return store.getters.userData.role
@@ -15,8 +15,6 @@ class RBAC {
     static isHiredTrainer(): boolean {
         return this.getUserRole() === "HIRED_TRAINER"
     }
-
 }
 
 export default RBAC
-

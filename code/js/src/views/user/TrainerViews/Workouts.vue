@@ -4,44 +4,41 @@
             <div class="title-row">
                 Workouts
                 <button @click="openAddWorkout" class="add-workout">
-                    <font-awesome-icon :icon="faPlus"/>
+                    <font-awesome-icon :icon="faPlus" />
                     Add Workout
                 </button>
             </div>
-            <WorkoutsRow  :workouts="workouts.workouts"/>
+            <WorkoutsRow :workouts="workouts.workouts" />
         </div>
         <AddWorkout @closeAddWorkout="openAddWorkout" v-if="isAddWorkoutOpen"></AddWorkout>
     </div>
 </template>
 
 <script setup lang="ts">
+import WorkoutsRow from "./components/workouts/WorkoutsRow.vue"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
+import AddWorkout from "@/views/user/TrainerViews/components/workouts/AddWorkout.vue"
+import { Ref, ref } from "vue"
+import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts"
+import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts"
+import router from "@/plugins/router.ts"
 
-import WorkoutsRow from "./components/workouts/WorkoutsRow.vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import AddWorkout from "@/views/user/TrainerViews/components/workouts/AddWorkout.vue";
-import {Ref, ref} from "vue";
-import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts";
-import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts";
-import router from "@/plugins/router.ts";
-
-const workouts : Ref<Workouts> = ref(new Workouts());
-const isAddWorkoutOpen = ref(false);
+const workouts: Ref<Workouts> = ref(new Workouts())
+const isAddWorkoutOpen = ref(false)
 
 const openAddWorkout = () => {
-    router.push({name: 'addWorkout'});
+    router.push({ name: "addWorkout" })
 }
 
-(async () => {
-    workouts.value = await getWorkouts();
-    console.log(workouts.value);
+;(async () => {
+    workouts.value = await getWorkouts()
+    console.log(workouts.value)
 })()
-
-
 </script>
 
 <style scoped>
-.workouts-container{
+.workouts-container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -51,7 +48,7 @@ const openAddWorkout = () => {
     border-radius: 10px;
 }
 
-.title-row{
+.title-row {
     position: relative;
     display: flex;
     width: 100%;
@@ -64,12 +61,11 @@ const openAddWorkout = () => {
     padding: 1.5rem;
 }
 
-.add-workout{
+.add-workout {
     position: relative;
     top: 0;
     color: whitesmoke;
     font-size: 1rem;
     background-color: var(--sign-up-blue);
 }
-
 </style>

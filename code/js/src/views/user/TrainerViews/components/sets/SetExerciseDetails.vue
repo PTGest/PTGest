@@ -1,23 +1,19 @@
 <template>
-   <div class="exerciseDetails-container">
-     <h2>{{ exerciseDetails.name }}</h2>
-        <h4 v-if="exerciseDetails.details.size != 0">{{exerciseDetails.details}}</h4>
-        <h3 v-else-if="exerciseDetails.ref.length != 0 " >{{exerciseDetails.ref}}</h3>
+    <div class="exerciseDetails-container">
+        <h2>{{ exerciseDetails.name }}</h2>
+        <h4 v-if="exerciseDetails.details.size != 0">{{ exerciseDetails.details }}</h4>
+        <h3 v-else-if="exerciseDetails.ref.length != 0">{{ exerciseDetails.ref }}</h3>
         <h3 v-else>There is no reference or details for this exercise</h3>
-   </div>
+    </div>
 </template>
 
-
 <script setup lang="ts">
-import {ref} from "vue";
-import getExerciseDetails from "@/services/TrainerServices/exercises/getExerciseDetails.ts";
-
+import { ref } from "vue"
+import getExerciseDetails from "@/services/TrainerServices/exercises/getExerciseDetails.ts"
 
 const props = defineProps<{
-    exerciseId: number;
-}>();
-
-
+    exerciseId: number
+}>()
 
 const exerciseDetails = ref({
     id: -1,
@@ -26,18 +22,17 @@ const exerciseDetails = ref({
     description: "",
     ref: "",
     details: new Map<string, any>(),
-    muscleGroup: []
-});
+    muscleGroup: [],
+})
 
-
-(async () => {
-    exerciseDetails.value = await getExerciseDetails( props.exerciseId )
-    console.log("ExerciseDetails", exerciseDetails.value);
-})();
+;(async () => {
+    exerciseDetails.value = await getExerciseDetails(props.exerciseId)
+    console.log("ExerciseDetails", exerciseDetails.value)
+})()
 </script>
 
 <style scoped>
-.exerciseDetails-container{
+.exerciseDetails-container {
     position: absolute;
     top: 0;
     right: -52%;
@@ -46,9 +41,8 @@ const exerciseDetails = ref({
     background-color: var(--main-primary-color);
 }
 
-.exerciseDetails-container{
+.exerciseDetails-container {
     animation: slideInFromLeft 0.5s ease-in-out;
-
 }
 
 @keyframes slideInFromLeft {

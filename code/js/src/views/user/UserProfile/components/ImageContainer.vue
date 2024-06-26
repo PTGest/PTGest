@@ -31,5 +31,4 @@ const props = defineProps({
     font-weight: bold;
     color: whitesmoke;
 }
-
 </style>

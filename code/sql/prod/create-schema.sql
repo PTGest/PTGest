@@ -110,9 +110,9 @@ create table if not exists prod.report
 
 create table if not exists prod.report_trainer
 (
-    reportId   int references prod.report (id) on delete cascade,
+    report_id   int references prod.report (id) on delete cascade,
     trainer_id uuid references prod.trainer (id) on delete cascade,
-    primary key (reportId, trainer_id)
+    primary key (report_id, trainer_id)
 );
 
 -- Trainee's workout plan
