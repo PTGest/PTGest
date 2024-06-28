@@ -8,14 +8,7 @@ import {computed, ref} from "vue"
 import store from "../../store"
 import Calendar from "../../components/calendar/Calendar.vue"
 import isSigned from "@/services/AuthServices/isSigned.ts";
-
-const is_logged_in = ref(false);
-
-(() => {
-    is_logged_in.value = isSigned()
-})()
-
-
+const is_logged_in = store.getters.isLogged;
 </script>
 
 <style>

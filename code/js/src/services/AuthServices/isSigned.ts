@@ -9,6 +9,5 @@ async function isSigned() {
     const response = await fetchData(uri, "GET", null);
     store.commit("setLogin", true);
     return response;
-
 }
 export default isSigned;

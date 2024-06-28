@@ -25,6 +25,7 @@ import TraineeSessions from "../views/user/TrainerViews/components/sessions/Trai
 import AddTraineeSession from "../views/user/TrainerViews/components/sessions/AddTraineeSession.vue";
 import SessionDetails from "../views/user/TrainerViews/components/sessions/SessionDetails.vue";
 import EditSessionDetails from "../views/user/TrainerViews/components/sessions/EditSessionDetails.vue";
+import isSigned from "../services/AuthServices/isSigned.ts";
 
 
 const routes: RouteRecordRaw[] = [
@@ -113,10 +114,10 @@ const router = createRouter({
     history: createWebHistory(),
 })
 
-router.beforeEach((to , from) => {
-    console.log("to",to)
-    console.log("from",from)
+router.beforeEach(async (to, from) => {
+
     if (to.meta.requiresAuth) {
+        await isSigned()
         if (!store.getters.isLogged) {
             return {name: "login"}
         }
@@ -124,7 +125,6 @@ router.beforeEach((to , from) => {
     if ((to.name === "login" || to.name === 'signup') && store.getters.isLogged) {
         return {name: "home"}
     }
-
 })
 
 router.beforeEach((to) => {

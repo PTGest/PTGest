@@ -20,6 +20,7 @@ export async function loginUserServices(userLoginData: LoginUserData): Promise<v
                             id: response.details.userId,
                             role: response.details.role,
                         })
+                        store.commit("setLogin", true)
                         router.push('/')
                         return response
                     })
