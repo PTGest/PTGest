@@ -1,10 +1,10 @@
 import store from "../../store";
 import router from "../../plugins/router.ts";
-import {useToast} from "primevue/usetoast";
+
 
 async function fetchData(uri: string, method: string, bodyData: any | null): Promise<any> {
-    console.log("fetchData uri", uri);
-    const body = bodyData ? JSON.stringify(bodyData) : null;
+    console.log("fetchData uri", uri)
+    const body = bodyData ? JSON.stringify(bodyData) : null
     const response = await fetch(uri, {
         method: method,
         headers: {
@@ -12,11 +12,11 @@ async function fetchData(uri: string, method: string, bodyData: any | null): Pro
         },
         body: body,
         credentials: "include",
-    });
+    })
 
     if (response.ok) {
-        console.log("Operation successful");
-        return await response.json();
+        console.log("Operation successful")
+        return await response.json()
     }
 
     if (!response.ok) {
@@ -31,4 +31,4 @@ async function fetchData(uri: string, method: string, bodyData: any | null): Pro
 
 
 }
-export default fetchData;
+export default fetchData

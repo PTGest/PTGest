@@ -131,7 +131,7 @@ const optionChange = (option: string) => {
     transform: rotateZ(-180deg);
 }
 
-.option{
+.option {
     max-width: 1em;
     padding: 0.5em;
     color: var(--black1a);

@@ -1,11 +1,11 @@
-class Trainee{
+class Trainee {
     traineeId: string
     traineeName: string
     gender: string
     trainerId: string
     trainerName: string
 
-    constructor(traineeId: string, traineeName: string, gender : string, trainerId: string, trainerName: string){
+    constructor(traineeId: string, traineeName: string, gender: string, trainerId: string, trainerName: string) {
         this.traineeId = traineeId
         this.traineeName = traineeName
         this.gender = gender
@@ -14,4 +14,4 @@ class Trainee{
     }
 }
 
-export default Trainee;
+export default Trainee

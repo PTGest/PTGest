@@ -1,7 +1,7 @@
 export default class UpdateCapacity {
-    capacity: number;
+    capacity: number
 
     constructor(capacity: number) {
-        this.capacity = capacity;
+        this.capacity = capacity
     }
 }

@@ -1,4 +1,4 @@
-class TrainerSessionDetails{
+class TrainerSessionDetails {
     id: number
     traineeName: string
     workoutId: number
@@ -11,7 +11,19 @@ class TrainerSessionDetails{
     reason: string | null
     source: string
 
-    constructor(id: number, traineeName: string, workoutId: number, beginDate: string, endDate: string | null, location: string | null, type: string, notes: string | null, cancelled: boolean, reason: string | null, source: string){
+    constructor(
+        id: number,
+        traineeName: string,
+        workoutId: number,
+        beginDate: string,
+        endDate: string | null,
+        location: string | null,
+        type: string,
+        notes: string | null,
+        cancelled: boolean,
+        reason: string | null,
+        source: string
+    ) {
         this.id = id
         this.traineeName = traineeName
         this.workoutId = workoutId
@@ -25,5 +37,4 @@ class TrainerSessionDetails{
         this.source = source
     }
 }
-export default TrainerSessionDetails;
-
+export default TrainerSessionDetails

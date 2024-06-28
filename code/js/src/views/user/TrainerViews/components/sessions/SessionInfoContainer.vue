@@ -1,42 +1,38 @@
 <template>
     <div class="session-info-container">
-        <div @click="sessionDetails(session.id)" v-for="session in props.daySessions" class="session-row-container">
-            <p>{{store.getters.traineeInfo.name}}</p>
+        <div v-bind="session" @click="sessionDetails(session.id)" v-for="session in props.daySessions" class="session-row-container">
+            <p>{{ store.getters.traineeInfo.name }}</p>
             <p>{{ dateFormatter(session.beginDate) }}</p>
-            <p v-if="session.endDate!=null">{{ dateFormatter(session.endDate) }}</p>
+            <p v-if="session.endDate != null">{{ dateFormatter(session.endDate) }}</p>
             <p>{{ session.type }}</p>
         </div>
-        <div class="no-sessions" v-if="props.daySessions.length==0">No Sessions Today</div>
-        <router-link v-if="isTraineeSessions" :to="{name: 'addTraineeSessions', params: {traineeId: $route.params.traineeId}}"  class="btn">Add Session</router-link>
+        <div class="no-sessions" v-if="props.daySessions.length == 0">No Sessions Today</div>
+        <router-link v-if="isTraineeSessions" :to="{ name: 'addTraineeSessions', params: { traineeId: $route.params.traineeId } }" class="btn">Add Session</router-link>
     </div>
 </template>
 
 <script setup lang="ts">
-import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts";
-import router from "@/plugins/router.ts";
-import dateFormatter from "../../../../../services/utils/dateFormatter.ts";
-import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts";
-import store from "../../../../../store";
+import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
+import router from "@/plugins/router.ts"
+import dateFormatter from "../../../../../services/utils/dateFormatter.ts"
+import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
+import store from "../../../../../store"
 
 const props = defineProps<{
     daySessions: TrainerSession[] | Sessions
     isTraineeSessions: boolean
 }>()
 
-const userId = router.currentRoute.value.params.traineeId;
+const userId = router.currentRoute.value.params.traineeId
 console.log(userId)
 
 const sessionDetails = (id: number) => {
-    router.push('/sessions/session/' + id)
+    router.push("/sessions/session/" + id)
 }
-
-
 </script>
 
-
-
 <style scoped>
-.session-info-container{
+.session-info-container {
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -49,26 +45,27 @@ const sessionDetails = (id: number) => {
     overflow-y: scroll;
 }
 
-.btn,.btn:hover{
-    padding:0.5em;
+.btn,
+.btn:hover {
+    padding: 0.5em;
     margin-top: 1em;
     background-color: var(--main-secondary-color);
     border-radius: 5px;
     color: whitesmoke;
 }
 
-.btn:hover{
+.btn:hover {
     border: 1px solid var(--button-border-color);
 }
 
-.no-sessions{
+.no-sessions {
     margin-top: 1em;
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: 500;
 }
 
-.session-row-container{
+.session-row-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -85,10 +82,13 @@ const sessionDetails = (id: number) => {
     transition: background-color 0.3s;
 }
 
-.session-row-container:hover{
+.session-row-container:hover {
     cursor: pointer;
     background-color: var(--main-tertiary-color);
     transition: 0.2s ease-out;
 }
 
+p {
+    font-size: 0.8em;
+}
 </style>

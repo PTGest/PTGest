@@ -11,33 +11,31 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref } from "vue"
 
-const reps = ref(0);
-const weight = ref(0);
-const details = ref(new Map());
-const emit = defineEmits(['details']);
+const reps = ref(0)
+const weight = ref(0)
+const details = ref(new Map())
+const emit = defineEmits(["details"])
 
-const handleDetails = (detailKey:string, value: number) => {
+const handleDetails = (detailKey: string, value: number) => {
     switch (detailKey) {
-        case 'weight':
-            details.value.set('WEIGHT', value);
-           emit('details', details.value);
-            break;
-        case 'reps':
-            details.value.set('REPS', value);
-            emit('details', details.value);
-            break;
+        case "weight":
+            details.value.set("WEIGHT", value)
+            emit("details", details.value)
+            break
+        case "reps":
+            details.value.set("REPS", value)
+            emit("details", details.value)
+            break
         default:
-            break;
+            break
     }
-};
-
-
+}
 </script>
 
 <style scoped>
-.boxes-container{
+.boxes-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -46,8 +44,8 @@ const handleDetails = (detailKey:string, value: number) => {
     gap: 0.5rem;
 }
 
-.box{
-    width:3em;
+.box {
+    width: 3em;
     height: 3em;
     border-radius: 10px;
     border: 1px solid var(--main-secondary-color);
@@ -56,12 +54,11 @@ const handleDetails = (detailKey:string, value: number) => {
     background-color: var(--main-primary-color);
 }
 
-.kilos-text{
+.kilos-text {
     font-size: 13px;
-
 }
 
-input{
-    text-align:center;
+input {
+    text-align: center;
 }
 </style>

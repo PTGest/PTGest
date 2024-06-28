@@ -1,35 +1,29 @@
-import fetchData from "../../utils/fetchData.ts";
-import TrainerTrainees from "../../../views/user/TrainerViews/models/trainees/TrainerTrainees.ts";
+import fetchData from "../../utils/fetchData.ts"
+import TrainerTrainees from "../../../views/user/TrainerViews/models/trainees/TrainerTrainees.ts"
 
-async function getTrainerTrainees(
-    skip: number | null,
-    limit: number | null,
-    name: string | null,
-    gender: string | null,
-): Promise<TrainerTrainees> {
-
-    let url = `http://localhost:8080/api/trainer/trainees`;
+async function getTrainerTrainees(skip: number | null, limit: number | null, name: string | null, gender: string | null): Promise<TrainerTrainees> {
+    let url = `http://localhost:8080/api/trainer/trainees`
     // Construct URL with skip and limit parameters
     if (skip != null) {
-        url += `?skip=${skip}`;
+        url += `?skip=${skip}`
     }
     if (limit != null) {
-        url += `&limit=${limit}`;
+        url += `&limit=${limit}`
     }
     if (name != null) {
-        url += `&name=${name}`;
+        url += `&name=${name}`
     }
     if (gender != null) {
-        url += `&gender=${gender}`;
+        url += `&gender=${gender}`
     }
 
     try {
-        const response = await fetchData(url,'GET', null);
-        return new TrainerTrainees(response.details.items, response.details.total);
+        const response = await fetchData(url, "GET", null)
+        return new TrainerTrainees(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error creating set:", error);
-        throw error;
+        console.error("Error creating set:", error)
+        throw error
     }
 }
 
-export default getTrainerTrainees;
+export default getTrainerTrainees
