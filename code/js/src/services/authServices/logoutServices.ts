@@ -1,7 +1,9 @@
 import store from "../../store"
 import router from "../../plugins/router.ts"
+import {useToast} from "primevue/usetoast";
 
 export default async function logoutServices(): Promise<void> {
+    const toast = useToast();
     // Logic to sign up
     fetch("http://localhost:8080/api/auth/logout", {
         method: "POST",
@@ -12,12 +14,12 @@ export default async function logoutServices(): Promise<void> {
     }).then((response) => {
         if (response.ok) {
             console.log("Deu Bom familia nao dei fumble da bag")
-            window.localStorage.removeItem("userData")
             store.commit("logout")
-            router.push({ name: "home" })
+            store.commit("setLogin", false)
+            router.push({ name: "login" })
             return response.json()
         } else {
-            throw new Error("Failed to logout")
+            toast.add({ severity: 'warn', summary: 'Warn Message', detail: 'Message Content', life: 3000 });
         }
     })
     return

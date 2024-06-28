@@ -1,3 +1,6 @@
+import store from "../../store";
+import router from "../../plugins/router.ts";
+import {useToast} from "primevue/usetoast";
 
 async function fetchData(uri: string, method: string, bodyData: any | null): Promise<any> {
     console.log("fetchData uri", uri);
@@ -19,10 +22,13 @@ async function fetchData(uri: string, method: string, bodyData: any | null): Pro
     if (!response.ok) {
         if (response.status === 400) {
             throw new Error("Bad request");
-        } else {
-            throw new Error("Failed to fetchData exercises");
+        } else if (response.status === 401) {
+            store.commit("setLogin", false);
+            await router.push({name: "login"});
+            return response;
         }
     }
+
 
 }
 export default fetchData;

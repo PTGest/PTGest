@@ -6,7 +6,7 @@ import Signup from "../views/auth/signUp/Signup.vue"
 import ForgetPassword from "../views/auth/forgetPassword/ForgetPassword.vue"
 import Error from "../views/Error.vue"
 import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue"
-import UserProfile from "../views/user/UserProfile/UserProfile.vue"
+// import UserProfile from "../views/user/UserProfile/UserProfile.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
 import Students from "../views/user/TrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue";
@@ -16,7 +16,6 @@ import AssignTrainer from "../views/user/CompaniesViews/AssignTrainer.vue";
 import Exercises from "../views/user/TrainerViews/Exercises.vue";
 import Sets from "../views/user/TrainerViews/Sets.vue";
 import Workouts from "../views/user/TrainerViews/Workouts.vue";
-import WorkoutDetails from "../views/user/TrainerViews/components/workouts/WorkoutDetails.vue";
 import AddSet from "../views/user/TrainerViews/components/sets/AddSet.vue";
 import AddExercise from "../views/user/TrainerViews/components/exercises/AddExercise.vue";
 import AddWorkout from "../views/user/TrainerViews/components/workouts/AddWorkout.vue";
@@ -43,8 +42,8 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: false },
     },
     //UserServices Views
-    { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
-            roleNeeded : ['TRAINEE', 'COMPANY', 'INDEPENDENT_TRAINER', 'HIRED_TRAINER'] } },
+    // { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
+    //         roleNeeded : ['TRAINEE', 'COMPANY', 'INDEPENDENT_TRAINER', 'HIRED_TRAINER'] } },
     //Company and Independent Trainer Views
     { path: "/trainees", name: "trainees", component: Students, meta: { requiresAuth: true ,
         roleNeeded : ['COMPANY', 'HIRED_TRAINER', 'INDEPENDENT_TRAINER'], canEdit:['COMPANY', 'INDEPENDENT_TRAINER']}
@@ -118,16 +117,11 @@ router.beforeEach((to , from) => {
     console.log("to",to)
     console.log("from",from)
     if (to.meta.requiresAuth) {
-        if (document.cookie.includes('accessToken') == undefined) {
+        if (!store.getters.isLogged) {
             return {name: "login"}
         }
-        // else {
-        //     // if (!document.cookie.includes('access_token')) {
-        //     //     store.commit('logout')
-        //     // }
-        // }
     }
-    if ((to.name === "login" || to.name === 'signup') && store.getters.userData.token) {
+    if ((to.name === "login" || to.name === 'signup') && store.getters.isLogged) {
         return {name: "home"}
     }
 

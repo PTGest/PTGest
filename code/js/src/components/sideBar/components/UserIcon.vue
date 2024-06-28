@@ -1,8 +1,8 @@
 <template>
-    <RouterLink class="user-icon-container" :to="{ name: 'userProfile', params: { userId: userId } }">
-        <img class="user-icon" src="../../../assets/userIcons/man.png" alt="User Icon" />
-        <div v-if="isOpen">Profile</div>
-    </RouterLink>
+<!--    <RouterLink class="user-icon-container" :to="{ name: 'userProfile', params: { userId: userId } }">-->
+<!--        <img class="user-icon" src="../../../assets/userIcons/man.png" alt="User Icon" />-->
+<!--        <div v-if="isOpen">Profile</div>-->
+<!--    </RouterLink>-->
 </template>
 
 <script setup lang="ts">
@@ -12,7 +12,6 @@ import store from "../../../store"
 const props = defineProps({
     isOpen: Boolean,
 })
-const userId = store.getters.userData.token
 </script>
 
 <style scoped>

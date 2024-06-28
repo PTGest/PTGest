@@ -1,5 +1,6 @@
 import CompanyTrainers from "../../views/user/CompaniesViews/models/CompanyTrainers.ts";
 import CompanyTrainees from "../../views/user/CompaniesViews/models/CompanyTrainees.ts";
+import {useToast} from "primevue/usetoast";
 
 export default async function getCompanyTrainersOrTrainees(
     skip: number | null,
@@ -9,6 +10,7 @@ export default async function getCompanyTrainersOrTrainees(
     isTrainees: boolean,
     name: string | null
 ): Promise<CompanyTrainers | CompanyTrainees> {
+    const toast = useToast();
     let url = `http://localhost:8080/api/company/`;
     if (isTrainees) {
         url += `trainees`;
@@ -64,8 +66,10 @@ export default async function getCompanyTrainersOrTrainees(
                     }
                 });
             case 400:
+                toast.add({ severity: 'warn', summary: 'Warn Message', detail: 'Bad Request', life: 3000 });
                 throw new Error("Bad request");
             default:
+                toast.add({ severity: 'warn', summary: 'Warn Message', detail: 'Failed to sign up', life: 3000 });
                 throw new Error("Failed to sign up");
         }
     });
