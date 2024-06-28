@@ -29,6 +29,9 @@ import TraineeReports from "../views/user/TrainerViews/components/reports/Traine
 import AddReport from "../views/user/TrainerViews/components/reports/createReport.vue";
 import Report from "../views/user/TrainerViews/components/reports/Report.vue";
 import isSigned from "../services/AuthServices/isSigned.ts";
+import CancelSession from "../views/user/TrainerViews/components/sessions/CancelSession.vue";
+import TraineeProfile from "../views/user/TrainerViews/components/trainees/TraineeProfile.vue";
+
 
 const routes: RouteRecordRaw[] = [
     { path: "/", name: "home", component: Home, meta: { requiresAuth: false } },
@@ -72,11 +75,12 @@ const routes: RouteRecordRaw[] = [
     { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
     { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-
+    { path: "/trainer/:traineeId/profile", name: "traineeProfile", component: TraineeProfile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/:traineeId", name: "traineeSessions", component: TraineeSessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/:traineeId/add-session", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/session/:sessionId", name: " sessionDetails", component: SessionDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/session/:sessionId/edit", name: " editSessionDetails", component: EditSessionDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/sessions/:sessionId/cancel", name: "cancelSession", component: CancelSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/reports/:traineeId", name: "traineeReports", component: TraineeReports, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/reports/:traineeId/addReport", name: "addReport", component: AddReport, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/reports/:traineeId/:reportId", name: "report", component: Report, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },

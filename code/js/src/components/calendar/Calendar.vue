@@ -34,7 +34,7 @@ import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSes
 const emit = defineEmits(["getDate"])
 
 const props = defineProps<{
-    trainDays: string[]
+    trainDays: number[]
 }>()
 
 const trainDays = ref(props.trainDays)
@@ -52,6 +52,10 @@ const currDay = ref("")
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
+
+console.log("TRAINDAYS",trainDays.value.includes(29));
+
+
 //Get days
 const getDaysInMonth = () => {
     const firstDayofMonth = new Date(currYear, currMonth, 1).getDay(), // getting first day of month
@@ -66,12 +70,11 @@ const getDaysInMonth = () => {
         currentMonthDays.push(new Day(`${lastDateofLastMonth - i + 1}`, "inactive")) // push all days in last month days array
     }
     for (let i = 1; i <= lastDayofMonth; i++) {
-        const isEmpty = props.trainDays.length == 0
         let classString = "normal"
         // loop through all days of current month
         if (i === new Date().getDate() && currMonth === new Date().getMonth()) {
             classString = currDay.value == `${i}` ? "active-train" : "active"
-        } else if (!isEmpty && trainDays.value.includes(`${i}`) && currMonth === new Date().getMonth()) {
+        } else if (trainDays.value.includes(i) && currMonth === new Date().getMonth()) {
             classString = "train"
         }
         currentMonthDays.push(new Day(`${i}`, classString))

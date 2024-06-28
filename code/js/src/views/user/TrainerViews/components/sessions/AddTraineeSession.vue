@@ -1,6 +1,7 @@
 <template>
     <h2>{{ props.isEdit ? "Edit Session" : "Add new Session" }}</h2>
     <div class="add-session-container">
+        <font-awesome-icon class="x-icon" @click="$router.go(-1)" :icon="faX" />
         <div class="item">
             <label for="workout">Workout</label>
             <ExercisesDropdown
@@ -57,13 +58,15 @@ import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 import editSession from "@/services/TrainerServices/sessions/editSession.ts"
 import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
 import store from "@/store"
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faX} from "@fortawesome/free-solid-svg-icons";
 
 const props = defineProps<{
     isEdit: boolean
     sessionData: TrainerSessionDetails
 }>()
 
-console.log(props.sessionData)
+console.log(store.getters.traineeInfo.id)
 
 const workoutType = ref(props.isEdit ? props.sessionData.workoutType : "")
 const workouts = ref(props.isEdit ? props.sessionData.workouts : new Workouts())
@@ -231,5 +234,10 @@ textarea {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.x-icon{
+    align-self: flex-end;
+    cursor: pointer;
 }
 </style>

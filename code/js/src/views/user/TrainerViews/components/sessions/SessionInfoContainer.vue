@@ -70,8 +70,9 @@ const sessionDetails = (id: number) => {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-top: 1em;
-    padding: 1em;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    padding: 0.5em;
     background-color: var(--main-secondary-color);
     border-radius: 5px;
     color: whitesmoke;

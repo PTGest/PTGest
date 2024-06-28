@@ -272,15 +272,16 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     override fun getSetByExercises(exerciseIds: List<Int>): List<Int> =
         handle.createQuery(
             """
-            select set_id
-            from set_exercise
-            group by set_id
-            having array_agg(exercise_id ORDER BY order_id) = :exercises::integer[]
-            """.trimIndent()
+        select set_id
+        from set_exercise
+        group by set_id
+        having array_agg(exercise_id ORDER BY order_id) = :exercisesArray::integer[]
+        """.trimIndent()
         )
             .bind("exercisesArray", exerciseIds.toTypedArray())
             .mapTo<Int>()
             .list()
+
 
     override fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean {
         return handle.createQuery(

@@ -18,8 +18,8 @@
                     <td class="exercise-details-box">{{ props.exercise.muscleGroup.join(", ") }}</td>
                     <td class="exercise-details-box">{{ props.exercise.modality }}</td>
                     <td class="exercise-details-box">
-                        <div class="label">Reps: {{ props.exercise.details["reps"] }}</div>
-                        <div v-if="props.exercise.details['weight'] != null" class="label">Weight: {{ props.exercise.details["weight"] }}</div>
+                        <div v-if="props.exercise.details['REPS'] != null" class="label">Reps: {{ props.exercise.details["REPS"] }}</div>
+                        <div v-if="props.exercise.details['WEIGHT'] != null" class="label">Weight: {{ props.exercise.details["WEIGHT"] }}</div>
                     </td>
                 </tr>
             </tbody>
