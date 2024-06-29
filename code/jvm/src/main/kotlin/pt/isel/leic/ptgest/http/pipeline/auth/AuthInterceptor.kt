@@ -58,6 +58,10 @@ class AuthInterceptor(
         val authenticationRequiredFromClass = handler.beanType.getAnnotation(AuthenticationRequired::class.java)?.role
         val authenticationRequiredFromMethod = handler.method.getAnnotation(AuthenticationRequired::class.java)?.role
 
+        if (authenticationRequiredFromClass?.isEmpty() != false && authenticationRequiredFromMethod?.isEmpty() != false) {
+            return
+        }
+
         if ((authenticationRequiredFromClass != null && !authenticationRequiredFromClass.contains(tokenDetails.role)) ||
             (authenticationRequiredFromMethod != null && !authenticationRequiredFromMethod.contains(tokenDetails.role))
         ) {
