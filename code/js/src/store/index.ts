@@ -12,6 +12,7 @@ interface State {
     userInfo: UserInfo
     traineeInfo: TraineeInfo
     sessionDetails: TrainerSessionDetails
+    isLogged: boolean
 }
 
 const vuexLocal = new VuexPersistence({
@@ -25,8 +26,6 @@ const store = createStore<State>({
             userData: {
                 id: undefined,
                 role: undefined,
-                token: undefined,
-                refreshToken: undefined,
             },
             is_mobile_view: false,
             userInfo: {
@@ -49,13 +48,17 @@ const store = createStore<State>({
                 notes: "",
                 cancelled: false,
                 reason: "",
-                source: "",
+                source: ""
             },
+            isLogged: false
         }
     },
     mutations: {
         setUserData(state: State, userData: UserData) {
             state.userData = userData
+        },
+        setLogin(state: State, isLogged: boolean) {
+            state.isLogged = isLogged
         },
         setMobileView(state: State, is_mobile_view: boolean) {
             state.is_mobile_view = is_mobile_view
@@ -64,8 +67,6 @@ const store = createStore<State>({
             state.userData = {
                 id: undefined,
                 role: undefined,
-                token: undefined,
-                refreshToken: undefined,
             }
         },
         setUserInfo(state: State, userInfo: UserInfo) {
@@ -82,6 +83,9 @@ const store = createStore<State>({
         setAuthentication({ commit }: any, userData: UserData) {
             console.log("setAuthentication", commit, userData)
             commit("setUserData", userData)
+        },
+        setLogin({ commit }: any, isLogged: boolean) {
+            commit("setLogin", isLogged)
         },
         setMobile({ commit }: any, is_mobile_view: boolean) {
             commit("setMobileView", is_mobile_view)
@@ -102,6 +106,7 @@ const store = createStore<State>({
     },
     getters: {
         userData: (state: State) => state.userData,
+        isLogged: (state: State) => state.isLogged,
         is_mobile_view: (state: State) => state.is_mobile_view,
         userInfo: (state: State) => state.userInfo,
         traineeInfo: (state: State) => state.traineeInfo,

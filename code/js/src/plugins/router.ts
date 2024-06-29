@@ -6,7 +6,7 @@ import Signup from "../views/auth/signUp/Signup.vue"
 import ForgetPassword from "../views/auth/forgetPassword/ForgetPassword.vue"
 import Error from "../views/Error.vue"
 import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue"
-import UserProfile from "../views/user/UserProfile/UserProfile.vue"
+// import UserProfile from "../views/user/UserProfile/UserProfile.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
 import Students from "../views/user/TrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue"
@@ -28,6 +28,10 @@ import EditSessionDetails from "../views/user/TrainerViews/components/sessions/E
 import TraineeReports from "../views/user/TrainerViews/components/reports/TraineeReports.vue";
 import AddReport from "../views/user/TrainerViews/components/reports/createReport.vue";
 import Report from "../views/user/TrainerViews/components/reports/Report.vue";
+import isSigned from "../services/AuthServices/isSigned.ts";
+import CancelSession from "../views/user/TrainerViews/components/sessions/CancelSession.vue";
+import TraineeProfile from "../views/user/TrainerViews/components/trainees/TraineeProfile.vue";
+
 
 const routes: RouteRecordRaw[] = [
     { path: "/", name: "home", component: Home, meta: { requiresAuth: false } },
@@ -44,13 +48,8 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: false },
     },
     //UserServices Views
-    {
-        path: "/user/profile/:userId",
-        name: "userProfile",
-        component: UserProfile,
-        props: true,
-        meta: { requiresAuth: true, roleNeeded: ["TRAINEE", "COMPANY", "INDEPENDENT_TRAINER", "HIRED_TRAINER"] },
-    },
+    // { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
+    //         roleNeeded : ['TRAINEE', 'COMPANY', 'INDEPENDENT_TRAINER', 'HIRED_TRAINER'] } },
     //Company and Independent Trainer Views
     {
         path: "/trainees",
@@ -76,11 +75,12 @@ const routes: RouteRecordRaw[] = [
     { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
     { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-
+    { path: "/trainer/:traineeId/profile", name: "traineeProfile", component: TraineeProfile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/:traineeId", name: "traineeSessions", component: TraineeSessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/:traineeId/add-session", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/session/:sessionId", name: " sessionDetails", component: SessionDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/session/:sessionId/edit", name: " editSessionDetails", component: EditSessionDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/sessions/:sessionId/cancel", name: "cancelSession", component: CancelSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/reports/:traineeId", name: "traineeReports", component: TraineeReports, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/reports/:traineeId/addReport", name: "addReport", component: AddReport, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/reports/:traineeId/:reportId", name: "report", component: Report, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
@@ -94,21 +94,16 @@ const router = createRouter({
     history: createWebHistory(),
 })
 
-router.beforeEach((to, from) => {
-    console.log("to", to)
-    console.log("from", from)
+router.beforeEach(async (to, from) => {
+
     if (to.meta.requiresAuth) {
-        if (document.cookie.includes("accessToken") == undefined) {
-            return { name: "login" }
+        await isSigned()
+        if (!store.getters.isLogged) {
+            return {name: "login"}
         }
-        // else {
-        //     // if (!document.cookie.includes('access_token')) {
-        //     //     store.commit('logout')
-        //     // }
-        // }
     }
-    if ((to.name === "login" || to.name === "signup") && store.getters.userData.token) {
-        return { name: "home" }
+    if ((to.name === "login" || to.name === 'signup') && store.getters.isLogged) {
+        return {name: "home"}
     }
 })
 

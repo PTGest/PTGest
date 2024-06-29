@@ -2,7 +2,7 @@
     <div class="set-details-container">
         <h1>Set Details</h1>
         <div class="set-details">
-            <div v-bind="exercise" class="exercise-details" v-for="exercise in setDetails.setExerciseDetails">
+            <div class="exercise-details" v-for="exercise in setDetails.setExerciseDetails">
                 <SetDetailsExerciseDetails :exercise="exercise"></SetDetailsExerciseDetails>
             </div>
         </div>
@@ -19,7 +19,7 @@ import { faX } from "@fortawesome/free-solid-svg-icons"
 import SetDetailsExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue"
 import router from "@/plugins/router.ts"
 
-const setDetails: Ref<SetDetails> = ref({})
+const setDetails = ref(new SetDetails());
 
 ;(async () => {
     setDetails.value = await getSetDetails(router.currentRoute.value.params.setId)

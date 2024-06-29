@@ -1,22 +1,22 @@
 <template>
     <div class="details-container">
+        <font-awesome-icon class="x-icon" @click="$router.go(-1)" :icon="faX" />
         <div class="details-header">
             <h1>Session Details</h1>
             <font-awesome-icon @click="handleEdit" v-if="!isEdit" class="icon" :icon="faPenToSquare"></font-awesome-icon>
-            <!--            <font-awesome-icon @click="editSessionDetails" v-else class="icon" :icon="faCheck"></font-awesome-icon>-->
         </div>
-        <div>
+        <div class="details">
             <p v-if="RBAC.isCompany()">Session Trainer: {{ sessionDetails.trainer }}</p>
             <h2>{{ store.getters.traineeInfo.name }}</h2>
             <p>{{ sessionDetails.type }}</p>
             <p>Begin Date: {{ dateFormatter(sessionDetails.beginDate) }}</p>
             <p v-if="sessionDetails.endDate != null">Session End Date: {{ sessionDetails.endDate }}</p>
             <p v-if="sessionDetails.location != null">Session Location: {{ sessionDetails.location }}</p>
-            <p v-if="sessionDetails.notes != null">Session Status: {{ sessionDetails.notes }}</p>
-
+            <p v-if="sessionDetails.notes != null">Session notes: {{ sessionDetails.notes }}</p>
             <p v-if="sessionDetails.reason != null">Session Status: {{ sessionDetails.reason }}</p>
             <p v-if="sessionDetails.source != 'NONE'">Session Status: {{ sessionDetails.source }}</p>
         </div>
+        <button class="cancel-btn" @click="cancelSession">Cancel Session</button>
     </div>
 </template>
 
@@ -29,12 +29,12 @@ import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import store from "../../../../../store"
 import dateFormatter from "../../../../../services/utils/dateFormatter.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons"
+import {faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons"
 
 const isEdit = ref(false)
-const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails())
+const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails());
 
-;(async () => {
+(async () => {
     sessionDetails.value = await getSessionDetails(router.currentRoute.value.params.sessionId)
     store.commit("setSessionDetails", sessionDetails.value)
 })()
@@ -42,6 +42,11 @@ const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails
 const handleEdit = () => {
     router.push(`/sessions/session/${router.currentRoute.value.params.sessionId}/edit`)
 }
+
+const cancelSession = () => {
+    router.push({name: "cancelSession", params: {sessionId: router.currentRoute.value.params.sessionId}})
+}
+
 </script>
 
 <style scoped>
@@ -74,5 +79,14 @@ h1 {
     position: relative;
     right: -2em;
     cursor: pointer;
+}
+.x-icon{
+    align-self: flex-end;
+    cursor: pointer;
+}
+.cancel-btn{
+    margin-top: 3em;
+    background-color: rgba(255, 0, 0, 0.5);
+    color: whitesmoke;
 }
 </style>

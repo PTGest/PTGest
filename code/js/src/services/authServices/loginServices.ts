@@ -19,10 +19,9 @@ export async function loginUserServices(userLoginData: LoginUserData): Promise<v
                         store.dispatch("setAuthentication", {
                             id: response.details.userId,
                             role: response.details.role,
-                            token: response.details.tokens.accessToken.token,
-                            refreshToken: response.details.tokens.refreshToken.token,
                         })
-                        router.push({ name: "home" })
+                        store.commit("setLogin", true)
+                        router.push('/')
                         return response
                     })
                     break

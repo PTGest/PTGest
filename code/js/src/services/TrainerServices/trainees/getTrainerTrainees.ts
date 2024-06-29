@@ -4,17 +4,25 @@ import TrainerTrainees from "../../../views/user/TrainerViews/models/trainees/Tr
 async function getTrainerTrainees(skip: number | null, limit: number | null, name: string | null, gender: string | null): Promise<TrainerTrainees> {
     let url = `http://localhost:8080/api/trainer/trainees`
     // Construct URL with skip and limit parameters
+    const queryParams: string[] = [];
+
+// Add each parameter to the array if it exists
     if (skip != null) {
-        url += `?skip=${skip}`
+        queryParams.push(`skip=${skip}`);
     }
     if (limit != null) {
-        url += `&limit=${limit}`
+        queryParams.push(`limit=${limit}`);
     }
     if (name != null) {
-        url += `&name=${name}`
+        queryParams.push(`name=${name}`);
     }
     if (gender != null) {
-        url += `&gender=${gender}`
+        queryParams.push(`gender=${gender}`);
+    }
+
+// Construct the final URL with query parameters if there are any
+    if (queryParams.length > 0) {
+        url += `?${queryParams.join('&')}`;
     }
 
     try {

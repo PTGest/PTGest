@@ -15,6 +15,7 @@
                 <font-awesome-icon :icon="faFilter" />
                 Filters
             </button>
+            <font-awesome-icon @click="resetFilters" class="reset-filters-icon" :icon="faArrowsRotate" />
         </div>
 
         <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises.filter((exercise) => exercise.name.includes(searchBar))" />
@@ -26,7 +27,7 @@
 <script setup lang="ts">
 import { Ref, ref } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faFilter, faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons"
+import {faArrowsRotate, faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons"
 import ExercisesTable from "./components/exercises/ExercisesTable.vue"
 import Exercises from "./models/exercises/Exercises.ts"
 import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts"
@@ -48,11 +49,18 @@ const applyFilters = (newExercises: any) => {
     console.log("Filters applied", newExercises)
     exercises.value = newExercises
 }
-const openAddExercise = () => {
-    router.push({ name: "addExercise" })
+const resetFilters = async () => {
+    searchBar.value = ""
+    filtersOpen.value = false
+    exercises.value = await getExercises(null)
 }
 
-;(async () => {
+
+const openAddExercise = () => {
+    router.push({ name: "addExercise" })
+};
+
+(async () => {
     try {
         exercises.value = await getExercises(null)
         console.log(exercises.value)
@@ -161,5 +169,11 @@ const openAddExercise = () => {
     margin-top: 2em;
     color: whitesmoke;
     text-align: center;
+}
+.reset-filters-icon{
+    color: whitesmoke;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s ease-in;
 }
 </style>

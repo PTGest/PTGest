@@ -4,7 +4,7 @@ import router from "../../../plugins/router.ts"
 async function createExercise(exercise: CreateCustomExerciseRequest): Promise<void> {
     try {
         const response = await fetchData(`http://localhost:8080/api/trainer/custom-exercise`, "POST", exercise)
-        router.go(0)
+        router.go(-1)
         return response.resourceId
     } catch (error) {
         console.error("Error fetching exercises:", error)

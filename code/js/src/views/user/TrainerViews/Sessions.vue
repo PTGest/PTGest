@@ -2,7 +2,7 @@
     <div>
         <h1>Sessions</h1>
         <div class="sessions-container">
-            <Calendar @get-date="dateClicked" :train-days="trainerSessions.sessions.map((value: TrainerSession) => value.beginDate)"></Calendar>
+            <Calendar @get-date="dateClicked" :train-days="trainerSessions.sessions.map((value: TrainerSession) => getDayFromDate(value.beginDate))"></Calendar>
             <SessionInfoContainer :day-sessions="trainerSessions.sessions" />
         </div>
     </div>
@@ -17,6 +17,7 @@ import formattedDate from "@/components/utils/formatDate.js"
 import TrainerSessions from "@/views/user/TrainerViews/models/sessions/TrainerSessions.ts"
 import getTrainerSessions from "@/services/TrainerServices/sessions/getTrainerSessions.ts"
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
+import getDayFromDate from "@/services/utils/getDayFromDate.ts";
 
 
 const selectedDay: Ref<string> = ref(formattedDate(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())))

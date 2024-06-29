@@ -34,7 +34,7 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
         return handle.createQuery(
             """
         select id, date, report, visibility, trainee_id as trainee
-        from report_trainer rt join report r on rt.report_id = r.id
+        from report_trainer rt join report r on rt.reportid = r.id
         where trainer_id = :trainerId $traineeCondition
         limit :limit offset :skip
         """.trimIndent()
@@ -58,7 +58,7 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
         return handle.createQuery(
             """
             select count(*)
-            from report_trainer rt join report r on rt.report_id = r.id
+            from report_trainer rt join report r on rt.reportid = r.id
             where trainer_id = :trainerId $traineeCondition
             """.trimIndent()
         )
@@ -77,9 +77,9 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             """
             select u.name as trainee, r.date, r.report, r.visibility
             from report_trainer rt 
-            join report r on rt.report_id = r.id
+            join report r on rt.reportid = r.id
             join "user" u on r.trainee_id = u.id
-            where trainer_id = :trainerId and report_id = :reportId
+            where trainer_id = :trainerId and reportid = :reportId
             """.trimIndent()
         )
             .bindMap(

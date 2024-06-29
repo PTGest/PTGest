@@ -12,12 +12,12 @@ export default async function logoutServices(): Promise<void> {
     }).then((response) => {
         if (response.ok) {
             console.log("Deu Bom familia nao dei fumble da bag")
-            window.localStorage.removeItem("userData")
             store.commit("logout")
-            router.push({ name: "home" })
+            store.commit("setLogin", false)
+            router.push({ name: "login" })
             return response.json()
         } else {
-            throw new Error("Failed to logout")
+            throw new Error("Erro ao fazer logout")
         }
     })
     return

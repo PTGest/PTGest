@@ -6,6 +6,14 @@
         <ExercisesDropdown @dropdownOption="modality = $event" :options="modalityOptions" placeholder="Filter by Modality"></ExercisesDropdown>
         <ExercisesDropdown @dropdownOption="selectedMuscleGroups = $event" :options="muscleGroupOptions" placeholder="Filter by Muscle Groups" />
 
+        <div class="liked-exercises">
+            Filter by Favorites
+            <div @click="handleLike" class="like-box">
+                <font-awesome-icon :class="[isLiked ? 'heart-icon-active' : 'heart-icon']" :icon="faHeart" />
+            </div>
+        </div>
+
+
         <button class="applyFilters" @click="applyFilters">Apply Filters</button>
     </div>
 </template>
@@ -15,12 +23,18 @@ import { ref } from "vue"
 import getExercises from "@/services/TrainerServices/exercises/getExercises.ts"
 import ExercisesDropdown from "../exercises/ExercisesDropdown.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faTimes } from "@fortawesome/free-solid-svg-icons"
+import {faHeart, faTimes} from "@fortawesome/free-solid-svg-icons"
+import LikeExercise from "@/views/user/TrainerViews/components/exercises/LikeExercise.vue";
 
 const modality = ref<string>("")
 const selectedMuscleGroups = ref<string>("")
 const emit = defineEmits(["filtersApplied", "close"])
 const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING_IN" }, { name: "RUNNING_OUT" }, { name: "CYCLING_IN" }, { name: "CYCLING_OUT" }, { name: "OTHER" }]
+const isLiked = ref(false);
+
+const handleLike = () => {
+    isLiked.value = !isLiked.value
+}
 
 const muscleGroupOptions = ref([
     { name: "BICEPS" },
@@ -49,6 +63,9 @@ const applyFilters = async () => {
     }
     if (selectedMuscleGroups.value !== "") {
         filters.set("muscleGroups", selectedMuscleGroups.value.name)
+    }
+    if (isLiked.value) {
+        filters.set("favorite", isLiked.value)
     }
     const exercises = await getExercises(filters)
     emit("filtersApplied", exercises)
@@ -110,5 +127,42 @@ const applyFilters = async () => {
     width: 1em;
     color: whitesmoke;
     cursor: pointer;
+}
+
+.like-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5em;
+    height: 2em;
+    margin-left: 1em;
+    background-color: var(--main-primary-color);
+    border: 1px solid var(--main-secondary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.like-box:hover {
+    background-color: var(--main-secondary-color);
+}
+
+.heart-icon,
+.heart-icon-active {
+    width: 1em;
+    height: 1em;
+    color: rgba(245, 245, 245, 0.5);
+}
+
+.heart-icon-active {
+    color: red;
+}
+
+.liked-exercises {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1em;
 }
 </style>

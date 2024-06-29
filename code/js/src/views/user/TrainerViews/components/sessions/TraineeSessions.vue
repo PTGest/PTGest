@@ -1,9 +1,13 @@
 <template>
     <h1>Trainee Sessions</h1>
     <div class="sessions-container">
-        <Calendar :train-days="traineeTrainDays.sessions.map((session: Session) => session.beginDate)"></Calendar>
+        <Calendar :train-days="traineeTrainDays.sessions.map((session: Session) => getDayFromDate(session.beginDate))"></Calendar>
         <SessionInfoContainer :day-sessions="traineeTrainDays.sessions" is-trainee-sessions />
-        <router-link :to="{name:'traineeReports', params:{traineeId:router.currentRoute.value.params.traineeId}}" class="reports-link">Reports</router-link> <!-- Add this line -->
+        <router-link :to="{name:'traineeProfile', params:{traineeId: router.currentRoute.value.params.traineeId}}" class="reports-link">
+           <img class="user-icon" src="@/assets/userIcons/man.png" alt="User Icon" />
+           Profile
+        </router-link>
+
     </div>
 </template>
 
@@ -15,6 +19,7 @@ import { Ref, ref } from "vue"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import Session from "@/views/user/TrainerViews/models/sessions/Session.ts"
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
+import getDayFromDate from "@/services/utils/getDayFromDate.ts";
 
 const traineeTrainDays: Ref<Sessions> = ref(new Sessions())
 
@@ -43,12 +48,21 @@ const traineeTrainDays: Ref<Sessions> = ref(new Sessions())
     text-decoration: none;
     font-size: 1.5em;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
 
 .reports-link:hover{
     background-color: var(--main-secondary-color);
     transition: 0.2s ease-in;
+}
+
+.user-icon{
+    margin-top: 0.5em;
+    width: 5em;
+    height: 5em;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 </style>

@@ -4,7 +4,12 @@
         <h1 v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">{{report.trainee + ' Report'}}</h1>
         <div>{{report.date}}</div>
         <font-awesome-icon v-if="report.visibility" :icon="faLock"/>
-        <textarea v-model="report.report" readonly></textarea>
+        <div class="textarea-container">
+            <font-awesome-icon @click="enableEdit" v-if="!isEdit" class="edit-icon" :icon="faPen"/>
+            <font-awesome-icon @click="handleEditReport" v-else class="edit-icon" :icon="faCheck"/>
+            <textarea v-model="report.report" :readonly="!isEdit"></textarea>
+            <SelectButton v-if="isEdit" class="privacy-button" v-model="visibility" :options="options" aria-labelledby="basic" />
+        </div>
     </div>
 </template>
 
@@ -15,12 +20,34 @@ import router from "@/plugins/router.ts";
 import ReportDetails from "@/views/user/TrainerViews/models/reports/ReportDetails.ts";
 import RBAC from "@/services/utils/RBAC/RBAC.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faLock, faX} from "@fortawesome/free-solid-svg-icons";
-const report = ref(new ReportDetails());
+import {faCheck, faLock, faPen, faX} from "@fortawesome/free-solid-svg-icons";
+import SelectButton from "primevue/selectbutton";
+import editReport from "@/services/TrainerServices/reports/editReport.ts";
+import EditReportRequest from "@/views/user/TrainerViews/models/reports/EditReportRequest.ts";
 
+
+const report = ref(new ReportDetails());
+const isEdit = ref(false);
+const visibility = ref('');
+const options = ['Public', 'Private'];
 (async () => {
     report.value = await getReportDetails(router.currentRoute.value.params.reportId);
+    visibility.value = report.value.visibility ? 'Private' : 'Public';
 })();
+
+const enableEdit = () => {
+    isEdit.value = !isEdit.value;
+}
+
+const handleEditReport = async () => {
+    try{
+        await editReport(router.currentRoute.value.params.reportId,new EditReportRequest(report.value.report, visibility.value === 'Private'));
+        isEdit.value = false;
+    }
+    catch (e) {
+        console.log(e);
+    }
+}
 
 const closeReport = () => {
     router.go(-1);
@@ -52,6 +79,7 @@ textarea{
     color: whitesmoke;
     border: none;
     resize: none;
+    outline: none;
 }
 
 h1{
@@ -61,5 +89,36 @@ h1{
 .x-icon{
     align-self: flex-end;
     cursor: pointer;
+}
+
+.textarea-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+.edit-icon{
+    align-self: flex-end;
+    padding: 0 1em 0 0;
+    cursor: pointer;
+}
+
+:deep(.p-component){
+    background-color: var(--main-primary-color);
+    border-radius: 10%;
+    border: none;
+}
+
+:deep(.p-selectbutton){
+    color: whitesmoke;
+}
+:global(.p-button){
+    color: whitesmoke;
+    background-color: var(--main-secondary-color);
+    border: none;
+}
+:global(.p-highlight){
+    color: var(--main-secondary-color);
 }
 </style>

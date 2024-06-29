@@ -1,6 +1,6 @@
 <template>
-    <button v-if="userData" :class="[props.isOpen ? 'logout-button-open' : 'logout-button']" @click="logout">
-        <div v-if="!props.isMobileView" class="logout-button-text">Log Out</div>
+    <button v-if="isLogged" :class="[props.isOpen ? 'logout-button-open' : 'logout-button']" @click="logout">
+        <div v-if="!isMobileView" class="logout-button-text">Log Out</div>
         <font-awesome-icon :icon="faRightToBracket"></font-awesome-icon>
     </button>
 </template>
@@ -17,8 +17,8 @@ const props = defineProps({
     isMobileView: Boolean,
 })
 
-const userData = computed(() => {
-    return store.state.userData.token !== undefined
+const isLogged = computed(() => {
+    return store.getters.isLogged
 })
 
 const logout = () => {
