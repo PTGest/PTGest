@@ -1,13 +1,13 @@
-import Exercise from "./Exercise.ts";
+import Exercise from "./Exercise.ts"
 
 class Exercises {
-    exercises: Exercise[];
-    nOfExercises: number;
+    exercises: Exercise[]
+    nOfExercises: number
 
-    constructor(exercises: Exercise[], nOfExercises: number){
-        this.exercises = exercises;
-        this.nOfExercises = nOfExercises;
+    constructor(exercises: Exercise[], nOfExercises: number) {
+        this.exercises = exercises
+        this.nOfExercises = nOfExercises
     }
 }
 
-export default Exercises;
+export default Exercises

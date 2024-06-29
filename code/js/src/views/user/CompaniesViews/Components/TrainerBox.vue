@@ -1,21 +1,17 @@
 <template>
     <div class="trainer">
         <div class="text">
-            <h4>{{props.trainer.name}}</h4>
+            <h4>{{ props.trainer.name }}</h4>
         </div>
         <div class="text">
             <p>Capacity</p>
-            <input v-model="capacity" :class="isDisabled ? 'input' : 'edit-input'"
-                   :disabled="isDisabled"
-            />
+            <input v-model="capacity" :class="isDisabled ? 'input' : 'edit-input'" :disabled="isDisabled" />
         </div>
         <div class="text">
             <p>Trainees</p>
-            <input v-model="assignedTrainees" class="input"
-                   :placeholder="`${props.trainer.assignedTrainees}`" disabled
-            />
+            <input v-model="assignedTrainees" class="input" :placeholder="`${props.trainer.assignedTrainees}`" disabled />
         </div>
-        <div v-if="!(isAssignTrainer||isReassignTrainer)">
+        <div v-if="!(isAssignTrainer || isReassignTrainer)">
             <font-awesome-icon v-if="isDisabled" :icon="faPen" @click="editCapacity" class="icon"></font-awesome-icon>
             <font-awesome-icon v-if="!isDisabled" :icon="faCheck" @click="updateCapacity" class="icon"></font-awesome-icon>
         </div>
@@ -23,18 +19,16 @@
         <AssignTrainerButton v-if="isAssignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId"></AssignTrainerButton>
         <AssignTrainerButton v-if="isReassignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId" is-reassign-trainer></AssignTrainerButton>
         <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
-
     </div>
 </template>
 
 <script setup lang="ts">
-import Trainer from "../../../../views/user/CompaniesViews/models/Trainer.ts";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faCheck, faPen, faX} from "@fortawesome/free-solid-svg-icons";
-import {ref} from "vue";
-import changeTrainerCapacity from "../../../../services/companyServices/changeTrainerCapacity.ts";
-import AssignTrainer from "@/views/user/CompaniesViews/AssignTrainer.vue";
-import AssignTrainerButton from "@/views/user/CompaniesViews/Components/AssignTrainerButton.vue";
+import Trainer from "../../../../views/user/CompaniesViews/models/Trainer.ts"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faCheck, faPen, faX } from "@fortawesome/free-solid-svg-icons"
+import { ref } from "vue"
+import changeTrainerCapacity from "../../../../services/companyServices/changeTrainerCapacity.ts"
+import AssignTrainerButton from "@/views/user/CompaniesViews/Components/AssignTrainerButton.vue"
 
 const isDisabled = ref(true)
 const props = defineProps<{
@@ -52,11 +46,10 @@ const updateCapacity = () => {
     changeTrainerCapacity(props.trainer.id, capacity.value)
     editCapacity()
 }
-
 </script>
 
 <style scoped>
-.trainer{
+.trainer {
     position: relative;
     width: 20em;
     height: 3em;
@@ -70,35 +63,39 @@ const updateCapacity = () => {
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: bold;
-    border : 1px solid var(--main-secondary-color);
+    border: 1px solid var(--main-secondary-color);
 }
-.icon{
+.icon {
     position: relative;
     color: whitesmoke;
     font-size: 0.8em;
     margin: 0 1em 0 1em;
     cursor: pointer;
 }
-p, h6, h4, input{
+p,
+h6,
+h4,
+input {
     padding: 0;
     margin: 0;
 }
-h4{
+h4 {
     position: relative;
-    left : -1em;
+    left: -1em;
     text-shadow: var(--main-secondary-color) 2px 2px 2px;
 }
-p{
+p {
     font-size: 0.8em;
 }
-.text{
+.text {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: 0 0.5em 0 0.5em;
 }
-.input, .edit-input{
+.input,
+.edit-input {
     width: 3em;
     height: 2em;
     font-size: 0.8em;
@@ -106,19 +103,19 @@ p{
     color: whitesmoke;
     background-color: transparent;
 }
-.edit-input{
+.edit-input {
     border: 1px solid whitesmoke;
     border-radius: 10px;
 }
-input{
+input {
     text-align: center;
 }
-::placeholder{
+::placeholder {
     text-align: center;
     color: whitesmoke;
 }
 
-.delete-icon{
+.delete-icon {
     position: absolute;
     top: 0.3em;
     right: -0.5em;
@@ -129,7 +126,7 @@ input{
 }
 
 @media screen and (max-width: 659px) {
-    .trainer{
+    .trainer {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -141,7 +138,7 @@ input{
         font-weight: bold;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .icon{
+    .icon {
         position: relative;
         top: -0.1em;
         color: whitesmoke;
@@ -149,25 +146,29 @@ input{
         margin: 0 1em 0 1em;
         cursor: pointer;
     }
-    p, h6, h4, input{
+    p,
+    h6,
+    h4,
+    input {
         padding: 0;
         margin: 0;
     }
-    h4{
+    h4 {
         position: relative;
-        left : -1em;
+        left: -1em;
         text-shadow: var(--main-secondary-color) 2px 2px 2px;
     }
-    p{
+    p {
         font-size: 0.8em;
     }
-    .text{
+    .text {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
     }
-    .capacity, .edit-capacity{
+    .capacity,
+    .edit-capacity {
         width: 3em;
         height: 2em;
         font-size: 0.8em;
@@ -175,19 +176,19 @@ input{
         color: whitesmoke;
         background-color: var(--light-blue);
     }
-    .edit-capacity{
+    .edit-capacity {
         border: 1px solid whitesmoke;
         border-radius: 10px;
     }
-    input{
+    input {
         text-align: center;
     }
-    ::placeholder{
+    ::placeholder {
         text-align: center;
         color: whitesmoke;
     }
 
-    .delete-icon{
+    .delete-icon {
         position: relative;
         top: -0.5em;
         right: -1em;

@@ -33,11 +33,11 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
 
         return handle.createQuery(
             """
-            select id, date, report, visibility
-            from report_trainer rt join report r on rt.report_id = r.id
-            where trainer_id = :trainerId $traineeCondition
-            limit :limit offset :skip
-            """.trimIndent()
+        select id, date, report, visibility, trainee_id as trainee
+        from report_trainer rt join report r on rt.report_id = r.id
+        where trainer_id = :trainerId $traineeCondition
+        limit :limit offset :skip
+        """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -50,6 +50,7 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             .mapTo<Report>()
             .list()
     }
+
 
     override fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int {
         val traineeCondition = if (traineeId != null) "and trainee_id = :traineeId" else ""

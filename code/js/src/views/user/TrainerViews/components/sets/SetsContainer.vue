@@ -3,7 +3,7 @@
         <div class="title-row">
             Sets
             <button @click="openAddSet" class="add-btn">
-                <FontAwesomeIcon :icon="faPlus"/>
+                <FontAwesomeIcon :icon="faPlus" />
                 Add Set
             </button>
         </div>
@@ -12,32 +12,29 @@
             <div>Notes</div>
             <div>Type</div>
         </div>
-        <Divider/>
-        <SetRowView v-for="set in props.sets" :key="set.id" :set="set"/>
+        <Divider />
+        <SetRowView v-for="set in props.sets" :key="set.id" :set="set" />
     </div>
 </template>
 
 <script setup lang="ts">
-import Divider from "primevue/divider";
-import Set from "../../models/sets/Set.ts";
-import SetRowView from "./SetRowView.vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import {ref} from "vue";
-import AddSet from "@/views/user/TrainerViews/components/sets/AddSet.vue";
-import router from "@/plugins/router.ts";
+import Divider from "primevue/divider"
+import Set from "../../models/sets/Set.ts"
+import SetRowView from "./SetRowView.vue"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
+import router from "@/plugins/router.ts"
 const props = defineProps<{
-   sets: Set[];
-}>();
+    sets: Set[]
+}>()
 
 const openAddSet = () => {
-   router.push({name: 'addSet'});
+    router.push({ name: "addSet" })
 }
 </script>
 
-
 <style scoped>
-.title-row{
+.title-row {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -47,18 +44,18 @@ const openAddSet = () => {
     width: 100%;
 }
 
-.sets-container{
-    position : relative;
+.sets-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     padding: 1rem;
     background-color: var(--main-primary-color);
-    color : whitesmoke;
+    color: whitesmoke;
     border-radius: 10px;
     width: 100%;
 }
 
-.label-row{
+.label-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -68,7 +65,7 @@ const openAddSet = () => {
     font-size: 1em;
 }
 
-.add-btn{
+.add-btn {
     display: flex;
     flex-direction: row;
     align-items: center;

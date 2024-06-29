@@ -1,13 +1,12 @@
-import Trainer from '.././models/Trainer.ts';
-class CompanyTrainers{
+import Trainer from ".././models/Trainer.ts"
+class CompanyTrainers {
     trainers: Trainer[]
     total: number
 
-    constructor(trainers: Trainer[], total: number){
+    constructor(trainers: Trainer[], total: number) {
         this.trainers = trainers
         this.total = total
     }
 }
 
-export default CompanyTrainers;
-
+export default CompanyTrainers

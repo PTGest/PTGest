@@ -238,10 +238,15 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     ) {
         handle.createUpdate(
             """
-            update session
-            set workout_id = :workoutId, begin_date = :beginDate, end_date = :endDate, location = :location, type = :type, notes = :notes
-            where id = :sessionId
-            """.trimIndent()
+        update session
+        set workout_id = :workoutId, 
+            begin_date = :beginDate, 
+            end_date = :endDate, 
+            location = :location, 
+            type = :type::session_type, 
+            notes = :notes
+        where id = :sessionId
+        """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -250,12 +255,13 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     "beginDate" to beginDate,
                     "endDate" to endDate,
                     "location" to location,
-                    "type" to type.name,
+                    "type" to type.name, // Ensure 'type.name' matches enum values in DB
                     "notes" to notes
                 )
             )
             .execute()
     }
+
 
     override fun cancelSession(sessionId: Int, source: Source, reason: String?) {
         handle.createUpdate(

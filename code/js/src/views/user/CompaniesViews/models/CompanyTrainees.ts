@@ -1,13 +1,13 @@
-import Trainee from "./Trainee.ts";
+import Trainee from "./Trainee.ts"
 
-class CompanyTrainees{
+class CompanyTrainees {
     trainees: Trainee[]
     total: number
 
-    constructor(trainees: Trainee[], total: number){
-        this.trainees = trainees;
-        this.total = total;
+    constructor(trainees: Trainee[], total: number) {
+        this.trainees = trainees
+        this.total = total
     }
 }
 
-export default CompanyTrainees;
+export default CompanyTrainees

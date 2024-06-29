@@ -16,4 +16,4 @@ class HiredTrainerRegisterData {
     }
 }
 
-export default HiredTrainerRegisterData;
+export default HiredTrainerRegisterData

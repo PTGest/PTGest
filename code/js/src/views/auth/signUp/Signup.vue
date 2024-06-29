@@ -22,7 +22,7 @@
 
             <div v-if="toggle" class="signup-input-container">
                 <div class="signup-input-text">Gender</div>
-                <DropdownMenu @gender="updateGender"size="16.8em" />
+                <DropdownMenu @gender="updateGender" size="16.8em" />
             </div>
 
             <div v-if="toggle" class="signup-input-container">
@@ -68,13 +68,12 @@ const signupUserData: Ref<SignupPTData> = ref({
     user_type: "independent_trainer",
 })
 
-
-const isFullOfData = computed(
-    () => (data: SignupPTData) => {
-            return toggle && (data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== ""
-                && phoneNumber.value != "" && countryNumber.value != "") || !toggle.value && (data.name !== "" && data.email !== "" && data.password !== "")
-        }
-)
+const isFullOfData = computed(() => (data: SignupPTData) => {
+    return (
+        (toggle.value && data.name !== "" && data.email !== "" && data.gender !== "" && data.password !== "" && phoneNumber.value != "" && countryNumber.value != "") ||
+        (!toggle.value && data.name !== "" && data.email !== "" && data.password !== "")
+    )
+})
 
 const isSignUpDisabled = computed(() => {
     return !isFullOfData.value(signupUserData.value)
@@ -260,7 +259,7 @@ const signUp = () => {
     margin-top: 0.5em;
 }
 
-input{
+input {
     color: var(--main-primary-color);
 }
 

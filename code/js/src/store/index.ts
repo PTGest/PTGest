@@ -2,8 +2,8 @@ import { createStore } from "vuex"
 import UserData from "../models/UserData.ts"
 import VuexPersistence from "vuex-persist"
 import { UserInfo } from "../views/user/UserProfile/Models/UserInfo.ts"
-import TrainerSessionDetails from "../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts";
-import TraineeInfo from "../views/user/TrainerViews/models/trainees/TraineeInfo.ts";
+import TrainerSessionDetails from "../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
+import TraineeInfo from "../views/user/TrainerViews/models/trainees/TraineeInfo.ts"
 
 interface State {
     userData: UserData
@@ -13,8 +13,6 @@ interface State {
     traineeInfo: TraineeInfo
     sessionDetails: TrainerSessionDetails
 }
-
-
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
@@ -38,7 +36,7 @@ const store = createStore<State>({
             },
             traineeInfo: {
                 id: "",
-                name: ""
+                name: "",
             },
             sessionDetails: {
                 id: -1,
@@ -51,8 +49,8 @@ const store = createStore<State>({
                 notes: "",
                 cancelled: false,
                 reason: "",
-                source: ""
-            }
+                source: "",
+            },
         }
     },
     mutations: {
@@ -78,7 +76,7 @@ const store = createStore<State>({
         },
         setSessionDetails(state: State, sessionDetails: TrainerSessionDetails) {
             state.sessionDetails = sessionDetails
-        }
+        },
     },
     actions: {
         setAuthentication({ commit }: any, userData: UserData) {
@@ -100,14 +98,14 @@ const store = createStore<State>({
         },
         setSessionDetails({ commit }: any, sessionDetails: TrainerSessionDetails) {
             commit("setSessionDetails", sessionDetails)
-        }
+        },
     },
     getters: {
         userData: (state: State) => state.userData,
         is_mobile_view: (state: State) => state.is_mobile_view,
         userInfo: (state: State) => state.userInfo,
         traineeInfo: (state: State) => state.traineeInfo,
-        sessionDetails: (state: State) => state.sessionDetails
+        sessionDetails: (state: State) => state.sessionDetails,
     },
     plugins: [vuexLocal.plugin],
 })

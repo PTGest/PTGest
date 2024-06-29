@@ -3,11 +3,11 @@
         <h1>Personal Info</h1>
         <div>
             <p>{{ props.email }}</p>
-<!--            <p>Phone: {{ props.phone }}</p>-->
-<!--            <p>Age: {{ props.age }}</p>-->
-<!--            <p>Height: {{ props.height }}</p>-->
-<!--            <p>Weight: {{ props.weight }}</p>-->
-<!--            <p>BMI: {{ props.BMI }}</p>-->
+            <!--            <p>Phone: {{ props.phone }}</p>-->
+            <!--            <p>Age: {{ props.age }}</p>-->
+            <!--            <p>Height: {{ props.height }}</p>-->
+            <!--            <p>Weight: {{ props.weight }}</p>-->
+            <!--            <p>BMI: {{ props.BMI }}</p>-->
         </div>
     </div>
 </template>
