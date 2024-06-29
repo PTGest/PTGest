@@ -51,7 +51,7 @@ class AuthInterceptor(
     }
 
     private fun isAuthRequired(handler: HandlerMethod): Boolean =
-        handler.hasMethodAnnotation(AuthenticationRequired::class.java) ||
+        handler.method.isAnnotationPresent(AuthenticationRequired::class.java) ||
             handler.beanType.isAnnotationPresent(AuthenticationRequired::class.java)
 
     private fun verifyRole(handler: HandlerMethod, tokenDetails: AccessTokenDetails) {

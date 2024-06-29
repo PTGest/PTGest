@@ -193,6 +193,7 @@ class AuthController(private val service: AuthService) {
         )
     }
 
+    @AuthenticationRequired
     @GetMapping(Uris.Auth.VALIDATE_AUTHENTICATION)
     fun validateAuthentication(): ResponseEntity<*> {
         return HttpResponse.ok(
