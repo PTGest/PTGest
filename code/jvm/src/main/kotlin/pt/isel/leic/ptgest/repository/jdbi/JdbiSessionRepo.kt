@@ -246,7 +246,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             type = :type::session_type, 
             notes = :notes
         where id = :sessionId
-        """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -261,7 +261,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             )
             .execute()
     }
-
 
     override fun cancelSession(sessionId: Int, source: Source, reason: String?) {
         handle.createUpdate(

@@ -26,13 +26,13 @@ import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.company.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.UpdateTrainerCapacityRequest
-import pt.isel.leic.ptgest.http.utils.RequiredRole
+import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.services.company.CompanyService
 import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.Company.PREFIX)
-@RequiredRole(Role.COMPANY)
+@AuthenticationRequired(Role.COMPANY)
 class CompanyController(
     private val companyService: CompanyService
 ) {
@@ -132,7 +132,7 @@ class CompanyController(
     }
 
     @PostMapping(Uris.Exercise.CREATE_CUSTOM_EXERCISE)
-    @RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
+    @AuthenticationRequired(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
     fun createCustomExercise(
         @Valid @RequestBody
         exerciseDetails: CreateExerciseRequest,
