@@ -54,7 +54,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             from session s
             join session_trainer st on s.id = st.session_id
             join "user" u on s.trainee_id = u.id
-            left join dev.cancelled_session cs on s.id = cs.session_id
+            left join cancelled_session cs on s.id = cs.session_id
             where trainer_id = :trainerId
             order by s.begin_date
             limit :limit offset :skip
@@ -95,19 +95,22 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     ): List<Session> =
         handle.createQuery(
             """
-        select s.id, s.begin_date, s.end_date, s.type,
-            case when cs.session_id is not null then true else false end as cancelled
-        from session s
-        left join dev.cancelled_session cs on s.id = cs.session_id
-        where s.trainee_id = :traineeId ${sessionType?.let { "and s.type = :type" } ?: ""}
-        order by s.begin_date
-        limit :limit offset :skip
+            select s.id, s.begin_date, s.end_date, s.type,
+                case when cs.session_id is not null then true else false end as cancelled
+            from session s
+            left join cancelled_session cs on s.id = cs.session_id
+            where s.trainee_id = :traineeId ${sessionType?.let { "and s.type = :type" } ?: ""}
+            order by s.begin_date
+            limit :limit offset :skip
             """.trimIndent()
         )
-            .bind("traineeId", traineeId)
-            .bind("skip", skip)
-            .bind("limit", limit)
-            .apply { sessionType?.let { bind("type", it.name) } }
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "skip" to skip,
+                    "limit" to limit
+                )
+            )
             .mapTo<Session>()
             .list()
 
@@ -156,66 +159,40 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                cs.reason, 
                cs.source
         from session s
-        left join dev.cancelled_session cs on s.id = cs.session_id
+        left join cancelled_session cs on s.id = cs.session_id
         join "user" u on s.trainee_id = u.id
         where s.id = :sessionId
             """.trimIndent()
         )
             .bind("sessionId", sessionId)
-            .map { rs, _ ->
-                TrainerSessionDetails(
-                    rs.getInt("id"),
-                    rs.getString("trainee_name"),
-                    rs.getInt("workout_id"),
-                    rs.getDate("begin_date"),
-                    rs.getDate("end_date"),
-                    rs.getString("location"),
-                    SessionType.valueOf(rs.getString("type")), // Supondo que 'type' é uma string que pode ser convertida para SessionType
-                    rs.getString("notes"),
-                    rs.getBoolean("cancelled"),
-                    rs.getString("reason"),
-                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE // Tratar null para 'source'
-                )
-            }
+            .mapTo<TrainerSessionDetails>()
             .firstOrNull()
 
     override fun getSessionDetails(sessionId: Int): SessionDetails? =
         handle.createQuery(
             """
         select id, workout_id, begin_date, end_date, location, type, notes,
-            case when cs.session_id is not null then true else false end as cancelled, 
-            cs.reason, 
+            case when cs.session_id is not null then true else false end as cancelled,
+            cs.reason,
             cs.source -- Ensure 'source' is included in the query result
         from session s
-        left join dev.cancelled_session cs on s.id = cs.session_id
+        left join cancelled_session cs on s.id = cs.session_id
         where s.id = :sessionId
             """.trimIndent()
         )
             .bind("sessionId", sessionId)
-            .map { rs, _ ->
-                SessionDetails(
-                    id = rs.getInt("id"),
-                    workoutId = rs.getInt("workout_id"),
-                    beginDate = rs.getDate("begin_date"),
-                    endDate = rs.getDate("end_date"),
-                    location = rs.getString("location"),
-                    type = SessionType.valueOf(rs.getString("type")), // Assuming type is stored as a string
-                    notes = rs.getString("notes"),
-                    cancelled = rs.getBoolean("cancelled"),
-                    reason = rs.getString("reason"),
-                    rs.getString("source")?.let { Source.valueOf(it) } ?: Source.NONE // Assuming source is stored as a string
-                )
-            }
+            .mapTo<SessionDetails>()
             .firstOrNull()
 
     override fun getSessionDetails(traineeId: UUID, sessionId: Int): SessionDetails? =
         handle.createQuery(
             """
             select id, workout_id, begin_date, end_date, location, type, notes,
-                case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
-            from session 
-            left join dev.cancelled_session cs on s.id = cs.session_id
-            where id = :sessionId and trainee_id = :traineeId
+                case when cs.session_id is not null then true else false end as cancelled, 
+                cs.reason, cs.source
+            from session s
+            left join cancelled_session cs on s.id = cs.session_id
+            where s.id = :sessionId and trainee_id = :traineeId
             """.trimIndent()
         )
             .bindMap(
@@ -238,15 +215,15 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     ) {
         handle.createUpdate(
             """
-        update session
-        set workout_id = :workoutId, 
-            begin_date = :beginDate, 
-            end_date = :endDate, 
-            location = :location, 
-            type = :type::session_type, 
-            notes = :notes
-        where id = :sessionId
-        """.trimIndent()
+            update session
+            set workout_id = :workoutId, 
+                begin_date = :beginDate, 
+                end_date = :endDate, 
+                location = :location, 
+                type = :type::session_type, 
+                notes = :notes
+            where id = :sessionId
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -255,7 +232,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     "beginDate" to beginDate,
                     "endDate" to endDate,
                     "location" to location,
-                    "type" to type.name, // Ensure 'type.name' matches enum values in DB
+                    "type" to type.name,
                     "notes" to notes
                 )
             )
@@ -390,8 +367,8 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         return handle.createQuery(
             """
             select exists (select 1
-               from dev.session s
-                        join dev.workout_set ws on s.workout_id = ws.workout_id
+               from session s
+                        join workout_set ws on s.workout_id = ws.workout_id
                where s.id = :sessionId
                  and ws.order_id = :setOrderId
                  and ws.set_id = :setId)

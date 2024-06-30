@@ -8,5 +8,5 @@ data class Session(
     val beginDate: Date,
     val endDate: Date?,
     val type: SessionType,
-    val cancelled: Boolean = false
+    val cancelled: Boolean
 )

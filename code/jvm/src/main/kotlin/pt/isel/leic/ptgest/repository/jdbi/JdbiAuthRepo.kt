@@ -17,8 +17,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     ): UUID =
         handle.createUpdate(
             """
-                insert into "user" (name, email, password_hash, role)
-                values (:name, :email, :passwordHash, :role::role)
+            insert into "user" (name, email, password_hash, role)
+            values (:name, :email, :passwordHash, :role::role)
             """.trimIndent()
         )
             .bindMap(
@@ -36,8 +36,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun createCompany(id: UUID) {
         handle.createUpdate(
             """
-                insert into company (id)
-                values (:id)
+            insert into company (id)
+            values (:id)
             """.trimIndent()
         )
             .bind("id", id)
@@ -47,8 +47,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun createTrainer(id: UUID, gender: Gender, phoneNumber: String?) {
         handle.createUpdate(
             """
-                insert into trainer (id, gender, phone_number)
-                values (:id, :gender::gender, :phoneNumber)
+            insert into trainer (id, gender, phone_number)
+            values (:id, :gender::gender, :phoneNumber)
             """.trimIndent()
         )
             .bindMap(
@@ -64,8 +64,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun createCompanyTrainer(companyId: UUID, trainerId: UUID, capacity: Int) {
         handle.createUpdate(
             """
-                insert into company_trainer (company_id, trainer_id, capacity)
-                values (:companyId, :trainerId, :capacity)
+            insert into company_trainer (company_id, trainer_id, capacity)
+            values (:companyId, :trainerId, :capacity)
             """.trimIndent()
         )
             .bindMap(
@@ -86,8 +86,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     ) {
         handle.createUpdate(
             """
-                insert into trainee (id, gender, birthdate, phone_number)
-                values (:id, :gender::gender, :birthdate, :phoneNumber)
+            insert into trainee (id, gender, birthdate, phone_number)
+            values (:id, :gender::gender, :birthdate, :phoneNumber)
             """.trimIndent()
         )
             .bindMap(
@@ -104,8 +104,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun createPasswordResetToken(tokenHash: String, userId: UUID, expirationDate: Date) {
         handle.createUpdate(
             """
-                insert into forget_password_request (token_hash, user_id, expiration)
-                values (:token, :userId, :expiration)
+            insert into forget_password_request (token_hash, user_id, expiration)
+            values (:token, :userId, :expiration)
             """.trimIndent()
         )
             .bindMap(
@@ -121,9 +121,9 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun getPasswordResetToken(tokenHash: String): TokenDetails? =
         handle.createQuery(
             """
-                select token_hash, user_id, expiration
-                from forget_password_request
-                where token_hash = :tokenHash
+            select token_hash, user_id, expiration
+            from forget_password_request
+            where token_hash = :tokenHash
             """.trimIndent()
         )
             .bind("tokenHash", tokenHash)
@@ -133,8 +133,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun removeOldPasswordResetTokens(userId: UUID) {
         handle.createUpdate(
             """
-                delete from forget_password_request
-                where user_id = :userId
+            delete from forget_password_request
+            where user_id = :userId
             """.trimIndent()
         )
             .bind("userId", userId)
@@ -144,9 +144,9 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun resetPassword(userId: UUID, newPasswordHash: String) {
         handle.createUpdate(
             """
-                update "user"
-                set password_hash = :newPasswordHash
-                where id = :userId
+            update "user"
+            set password_hash = :newPasswordHash
+            where id = :userId
             """.trimIndent()
         )
             .bindMap(
@@ -161,8 +161,8 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun createTokenVersion(userId: UUID): Int =
         handle.createUpdate(
             """
-                insert into token_version (user_id)
-                values (:userId)
+            insert into token_version (user_id)
+            values (:userId)
             """.trimIndent()
         )
             .bind("userId", userId)
@@ -173,9 +173,9 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun getTokenVersion(userId: UUID): Int? =
         handle.createQuery(
             """
-                select version
-                from token_version
-                where user_id = :userId
+            select version
+            from token_version
+            where user_id = :userId
             """.trimIndent()
         )
             .bind("userId", userId)
@@ -185,9 +185,9 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
     override fun updateTokenVersion(userId: UUID) {
         handle.createUpdate(
             """
-                update token_version
-                set version = version + 1
-                where user_id = :userId
+            update token_version
+            set version = version + 1
+            where user_id = :userId
             """.trimIndent()
         )
             .bind("userId", userId)

@@ -16,7 +16,7 @@
             <p v-if="sessionDetails.reason != null">Session Status: {{ sessionDetails.reason }}</p>
             <p v-if="sessionDetails.source != 'NONE'">Session Status: {{ sessionDetails.source }}</p>
         </div>
-        <button class="cancel-btn" @click="cancelSession">Cancel Session</button>
+        <button v-if="!sessionDetails.cancelled" class="cancel-btn" @click="cancelSession">Cancel Session</button>
     </div>
 </template>
 

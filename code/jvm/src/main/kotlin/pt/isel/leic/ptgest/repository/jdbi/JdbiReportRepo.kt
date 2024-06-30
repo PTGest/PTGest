@@ -33,11 +33,11 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
 
         return handle.createQuery(
             """
-        select id, date, report, visibility, trainee_id as trainee
-        from report_trainer rt join report r on rt.reportid = r.id
-        where trainer_id = :trainerId $traineeCondition
-        limit :limit offset :skip
-        """.trimIndent()
+            select id, date, report, visibility, trainee_id as trainee
+            from report_trainer rt join report r on rt.reportid = r.id
+            where trainer_id = :trainerId $traineeCondition
+            limit :limit offset :skip
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(

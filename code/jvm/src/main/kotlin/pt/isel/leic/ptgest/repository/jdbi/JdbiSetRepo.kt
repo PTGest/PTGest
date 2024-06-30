@@ -68,12 +68,12 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
 
         return handle.createQuery(
             """
-                select id, name, notes, type
-                from set s join set_trainer st on s.id = st.set_id
-                where st.trainer_id = :trainerId
-                $typeCondition
-                $nameCondition
-                limit :limit offset :skip
+            select id, name, notes, type
+            from set s join set_trainer st on s.id = st.set_id
+            where st.trainer_id = :trainerId
+            $typeCondition
+            $nameCondition
+            limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
@@ -272,11 +272,11 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     override fun getSetByExercises(exerciseIds: List<Int>): List<Int> =
         handle.createQuery(
             """
-        select set_id
-        from set_exercise
-        group by set_id
-        having array_agg(exercise_id ORDER BY order_id) = :exercisesArray::integer[]
-        """.trimIndent()
+            select set_id
+            from set_exercise
+            group by set_id
+            having array_agg(exercise_id ORDER BY order_id) = :exercisesArray::integer[]
+            """.trimIndent()
         )
             .bind("exercisesArray", exerciseIds.toTypedArray())
             .mapTo<Int>()

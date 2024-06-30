@@ -187,8 +187,8 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID) {
         handle.createUpdate(
             """
-                insert into trainer_trainee(trainer_id, trainee_id)
-                values (:trainerId, :traineeId)
+            insert into trainer_trainee(trainer_id, trainee_id)
+            values (:trainerId, :traineeId)
             """.trimIndent()
         )
             .bindMap(
@@ -203,9 +203,9 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun reassignTrainer(trainerId: UUID, traineeId: UUID) {
         handle.createUpdate(
             """
-                update trainer_trainee
-                set trainer_id = :trainerId
-                where trainee_id = :traineeId
+            update trainer_trainee
+            set trainer_id = :trainerId
+            where trainee_id = :traineeId
             """.trimIndent()
         )
             .bindMap(
@@ -220,9 +220,9 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun updateTrainerCapacity(companyId: UUID, trainerId: UUID, capacity: Int) {
         handle.createUpdate(
             """
-                update company_trainer
-                set capacity = :capacity
-                where company_id = :companyId and trainer_id = :trainerId
+            update company_trainer
+            set capacity = :capacity
+            where company_id = :companyId and trainer_id = :trainerId
             """.trimIndent()
         )
             .bindMap(
@@ -238,8 +238,8 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
     override fun associateCompanyToExercise(companyId: UUID, exerciseId: Int) {
         handle.createUpdate(
             """
-                insert into exercise_company(company_id, exercise_id)
-                values (:companyId, :exerciseId)
+            insert into exercise_company(company_id, exercise_id)
+            values (:companyId, :exerciseId)
             """.trimIndent()
         )
             .bindMap(

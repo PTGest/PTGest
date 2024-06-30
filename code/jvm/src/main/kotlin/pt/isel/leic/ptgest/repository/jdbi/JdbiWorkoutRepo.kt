@@ -36,11 +36,11 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
     override fun getWorkoutBySets(sets: List<Int>): Int? =
         handle.createQuery(
             """
-        select workout_id
-        from workout_set
-        group by workout_id
-        having array_agg(set_id order by order_id) = :sets::integer[]
-        """.trimIndent()
+            select workout_id
+            from workout_set
+            group by workout_id
+            having array_agg(set_id order by order_id) = :sets::integer[]
+            """.trimIndent()
         )
             .bind("sets", sets.toTypedArray())
             .mapTo<Int>()
@@ -253,7 +253,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             """
             insert into trainer_favorite_workout (trainer_id, workout_id)
             values (:trainerId, :workoutId)
-            """
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -269,7 +269,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             """
             delete from trainer_favorite_workout
             where trainer_id = :trainerId and workout_id = :workoutId
-            """
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(

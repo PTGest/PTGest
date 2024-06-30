@@ -66,9 +66,9 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun getTrainerDetails(trainerId: UUID): TrainerDetails? =
         handle.createQuery(
             """
-                select gender, phone_number
-                from trainer 
-                where trainer.id = :trainerId
+            select gender, phone_number
+            from trainer 
+            where trainer.id = :trainerId
             """.trimIndent()
         )
             .bind("trainerId", trainerId)
@@ -135,8 +135,8 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun associateTrainerToSet(trainerId: UUID, setId: Int) {
         handle.createUpdate(
             """
-                insert into set_trainer (trainer_id, set_id)
-                values (:trainerId, :setId)
+            insert into set_trainer (trainer_id, set_id)
+            values (:trainerId, :setId)
             """.trimIndent()
         )
             .bindMap(
@@ -151,8 +151,8 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun associateTrainerToWorkout(trainerId: UUID, workoutId: Int) {
         handle.createUpdate(
             """
-                insert into workout_trainer (trainer_id, workout_id)
-                values (:trainerId, :workoutId)
+            insert into workout_trainer (trainer_id, workout_id)
+            values (:trainerId, :workoutId)
             """.trimIndent()
         )
             .bindMap(

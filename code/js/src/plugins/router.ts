@@ -63,13 +63,10 @@ const routes: RouteRecordRaw[] = [
     { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true, roleNeeded: ["COMPANY"] } },
     //Trainers Views
     { path: "/exercises", name: "exercises", component: Exercises, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/exercises/add-exercise", name: "addExercise", component: AddExercise, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sets", name: "sets", component: Sets, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    { path: "/workouts", name: "workouts", component: Workouts, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    // { path: "/workouts/:workoutId", name: "workouts", component: WorkoutDetails, meta: { requiresAuth: true,
-    //         roleNeeded : ['TRAINER', 'HIRED_TRAINER']}
-    // },
     { path: "/sets/custom-set", name: "addSet", component: AddSet, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    { path: "/workouts/add-exercise", name: "addExercise", component: AddExercise, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/workouts", name: "workouts", component: Workouts, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/workouts/add-workout", name: "addWorkout", component: AddWorkout, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
     { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
