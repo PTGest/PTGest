@@ -276,12 +276,11 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         from set_exercise
         group by set_id
         having array_agg(exercise_id ORDER BY order_id) = :exercisesArray::integer[]
-        """.trimIndent()
+            """.trimIndent()
         )
             .bind("exercisesArray", exerciseIds.toTypedArray())
             .mapTo<Int>()
             .list()
-
 
     override fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean {
         return handle.createQuery(

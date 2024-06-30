@@ -61,8 +61,8 @@ class JwtService(
 
         transactionManager.run {
             val authRepo = it.authRepo
-
             it.validateUser(accessTokenDetails.userId, accessTokenDetails.role)
+
             if (authRepo.getTokenVersion(accessTokenDetails.userId) != version) {
                 throw AuthError.TokenError.InvalidTokenVersion
             }

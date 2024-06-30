@@ -8,5 +8,6 @@ data class UserDetails(
     val name: String,
     val email: String,
     val passwordHash: String,
-    val role: Role
+    val role: Role,
+    val active: Boolean
 )

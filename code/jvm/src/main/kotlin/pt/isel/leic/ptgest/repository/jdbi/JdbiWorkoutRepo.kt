@@ -40,13 +40,11 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         from workout_set
         group by workout_id
         having array_agg(set_id order by order_id) = :sets::integer[]
-        """.trimIndent()
+            """.trimIndent()
         )
             .bind("sets", sets.toTypedArray())
             .mapTo<Int>()
             .firstOrNull()
-
-
 
     override fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int) {
         handle.createUpdate(
