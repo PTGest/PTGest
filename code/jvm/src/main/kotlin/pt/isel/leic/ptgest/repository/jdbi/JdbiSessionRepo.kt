@@ -239,7 +239,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .execute()
     }
 
-
     override fun cancelSession(sessionId: Int, source: Source, reason: String?) {
         handle.createUpdate(
             """

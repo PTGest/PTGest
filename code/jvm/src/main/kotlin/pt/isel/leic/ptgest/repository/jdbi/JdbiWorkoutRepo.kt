@@ -46,8 +46,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Int>()
             .firstOrNull()
 
-
-
     override fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int) {
         handle.createUpdate(
             """

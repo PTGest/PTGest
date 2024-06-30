@@ -24,7 +24,7 @@ import pt.isel.leic.ptgest.http.model.auth.request.SignupRequest
 import pt.isel.leic.ptgest.http.model.auth.response.AuthenticatedSignupResponse
 import pt.isel.leic.ptgest.http.model.auth.response.LoginResponse
 import pt.isel.leic.ptgest.http.model.auth.response.RefreshTokenResponse
-import pt.isel.leic.ptgest.http.utils.RequiredRole
+import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.http.utils.createTokensHeaders
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
@@ -65,7 +65,7 @@ class AuthController(private val service: AuthService) {
     }
 
     @PostMapping(Uris.Auth.AUTHENTICATED_SIGNUP)
-    @RequiredRole(Role.COMPANY, Role.INDEPENDENT_TRAINER)
+    @AuthenticationRequired(Role.COMPANY, Role.INDEPENDENT_TRAINER)
     fun authenticatedSignup(
         authenticatedUser: AuthenticatedUser,
         @Valid @RequestBody
@@ -193,10 +193,9 @@ class AuthController(private val service: AuthService) {
         )
     }
 
+    @AuthenticationRequired
     @GetMapping(Uris.Auth.VALIDATE_AUTHENTICATION)
-    fun validateAuthentication(
-        authUser: AuthenticatedUser
-    ): ResponseEntity<*> {
+    fun validateAuthentication(): ResponseEntity<*> {
         return HttpResponse.ok(
             message = "User authenticated successfully."
         )

@@ -282,7 +282,6 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .mapTo<Int>()
             .list()
 
-
     override fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean {
         return handle.createQuery(
             """

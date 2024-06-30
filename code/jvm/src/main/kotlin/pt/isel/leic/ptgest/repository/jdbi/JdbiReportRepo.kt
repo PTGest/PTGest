@@ -51,7 +51,6 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             .list()
     }
 
-
     override fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int {
         val traineeCondition = if (traineeId != null) "and trainee_id = :traineeId" else ""
 

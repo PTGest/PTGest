@@ -8,7 +8,7 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
-import pt.isel.leic.ptgest.http.utils.RequiredRole
+import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.auth.AuthError
@@ -27,35 +27,46 @@ class AuthInterceptor(
         response: HttpServletResponse,
         handler: Any
     ): Boolean {
-        if (
-            handler is HandlerMethod && handler.methodParameters
-                .any { it.parameterType == AuthenticatedUser::class.java }
-        ) {
-            val user = try {
+        if (handler is HandlerMethod && isAuthRequired(handler)) {
+            val tokenDetails = try {
                 processTokens(request, response)
             } catch (e: Exception) {
                 revokeCookies(response)
                 throw e
             }
 
-            val requiredRoleFromClass = handler.beanType.getAnnotation(RequiredRole::class.java)?.role
-            val requiredRoleFromMethod = handler.method.getAnnotation(RequiredRole::class.java)?.role
+            verifyRole(handler, tokenDetails)
 
-//          todo: check
-            if ((requiredRoleFromClass != null && !requiredRoleFromClass.contains(user.role)) ||
-                (requiredRoleFromMethod != null && !requiredRoleFromMethod.contains(user.role))
-            ) {
-                throw AuthError.UserAuthenticationError.UnauthorizedRole
+            if (handler.methodParameters.any { it.parameterType == AuthenticatedUser::class.java }) {
+                AuthenticatedUserResolver.addUserTo(
+                    AuthenticatedUser(
+                        id = tokenDetails.userId,
+                        role = tokenDetails.role
+                    ),
+                    request
+                )
             }
-
-            val authenticatedUser = AuthenticatedUser(
-                id = user.userId,
-                role = user.role
-            )
-
-            AuthenticatedUserResolver.addUserTo(authenticatedUser, request)
         }
         return true
+    }
+
+    private fun isAuthRequired(handler: HandlerMethod): Boolean =
+        handler.method.isAnnotationPresent(AuthenticationRequired::class.java) ||
+            handler.beanType.isAnnotationPresent(AuthenticationRequired::class.java)
+
+    private fun verifyRole(handler: HandlerMethod, tokenDetails: AccessTokenDetails) {
+        val authenticationRequiredFromClass = handler.beanType.getAnnotation(AuthenticationRequired::class.java)?.role
+        val authenticationRequiredFromMethod = handler.method.getAnnotation(AuthenticationRequired::class.java)?.role
+
+        if (authenticationRequiredFromClass?.isEmpty() != false && authenticationRequiredFromMethod?.isEmpty() != false) {
+            return
+        }
+
+        if ((authenticationRequiredFromClass != null && !authenticationRequiredFromClass.contains(tokenDetails.role)) ||
+            (authenticationRequiredFromMethod != null && !authenticationRequiredFromMethod.contains(tokenDetails.role))
+        ) {
+            throw AuthError.UserAuthenticationError.UnauthorizedRole
+        }
     }
 
     private fun processTokens(

@@ -39,14 +39,14 @@ import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSessionDetails
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
-import pt.isel.leic.ptgest.http.utils.RequiredRole
+import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.services.trainer.TrainerService
 import java.util.Date
 import java.util.UUID
 
 @RestController
 @RequestMapping(Uris.Trainer.PREFIX)
-@RequiredRole(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER)
+@AuthenticationRequired(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER)
 class TrainerController(
     private val trainerService: TrainerService
 ) {
