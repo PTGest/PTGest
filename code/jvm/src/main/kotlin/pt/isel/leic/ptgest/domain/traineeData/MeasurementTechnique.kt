@@ -21,7 +21,6 @@ enum class MeasurementTechnique(
                 val dc = 1.1093800 - 0.0008267 * sum + 0.0000016 * (sum * sum) - 0.0002574 * age
                 (495 / dc) - 450
             }
-
             Gender.FEMALE -> {
                 require(
                     skinFolds.containsKey(SkinFold.TRICEPS) &&
@@ -35,7 +34,6 @@ enum class MeasurementTechnique(
                 val dc = 1.0994921 - 0.0009929 * sum + 0.0000023 * (sum * sum) - 0.0001392 * age
                 (495 / dc) - 450
             }
-
             else -> {
                 throw IllegalArgumentException("The gender must be either Male or Female")
             }
@@ -57,7 +55,6 @@ enum class MeasurementTechnique(
                 val dc = (0.29288 * sum) - (0.0005 * (sum * sum)) + (0.15845 * age) - 5.76377
                 (495 / dc) - 450
             }
-
             Gender.FEMALE -> {
                 require(
                     skinFolds.containsKey(SkinFold.THIGH) &&
@@ -72,13 +69,12 @@ enum class MeasurementTechnique(
                 val dc = (0.29669 * sum) - (0.00043 * (sum * sum)) + (0.02963 * age) + 1.4072
                 (495 / dc) - 450
             }
-
             else -> {
                 throw IllegalArgumentException("The gender must be either Male or Female")
             }
         }
     }),
-    SEVEN_SKIN_FOLDS(3, { _, skinFolds, age ->
+    SEVEN_SKIN_FOLDS(7, { _, skinFolds, age ->
         require(skinFolds.values.all { it > 0 }) { "The skin folds must contain positive values" }
 
         val sum = skinFolds.values.sum()

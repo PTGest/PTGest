@@ -1052,7 +1052,6 @@ class TrainerService(
                 val bodyComposition = BodyComposition(weight, height, bodyFatPercentage)
                 BodyData(weight, height, bodyCircumferences, bodyComposition)
             }
-
             skinFold != null -> {
                 val bodyFatPercentageResult = MeasurementTechnique.getTechnique(skinFold.size)
                     .bodyFatCalculator(
@@ -1062,10 +1061,8 @@ class TrainerService(
                     )
 
                 val bodyComposition = BodyComposition(weight, height, bodyFatPercentageResult)
-
                 BodyData(weight, height, bodyCircumferences, bodyComposition, skinFold)
             }
-
             else -> {
                 val bodyComposition = BodyComposition(weight, height)
                 BodyData(weight, height, bodyCircumferences, bodyComposition)
