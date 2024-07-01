@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import getSetDetails from "@/services/TrainerServices/sets/getSetDetails.ts"
-import { Ref, ref } from "vue"
+import { getSetDetails } from "@/services/TrainerServices/sets/setServices.js"
+import { ref } from "vue"
 import SetDetails from "@/views/user/TrainerViews/models/sets/SetDetails.js"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"

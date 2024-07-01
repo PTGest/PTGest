@@ -8,7 +8,7 @@ import router from "@/plugins/router.ts";
 import {ref} from "vue";
 import TraineeInfo from "@/views/user/TrainerViews/models/trainees/TraineeInfo.ts";
 import Trainee from "@/views/user/CompaniesViews/models/Trainee.ts";
-import getTrainerTrainees from "@/services/TrainerServices/trainees/getTrainerTrainees.ts";
+import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.js";
 import TrainerTrainees from "@/views/user/TrainerViews/models/trainees/TrainerTrainees.ts";
 import store from "@/store";
 const trainee = ref(new Trainee());

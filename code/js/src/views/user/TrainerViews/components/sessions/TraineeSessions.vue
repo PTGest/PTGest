@@ -13,13 +13,14 @@
 
 <script setup lang="ts">
 import Calendar from "@/components/calendar/Calendar.vue"
-import getTraineeSessions from "@/services/TrainerServices/sessions/getTraineeSessions.ts"
+
 import router from "@/plugins/router.ts"
 import { Ref, ref } from "vue"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import Session from "@/views/user/TrainerViews/models/sessions/Session.ts"
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
 import getDayFromDate from "@/services/utils/getDayFromDate.ts";
+import {getTraineeSessions} from "@/services/TrainerServices/sessions/sessionServices.js";
 
 const traineeTrainDays: Ref<Sessions> = ref(new Sessions())
 

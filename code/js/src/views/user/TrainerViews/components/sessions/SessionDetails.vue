@@ -24,12 +24,13 @@
 import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
 import { Ref, ref } from "vue"
 import router from "@/plugins/router.ts"
-import getSessionDetails from "@/services/TrainerServices/sessions/getSessionDetails.ts"
+
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import store from "../../../../../store"
 import dateFormatter from "../../../../../services/utils/dateFormatter.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import {faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons"
+import {getSessionDetails} from "@/services/TrainerServices/sessions/sessionServices.js";
 
 const isEdit = ref(false)
 const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails());

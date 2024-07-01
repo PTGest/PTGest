@@ -14,5 +14,5 @@ data class SessionDetails(
     val notes: String?,
     val cancelled: Boolean,
     val reason: String?,
-    val source: Source
+    val source: Source?
 )

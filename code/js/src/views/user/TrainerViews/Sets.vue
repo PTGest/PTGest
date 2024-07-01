@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import Sets from "./models/sets/Sets.ts"
 import SetsContainer from "./components/sets/SetsContainer.vue"
-import getSets from "../../../services/TrainerServices/sets/getSets.ts"
+import { getSets } from "@/services/TrainerServices/sets/setServices.js"
 import { Ref, ref } from "vue"
 
 const sets: Ref<Sets> = ref({

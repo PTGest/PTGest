@@ -11,7 +11,7 @@
 import SelectButton from 'primevue/selectbutton';
 import CreateReportRequest from "@/views/user/TrainerViews/models/reports/CreateReportRequest.ts";
 import {ref} from "vue";
-import createReport from "@/services/TrainerServices/reports/addReport.ts";
+import {createReport} from "@/services/TrainerServices/reports/reportServices.js";
 import router from "@/plugins/router.ts";
 
 

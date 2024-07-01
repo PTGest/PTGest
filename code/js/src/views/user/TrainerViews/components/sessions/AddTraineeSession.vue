@@ -45,21 +45,24 @@
 
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
-import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts"
+
 import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts"
 import CreateSessionRequest from "@/views/user/TrainerViews/models/sessions/CreateSessionRequest.ts"
 import Calendar from "primevue/calendar"
 import RadioButton from "primevue/radiobutton"
 import ExercisesDropdown from "@/views/user/TrainerViews/components/exercises/ExercisesDropdown.vue"
-import createSession from "@/services/TrainerServices/sessions/createSession.ts"
+import { createSession } from "@/services/TrainerServices/sessions/sessionServices.js"
 import router from "@/plugins/router.ts"
 import Button from "primevue/button"
 import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
-import editSession from "@/services/TrainerServices/sessions/editSession.ts"
+
 import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
 import store from "@/store"
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
+import {getWorkouts} from "@/services/TrainerServices/workouts/workoutServices.js";
+import {editSession} from "@/services/TrainerServices/sessions/sessionServices.js";
+
 
 const props = defineProps<{
     isEdit: boolean

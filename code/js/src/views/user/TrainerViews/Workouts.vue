@@ -21,8 +21,9 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import AddWorkout from "@/views/user/TrainerViews/components/workouts/AddWorkout.vue"
 import { Ref, ref } from "vue"
 import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts"
-import getWorkouts from "@/services/TrainerServices/workouts/getWorkouts.ts"
+
 import router from "@/plugins/router.ts"
+import {getWorkouts} from "@/services/TrainerServices/workouts/workoutServices.js";
 
 const workouts: Ref<Workouts> = ref(new Workouts())
 const isAddWorkoutOpen = ref(false)

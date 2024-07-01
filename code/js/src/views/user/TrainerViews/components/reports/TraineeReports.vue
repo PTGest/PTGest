@@ -15,11 +15,12 @@
 
 <script setup lang="ts">
 import store from "../../../../../store";
-import getReports from "@/services/TrainerServices/reports/getReports.ts";
+
 import Reports from "@/views/user/TrainerViews/models/reports/Reports.ts";
 import {ref} from "vue";
 import ReportBox from "@/views/user/TrainerViews/components/reports/ReportBox.vue";
 import RBAC from "@/services/utils/RBAC/RBAC.ts";
+import {getReports} from "@/services/TrainerServices/reports/reportServices.js";
 
 const reports = ref(new Reports());
 

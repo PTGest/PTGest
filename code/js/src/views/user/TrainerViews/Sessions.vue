@@ -15,9 +15,10 @@ import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSes
 import { Ref, ref } from "vue"
 import formattedDate from "@/components/utils/formatDate.js"
 import TrainerSessions from "@/views/user/TrainerViews/models/sessions/TrainerSessions.ts"
-import getTrainerSessions from "@/services/TrainerServices/sessions/getTrainerSessions.ts"
+
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
 import getDayFromDate from "@/services/utils/getDayFromDate.ts";
+import {getTrainerSessions} from "@/services/TrainerServices/sessions/sessionServices.js";
 
 
 const selectedDay: Ref<string> = ref(formattedDate(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())))

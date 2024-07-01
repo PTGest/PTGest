@@ -8,8 +8,9 @@
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref } from "vue"
-import likeSet from "@/services/TrainerServices/sets/likeSet.js"
-import unlikeSet from "@/services/TrainerServices/sets/unlikeSet.ts"
+import {unlikeSet, likeSet} from "@/services/TrainerServices/sets/setServices.js";
+
+
 
 const props = defineProps<{
     setId: number

@@ -30,9 +30,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import {faArrowsRotate, faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons"
 import ExercisesTable from "./components/exercises/ExercisesTable.vue"
 import Exercises from "./models/exercises/Exercises.ts"
-import getExercises from "../../../services/TrainerServices/exercises/getExercises.ts"
+
 import router from "@/plugins/router.ts"
 import ExerciseFilters from "@/views/user/TrainerViews/components/exercises/exerciseFilters.vue"
+import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
 
 const filtersOpen = ref(false)
 const searchBar = ref("")

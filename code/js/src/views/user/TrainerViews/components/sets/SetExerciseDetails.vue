@@ -9,7 +9,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import getExerciseDetails from "@/services/TrainerServices/exercises/getExerciseDetails.ts"
+import {getExerciseDetails} from "@/services/TrainerServices/exercises/exerciseServices.js";
+
 
 const props = defineProps<{
     exerciseId: number

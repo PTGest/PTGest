@@ -9,7 +9,7 @@ class TrainerSessionDetails {
     notes: string | null
     cancelled: boolean = false
     reason: string | null
-    source: string
+    source: string | null
 
     constructor(
         id: number,
@@ -22,7 +22,7 @@ class TrainerSessionDetails {
         notes: string | null,
         cancelled: boolean,
         reason: string | null,
-        source: string
+        source: string | null
     ) {
         this.id = id
         this.traineeName = traineeName

@@ -20,11 +20,12 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import getExercises from "@/services/TrainerServices/exercises/getExercises.ts"
+
 import ExercisesDropdown from "../exercises/ExercisesDropdown.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import {faHeart, faTimes} from "@fortawesome/free-solid-svg-icons"
 import LikeExercise from "@/views/user/TrainerViews/components/exercises/LikeExercise.vue";
+import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
 
 const modality = ref<string>("")
 const selectedMuscleGroups = ref<string>("")

@@ -42,7 +42,7 @@ import { faArrowDownWideShort, faArrowUpWideShort, faPerson, faPersonDress, faPe
 import { ref } from "vue"
 import getCompanyTrainersOrTrainees from "@/services/companyServices/getCompanyTrainersOrTrainees.js"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
-import getTrainerTrainees from "@/services/TrainerServices/trainees/getTrainerTrainees.ts"
+import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.js"
 const skip = ref(4)
 const gender = ref("")
 const isSortedDown = ref(false)

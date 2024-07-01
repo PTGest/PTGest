@@ -62,14 +62,15 @@ import { computed, Ref, ref } from "vue"
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import ExercisesDropdown from "../exercises/ExercisesDropdown.vue"
-import getExercises from "../../../../../services/TrainerServices/exercises/getExercises.ts"
+
 import Exercises from "../../models/exercises/Exercises.ts"
 import MultiSelect from "primevue/multiselect"
 import ExercisesDetails from "../exercises/ExercisesDetails.vue"
 import SetExercise from "../../models/sets/SetExercise.ts"
-import createSet from "../../../../../services/TrainerServices/sets/createSet.ts"
+import createSet from "../../../../../services/TrainerServices/sets/setServices.ts"
 import CreateCustomSetRequest from "../../models/sets/CreateCustomSetRequest.ts"
 import router from "@/plugins/router.ts"
+import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
 
 const selectedExercises: Ref<{ id: number; name: string }[]> = ref([])
 const exercises: Ref<Exercises> = ref({

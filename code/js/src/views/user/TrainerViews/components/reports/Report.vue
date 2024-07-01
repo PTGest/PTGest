@@ -15,15 +15,14 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
-import getReportDetails from "@/services/TrainerServices/reports/getReportDetails.ts";
 import router from "@/plugins/router.ts";
 import ReportDetails from "@/views/user/TrainerViews/models/reports/ReportDetails.ts";
 import RBAC from "@/services/utils/RBAC/RBAC.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faCheck, faLock, faPen, faX} from "@fortawesome/free-solid-svg-icons";
 import SelectButton from "primevue/selectbutton";
-import editReport from "@/services/TrainerServices/reports/editReport.ts";
 import EditReportRequest from "@/views/user/TrainerViews/models/reports/EditReportRequest.ts";
+import {editReport, getReportDetails} from "@/services/TrainerServices/reports/reportServices.js";
 
 
 const report = ref(new ReportDetails());

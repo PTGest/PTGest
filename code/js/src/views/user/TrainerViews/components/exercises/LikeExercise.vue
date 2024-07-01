@@ -8,8 +8,9 @@
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref } from "vue"
-import likeExercise from "@/services/TrainerServices/exercises/likeExercise.ts"
-import unlikeExercise from "@/services/TrainerServices/exercises/unlikeExercise.ts"
+
+import {likeExercise, unlikeExercise} from "@/services/TrainerServices/exercises/exerciseServices.js";
+
 
 const props = defineProps<{
     exerciseId: number

@@ -17,7 +17,7 @@ data class GetSessionDetails(
     val notes: String?,
     val cancelled: Boolean,
     val reason: String?,
-    val source: Source,
+    val source: Source?,
     val feedbacks: List<SessionFeedback>
 ) {
     constructor(trainerSessionDetails: TrainerSessionDetails, feedbacks: List<SessionFeedback>) : this(
