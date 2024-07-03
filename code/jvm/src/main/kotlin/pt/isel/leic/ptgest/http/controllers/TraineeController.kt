@@ -25,6 +25,7 @@ import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.services.trainee.TraineeService
+import java.util.Date
 
 @RestController
 @RequestMapping(Uris.Trainee.PREFIX)
@@ -83,16 +84,18 @@ class TraineeController(
 
     @GetMapping(Uris.Session.GET_SESSIONS)
     fun getSessions(
+        @RequestParam sessionType: SessionType?,
+        @RequestParam date: Date?,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
-        @RequestParam sessionType: SessionType?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (sessions, total) = traineeService.getSessions(
             authenticatedUser.id,
+            sessionType,
+            date,
             skip,
-            limit,
-            sessionType
+            limit
         )
 
         return HttpResponse.ok(

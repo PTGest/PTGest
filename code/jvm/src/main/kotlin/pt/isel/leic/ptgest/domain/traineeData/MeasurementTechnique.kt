@@ -78,7 +78,7 @@ enum class MeasurementTechnique(
         require(skinFolds.values.all { it > 0 }) { "The skin folds must contain positive values" }
 
         val sum = skinFolds.values.sum()
-        val dc = 1.112 - 0.00043499 * (sum) + 0.00000055 * (sum) * 2 - 0.00028826 * (age)
+        val dc = 1.112 - (0.00043499 * sum) + (0.00000055 * sum) * 2 - (0.00028826 * age)
         (495 / dc) - 450
     });
 

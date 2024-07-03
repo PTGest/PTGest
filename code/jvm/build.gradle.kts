@@ -29,6 +29,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    implementation("org.hibernate:hibernate-validator:8.0.1.Final")
+
     // for JDBI
     implementation("org.jdbi:jdbi3-core:3.37.1")
     implementation("org.jdbi:jdbi3-kotlin:3.37.1")

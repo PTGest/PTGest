@@ -47,7 +47,6 @@ class AuthController(private val service: AuthService) {
                     message = "Company registered successfully."
                 )
             }
-
             is SignupRequest.IndependentTrainer -> {
                 service.signUpIndependentTrainer(
                     userInfo.name,

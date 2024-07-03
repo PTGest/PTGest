@@ -555,12 +555,14 @@ class TrainerController(
 
     @GetMapping(Uris.Session.GET_SESSIONS)
     fun getSessions(
+        @RequestParam date: Date?,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (sessions, total) = trainerService.getSessions(
             authenticatedUser.id,
+            date,
             skip,
             limit
         )
@@ -574,17 +576,19 @@ class TrainerController(
     @GetMapping(Uris.Session.GET_TRAINEE_SESSIONS)
     fun getTraineeSessions(
         @PathVariable traineeId: UUID,
+        @RequestParam sessionType: SessionType?,
+        @RequestParam date: Date?,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
-        @RequestParam sessionType: SessionType?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (sessions, total) = trainerService.getTraineeSessions(
             authenticatedUser.id,
             traineeId,
+            sessionType,
+            date,
             skip,
-            limit,
-            sessionType
+            limit
         )
 
         return HttpResponse.ok(

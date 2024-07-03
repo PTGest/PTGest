@@ -24,24 +24,28 @@ interface SessionRepo {
 
     fun getTrainerSessions(
         trainerId: UUID,
+        date: Date?,
         skip: Int,
         limit: Int?
     ): List<TrainerSession>
 
     fun getTotalTrainerSessions(
-        trainerId: UUID
+        trainerId: UUID,
+        date: Date?
     ): Int
 
     fun getTraineeSessions(
         traineeId: UUID?,
+        sessionType: SessionType?,
+        date: Date?,
         skip: Int,
-        limit: Int?,
-        sessionType: SessionType?
+        limit: Int?
     ): List<Session>
 
     fun getTotalTraineeSessions(
         traineeId: UUID?,
-        sessionType: SessionType?
+        sessionType: SessionType?,
+        date: Date?
     ): Int
 
     fun getSessionTrainee(

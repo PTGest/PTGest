@@ -83,9 +83,10 @@ class TraineeService(
 
     fun getSessions(
         traineeId: UUID,
+        sessionType: SessionType?,
+        date: Date?,
         skip: Int?,
-        limit: Int?,
-        sessionType: SessionType?
+        limit: Int?
     ): Pair<List<Session>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -95,8 +96,8 @@ class TraineeService(
         return transactionManager.run {
             val sessionRepo = it.sessionRepo
 
-            val sessions = sessionRepo.getTraineeSessions(traineeId, skip ?: 0, limit, sessionType)
-            val total = sessionRepo.getTotalTraineeSessions(traineeId, sessionType)
+            val sessions = sessionRepo.getTraineeSessions(traineeId, sessionType, date, skip ?: 0, limit)
+            val total = sessionRepo.getTotalTraineeSessions(traineeId, sessionType, date)
 
             return@run Pair(sessions, total)
         }

@@ -111,7 +111,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
     override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
 
         return handle.createQuery(
             """
@@ -139,7 +139,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         muscleGroup: MuscleGroup?
     ): List<Workout> {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
 
         return handle.createQuery(
             """
@@ -164,7 +164,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
     override fun getTotalFavoriteWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
 
         return handle.createQuery(
             """

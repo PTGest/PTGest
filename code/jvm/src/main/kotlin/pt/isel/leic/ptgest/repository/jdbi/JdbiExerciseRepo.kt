@@ -48,7 +48,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         modality: Modality?
     ): List<Exercise> {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
         val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
@@ -80,7 +80,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         modality: Modality?
     ): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
         val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
@@ -128,7 +128,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         modality: Modality?
     ): List<Exercise> {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
         val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
@@ -160,7 +160,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         modality: Modality?
     ): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
         val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
 
         return handle.createQuery(
@@ -255,7 +255,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         modality: Modality?
     ): List<Exercise> {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
         val modalityCondition = if (modality != null) "and type = :modality" else ""
 
         return handle.createQuery(
@@ -287,7 +287,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         modality: Modality?
     ): Int {
         val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
         val modalityCondition = if (modality != null) "and type = :modality" else ""
 
         return handle.createQuery(

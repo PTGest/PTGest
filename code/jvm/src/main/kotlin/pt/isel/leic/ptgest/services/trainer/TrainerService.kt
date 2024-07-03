@@ -763,6 +763,7 @@ class TrainerService(
 
     fun getSessions(
         trainerId: UUID,
+        date: Date?,
         skip: Int?,
         limit: Int?
     ): Pair<List<TrainerSession>, Int> {
@@ -774,8 +775,8 @@ class TrainerService(
         return transactionManager.run {
             val sessionRepo = it.sessionRepo
 
-            val sessions = sessionRepo.getTrainerSessions(trainerId, skip ?: 0, limit)
-            val totalSessions = sessionRepo.getTotalTrainerSessions(trainerId)
+            val sessions = sessionRepo.getTrainerSessions(trainerId, date, skip ?: 0, limit)
+            val totalSessions = sessionRepo.getTotalTrainerSessions(trainerId, date)
 
             return@run Pair(sessions, totalSessions)
         }
@@ -784,9 +785,10 @@ class TrainerService(
     fun getTraineeSessions(
         trainerId: UUID,
         traineeId: UUID,
+        sessionType: SessionType?,
+        date: Date?,
         skip: Int?,
-        limit: Int?,
-        sessionType: SessionType?
+        limit: Int?
     ): Pair<List<Session>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -804,8 +806,8 @@ class TrainerService(
                 throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            val sessions = sessionRepo.getTraineeSessions(traineeId, skip ?: 0, limit, sessionType)
-            val totalSessions = sessionRepo.getTotalTraineeSessions(traineeId, sessionType)
+            val sessions = sessionRepo.getTraineeSessions(traineeId, sessionType, date, skip ?: 0, limit)
+            val totalSessions = sessionRepo.getTotalTraineeSessions(traineeId, sessionType, date)
 
             return@run Pair(sessions, totalSessions)
         }
