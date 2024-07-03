@@ -30,14 +30,20 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import { ref } from "vue"
 import Day from "../calendar/Day.ts"
 import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
+import {getDayFromDate, getMonthFromDate} from "@/services/utils/getDayFromDate.ts";
 
 const emit = defineEmits(["getDate"])
 
 const props = defineProps<{
-    trainDays: number[]
+    trainDays: string[]
 }>()
+console.log("PROPS", props.trainDays)
 
-const trainDays = ref(props.trainDays)
+const trainDays = ref(props.trainDays.map((day: string) => ({
+    day: getDayFromDate(day),
+    month: getMonthFromDate(day)
+})));
+console.log("TRAINDAYS",trainDays.value);
 
 // daysTag = document.getElementById("days"),
 const icons = document.querySelectorAll(".icon")
@@ -45,16 +51,13 @@ const icons = document.querySelectorAll(".icon")
 // getting new date, current year and month
 let date = new Date(),
     currYear = date.getFullYear(),
-    currMonth = date.getMonth()
+    currMonth = date.getMonth(),
+    currDay = date.getDate()
 
 const currDateString = ref("")
-const currDay = ref("")
+const selectedDay = ref("")
 // storing full name of all months in array
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-
-console.log("TRAINDAYS",trainDays.value.includes(29));
-
 
 //Get days
 const getDaysInMonth = () => {
@@ -74,7 +77,7 @@ const getDaysInMonth = () => {
         // loop through all days of current month
         if (i === new Date().getDate() && currMonth === new Date().getMonth()) {
             classString = currDay.value == `${i}` ? "active-train" : "active"
-        } else if (trainDays.value.includes(i) && currMonth === new Date().getMonth()) {
+        } else if ((trainDays.value.find(day => day.day == i && day.day > currDay && currMonth == day.month)) && currMonth === new Date().getMonth()) {
             classString = "train"
         }
         currentMonthDays.push(new Day(`${i}`, classString))
@@ -117,10 +120,11 @@ icons.forEach((icon) => {
 })
 
 const getDate = (day: Day) => {
-    const date = `${currYear}-${months.findIndex((month) => month === currDateString.value.split(" ")[0]) + 1}-${day.day}`
-    currDay.value = day.day
-    console.log("CURRDAY", currDay.value)
-    emit("getDate", date)
+    const monthIndex = months.findIndex((month) => month === currDateString.value.split(" ")[0]) + 1;
+    const formattedDate = `${currYear}-${String(monthIndex).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`;
+    selectedDay.value = day.day
+    console.log("CURRDAY", selectedDay.value)
+    emit("getDate", formattedDate)
 }
 </script>
 

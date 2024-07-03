@@ -1,5 +1,6 @@
 import CompanyTrainers from "../../views/user/CompaniesViews/models/CompanyTrainers.ts"
 import CompanyTrainees from "../../views/user/CompaniesViews/models/CompanyTrainees.ts"
+import {apiBaseUri} from "../../main.ts";
 
 export default async function getCompanyTrainersOrTrainees(
     skip: number | null,
@@ -9,7 +10,7 @@ export default async function getCompanyTrainersOrTrainees(
     isTrainees: boolean,
     name: string | null
 ): Promise<CompanyTrainers | CompanyTrainees> {
-    let url = `http://localhost:8080/api/company/`
+    let url = `${apiBaseUri}/api/company/`
     if (isTrainees) {
         url += `trainees`
     } else {

@@ -1,9 +1,10 @@
 import store from "../../store"
 import router from "../../plugins/router.ts"
+import {apiBaseUri} from "../../main.ts";
 
 export default async function logoutServices(): Promise<void> {
     // Logic to sign up
-    fetch("http://localhost:8080/api/auth/logout", {
+    fetch(`${apiBaseUri}/api/auth/logout`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

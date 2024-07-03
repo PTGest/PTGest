@@ -1,8 +1,9 @@
 import UpdateCapacity from "../../views/user/CompaniesViews/models/capacity.ts"
+import {apiBaseUri} from "../../main.ts";
 
 export default async function changeTrainerCapacity(trainerId: string, newCapacity: number): Promise<void> {
     // Logic to sign up
-    fetch(`http://localhost:8080/api/company/trainer/${trainerId}/update-capacity`, {
+    fetch(`${apiBaseUri}/api/company/trainer/${trainerId}/update-capacity`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

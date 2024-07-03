@@ -1,4 +1,4 @@
-import {createApp, nextTick} from "vue"
+import {createApp} from "vue"
 import "./style.css"
 import router from "../src/plugins/router.ts"
 import store from "../src/store/index.ts"
@@ -18,14 +18,9 @@ const vuetify = createVuetify({
  // const app =
  createApp(App).use(store).use(router).use(PrimeVue).use(vuetify).use(ToastService).mount("#app");
 
-// export function errorToast(title: string = 'I am title', body: string = 'I am body'): void {
-//     nextTick(() => {
-//         app.config.globalProperties.$toast.add({
-//             severity: 'error',
-//             summary: title,
-//             detail: body,
-//             life: 3000
-//         });
-//     });
-// }
+const apiBaseUri = import.meta.env.VITE_API_URI
+const vueBaseUri = import.meta.env.VITE_VUE_PORT
+
+export { apiBaseUri, vueBaseUri }
+
 

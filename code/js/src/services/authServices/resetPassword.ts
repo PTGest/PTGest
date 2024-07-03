@@ -1,10 +1,11 @@
 import router from "../../plugins/router.ts"
 import store from "../../store"
 import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
+import {apiBaseUri} from "../../main.ts";
 
 export async function resetPasswordServices(resetPasswordData: ResetPasswordData, token: string | string[]): Promise<void> {
     try {
-        await fetch(`http://localhost:8080/api/reset-password/${token}`, {
+        await fetch(`${apiBaseUri}/api/reset-password/${token}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

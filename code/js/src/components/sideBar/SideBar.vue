@@ -120,7 +120,7 @@ window.addEventListener("resize", handleResize)
     top: 0;
     left: 0;
     width: 7em;
-    height: 100vh;
+    height: 100%;
     gap: 1em;
     transition: 0.2s ease-out;
     z-index: 999;

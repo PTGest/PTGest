@@ -4,9 +4,11 @@ import router from "../../../plugins/router.ts"
 import ExerciseDetails from "../../../views/user/TrainerViews/models/exercises/ExerciseDetails.ts";
 import Exercises from "../../../views/user/TrainerViews/models/exercises/Exercises.ts";
 import handleFilters from "../../utils/handleFilters.ts";
+import {apiBaseUri} from "../../../main.ts";
+
 async function createExercise(exercise: CreateCustomExerciseRequest): Promise<void> {
     try {
-        const response = await fetchData(`http://localhost:8080/api/trainer/custom-exercise`, "POST", exercise)
+        const response = await fetchData(`${apiBaseUri}/api/trainer/custom-exercise`, "POST", exercise)
         router.go(-1)
         return response.resourceId
     } catch (error) {
@@ -16,7 +18,7 @@ async function createExercise(exercise: CreateCustomExerciseRequest): Promise<vo
 }
 
 async function getExerciseDetails(exerciseId: number): Promise<ExerciseDetails> {
-    const uri = "http://localhost:8080/api/trainer/exercise/" + exerciseId
+    const uri = `${apiBaseUri}/api/trainer/exercise/` + exerciseId
 
     try {
         const response = await fetchData(uri, "GET", null)
@@ -29,7 +31,7 @@ async function getExerciseDetails(exerciseId: number): Promise<ExerciseDetails> 
 }
 
 async function getExercises(filters: Map<string, any> | null): Promise<Exercises> {
-    const uri = "http://localhost:8080/api/trainer/exercises"
+    const uri = `${apiBaseUri}/api/trainer/exercises`
     let postFiltersUri = uri
     console.log("filters", filters)
     if (filters != null) {
@@ -47,7 +49,7 @@ async function getExercises(filters: Map<string, any> | null): Promise<Exercises
 }
 
 async function likeExercise(exerciseId: string): Promise<void> {
-    const uri = `http://localhost:8080/api/trainer/exercise/${exerciseId}/favorite`
+    const uri = `${apiBaseUri}/api/trainer/exercise/${exerciseId}/favorite`
 
     try {
         await fetchData(uri, "POST", null)
@@ -59,7 +61,7 @@ async function likeExercise(exerciseId: string): Promise<void> {
 }
 
 async function unlikeExercise(exerciseId: string): Promise<void> {
-    const uri = `http://localhost:8080/api/trainer/exercise/${exerciseId}/unfavorite`
+    const uri = `${apiBaseUri}/api/trainer/exercise/${exerciseId}/unfavorite`
 
     try {
         await fetchData(uri, "DELETE", null)

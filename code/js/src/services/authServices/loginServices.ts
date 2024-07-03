@@ -1,10 +1,11 @@
 import LoginUserData from "../../models/authModels/LoginUserData.ts"
 import router from "../../plugins/router.ts"
 import store from "../../store"
+import {apiBaseUri} from "../../main.ts";
 
 export async function loginUserServices(userLoginData: LoginUserData): Promise<void> {
     try {
-        await fetch("http://localhost:8080/api/login", {
+        await fetch(`${apiBaseUri}/api/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

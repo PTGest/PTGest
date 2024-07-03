@@ -1,6 +1,6 @@
 <template>
     <div class="session-info-container">
-        <div v-bind="session" @click="sessionDetails(session.id)" v-for="session in props.daySessions" class="session-row-container">
+        <div v-bind="session" @click="sessionDetails(session.id)" v-for="session in daySessionsFiltered" class="session-row-container">
             <p>{{ store.getters.traineeInfo.name }}</p>
             <p>{{ dateFormatter(session.beginDate) }}</p>
             <p v-if="session.endDate != null">{{ dateFormatter(session.endDate) }}</p>
@@ -17,14 +17,22 @@ import router from "@/plugins/router.ts"
 import dateFormatter from "../../../../../services/utils/dateFormatter.ts"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import store from "../../../../../store"
+import {Session} from "node:inspector";
+import {getDayFromDate, getMonthFromDate} from "@/services/utils/getDayFromDate.ts";
+import {ref} from "vue";
 
 const props = defineProps<{
-    daySessions: TrainerSession[] | Sessions
+    daySessions: TrainerSession[] | Session[]
     isTraineeSessions: boolean
 }>()
 
+const daySessionsFiltered = ref(props.daySessions.filter((session: TrainerSession) =>
+    getDayFromDate(session.beginDate) > new Date().getDay() && getMonthFromDate(session.beginDate) >= new Date().getMonth()
+
+))
+console.log("DAY SESSIONS", daySessionsFiltered.value)
 const userId = router.currentRoute.value.params.traineeId
-console.log(userId)
+
 
 const sessionDetails = (id: number) => {
     router.push("/sessions/session/" + id)
@@ -38,9 +46,9 @@ const sessionDetails = (id: number) => {
     justify-content: start;
     align-items: center;
     width: 25em;
-    height: 33.5em;
+    height: 30em;
     background-color: var(--main-primary-color);
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
     overflow-y: scroll;
 }
@@ -74,7 +82,7 @@ const sessionDetails = (id: number) => {
     margin-left: 0.5em;
     padding: 0.5em;
     background-color: var(--main-secondary-color);
-    border-radius: 5px;
+    border-radius: 10px;
     color: whitesmoke;
     font-size: 1em;
     font-weight: 500;

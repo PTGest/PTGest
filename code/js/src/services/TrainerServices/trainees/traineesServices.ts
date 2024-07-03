@@ -1,8 +1,9 @@
 import fetchData from "../../utils/fetchData.ts"
 import TrainerTrainees from "../../../views/user/TrainerViews/models/trainees/TrainerTrainees.ts"
+import {apiBaseUri} from "../../../main.ts";
 
 async function getTrainerTrainees(skip: number | null, limit: number | null, name: string | null, gender: string | null): Promise<TrainerTrainees> {
-    let url = `http://localhost:8080/api/trainer/trainees`
+    let url = `${apiBaseUri}/api/trainer/trainees`
     // Construct URL with skip and limit parameters
     const queryParams: string[] = [];
 

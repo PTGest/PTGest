@@ -5,9 +5,10 @@ import router from "../../../plugins/router.ts";
 import ReportDetails from "../../../views/user/TrainerViews/models/reports/ReportDetails.ts";
 import Reports from "../../../views/user/TrainerViews/models/reports/Reports.ts";
 import handleFilters from "../../utils/handleFilters.ts";
+import {apiBaseUri} from "../../../main.ts";
 
 async function createReport(reportData: CreateReportRequest): Promise<void> {
-    const uri = "http://localhost:8080/api/trainer/report"
+    const uri = `${apiBaseUri}/api/trainer/report`
     try {
         await fetchData(uri, "POST", reportData);
         return
@@ -17,7 +18,7 @@ async function createReport(reportData: CreateReportRequest): Promise<void> {
     }
 }
 async function editReport(reportId: number,reportData: EditReportRequest): Promise<void> {
-    const uri = `http://localhost:8080/api/trainer/report/${reportId}/edit`
+    const uri = `${apiBaseUri}/api/trainer/report/${reportId}/edit`
     try {
         await fetchData(uri, "PUT", reportData);
         router.go(-1)
@@ -28,7 +29,7 @@ async function editReport(reportId: number,reportData: EditReportRequest): Promi
     }
 }
 async function getReportDetails(reportId: number): Promise<ReportDetails> {
-    const uri = "http://localhost:8080/api/trainer/report/" + reportId
+    const uri = `${apiBaseUri}/api/trainer/report/` + reportId
     try {
         const response = await fetchData(uri, "GET", null);
         return response.details
@@ -38,7 +39,7 @@ async function getReportDetails(reportId: number): Promise<ReportDetails> {
     }
 }
 async function getReports(filters: Map<string, any> | null): Promise<Reports> {
-    const uri = "http://localhost:8080/api/trainer/reports"
+    const uri = `${apiBaseUri}/api/trainer/reports`
     let postFiltersUri = uri
 
     if (filters != null) {

@@ -30,7 +30,7 @@ import {getExercises} from "@/services/TrainerServices/exercises/exerciseService
 const modality = ref<string>("")
 const selectedMuscleGroups = ref<string>("")
 const emit = defineEmits(["filtersApplied", "close"])
-const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING_IN" }, { name: "RUNNING_OUT" }, { name: "CYCLING_IN" }, { name: "CYCLING_OUT" }, { name: "OTHER" }]
+const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING" }, { name: "CYCLING" }, { name: "OTHER" }]
 const isLiked = ref(false);
 
 const handleLike = () => {
@@ -63,7 +63,7 @@ const applyFilters = async () => {
         filters.set("modality", modality.value.name)
     }
     if (selectedMuscleGroups.value !== "") {
-        filters.set("muscleGroups", selectedMuscleGroups.value.name)
+        filters.set("muscleGroup", selectedMuscleGroups.value.name)
     }
     if (isLiked.value) {
         filters.set("favorite", isLiked.value)

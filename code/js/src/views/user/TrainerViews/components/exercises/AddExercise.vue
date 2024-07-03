@@ -42,7 +42,7 @@ import Button from "primevue/button"
 import {createExercise} from "../../../../../services/TrainerServices/exercises/exerciseServices.ts"
 import CreateCustomExerciseRequest from "../../models/exercises/CreateCustomExerciseRequest.ts"
 
-const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING_IN" }, { name: "RUNNING_OUT" }, { name: "CYCLING_IN" }, { name: "CYCLING_OUT" }, { name: "OTHER" }]
+const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING" }, { name: "CYCLING" }, { name: "OTHER" }]
 
 const exerciseName = ref("")
 const modalityOption = ref("")

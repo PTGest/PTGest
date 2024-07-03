@@ -1,5 +1,7 @@
+import {apiBaseUri} from "../../main.ts";
+
 export async function verifyToken(token: string | string[]): Promise<boolean> {
-    await fetch(`http://localhost:8080/api/validate-password-reset-token/${token}`, {
+    await fetch(`${apiBaseUri}/api/validate-password-reset-token/${token}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

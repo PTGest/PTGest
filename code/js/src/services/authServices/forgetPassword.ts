@@ -1,6 +1,8 @@
+import {apiBaseUri} from "../../main.ts";
+
 export default async function forgetPasswordServices(email: string): Promise<void> {
     // Logic to sign up
-    fetch("http://localhost:8080/api/forget-password", {
+    fetch(`${apiBaseUri}/api/forget-password`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -14,5 +16,4 @@ export default async function forgetPasswordServices(email: string): Promise<voi
             throw new Error("Failed to send email")
         }
     })
-    return
 }

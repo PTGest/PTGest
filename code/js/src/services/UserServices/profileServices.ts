@@ -1,10 +1,11 @@
 import router from "../../plugins/router.ts"
 import store from "../../store"
 import { UserInfo } from "../../views/user/UserProfile/Models/UserInfo.ts"
+import {apiBaseUri} from "../../main.ts";
 
 export async function getUserInfo(): Promise<void> {
     // Logic to sign up
-    fetch("http://localhost:8080/api/profile", {
+    fetch(`${apiBaseUri}/api/profile`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

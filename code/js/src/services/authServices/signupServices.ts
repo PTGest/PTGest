@@ -1,10 +1,11 @@
 import SignupPTData from "../../models/authModels/SignupPTData.ts"
 import router from "../../plugins/router.ts"
 import store from "../../store"
+import {apiBaseUri} from "../../main.ts";
 
 export async function signupUserServices(userData: SignupPTData): Promise<void> {
     // Logic to sign up
-    fetch("http://localhost:8080/api/signup", {
+    fetch(`${apiBaseUri}/api/signup`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

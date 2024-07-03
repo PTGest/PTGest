@@ -5,6 +5,7 @@ import router from "../../../plugins/router.ts"
 import SetDetails from "../../../views/user/TrainerViews/models/sets/SetDetails.ts";
 import Sets from "../../../views/user/TrainerViews/models/sets/Sets.ts";
 import handleFilters from "../../utils/handleFilters.ts";
+import {apiBaseUri} from "../../../main.ts";
 
 // Function to convert Map to Object
 
@@ -14,7 +15,7 @@ async function createSet(setData: CreateCustomSetRequest): Promise<number> {
         setData.setExercises.map((setExercise) => {
             setExercise.details = mapToObject(setExercise.details)
         })
-        const response = await fetchData(`http://localhost:8080/api/trainer/custom-set`, "POST", setData)
+        const response = await fetchData(`${apiBaseUri}/api/trainer/custom-set`, "POST", setData)
         router.go(0)
         return response.resourceId
     } catch (error) {
@@ -24,7 +25,7 @@ async function createSet(setData: CreateCustomSetRequest): Promise<number> {
 }
 
 async function getSetDetails(setId: number): Promise<SetDetails> {
-    const uri = "http://localhost:8080/api/trainer/set/" + setId
+    const uri = `${apiBaseUri}/api/trainer/set/` + setId
 
     try {
         const response = await fetchData(uri, "GET", null)
@@ -37,7 +38,7 @@ async function getSetDetails(setId: number): Promise<SetDetails> {
 
 
 async function getSets(filters: Map<string, any> | null): Promise<Sets> {
-    const uri = "http://localhost:8080/api/trainer/sets"
+    const uri = `${apiBaseUri}/api/trainer/sets`
     let postFiltersUri = uri
 
     if (filters != null) {
@@ -55,7 +56,7 @@ async function getSets(filters: Map<string, any> | null): Promise<Sets> {
 
 
 async function likeSet(setId: string): Promise<void> {
-    const uri = `http://localhost:8080/api/trainer/set/${setId}/favorite`
+    const uri = `${apiBaseUri}/api/trainer/set/${setId}/favorite`
 
     try {
         await fetchData(uri, "POST", null)
@@ -68,7 +69,7 @@ async function likeSet(setId: string): Promise<void> {
 
 
 async function unlikeSet(setId: string): Promise<void> {
-    const uri = `http://localhost:8080/api/trainer/set/${setId}/unfavorite`
+    const uri = `${apiBaseUri}/api/trainer/set/${setId}/unfavorite`
 
     try {
         await fetchData(uri, "DELETE", null)

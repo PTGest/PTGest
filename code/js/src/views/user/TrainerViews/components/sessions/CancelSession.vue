@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import router from "@/plugins/router.ts";
 import {ref} from "vue";
-import cancelSession from "@/services/TrainerServices/sessions/sessionServices.js";
+import {cancelSession} from "@/services/TrainerServices/sessions/sessionServices.js";
 import CancelSessionRequest from "@/views/user/TrainerViews/models/sessions/CancelSessionRequest.ts";
 
 const reason = ref("")

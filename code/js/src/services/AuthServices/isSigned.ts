@@ -1,10 +1,11 @@
 import fetchData from "../utils/fetchData.ts";
 import store from "../../store";
+import {apiBaseUri} from "../../main.ts";
 
 
 
 async function isSigned() {
-    const uri = "http://localhost:8080/api/auth/validate";
+    const uri = `${apiBaseUri}/api/auth/validate`;
 
     const response = await fetchData(uri, "GET", null);
     store.commit("setLogin", true);

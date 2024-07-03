@@ -2,10 +2,11 @@ import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeReg
 import router from "../../plugins/router.ts"
 import HiredTrainerRegisterData from "../../models/authModels/HiredTrainerRegisterData.ts"
 import RBAC from "../utils/RBAC/RBAC.ts"
+import {apiBaseUri} from "../../main.ts";
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up
-    fetch("http://localhost:8080/api/auth/signup", {
+    fetch(`${apiBaseUri}/api/auth/signup`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -37,5 +38,4 @@ export default async function authenticatedSignup(userRegisterData: TraineeRegis
                 throw new Error("Failed to sign up")
         }
     })
-    return
 }
