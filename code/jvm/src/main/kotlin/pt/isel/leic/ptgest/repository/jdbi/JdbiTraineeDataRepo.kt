@@ -29,16 +29,15 @@ class JdbiTraineeDataRepo(private val handle: Handle) : TraineeDataRepo {
 
     override fun getTraineeData(
         traineeId: UUID,
-        skip: Int,
-        limit: Int?,
         order: Order,
-        date: Date?
+        skip: Int,
+        limit: Int?
     ): List<TraineeData> =
         handle.createQuery(
             """
             select id, trainee_id, date, body_data
             from trainee_data
-            where trainee_id = :traineeId ${date?.let { "and date = :date" } ?: ""}
+            where trainee_id = :traineeId
             order by date :order
             limit :limit offset :skip
             """.trimIndent()
@@ -46,27 +45,25 @@ class JdbiTraineeDataRepo(private val handle: Handle) : TraineeDataRepo {
             .bindMap(
                 mapOf(
                     "traineeId" to traineeId,
-                    "skip" to skip,
-                    "limit" to limit,
                     "order" to order,
-                    "date" to date
+                    "skip" to skip,
+                    "limit" to limit
                 )
             )
             .mapTo<TraineeData>()
             .list()
 
-    override fun getTotalTraineeData(traineeId: UUID, date: Date?): Int =
+    override fun getTotalTraineeData(traineeId: UUID): Int =
         handle.createQuery(
             """
             select count(*)
             from trainee_data
-            where trainee_id = :traineeId ${date?.let { "and date = :date" } ?: ""}
+            where trainee_id = :traineeId
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "traineeId" to traineeId,
-                    "date" to date
+                    "traineeId" to traineeId
                 )
             )
             .mapTo<Int>()

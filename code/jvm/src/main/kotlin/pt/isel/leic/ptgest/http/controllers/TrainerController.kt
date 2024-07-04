@@ -75,12 +75,13 @@ class TrainerController(
     //  Trainee data related endpoints
     @PostMapping(Uris.TraineeData.ADD_TRAINEE_DATA)
     fun addTraineeData(
+        @PathVariable traineeId: UUID,
         @RequestBody traineeData: AddTraineeDataRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val dataId = trainerService.addTraineeData(
             authenticatedUser.id,
-            traineeData.traineeId,
+            traineeId,
             traineeData.gender,
             traineeData.weight,
             traineeData.height,
@@ -98,19 +99,17 @@ class TrainerController(
     @GetMapping(Uris.TraineeData.GET_TRAINEE_DATA_HISTORY)
     fun getTraineeDataHistory(
         @PathVariable traineeId: UUID,
+        @RequestParam order: Order?,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
-        @RequestParam order: Order?,
-        @RequestParam date: Date?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (traineeData, total) = trainerService.getTraineeDataHistory(
             authenticatedUser.id,
             traineeId,
-            skip,
-            limit,
             order,
-            date
+            skip,
+            limit
         )
 
         return HttpResponse.ok(
@@ -140,13 +139,14 @@ class TrainerController(
     //  Report related endpoints
     @PostMapping(Uris.Report.CREATE_REPORT)
     fun createReport(
+        @PathVariable traineeId: UUID,
         @Valid @RequestBody
         reportDetails: CreateReportRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val reportId = trainerService.createReport(
             authenticatedUser.id,
-            reportDetails.traineeId,
+            traineeId,
             reportDetails.report,
             reportDetails.visibility
         )
@@ -157,21 +157,18 @@ class TrainerController(
         )
     }
 
-    //  todo: verify if this method
     @GetMapping(Uris.Report.GET_REPORTS)
     fun getReports(
+        @PathVariable traineeId: UUID,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
-        @RequestParam traineeId: UUID?,
-        @RequestParam traineeName: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (reports, total) = trainerService.getReports(
             authenticatedUser.id,
-            skip,
-            limit,
             traineeId,
-            traineeName?.trim()
+            skip,
+            limit
         )
 
         return HttpResponse.ok(
@@ -182,11 +179,13 @@ class TrainerController(
 
     @GetMapping(Uris.Report.GET_REPORT_DETAILS)
     fun getReportDetails(
+        @PathVariable traineeId: UUID,
         @PathVariable reportId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val reportDetails = trainerService.getReportDetails(
             authenticatedUser.id,
+            traineeId,
             reportId
         )
 
@@ -198,6 +197,7 @@ class TrainerController(
 
     @PutMapping(Uris.Report.EDIT_REPORT)
     fun editReport(
+        @PathVariable traineeId: UUID,
         @PathVariable reportId: Int,
         @Valid @RequestBody
         reportDetails: EditReportRequest,
@@ -205,6 +205,7 @@ class TrainerController(
     ): ResponseEntity<*> {
         trainerService.editReport(
             authenticatedUser.id,
+            traineeId,
             reportId,
             reportDetails.report,
             reportDetails.visibility
@@ -217,11 +218,13 @@ class TrainerController(
 
     @DeleteMapping(Uris.Report.DELETE_REPORT)
     fun deleteReport(
+        @PathVariable traineeId: UUID,
         @PathVariable reportId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         trainerService.deleteReport(
             authenticatedUser.id,
+            traineeId,
             reportId
         )
 

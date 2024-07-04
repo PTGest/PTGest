@@ -4,7 +4,6 @@ import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import java.util.*
 
-// todo: check
 interface ReportRepo {
 
     fun createReport(
@@ -14,11 +13,13 @@ interface ReportRepo {
         visibility: Boolean
     ): Int
 
-    fun getReports(trainerId: UUID, skip: Int, limit: Int?, traineeId: UUID?): List<Report>
+    fun getReports(traineeId: UUID, skip: Int, limit: Int?): List<Report>
 
-    fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int
+    fun getTotalReports(traineeId: UUID): Int
 
-    fun getReportDetails(trainerId: UUID, reportId: Int): ReportDetails?
+    fun getReportDetails(traineeId: UUID, reportId: Int): ReportDetails?
+
+    fun reportBelongsToTrainer(trainerId: UUID, reportId: Int): Boolean
 
     fun editReport(reportId: Int, date: Date, report: String, visibility: Boolean)
 

@@ -123,15 +123,13 @@ class TrainerService(
     fun getTraineeDataHistory(
         trainerId: UUID,
         traineeId: UUID,
-        skip: Int?,
-        limit: Int?,
         order: Order?,
-        date: Date?
+        skip: Int?,
+        limit: Int?
     ): Pair<List<TraineeData>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
-            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
-            Validators.ValidationRequest(date, "Date must be before the current date.") { (it as Date).before(Date()) }
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
         )
 
         return transactionManager.run {
@@ -147,13 +145,12 @@ class TrainerService(
 
             val traineeData = traineeDataRepo.getTraineeData(
                 traineeId,
-                skip ?: 0,
-                limit,
                 order ?: Order.DESC,
-                date
+                skip ?: 0,
+                limit
             )
 
-            val totalTraineeData = traineeDataRepo.getTotalTraineeData(traineeId, date)
+            val totalTraineeData = traineeDataRepo.getTotalTraineeData(traineeId)
 
             return@run Pair(traineeData, totalTraineeData)
         }
@@ -208,38 +205,28 @@ class TrainerService(
 
     fun getReports(
         trainerId: UUID,
+        traineeId: UUID,
         skip: Int?,
-        limit: Int?,
-        traineeId: UUID?,
-        traineeName: String?
+        limit: Int?
     ): Pair<List<Report>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
-            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
-            Validators.ValidationRequest(
-                traineeName,
-                "Name must be a non-empty string."
-            ) { (it as String).isNotEmpty() }
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
         )
 
         return transactionManager.run {
-            val trainerRepo = it.trainerRepo
             val traineeRepo = it.traineeRepo
             val reportRepo = it.reportRepo
 
-            val searchTraineeId = traineeId ?: traineeName?.let { trainerRepo.getTraineeIdByName(it) }
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssignedError
 
-            if (searchTraineeId != null) {
-                val traineeTrainerId = traineeRepo.getTrainerAssigned(searchTraineeId)
-                    ?: throw TraineeError.TraineeNotAssignedError
-
-                if (traineeTrainerId != trainerId) {
-                    throw TrainerError.TraineeNotAssignedToTrainerError
-                }
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
             }
 
-            val reports = reportRepo.getReports(trainerId, skip ?: 0, limit, searchTraineeId)
-            val totalReports = reportRepo.getTotalReports(trainerId, searchTraineeId)
+            val reports = reportRepo.getReports(traineeId, skip ?: 0, limit)
+            val totalReports = reportRepo.getTotalReports(traineeId)
 
             return@run Pair(reports, totalReports)
         }
@@ -247,39 +234,68 @@ class TrainerService(
 
     fun getReportDetails(
         trainerId: UUID,
+        traineeId: UUID,
         reportId: Int
     ): ReportDetails =
         transactionManager.run {
             val reportRepo = it.reportRepo
+            val traineeRepo = it.traineeRepo
 
-            return@run reportRepo.getReportDetails(trainerId, reportId)
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            return@run reportRepo.getReportDetails(traineeId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
         }
 
     fun editReport(
         trainerId: UUID,
+        traineeId: UUID,
         reportId: Int,
         report: String,
         visibility: Boolean
     ) {
         val requestDate = Date()
-
         transactionManager.run {
             val reportRepo = it.reportRepo
+            val traineeRepo = it.traineeRepo
 
-            reportRepo.getReportDetails(trainerId, reportId)
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            reportRepo.getReportDetails(traineeId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
+
+            require(reportRepo.reportBelongsToTrainer(trainerId, reportId)) { "Report does not belong to the trainer." }
 
             reportRepo.editReport(reportId, requestDate, report, visibility)
         }
     }
 
-    fun deleteReport(trainerId: UUID, reportId: Int) {
+    fun deleteReport(trainerId: UUID, traineeId: UUID, reportId: Int) {
         transactionManager.run {
             val reportRepo = it.reportRepo
-//          todo: check error
-            reportRepo.getReportDetails(trainerId, reportId)
+            val traineeRepo = it.traineeRepo
+
+            val traineeTrainerId = traineeRepo.getTrainerAssigned(traineeId)
+                ?: throw TraineeError.TraineeNotAssignedError
+
+            if (traineeTrainerId != trainerId) {
+                throw TrainerError.TraineeNotAssignedToTrainerError
+            }
+
+            reportRepo.getReportDetails(traineeId, reportId)
                 ?: throw TrainerError.ResourceNotFoundError
+
+            require(reportRepo.reportBelongsToTrainer(trainerId, reportId)) { "Report does not belong to the trainer." }
 
             reportRepo.deleteReport(reportId)
         }

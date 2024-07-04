@@ -30,7 +30,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
                     "description" to description,
                     "modality" to modality.name,
                     "ref" to ref,
-                    "muscleGroup" to muscleGroup.map{ it.name }.toTypedArray()
+                    "muscleGroup" to muscleGroup.map { it.name }.toTypedArray()
                 )
             )
             .executeAndReturnGeneratedKeys("id")

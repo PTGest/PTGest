@@ -74,7 +74,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .list()
     }
 
-
     override fun getTotalTrainerSessions(trainerId: UUID, date: Date?): Int {
         val dateCondition = date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""
 
@@ -84,7 +83,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         from session s
         join session_trainer st on s.id = st.session_id
         where trainer_id = :trainerId $dateCondition
-        """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
@@ -393,7 +392,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             )
             .mapTo<Boolean>()
             .one()
-
 
     override fun createSessionSetFeedback(
         feedbackId: Int,

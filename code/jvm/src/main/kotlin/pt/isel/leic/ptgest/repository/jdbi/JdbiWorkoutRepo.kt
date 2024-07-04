@@ -31,7 +31,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Int>()
             .one()
 
-
     override fun getWorkoutBySets(sets: List<Int>): Int? =
         handle.createQuery(
             """

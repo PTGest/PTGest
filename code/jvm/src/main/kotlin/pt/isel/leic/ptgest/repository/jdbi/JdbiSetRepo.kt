@@ -88,7 +88,7 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     }
 
     override fun getTotalSets(trainerId: UUID, type: SetType?, name: String?): Int {
-        val typeCondition = type?.let {  "and type = :type::set_type" } ?: ""
+        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
         val nameCondition = name?.let { "and name like :name" } ?: ""
 
         return handle.createQuery(

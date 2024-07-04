@@ -28,67 +28,77 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             .mapTo<Int>()
             .one()
 
-    override fun getReports(trainerId: UUID, skip: Int, limit: Int?, traineeId: UUID?): List<Report> {
-        val traineeCondition = traineeId?.let { "and trainee_id = :traineeId" } ?: ""
-
-        return handle.createQuery(
+    override fun getReports(traineeId: UUID, skip: Int, limit: Int?): List<Report> =
+        handle.createQuery(
             """
-            select id, date, report, visibility, trainee_id as trainee
-            from report_trainer rt join report r on rt.report_id = r.id
-            where trainer_id = :trainerId $traineeCondition
+            select id, date, visibility
+            from report
+            where trainee_id = :traineeId
             limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
+                    "traineeId" to traineeId,
                     "skip" to skip,
-                    "limit" to limit,
-                    "traineeId" to traineeId
+                    "limit" to limit
                 )
             )
             .mapTo<Report>()
             .list()
-    }
 
-    override fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int {
-        val traineeCondition = traineeId?.let { "and trainee_id = :traineeId" } ?: ""
-
-        return handle.createQuery(
+    override fun getTotalReports(traineeId: UUID): Int =
+        handle.createQuery(
             """
             select count(*)
-            from report_trainer rt join report r on rt.report_id = r.id
-            where trainer_id = :trainerId $traineeCondition
+            from report
+            where trainee_id = :traineeId
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
                     "traineeId" to traineeId
                 )
             )
             .mapTo<Int>()
             .one()
-    }
 
-    override fun getReportDetails(trainerId: UUID, reportId: Int): ReportDetails? =
+    override fun getReportDetails(traineeId: UUID, reportId: Int): ReportDetails? =
         handle.createQuery(
             """
             select u.name as trainee, r.date, r.report, r.visibility
-            from report_trainer rt 
-            join report r on rt.report_id = r.id
+            from report r
             join "user" u on r.trainee_id = u.id
-            where trainer_id = :trainerId and report_id = :reportId
+            where trainee_id = :traineeId and report_id = :reportId
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
+                    "traineeId" to traineeId,
                     "reportId" to reportId
                 )
             )
             .mapTo<ReportDetails>()
             .firstOrNull()
+
+    override fun reportBelongsToTrainer(trainerId: UUID, reportId: Int): Boolean =
+        handle.createQuery(
+            """
+            select exists(
+                select 1
+                from report_trainer
+                where report_id = :reportId and trainer_id = :trainerId
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "reportId" to reportId,
+                    "trainerId" to trainerId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
 
     override fun editReport(reportId: Int, date: Date, report: String, visibility: Boolean) {
         handle.createUpdate(

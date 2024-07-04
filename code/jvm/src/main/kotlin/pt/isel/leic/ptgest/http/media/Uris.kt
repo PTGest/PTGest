@@ -39,17 +39,19 @@ object Uris {
     }
 
     object Report {
-        const val CREATE_REPORT = "/report"
-        const val GET_REPORTS = "/reports"
-        const val GET_REPORT_DETAILS = "/report/{reportId}"
-        const val EDIT_REPORT = "/report/{reportId}/edit"
-        const val DELETE_REPORT = "/report/{reportId}/delete"
+        private const val PREFIX = "/trainee/{traineeId}"
+        const val CREATE_REPORT = "$PREFIX/report"
+        const val GET_REPORTS = "$PREFIX/reports"
+        const val GET_REPORT_DETAILS = "$PREFIX/report/{reportId}"
+        const val EDIT_REPORT = "$PREFIX/report/{reportId}/edit"
+        const val DELETE_REPORT = "$PREFIX/report/{reportId}/delete"
     }
 
     object TraineeData {
-        const val ADD_TRAINEE_DATA = "/trainee-data"
-        const val GET_TRAINEE_DATA_HISTORY = "/trainee-data/{traineeId}"
-        const val GET_TRAINEE_DATA_DETAILS = "/trainee-data/{traineeId}/{dataId}"
+        private const val PREFIX = "/trainee/{traineeId}"
+        const val ADD_TRAINEE_DATA = "$PREFIX/data"
+        const val GET_TRAINEE_DATA_HISTORY = "$PREFIX/data"
+        const val GET_TRAINEE_DATA_DETAILS = "$PREFIX/data/{dataId}"
     }
 
     object Exercise {
