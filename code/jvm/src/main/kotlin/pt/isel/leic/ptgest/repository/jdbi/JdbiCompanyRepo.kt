@@ -20,13 +20,9 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         name: String?,
         excludeTraineeTrainer: UUID?
     ): List<Trainer> {
-        val genderCondition = if (gender != null) "and t.gender = :gender" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val excludeCondition = if (excludeTraineeTrainer != null) {
-            "where t_t.trainee_id != :excludeTraineeTrainer"
-        } else {
-            ""
-        }
+        val genderCondition = gender?.let { "and t.gender = :gender" } ?: ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val excludeCondition = excludeTraineeTrainer?.let { "where t_t.trainee_id != :excludeTraineeTrainer" } ?: ""
 
         return handle.createQuery(
             """
@@ -41,7 +37,7 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
                 group by u_d.id, u_d.name, u_d.gender
             ) ptd on c_pt.trainer_id = ptd.id
             where company_id = :companyId $genderCondition $nameCondition
-            order by (capacity - assigned_trainees) ${availability.name.lowercase()}
+            order by (capacity - assigned_trainees) ${availability.name}
             limit :limit offset :skip;
             """.trimIndent()
         )
@@ -64,13 +60,9 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         name: String?,
         excludeTraineeTrainer: UUID?
     ): Int {
-        val genderCondition = if (gender != null) "and t.gender = :gender" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val excludeCondition = if (excludeTraineeTrainer != null) {
-            "where t_t.trainee_id != :excludeTraineeTrainer"
-        } else {
-            ""
-        }
+        val genderCondition = gender?.let { "and t.gender = :gender" } ?: ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val excludeCondition = excludeTraineeTrainer?.let { "where t_t.trainee_id != :excludeTraineeTrainer" } ?: ""
 
         return handle.createQuery(
             """
@@ -106,8 +98,8 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
         gender: Gender?,
         name: String?
     ): List<Trainee> {
-        val genderCondition = if (gender != null) "and gender = :gender" else ""
-        val nameCondition = if (name != null) "and ut.name like :name" else ""
+        val genderCondition = gender?.let { "and gender = :gender" } ?: ""
+        val nameCondition = name?.let { "and ut.name like :name" } ?: ""
 
         return handle.createQuery(
             """

@@ -11,8 +11,8 @@ import java.util.*
 class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
 
     override fun getTrainees(trainerId: UUID, skip: Int, limit: Int?, gender: Gender?, name: String?): List<Trainee> {
-        val genderCondition = if (gender != null) "and gender = :gender" else ""
-        val nameCondition = if (name != null) "and ut.name like :name" else ""
+        val genderCondition = gender?.let { "and gender = :gender::gender" } ?: ""
+        val nameCondition = name?.let { "and ut.name like :name" } ?: ""
 
         return handle.createQuery(
             """
@@ -39,8 +39,8 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     }
 
     override fun getTotalTrainees(trainerId: UUID, gender: Gender?, name: String?): Int {
-        val genderCondition = if (gender != null) "and gender = :gender" else ""
-        val nameCondition = if (name != null) "and ut.name like :name" else ""
+        val genderCondition = gender?.let { "and gender = :gender::gender" } ?: ""
+        val nameCondition = name?.let { "and ut.name like :name" } ?: ""
 
         return handle.createQuery(
             """

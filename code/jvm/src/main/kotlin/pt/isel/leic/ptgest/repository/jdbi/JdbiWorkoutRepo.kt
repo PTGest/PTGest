@@ -13,25 +13,24 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         name: String,
         description: String?,
         muscleGroup: List<MuscleGroup>
-    ): Int {
-        val muscleGroupArray = muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
-
-        return handle.createUpdate(
+    ): Int =
+        handle.createUpdate(
             """
             insert into workout (name, description, muscle_group)
-            values (:name, :description, ARRAY[$muscleGroupArray])
+            values (:name, :description, :muscleGroup::muscle_group[])
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "name" to name,
-                    "description" to description
+                    "description" to description,
+                    "muscleGroup" to muscleGroup.map { it.name }.toTypedArray()
                 )
             )
             .executeAndReturnGeneratedKeys("id")
             .mapTo<Int>()
             .one()
-    }
+
 
     override fun getWorkoutBySets(sets: List<Int>): Int? =
         handle.createQuery(
@@ -85,8 +84,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         name: String?,
         muscleGroup: MuscleGroup?
     ): List<Workout> {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup = any(muscle_group)" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
 
         return handle.createQuery(
             """
@@ -110,8 +109,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
     }
 
     override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
 
         return handle.createQuery(
             """
@@ -138,8 +137,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         name: String?,
         muscleGroup: MuscleGroup?
     ): List<Workout> {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
 
         return handle.createQuery(
             """
@@ -163,8 +162,8 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
     }
 
     override fun getTotalFavoriteWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
 
         return handle.createQuery(
             """

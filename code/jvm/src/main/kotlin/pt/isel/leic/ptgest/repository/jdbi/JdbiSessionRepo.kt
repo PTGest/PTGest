@@ -46,8 +46,10 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .one()
     }
 
-    override fun getTrainerSessions(trainerId: UUID, date: Date?, skip: Int, limit: Int?): List<TrainerSession> =
-        handle.createQuery(
+    override fun getTrainerSessions(trainerId: UUID, date: Date?, skip: Int, limit: Int?): List<TrainerSession> {
+        val dateCondition = date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""
+
+        return handle.createQuery(
             """
             select s.id, u.name as trainee_name, s.begin_date, s.end_date, s.type,
                 case when cs.session_id is not null then true else false end as cancelled
@@ -55,7 +57,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             join session_trainer st on s.id = st.session_id
             join "user" u on s.trainee_id = u.id
             left join cancelled_session cs on s.id = cs.session_id
-            where trainer_id = :trainerId  ${if (date != null) "and DATE(s.begin_date) = DATE(:date)" else ""}
+            where trainer_id = :trainerId  $dateCondition
             order by s.begin_date
             limit :limit offset :skip
             """.trimIndent()
@@ -70,23 +72,29 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             )
             .mapTo<TrainerSession>()
             .list()
+    }
 
-    override fun getTotalTrainerSessions(trainerId: UUID, date: Date?): Int =
-        handle.createQuery(
+
+    override fun getTotalTrainerSessions(trainerId: UUID, date: Date?): Int {
+        val dateCondition = date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""
+
+        return handle.createQuery(
             """
-            select count(*)
-            from session s
-            join session_trainer st on s.id = st.session_id
-            where trainer_id = :trainerId ${date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""}
-            """.trimIndent()
+        select count(*)
+        from session s
+        join session_trainer st on s.id = st.session_id
+        where trainer_id = :trainerId $dateCondition
+        """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId
+                    "trainerId" to trainerId,
+                    "date" to date
                 )
             )
             .mapTo<Int>()
             .one()
+    }
 
     override fun getTraineeSessions(
         traineeId: UUID?,
@@ -94,15 +102,17 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         date: Date?,
         skip: Int,
         limit: Int?
-    ): List<Session> =
-        handle.createQuery(
+    ): List<Session> {
+        val sessionTypeCondition = sessionType?.let { "and s.type = :type::session_type" } ?: ""
+        val dateCondition = date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""
+
+        return handle.createQuery(
             """
             select s.id, s.begin_date, s.end_date, s.type,
                 case when cs.session_id is not null then true else false end as cancelled
             from session s
             left join cancelled_session cs on s.id = cs.session_id
-            where s.trainee_id = :traineeId ${sessionType?.let { "and s.type = :type" } ?: ""} 
-            ${date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""}
+            where s.trainee_id = :traineeId $sessionTypeCondition $dateCondition
             order by s.begin_date
             limit :limit offset :skip
             """.trimIndent()
@@ -110,30 +120,37 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .bindMap(
                 mapOf(
                     "traineeId" to traineeId,
+                    "type" to sessionType?.name,
+                    "date" to date,
                     "skip" to skip,
                     "limit" to limit
                 )
             )
             .mapTo<Session>()
             .list()
+    }
 
-    override fun getTotalTraineeSessions(traineeId: UUID?, sessionType: SessionType?, date: Date?): Int =
-        handle.createQuery(
+    override fun getTotalTraineeSessions(traineeId: UUID?, sessionType: SessionType?, date: Date?): Int {
+        val sessionTypeCondition = sessionType?.let { "and type = :type::session_type" } ?: ""
+        val dateCondition = date?.let { "and DATE(begin_date) = DATE(:date)" } ?: ""
+
+        return handle.createQuery(
             """
             select count(*)
             from session
-            where trainee_id = ${sessionType?.let { "and s.type = :type" } ?: ""} 
-            ${date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""}
+            where trainee_id = :traineeId $sessionTypeCondition $dateCondition
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "traineeId" to traineeId,
-                    "type" to sessionType?.name
+                    "type" to sessionType?.name,
+                    "date" to date
                 )
             )
             .mapTo<Int>()
             .one()
+    }
 
     override fun getSessionTrainee(sessionId: Int): UUID {
         return handle.createQuery(
@@ -151,21 +168,13 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getTrainerSessionDetails(sessionId: Int): TrainerSessionDetails? =
         handle.createQuery(
             """
-        select s.id, 
-               u.name as trainee_name, 
-               s.workout_id, 
-               s.begin_date, 
-               s.end_date, 
-               s.location, 
-               s.type, 
-               s.notes,
-               case when cs.session_id is not null then true else false end as cancelled, 
-               cs.reason, 
-               cs.source
-        from session s
-        left join cancelled_session cs on s.id = cs.session_id
-        join "user" u on s.trainee_id = u.id
-        where s.id = :sessionId
+            select s.id, u.name as trainee_name, s.workout_id, s.begin_date, s.end_date, s.location, 
+                   s.type, s.notes,
+                   case when cs.session_id is not null then true else false end as cancelled, cs.reason, cs.source
+            from session s
+            left join cancelled_session cs on s.id = cs.session_id
+            join "user" u on s.trainee_id = u.id
+            where s.id = :sessionId
             """.trimIndent()
         )
             .bind("sessionId", sessionId)
@@ -175,13 +184,12 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getSessionDetails(sessionId: Int): SessionDetails? =
         handle.createQuery(
             """
-        select id, workout_id, begin_date, end_date, location, type, notes,
-            case when cs.session_id is not null then true else false end as cancelled,
-            cs.reason,
-            cs.source -- Ensure 'source' is included in the query result
-        from session s
-        left join cancelled_session cs on s.id = cs.session_id
-        where s.id = :sessionId
+            select id, workout_id, begin_date, end_date, location, type, notes,
+                case when cs.session_id is not null then true else false end as cancelled,
+                cs.reason, cs.source
+            from session s
+            left join cancelled_session cs on s.id = cs.session_id
+            where s.id = :sessionId
             """.trimIndent()
         )
             .bind("sessionId", sessionId)
@@ -331,10 +339,10 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     ): SetSessionFeedback? =
         handle.createQuery(
             """
-            select id, set_order_id, set_id source, feedback, date
-            from feedback
-            join session_set_feedback ssf on feedback.id = ssf.feedback_id
-            where feedback.id = :feedbackId and ssf.session_id = :sessionId and ssf.workout_id = :workoutId 
+            select id, set_order_id, set_id, source, feedback, date
+            from feedback f
+            join session_set_feedback ssf on f.id = ssf.feedback_id
+            where f.id = :feedbackId and ssf.session_id = :sessionId and ssf.workout_id = :workoutId 
             and ssf.set_order_id = :setOrderId and ssf.set_id = :setId
             """.trimIndent()
         )
@@ -366,15 +374,14 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .execute()
     }
 
-    override fun validateSessionSet(sessionId: Int, setOrderId: Int, setId: Int): Boolean {
-        return handle.createQuery(
+    override fun validateSessionSet(sessionId: Int, setOrderId: Int, setId: Int): Boolean =
+        handle.createQuery(
             """
-            select exists (select 1
-               from session s
-                        join workout_set ws on s.workout_id = ws.workout_id
-               where s.id = :sessionId
-                 and ws.order_id = :setOrderId
-                 and ws.set_id = :setId)
+            select exists (
+                select 1
+                from session s join workout_set ws on s.workout_id = ws.workout_id
+                where s.id = :sessionId and ws.order_id = :setOrderId and ws.set_id = :setId
+            )
             """.trimIndent()
         )
             .bindMap(
@@ -386,7 +393,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             )
             .mapTo<Boolean>()
             .one()
-    }
+
 
     override fun createSessionSetFeedback(
         feedbackId: Int,

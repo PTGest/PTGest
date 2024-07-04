@@ -16,7 +16,7 @@ create type dev.source as enum ('TRAINER', 'TRAINEE');
 
 create table if not exists dev."user"
 (
-    id            uuid default uuid_generate_v4() primary key,
+    id            uuid    default uuid_generate_v4() primary key,
     name          varchar(40) check (name <> '')                                    not null,
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
@@ -27,7 +27,7 @@ create table if not exists dev."user"
 
 create table if not exists dev.token_version
 (
-    user_id  uuid primary key references dev."user" (id) on delete cascade,
+    user_id uuid primary key references dev."user" (id) on delete cascade,
     version int default 1 not null
 );
 
@@ -101,9 +101,9 @@ create table if not exists dev.report
 
 create table if not exists dev.report_trainer
 (
-    reportId   int references dev.report (id) on delete cascade,
+    report_id  int references dev.report (id) on delete cascade,
     trainer_id uuid references dev.trainer (id) on delete cascade,
-    primary key (reportId, trainer_id)
+    primary key (report_id, trainer_id)
 );
 
 -- Trainee's workout plan
@@ -139,7 +139,7 @@ create table if not exists dev.session
     trainee_id uuid references dev.trainee (id) on delete cascade,
     workout_id int references dev.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
-    end_date   timestamp check ( end_date > begin_date and end_date > now() )  ,
+    end_date   timestamp check ( end_date > begin_date and end_date > now() ),
     location   varchar(50),
     type       dev.session_type                                                 not null,
     notes      text

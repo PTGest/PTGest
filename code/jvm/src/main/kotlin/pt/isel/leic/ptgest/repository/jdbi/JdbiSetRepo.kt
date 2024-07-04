@@ -63,16 +63,14 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .firstOrNull()
 
     override fun getSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
-        val typeCondition = if (type != null) "and type = :type" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
+        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
 
         return handle.createQuery(
             """
             select id, name, notes, type
             from set s join set_trainer st on s.id = st.set_id
-            where st.trainer_id = :trainerId
-            $typeCondition
-            $nameCondition
+            where st.trainer_id = :trainerId $typeCondition $nameCondition
             limit :limit offset :skip
             """.trimIndent()
         )
@@ -90,8 +88,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     }
 
     override fun getTotalSets(trainerId: UUID, type: SetType?, name: String?): Int {
-        val typeCondition = if (type != null) "and type = :type" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
+        val typeCondition = type?.let {  "and type = :type::set_type" } ?: ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
 
         return handle.createQuery(
             """
@@ -112,8 +110,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     }
 
     override fun getFavoriteSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
-        val typeCondition = if (type != null) "and type = :type" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
+        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
 
         return handle.createQuery(
             """
@@ -137,8 +135,8 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
     }
 
     override fun getTotalFavoriteSets(trainerId: UUID, type: SetType?, name: String?): Int {
-        val typeCondition = if (type != null) "and type = :type" else ""
-        val nameCondition = if (name != null) "and name like :name" else ""
+        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
 
         return handle.createQuery(
             """

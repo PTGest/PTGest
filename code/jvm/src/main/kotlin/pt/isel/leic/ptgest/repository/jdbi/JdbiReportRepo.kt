@@ -29,12 +29,12 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             .one()
 
     override fun getReports(trainerId: UUID, skip: Int, limit: Int?, traineeId: UUID?): List<Report> {
-        val traineeCondition = if (traineeId != null) "and trainee_id = :traineeId" else ""
+        val traineeCondition = traineeId?.let { "and trainee_id = :traineeId" } ?: ""
 
         return handle.createQuery(
             """
             select id, date, report, visibility, trainee_id as trainee
-            from report_trainer rt join report r on rt.reportid = r.id
+            from report_trainer rt join report r on rt.report_id = r.id
             where trainer_id = :trainerId $traineeCondition
             limit :limit offset :skip
             """.trimIndent()
@@ -52,12 +52,12 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
     }
 
     override fun getTotalReports(trainerId: UUID, traineeId: UUID?): Int {
-        val traineeCondition = if (traineeId != null) "and trainee_id = :traineeId" else ""
+        val traineeCondition = traineeId?.let { "and trainee_id = :traineeId" } ?: ""
 
         return handle.createQuery(
             """
             select count(*)
-            from report_trainer rt join report r on rt.reportid = r.id
+            from report_trainer rt join report r on rt.report_id = r.id
             where trainer_id = :trainerId $traineeCondition
             """.trimIndent()
         )
@@ -76,9 +76,9 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             """
             select u.name as trainee, r.date, r.report, r.visibility
             from report_trainer rt 
-            join report r on rt.reportid = r.id
+            join report r on rt.report_id = r.id
             join "user" u on r.trainee_id = u.id
-            where trainer_id = :trainerId and reportid = :reportId
+            where trainer_id = :trainerId and report_id = :reportId
             """.trimIndent()
         )
             .bindMap(

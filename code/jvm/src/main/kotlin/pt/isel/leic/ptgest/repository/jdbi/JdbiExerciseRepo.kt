@@ -17,13 +17,11 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: List<MuscleGroup>,
         modality: Modality,
         ref: String?
-    ): Int {
-        val muscleGroupArray = muscleGroup.joinToString(",") { "'${it.name}'::muscle_group" }
-
-        return handle.createUpdate(
+    ): Int =
+        handle.createUpdate(
             """
             insert into exercise (name, description, muscle_group, modality, ref)
-            values (:name, :description, ARRAY[$muscleGroupArray], :modality::modality, :ref)
+            values (:name, :description, :muscleGroup::muscle_group[], :modality::modality, :ref)
             """.trimIndent()
         )
             .bindMap(
@@ -31,13 +29,13 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
                     "name" to name,
                     "description" to description,
                     "modality" to modality.name,
-                    "ref" to ref
+                    "ref" to ref,
+                    "muscleGroup" to muscleGroup.map{ it.name }.toTypedArray()
                 )
             )
             .executeAndReturnGeneratedKeys("id")
             .mapTo<Int>()
             .one()
-    }
 
     override fun getCompanyExercises(
         companyId: UUID,
@@ -47,9 +45,9 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): List<Exercise> {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val modalityCondition = modality?.let { "and modality = :modality::modality" } ?: ""
 
         return handle.createQuery(
             """
@@ -79,9 +77,9 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): Int {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val modalityCondition = modality?.let { "and modality = :modality::modality" } ?: ""
 
         return handle.createQuery(
             """
@@ -127,9 +125,9 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): List<Exercise> {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val modalityCondition = modality?.let { "and modality = :modality::modality" } ?: ""
 
         return handle.createQuery(
             """
@@ -159,9 +157,9 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): Int {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and modality = :modality::modality" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val modalityCondition = modality?.let { "and modality = :modality::modality" } ?: ""
 
         return handle.createQuery(
             """
@@ -254,9 +252,9 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): List<Exercise> {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and type = :modality" else ""
+        val nameCondition = name?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val modalityCondition = modality?.let { "and modality = :modality::modality" } ?: ""
 
         return handle.createQuery(
             """
@@ -286,9 +284,9 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         muscleGroup: MuscleGroup?,
         modality: Modality?
     ): Int {
-        val nameCondition = if (name != null) "and name like :name" else ""
-        val muscleGroupCondition = if (muscleGroup != null) "and :muscleGroup::muscle_group = any(muscle_group)" else ""
-        val modalityCondition = if (modality != null) "and type = :modality" else ""
+        val nameCondition = name?.let { "and name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val modalityCondition = modality?.let { "and modality = :modality::modality" } ?: ""
 
         return handle.createQuery(
             """
