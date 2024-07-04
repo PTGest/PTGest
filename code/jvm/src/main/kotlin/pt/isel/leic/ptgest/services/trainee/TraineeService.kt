@@ -1,14 +1,19 @@
 package pt.isel.leic.ptgest.services.trainee
 
 import org.springframework.stereotype.Service
+import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.report.model.Report
+import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
 import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
+import pt.isel.leic.ptgest.domain.traineeData.model.TraineeData
+import pt.isel.leic.ptgest.domain.traineeData.model.TraineeDataDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutSetDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
@@ -20,6 +25,74 @@ import java.util.*
 class TraineeService(
     private val transactionManager: TransactionManager
 ) {
+    fun getReports(
+        traineeId: UUID,
+        skip: Int?,
+        limit: Int?
+    ): Pair<List<Report>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
+        )
+
+        return transactionManager.run {
+            val reportRepo = it.reportRepo
+
+            val reports = reportRepo.getReports(traineeId, skip ?: 0, limit)
+            val totalReports = reportRepo.getTotalReports(traineeId)
+
+            return@run Pair(reports, totalReports)
+        }
+    }
+
+    fun getReportDetails(
+        traineeId: UUID,
+        reportId: Int
+    ): ReportDetails =
+        transactionManager.run {
+            val reportRepo = it.reportRepo
+
+            return@run reportRepo.getReportDetails(traineeId, reportId)
+                ?: throw TrainerError.ResourceNotFoundError
+        }
+
+    fun getTraineeDataHistory(
+        traineeId: UUID,
+        order: Order?,
+        skip: Int?,
+        limit: Int?
+    ): Pair<List<TraineeData>, Int> {
+        Validators.validate(
+            Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
+            Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 }
+        )
+
+        return transactionManager.run {
+            val traineeDataRepo = it.traineeDataRepo
+
+            val traineeData = traineeDataRepo.getTraineeData(
+                traineeId,
+                order ?: Order.DESC,
+                skip ?: 0,
+                limit
+            )
+
+            val totalTraineeData = traineeDataRepo.getTotalTraineeData(traineeId)
+
+            return@run Pair(traineeData, totalTraineeData)
+        }
+    }
+
+    fun getTraineeDataDetails(
+        traineeId: UUID,
+        dataId: Int
+    ): TraineeDataDetails =
+        transactionManager.run {
+            val traineeDataRepo = it.traineeDataRepo
+
+            return@run traineeDataRepo.getTraineeBodyDataDetails(traineeId, dataId)
+                ?: throw TrainerError.ResourceNotFoundError
+        }
 
     fun getExerciseDetails(
         traineeId: UUID,

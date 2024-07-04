@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
+import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
-import pt.isel.leic.ptgest.http.model.common.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
-import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
-import pt.isel.leic.ptgest.http.model.common.response.ListResponse
+import pt.isel.leic.ptgest.http.model.common.response.*
 import pt.isel.leic.ptgest.http.model.trainee.request.CancelSessionRequest
+import pt.isel.leic.ptgest.http.model.trainee.response.GetReportDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainee.response.GetSessionDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
@@ -33,6 +32,72 @@ import java.util.Date
 class TraineeController(
     private val traineeService: TraineeService
 ) {
+    @GetMapping(Uris.Trainee.GET_REPORTS)
+    fun getReports(
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (reports, total) = traineeService.getReports(authenticatedUser.id, skip, limit)
+
+        return HttpResponse.ok(
+            message = "Reports retrieved successfully.",
+            details = ListResponse(reports, total)
+        )
+    }
+
+    @GetMapping(Uris.Trainee.GET_REPORT_DETAILS)
+    fun getReportDetails(
+        @PathVariable reportId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val reportDetails = traineeService.getReportDetails(
+            authenticatedUser.id,
+            reportId
+        )
+
+        return HttpResponse.ok(
+            message = "Report details retrieved successfully.",
+            details = GetReportDetailsResponse(reportDetails)
+        )
+    }
+
+    @GetMapping(Uris.Trainee.GET_TRAINEE_DATA_HISTORY)
+    fun getTraineeDataHistory(
+        @RequestParam order: Order?,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val (traineeData, total) = traineeService.getTraineeDataHistory(
+            authenticatedUser.id,
+            order,
+            skip,
+            limit
+        )
+
+        return HttpResponse.ok(
+            message = "Trainee data history retrieved successfully.",
+            details = ListResponse(traineeData, total)
+        )
+    }
+
+    @GetMapping(Uris.Trainee.GET_TRAINEE_DATA_DETAILS)
+    fun getTraineeDataDetails(
+        @PathVariable dataId: Int,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        val traineeDataDetails = traineeService.getTraineeDataDetails(
+            authenticatedUser.id,
+            dataId
+        )
+
+        return HttpResponse.ok(
+            message = "Trainee data details retrieved successfully.",
+            details = GetTraineeDataDetailsResponse(traineeDataDetails)
+        )
+    }
+
     @GetMapping(Uris.Exercise.GET_EXERCISE_DETAILS)
     fun getExerciseDetails(
         @PathVariable exerciseId: Int,

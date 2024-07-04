@@ -53,9 +53,9 @@ class TrainerController(
     @GetMapping(Uris.Trainer.TRAINEES)
     fun getTrainerTrainees(
         @RequestParam skip: Int?,
+        @RequestParam name: String?,
         @RequestParam limit: Int?,
         @RequestParam gender: Gender?,
-        @RequestParam name: String?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (trainees, total) = trainerService.getTrainerTrainees(

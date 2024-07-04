@@ -36,6 +36,12 @@ object Uris {
 
     object Trainee {
         const val PREFIX = "${Uris.PREFIX}/trainee"
+
+        const val GET_REPORTS = "/reports"
+        const val GET_REPORT_DETAILS = "/report/{reportId}"
+
+        const val GET_TRAINEE_DATA_HISTORY = "/data"
+        const val GET_TRAINEE_DATA_DETAILS = "/data/{dataId}"
     }
 
     object Report {
