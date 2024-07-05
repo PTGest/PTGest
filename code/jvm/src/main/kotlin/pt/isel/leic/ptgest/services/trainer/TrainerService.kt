@@ -603,11 +603,11 @@ class TrainerService(
 
     fun getWorkouts(
         trainerId: UUID,
-        skip: Int?,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        favorite: Boolean
+        isFavorite: Boolean,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<TrainerWorkout>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -618,25 +618,11 @@ class TrainerService(
         return transactionManager.run {
             val workoutRepo = it.workoutRepo
 
-            return@run if (favorite) {
-                val workouts = workoutRepo.getFavoriteWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
-                    .map { workout ->
-                        val isFavorite = workoutRepo.isWorkoutFavorite(trainerId, workout.id)
-                        TrainerWorkout(workout.id, workout.name, workout.description, workout.muscleGroup, isFavorite)
-                    }
-                val totalWorkouts = workoutRepo.getTotalFavoriteWorkouts(trainerId, name, muscleGroup)
+            val workouts = workoutRepo.getWorkouts(trainerId, name, muscleGroup, isFavorite, skip ?: 0, limit)
 
-                return@run Pair(workouts, totalWorkouts)
-            } else {
-                val workouts = workoutRepo.getWorkouts(trainerId, skip ?: 0, limit, name, muscleGroup)
-                    .map { workout ->
-                        val isFavorite = workoutRepo.isWorkoutFavorite(trainerId, workout.id)
-                        TrainerWorkout(workout.id, workout.name, workout.description, workout.muscleGroup, isFavorite)
-                    }
-                val totalWorkouts = workoutRepo.getTotalWorkouts(trainerId, name, muscleGroup)
+            val totalWorkouts = workoutRepo.getTotalWorkouts(trainerId, name, muscleGroup, isFavorite)
 
-                Pair(workouts, totalWorkouts)
-            }
+            return@run Pair(workouts, totalWorkouts)
         }
     }
 
@@ -667,9 +653,7 @@ class TrainerService(
             workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteWorkouts = workoutRepo.getFavoriteWorkoutsByTrainerId(trainerId)
-
-            if (workoutId in favoriteWorkouts) {
+            if (workoutRepo.isWorkoutFavorite(trainerId, workoutId)) {
                 throw TrainerError.ResourceAlreadyFavoriteError
             }
 
@@ -684,9 +668,7 @@ class TrainerService(
             workoutRepo.getWorkoutDetails(trainerId, workoutId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteWorkouts = workoutRepo.getFavoriteWorkoutsByTrainerId(trainerId)
-
-            if (workoutId !in favoriteWorkouts) {
+            if (!workoutRepo.isWorkoutFavorite(trainerId, workoutId)) {
                 throw TrainerError.ResourceNotFavoriteError
             }
 

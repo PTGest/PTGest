@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.repository.jdbi
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
+import pt.isel.leic.ptgest.domain.workout.model.TrainerWorkout
 import pt.isel.leic.ptgest.domain.workout.model.Workout
 import pt.isel.leic.ptgest.repository.WorkoutRepo
 import java.util.*
@@ -61,7 +62,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .execute()
     }
 
-    //  Workout related methods
     override fun getLastWorkoutNameId(trainerId: UUID): Int =
         handle.createQuery(
             """
@@ -78,44 +78,53 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
 
     override fun getWorkouts(
         trainerId: UUID,
-        skip: Int,
-        limit: Int?,
         name: String?,
-        muscleGroup: MuscleGroup?
-    ): List<Workout> {
+        muscleGroup: MuscleGroup?,
+        isFavorite: Boolean,
+        skip: Int,
+        limit: Int?
+    ): List<TrainerWorkout> {
         val nameCondition = name?.let { "and name like :name" } ?: ""
         val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val isFavoriteCondition = if (isFavorite) "and tfw.workout_id is not null" else ""
 
         return handle.createQuery(
             """
             select id, name, description, muscle_group
-            from workout w join workout_trainer wt on wt.workout_id = w.id
-            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition
+                case when tfw.workout_id is not null then true else false end as is_favorite
+            from workout w 
+            join workout_trainer wt on wt.workout_id = w.id
+            left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
+            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
             limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "trainerId" to trainerId,
-                    "skip" to skip,
-                    "limit" to limit,
                     "name" to "%$name%",
-                    "muscleGroup" to muscleGroup?.name
+                    "muscleGroup" to muscleGroup?.name,
+                    "skip" to skip,
+                    "limit" to limit
                 )
             )
-            .mapTo<Workout>()
+            .mapTo<TrainerWorkout>()
             .list()
     }
 
-    override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int {
+    override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?, isFavorite: Boolean): Int {
         val nameCondition = name?.let { "and name like :name" } ?: ""
         val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val isFavoriteCondition = if (isFavorite) "and tfw.workout_id is not null" else ""
 
         return handle.createQuery(
             """
             select count(*)
-            from workout w join workout_trainer wt on wt.workout_id = w.id
-            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition
+            from workout w 
+            join workout_trainer wt on wt.workout_id = w.id
+            left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
+            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
+            limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
