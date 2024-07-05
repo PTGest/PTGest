@@ -1,9 +1,9 @@
 import CreateCustomWorkoutRequest from "../../../views/user/TrainerViews/models/workouts/CreateCustomWorkoutRequest.ts"
-import fetchData from "../../utils/fetchData.ts"
+import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import router from "../../../plugins/router.ts"
 import WorkoutDetails from "../../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts";
 import Workouts from "../../../views/user/TrainerViews/models/workouts/Workouts.ts";
-import {apiBaseUri} from "../../../main.ts";
+import {apiBaseUri} from "../../utils/envUtils.ts";
 
 async function createCustomWorkout(workoutRequest: CreateCustomWorkoutRequest) {
     try {

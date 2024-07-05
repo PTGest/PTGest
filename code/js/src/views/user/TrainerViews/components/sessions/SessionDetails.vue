@@ -10,7 +10,7 @@
             <h2>{{ store.getters.traineeInfo.name }}</h2>
             <p>{{ sessionDetails.type }}</p>
             <p>Begin Date: {{ dateFormatter(sessionDetails.beginDate) }}</p>
-            <p v-if="sessionDetails.endDate != null">Session End Date: {{ sessionDetails.endDate }}</p>
+            <p v-if="sessionDetails.endDate != null">Session End Date: {{ dateFormatter(sessionDetails.endDate) }}</p>
             <p v-if="sessionDetails.location != null">Session Location: {{ sessionDetails.location }}</p>
             <p v-if="sessionDetails.notes != null">Session notes: {{ sessionDetails.notes }}</p>
             <p v-if="sessionDetails.reason != null">Session Status: {{ sessionDetails.reason }}</p>
@@ -27,7 +27,7 @@ import router from "@/plugins/router.ts"
 
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import store from "../../../../../store"
-import dateFormatter from "../../../../../services/utils/dateFormatter.ts"
+import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import {faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons"
 import {getSessionDetails} from "@/services/TrainerServices/sessions/sessionServices.js";

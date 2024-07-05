@@ -6,7 +6,7 @@
             <p v-if="session.endDate != null">{{ dateFormatter(session.endDate) }}</p>
             <p>{{ session.type }}</p>
         </div>
-        <div class="no-sessions" v-if="props.daySessions.length == 0">No Sessions Today</div>
+        <div class="no-sessions" v-if="daySessionsFiltered.length == 0">No Sessions Today</div>
         <router-link v-if="isTraineeSessions" :to="{ name: 'addTraineeSessions', params: { traineeId: $route.params.traineeId } }" class="btn">Add Session</router-link>
     </div>
 </template>
@@ -14,20 +14,21 @@
 <script setup lang="ts">
 import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
 import router from "@/plugins/router.ts"
-import dateFormatter from "../../../../../services/utils/dateFormatter.ts"
+import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import store from "../../../../../store"
 import {Session} from "node:inspector";
-import {getDayFromDate, getMonthFromDate} from "@/services/utils/getDayFromDate.ts";
-import {ref} from "vue";
+import {getDayFromDate, getMonthFromDate} from "@/services/utils/dateUtils/getFromDateUtils.js";
+import {Ref, ref} from "vue";
 
 const props = defineProps<{
     daySessions: TrainerSession[] | Session[]
     isTraineeSessions: boolean
 }>()
 
-const daySessionsFiltered = ref(props.daySessions.filter((session: TrainerSession) =>
-    getDayFromDate(session.beginDate) > new Date().getDay() && getMonthFromDate(session.beginDate) >= new Date().getMonth()
+const daySessionsFiltered : Ref<TrainerSession[]| Session[]> = ref(props.daySessions.filter((session: TrainerSession) =>
+    getDayFromDate(session.beginDate) >= new Date().getDay() && getMonthFromDate(session.beginDate) >= new Date().getMonth()
+    && !session.cancelled
 
 ))
 console.log("DAY SESSIONS", daySessionsFiltered.value)

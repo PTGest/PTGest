@@ -30,9 +30,9 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import { ref } from "vue"
 import Day from "../calendar/Day.ts"
 import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
-import {getDayFromDate, getMonthFromDate} from "@/services/utils/getDayFromDate.ts";
+import {getDayFromDate, getMonthFromDate} from "@/services/utils/dateUtils/getFromDateUtils.js";
 
-const emit = defineEmits(["getDate"])
+const emits =  defineEmits(["getDate"])
 
 const props = defineProps<{
     trainDays: string[]
@@ -76,7 +76,7 @@ const getDaysInMonth = () => {
         let classString = "normal"
         // loop through all days of current month
         if (i === new Date().getDate() && currMonth === new Date().getMonth()) {
-            classString = currDay.value == `${i}` ? "active-train" : "active"
+            classString = (trainDays.value.find(day => day.day == i) ? "active-train" : "active")
         } else if ((trainDays.value.find(day => day.day == i && day.day > currDay && currMonth == day.month)) && currMonth === new Date().getMonth()) {
             classString = "train"
         }
@@ -123,8 +123,8 @@ const getDate = (day: Day) => {
     const monthIndex = months.findIndex((month) => month === currDateString.value.split(" ")[0]) + 1;
     const formattedDate = `${currYear}-${String(monthIndex).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`;
     selectedDay.value = day.day
-    console.log("CURRDAY", selectedDay.value)
-    emit("getDate", formattedDate)
+    emits("getDate", formattedDate)
+    console.log("CURRDAY", formattedDate)
 }
 </script>
 

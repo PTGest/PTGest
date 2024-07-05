@@ -260,7 +260,7 @@ class TrainerController(
         @RequestParam name: String?,
         @RequestParam muscleGroup: MuscleGroup?,
         @RequestParam modality: Modality?,
-        @RequestParam favorite: Boolean?,
+        @RequestParam isFavorite: Boolean?,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
@@ -271,7 +271,7 @@ class TrainerController(
             name?.trim(),
             muscleGroup,
             modality,
-            favorite ?: false,
+            isFavorite ?: false,
             skip,
             limit
         )
@@ -372,6 +372,7 @@ class TrainerController(
     ): ResponseEntity<*> {
         val (sets, total) = trainerService.getSets(
             authenticatedUser.id,
+
             type,
             name?.trim(),
             isFavorite ?: false,

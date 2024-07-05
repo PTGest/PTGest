@@ -2,7 +2,7 @@
     <div>
         <h1>Sessions</h1>
         <div class="sessions-container">
-            <Calendar @get-date="dateClicked" :train-days="trainerSessions.sessions.map((value: TrainerSession) => value.beginDate)"></Calendar>
+            <Calendar @getDate="dateClicked" :train-days="trainerSessions.sessions.map((value: TrainerSession) => value.beginDate)"></Calendar>
             <SessionInfoContainer :day-sessions="trainerSessions.sessions"/>
         </div>
     </div>
@@ -24,21 +24,19 @@ const daySessions: Ref<TrainerSession[]> = ref([])
 const trainerSessions: Ref<TrainerSessions> = ref<TrainerSessions>(new TrainerSessions())
 
 ;(async () => {
-    trainerSessions.value = await getTrainerSessions(null)
+    const map = new Map<string, any>()
+    map.set("date", new Date())
+    trainerSessions.value = await getTrainerSessions()
+    trainerSessions.value.sessions = trainerSessions.value.sessions.filter((session: TrainerSession) => !session.cancelled)
     console.log(trainerSessions.value)
 })()
 
-const dateClicked = (date: string) => {
+const dateClicked = async (date: string) => {
+    console.log("HELLOOOO")
     daySessions.value = []
     selectedDay.value = date.trim() // Trim any extra spaces
     //filter Sessions by date
-    for (const element of trainerSessions.value.sessions) {
-        if (element.beginDate.includes(selectedDay.value.trim())) {
-            // Trim the session date too
-            daySessions.value.push(element)
-        }
-    }
-    console.log(daySessions.value)
+
 }
 </script>
 

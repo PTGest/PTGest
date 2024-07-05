@@ -1,6 +1,6 @@
 import store from "../../store"
 import router from "../../plugins/router.ts"
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 export default async function logoutServices(): Promise<void> {
     // Logic to sign up

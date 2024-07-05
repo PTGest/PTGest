@@ -20,14 +20,25 @@ import { Ref, ref } from "vue"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import Session from "@/views/user/TrainerViews/models/sessions/Session.ts"
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
-import {getDayFromDate} from "@/services/utils/getDayFromDate.ts";
+import {getDayFromDate} from "@/services/utils/dateUtils/getFromDateUtils.js";
 import {getTraineeSessions} from "@/services/TrainerServices/sessions/sessionServices.js";
 import store from "../../../../../store";
 
 const traineeTrainDays: Ref<Sessions> = ref(new Sessions())
 
 ;(async () => {
-    traineeTrainDays.value = await getTraineeSessions(router.currentRoute.value.params.traineeId)
+    const map = new Map<string, any>()
+    map.set('date', new Date())
+    traineeTrainDays.value = await getTraineeSessions(router.currentRoute.value.params.traineeId, map)
+    traineeTrainDays.value.sessions =
+    traineeTrainDays.value.sessions.filter((session: Session) =>
+        !session.cancelled
+    )
+    traineeTrainDays.value.total = traineeTrainDays.value.sessions.length
+
+    console.log("Trainee Train Days", traineeTrainDays.value)
+
+
 })()
 </script>
 

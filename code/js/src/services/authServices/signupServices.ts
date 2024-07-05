@@ -1,7 +1,7 @@
 import SignupPTData from "../../models/authModels/SignupPTData.ts"
 import router from "../../plugins/router.ts"
 import store from "../../store"
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 export async function signupUserServices(userData: SignupPTData): Promise<void> {
     // Logic to sign up

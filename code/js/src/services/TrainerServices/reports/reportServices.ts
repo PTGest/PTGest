@@ -1,14 +1,14 @@
-import fetchData from "../../utils/fetchData.ts";
+import fetchData from "../../utils/fetchUtils/fetchData.ts";
 import CreateReportRequest from "../../../views/user/TrainerViews/models/reports/CreateReportRequest.ts";
-import EditReportRequest from "../../../views/user/TrainerViews/models/reports/CreateReportRequest.ts";
 import router from "../../../plugins/router.ts";
 import ReportDetails from "../../../views/user/TrainerViews/models/reports/ReportDetails.ts";
 import Reports from "../../../views/user/TrainerViews/models/reports/Reports.ts";
-import handleFilters from "../../utils/handleFilters.ts";
-import {apiBaseUri} from "../../../main.ts";
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
+import {apiBaseUri} from "../../utils/envUtils.ts";
+import EditReportRequest from "../../../views/user/TrainerViews/models/reports/EditReportRequest.ts";
 
 async function createReport(reportData: CreateReportRequest): Promise<void> {
-    const uri = `${apiBaseUri}/api/trainer/report`
+    const uri = `${apiBaseUri}/api/trainer/trainee/${reportData.traineeId}/report`
     try {
         await fetchData(uri, "POST", reportData);
         return
@@ -18,7 +18,7 @@ async function createReport(reportData: CreateReportRequest): Promise<void> {
     }
 }
 async function editReport(reportId: number,reportData: EditReportRequest): Promise<void> {
-    const uri = `${apiBaseUri}/api/trainer/report/${reportId}/edit`
+    const uri = `${apiBaseUri}/api/trainer/trainee/${reportData.traineeId}/report/${reportId}/edit`
     try {
         await fetchData(uri, "PUT", reportData);
         router.go(-1)
@@ -28,8 +28,8 @@ async function editReport(reportId: number,reportData: EditReportRequest): Promi
         throw error
     }
 }
-async function getReportDetails(reportId: number): Promise<ReportDetails> {
-    const uri = `${apiBaseUri}/api/trainer/report/` + reportId
+async function getReportDetails(traineeId: string,reportId: number): Promise<ReportDetails> {
+    const uri = `${apiBaseUri}/api/trainer/trainee/${traineeId}/report/${reportId}`
     try {
         const response = await fetchData(uri, "GET", null);
         return response.details
@@ -38,8 +38,8 @@ async function getReportDetails(reportId: number): Promise<ReportDetails> {
         throw error
     }
 }
-async function getReports(filters: Map<string, any> | null): Promise<Reports> {
-    const uri = `${apiBaseUri}/api/trainer/reports`
+async function getReports(traineeId: string,filters: Map<string, any> | null): Promise<Reports> {
+    const uri = `${apiBaseUri}/api/trainer/trainee/${traineeId}/reports`
     let postFiltersUri = uri
 
     if (filters != null) {

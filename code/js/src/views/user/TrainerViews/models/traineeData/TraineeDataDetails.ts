@@ -9,5 +9,5 @@ class TraineeDataDetails{
         this.bodyData = bodyData
     }
 }
-export default TraineeDataDetails;`;
+export default TraineeDataDetails;
 

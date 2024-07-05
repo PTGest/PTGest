@@ -24,18 +24,6 @@ class BodyCircumferences {
         flexedLeftArm: number,
         forearm: number
     ) {
-        this.requirePositive(neck, "Neck circumference must be a positive number");
-        this.requirePositive(chest, "Chest circumference must be a positive number");
-        this.requirePositive(waist, "Waist circumference must be a positive number");
-        this.requirePositive(hips, "Hips circumference must be a positive number");
-        this.requirePositive(thighs, "Thighs circumference must be a positive number");
-        this.requirePositive(calves, "Calves circumference must be a positive number");
-        this.requirePositive(relaxedRightArm, "Relaxed right arm circumference must be a positive number");
-        this.requirePositive(relaxedLeftArm, "Relaxed left arm circumference must be a positive number");
-        this.requirePositive(flexedRightArm, "Flexed right arm circumference must be a positive number");
-        this.requirePositive(flexedLeftArm, "Flexed left arm circumference must be a positive number");
-        this.requirePositive(forearm, "Forearm circumference must be a positive number");
-
         this.neck = neck;
         this.chest = chest;
         this.waist = waist;
@@ -47,12 +35,6 @@ class BodyCircumferences {
         this.flexedRightArm = flexedRightArm;
         this.flexedLeftArm = flexedLeftArm;
         this.forearm = forearm;
-    }
-
-    private requirePositive(value: number, errorMessage: string): void {
-        if (value <= 0) {
-            throw new Error(errorMessage);
-        }
     }
 }
 export default BodyCircumferences;

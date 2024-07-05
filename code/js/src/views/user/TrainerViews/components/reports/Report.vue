@@ -30,7 +30,7 @@ const isEdit = ref(false);
 const visibility = ref('');
 const options = ['Public', 'Private'];
 (async () => {
-    report.value = await getReportDetails(router.currentRoute.value.params.reportId);
+    report.value = await getReportDetails(router.currentRoute.value.params.traineeId,router.currentRoute.value.params.reportId);
     visibility.value = report.value.visibility ? 'Private' : 'Public';
 })();
 
@@ -40,7 +40,7 @@ const enableEdit = () => {
 
 const handleEditReport = async () => {
     try{
-        await editReport(router.currentRoute.value.params.reportId,new EditReportRequest(report.value.report, visibility.value === 'Private'));
+        await editReport(router.currentRoute.value.params.reportId,new EditReportRequest(router.currentRoute.value.params.traineeId,report.value.report, visibility.value === 'Private'));
         isEdit.value = false;
     }
     catch (e) {

@@ -66,7 +66,7 @@ const applyFilters = async () => {
         filters.set("muscleGroup", selectedMuscleGroups.value.name)
     }
     if (isLiked.value) {
-        filters.set("favorite", isLiked.value)
+        filters.set("isFavorite", isLiked.value)
     }
     const exercises = await getExercises(filters)
     emit("filtersApplied", exercises)

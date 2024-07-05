@@ -1,12 +1,16 @@
-export class UserInfo {
-    public name: string = ""
-    public email: string = ""
-    public phone: string = ""
-    //public address: string = '';
+class UserInfo {
+    name: string
+    email: string
+    gender: string
+    birthdate: Date
+    phoneNumber: string
 
-    constructor(name: string, email: string, phone: string) {
+    constructor(name: string, email: string, gender: string, birthdate: Date, phoneNumber: string) {
         this.name = name
         this.email = email
-        this.phone = phone
+        this.gender = gender
+        this.birthdate = birthdate
+        this.phoneNumber = phoneNumber
     }
 }
+export default UserInfo

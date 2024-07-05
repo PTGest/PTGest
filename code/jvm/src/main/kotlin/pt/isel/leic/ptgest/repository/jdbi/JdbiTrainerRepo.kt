@@ -90,7 +90,7 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
     override fun associateTrainerToReport(trainerId: UUID, reportId: Int) {
         handle.createUpdate(
             """
-            insert into report_trainer (reportid, trainer_id)
+            insert into report_trainer (report_id, trainer_id)
             values (:reportId, :trainerId)
             """
         )

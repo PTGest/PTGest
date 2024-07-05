@@ -1,32 +1,15 @@
-import router from "../../plugins/router.ts"
-import store from "../../store"
-import { UserInfo } from "../../views/user/UserProfile/Models/UserInfo.ts"
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
+import fetchData from "../utils/fetchUtils/fetchData.ts";
+import UserInfo from "../../views/user/UserProfile/Models/UserInfo.ts";
 
-export async function getUserInfo(): Promise<void> {
-    // Logic to sign up
-    fetch(`${apiBaseUri}/api/profile`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-    }).then((response) => {
-        switch (response.status) {
-            case 200:
-                response.json().then((response) => {
-                    console.log(response)
-                    store.dispatch("userInfo", new UserInfo(response.details.name, response.details.email, response.details.phoneNumber))
-                })
-                break
 
-            default:
-                response.json().then((response) => {
-                    store.commit("setErrorType", { type: response.type, message: response.title })
-                    router.push({ name: "error" })
-                })
-                break
-        }
-    })
-    return
+export async function getUserInfo(userId: string): Promise<UserInfo> {
+    const uri = `${apiBaseUri}/api/user/${userId}`
+    try{
+        const response = await fetchData(uri, "GET", null)
+        return response.details
+    }catch (error: any) {
+        throw error
+    }
+
 }

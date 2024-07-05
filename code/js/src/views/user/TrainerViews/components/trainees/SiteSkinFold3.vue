@@ -2,29 +2,35 @@
         <div class="container" v-if="props.gender == 'MALE'">
             <FloatLabel>
                 <InputText @change="handleInput" id="pectoral" v-model="pectoral" />
+                cm
                 <label for="pectoral">Pectoral</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText @change="handleInput" id="pectoral" v-model="abdominal" />
-                <label for="pectoral">Abdominal</label>
+                <InputText @change="handleInput" id="abdominal" v-model="abdominal" />
+                cm
+                <label for="abdominal">Abdominal</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText @change="handleInput" id="pectoral" v-model="thigh" />
-                <label for="pectoral">Thigh</label>
+                <InputText @change="handleInput" id="thigh" v-model="thigh" />
+                cm
+                <label for="thigh">Thigh</label>
             </FloatLabel>
         </div>
         <div class="container" v-else>
             <FloatLabel>
-                <InputText @change="handleInput" id="pectoral" v-model="tricep" />
-                <label for="pectoral">Tricep</label>
+                <InputText @change="handleInput" id="tricep" v-model="tricep" />
+                cm
+                <label for="tricep">Tricep</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText @change="handleInput" id="pectoral" v-model="suprailiac" />
-                <label for="pectoral">Suprailiac</label>
+                <InputText @change="handleInput" id="suprailiac" v-model="suprailiac" />
+                cm
+                <label for="suprailiac">Suprailiac</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText @change="handleInput" id="pectoral" v-model="thigh" />
-                <label for="pectoral">Thigh</label>
+                <InputText @change="handleInput" id="thigh" v-model="thigh" />
+                cm
+                <label for="thigh">Thigh</label>
             </FloatLabel>
         </div>
 
@@ -50,12 +56,9 @@ const suprailiac = ref(null);
 
 const emits = defineEmits(['skinFoldData']);
 const handleInput = (e: any) => {
-    map.set(e.target.id, e.target.value);
+    map.set(e.target.id.toUpperCase(), e.target.value);
     emits('skinFoldData', map);
 }
-
-
-
 </script>
 
 

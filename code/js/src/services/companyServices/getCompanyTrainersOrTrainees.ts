@@ -1,6 +1,7 @@
 import CompanyTrainers from "../../views/user/CompaniesViews/models/CompanyTrainers.ts"
 import CompanyTrainees from "../../views/user/CompaniesViews/models/CompanyTrainees.ts"
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
+
 
 export default async function getCompanyTrainersOrTrainees(
     skip: number | null,

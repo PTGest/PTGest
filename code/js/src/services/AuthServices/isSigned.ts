@@ -1,6 +1,6 @@
-import fetchData from "../utils/fetchData.ts";
+import fetchData from "../utils/fetchUtils/fetchData.ts";
 import store from "../../store";
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 
 

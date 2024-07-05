@@ -13,7 +13,7 @@ class JdbiTraineeDataRepo(private val handle: Handle) : TraineeDataRepo {
         handle.createUpdate(
             """
             insert into trainee_data (trainee_id, date, body_data)
-            values (:traineeId, :date, :bodyData)
+            values (:traineeId, :date, :bodyData::jsonb)
             """.trimIndent()
         )
             .bindMap(
@@ -32,26 +32,41 @@ class JdbiTraineeDataRepo(private val handle: Handle) : TraineeDataRepo {
         order: Order,
         skip: Int,
         limit: Int?
-    ): List<TraineeData> =
-        handle.createQuery(
+    ): List<TraineeData> {
+        // Determine order direction as a string
+        val orderDirection = if (order == Order.ASC) "ASC" else "DESC"
+
+        // Build the base query
+        val queryBuilder = StringBuilder(
             """
-            select id, trainee_id, date, body_data
-            from trainee_data
-            where trainee_id = :traineeId
-            order by date :order
-            limit :limit offset :skip
-            """.trimIndent()
+        select id, trainee_id, date, body_data
+        from trainee_data
+        where trainee_id = :traineeId
+        order by date $orderDirection
+        """.trimIndent()
         )
-            .bindMap(
-                mapOf(
-                    "traineeId" to traineeId,
-                    "order" to order,
-                    "skip" to skip,
-                    "limit" to limit
-                )
-            )
+
+        // Append limit and offset
+        if (limit != null) {
+            queryBuilder.append(" limit :limit")
+        }
+        queryBuilder.append(" offset :skip")
+
+        // Create the query
+        val query = handle.createQuery(queryBuilder.toString())
+            .bind("traineeId", traineeId)
+            .bind("skip", skip)
+
+        // Bind limit if it's not null
+        if (limit != null) {
+            query.bind("limit", limit)
+        }
+
+        return query
             .mapTo<TraineeData>()
             .list()
+    }
+
 
     override fun getTotalTraineeData(traineeId: UUID): Int =
         handle.createQuery(

@@ -1,11 +1,11 @@
-import fetchData from "../../utils/fetchData.ts"
+import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import CreateCustomSetRequest from "../../../views/user/TrainerViews/models/sets/CreateCustomSetRequest.ts"
-import mapToObject from "../../utils/mapToObject.ts"
+import mapToObject from "../../utils/fetchUtils/mapToObject.ts"
 import router from "../../../plugins/router.ts"
 import SetDetails from "../../../views/user/TrainerViews/models/sets/SetDetails.ts";
 import Sets from "../../../views/user/TrainerViews/models/sets/Sets.ts";
-import handleFilters from "../../utils/handleFilters.ts";
-import {apiBaseUri} from "../../../main.ts";
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
+import {apiBaseUri} from "../../utils/envUtils.ts";
 
 // Function to convert Map to Object
 

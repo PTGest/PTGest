@@ -69,7 +69,7 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             select u.name as trainee, r.date, r.report, r.visibility
             from report r
             join "user" u on r.trainee_id = u.id
-            where trainee_id = :traineeId and report_id = :reportId
+            where trainee_id = :traineeId and r.id = :reportId
             """.trimIndent()
         )
             .bindMap(

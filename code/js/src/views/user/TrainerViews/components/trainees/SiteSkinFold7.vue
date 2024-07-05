@@ -2,30 +2,37 @@
     <div class="container">
         <FloatLabel>
             <InputText @change="handleInput" id="pectoral" v-model="pectoral" />
+            cm
             <label for="pectoral">Pectoral</label>
         </FloatLabel>
         <FloatLabel>
             <InputText @change="handleInput" id="abdominal" v-model="abdominal" />
+            cm
             <label for="abdominal">Abdominal</label>
         </FloatLabel>
         <FloatLabel>
             <InputText @change="handleInput" id="thigh" v-model="thigh" />
+            cm
             <label for="thigh">Thigh</label>
         </FloatLabel>
         <FloatLabel>
             <InputText @change="handleInput" id="triceps" v-model="triceps" />
+            cm
             <label for="triceps">Triceps</label>
         </FloatLabel>
         <FloatLabel>
             <InputText @change="handleInput" id="suprailiac" v-model="suprailiac" />
+            cm
             <label for="suprailiac">Suprailiac</label>
         </FloatLabel>
         <FloatLabel>
             <InputText @change="handleInput" id="subscapular" v-model="subscapular" />
+            cm
             <label for="subscapular">Subscapular</label>
         </FloatLabel>
         <FloatLabel>
             <InputText @change="handleInput" id="midaxillary" v-model="midaxillary" />
+            cm
             <label for="midaxillary">Midaxillary</label>
         </FloatLabel>
     </div>
@@ -46,7 +53,7 @@ const midaxillary = ref(null);
 
 const emits = defineEmits(['skinFoldData']);
 const handleInput = (e: any) => {
-    map.set(e.target.id, e.target.value);
+    map.set(e.target.id.toUpperCase(), e.target.value);
     emits('skinFoldData', map);
 }
 

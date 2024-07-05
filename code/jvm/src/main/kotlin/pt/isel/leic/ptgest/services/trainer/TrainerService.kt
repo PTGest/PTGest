@@ -619,7 +619,6 @@ class TrainerService(
             val workoutRepo = it.workoutRepo
 
             val workouts = workoutRepo.getWorkouts(trainerId, name, muscleGroup, isFavorite, skip ?: 0, limit)
-
             val totalWorkouts = workoutRepo.getTotalWorkouts(trainerId, name, muscleGroup, isFavorite)
 
             return@run Pair(workouts, totalWorkouts)

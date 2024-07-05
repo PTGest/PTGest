@@ -1,7 +1,7 @@
 import router from "../../plugins/router.ts"
 import store from "../../store"
 import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 export async function resetPasswordServices(resetPasswordData: ResetPasswordData, token: string | string[]): Promise<void> {
     try {

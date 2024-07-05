@@ -2,7 +2,7 @@ import TraineeRegisterData from "../../views/user/UserRegister/models/TraineeReg
 import router from "../../plugins/router.ts"
 import HiredTrainerRegisterData from "../../models/authModels/HiredTrainerRegisterData.ts"
 import RBAC from "../utils/RBAC/RBAC.ts"
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 export default async function authenticatedSignup(userRegisterData: TraineeRegisterData | HiredTrainerRegisterData): Promise<void> {
     // Logic to sign up

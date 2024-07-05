@@ -5,6 +5,7 @@
            No Reports available
        </div>
          <div v-else>
+             <font-awesome-icon class="icon" :icon="faX" @click="router.go(-1)" ></font-awesome-icon>
               <div class="report-row-container" v-for="report in reports.reports" :key="report.id">
                 <ReportBox v-if="(RBAC.isTrainee() && !report.visibility)|| RBAC.isTrainer() || RBAC.isHiredTrainer()" :report="report"></ReportBox>
               </div>
@@ -21,21 +22,19 @@ import {ref} from "vue";
 import ReportBox from "@/views/user/TrainerViews/components/reports/ReportBox.vue";
 import RBAC from "@/services/utils/RBAC/RBAC.ts";
 import {getReports} from "@/services/TrainerServices/reports/reportServices.js";
+import router from "@/plugins/router.ts";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faX} from "@fortawesome/free-solid-svg-icons";
 
 const reports = ref(new Reports());
 
 (async () => {
-    const filters = new Map<string, string>();
-    filters.set("traineeId", store.getters.traineeInfo.id);
-    filters.set("traineeName", store.getters.traineeInfo.name);
-   reports.value = await getReports(filters);
+    reports.value = await getReports(router.currentRoute.value.params.traineeId, null);
     console.log(reports);
 })();
 
 
 </script>
-
-
 
 <style scoped>
 .reports-container{
@@ -81,6 +80,14 @@ const reports = ref(new Reports());
     padding: 0.5em;
 }
 
+.icon{
+    position: relative;
+    left: 50%;
+    color: whitesmoke;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 1em;
+}
 
 
 </style>

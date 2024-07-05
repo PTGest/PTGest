@@ -1,12 +1,13 @@
-import fetchData from "../../utils/fetchData.ts";
+import fetchData from "../../utils/fetchUtils/fetchData.ts";
 import CancelSessionRequest from "../../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts";
 import router from "../../../plugins/router.ts";
 import CreateSessionRequest from "../../../views/user/TrainerViews/models/sessions/CreateSessionRequest.ts";
 import TrainerSessionDetails from "../../../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts";
 import Sessions from "../../../views/user/TrainerViews/models/sessions/Sessions.ts";
-import handleFilters from "../../utils/handleFilters.ts";
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
 import TrainerSessions from "../../../views/user/TrainerViews/models/sessions/TrainerSessions.ts";
-import {apiBaseUri} from "../../../main.ts";
+import {apiBaseUri} from "../../utils/envUtils.ts";
+
 
 async function cancelSession(sessionId: number, reason: CancelSessionRequest): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/cancel`
@@ -52,7 +53,7 @@ async function getSessionDetails(sessionId: number): Promise<TrainerSessionDetai
 async function getTraineeSessions(traineeId: number, filters: Map<string, any> | null): Promise<Sessions> {
     const uri = `${apiBaseUri}/api/trainer/trainee/${traineeId}/sessions`
     let postFiltersUri = uri
-
+    console.log("filters", filters)
     if (filters != null) {
         postFiltersUri = handleFilters(uri, filters)
     }
@@ -79,6 +80,23 @@ async function getTrainerSessions(filters: Map<string, any> | null): Promise<Tra
         throw error
     }
 }
+
+// async function getTrainerSessionsByDate(filters: Map<string, any> | null): Promise<TrainerSessions> {
+//     const uri = `${apiBaseUri}/api/trainer/sessions`
+//     let postFiltersUri = uri
+//
+//     if (filters != null) {
+//         postFiltersUri = handleFilters(uri, filters)
+//     }
+//     try {
+//         const response = await fetchData(postFiltersUri, "GET", null)
+//         return new TrainerSessions(response.details.items, response.details.total)
+//     } catch (error) {
+//         console.error("Error fetching set:", error)
+//         throw error
+//     }
+// }
+
 
 export {
     cancelSession,

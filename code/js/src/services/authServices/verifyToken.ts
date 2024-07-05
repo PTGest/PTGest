@@ -1,4 +1,4 @@
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 export async function verifyToken(token: string | string[]): Promise<boolean> {
     await fetch(`${apiBaseUri}/api/validate-password-reset-token/${token}`, {

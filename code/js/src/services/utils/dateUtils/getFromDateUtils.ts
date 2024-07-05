@@ -9,8 +9,14 @@ function getMonthFromDate(dateString: string): number {
     return date.getUTCMonth();
 }
 
+function getYearFromDate(dateString: string): number {
+    const date = new Date(dateString);
+    return date.getUTCFullYear();
+}
+
 export {
     getDayFromDate,
-    getMonthFromDate
+    getMonthFromDate,
+    getYearFromDate
 };
 

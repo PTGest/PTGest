@@ -1,4 +1,4 @@
-import {apiBaseUri} from "../../main.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
 
 export default async function forgetPasswordServices(email: string): Promise<void> {
     // Logic to sign up

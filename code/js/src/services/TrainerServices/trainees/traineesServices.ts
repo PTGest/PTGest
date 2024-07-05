@@ -1,6 +1,6 @@
-import fetchData from "../../utils/fetchData.ts"
+import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import TrainerTrainees from "../../../views/user/TrainerViews/models/trainees/TrainerTrainees.ts"
-import {apiBaseUri} from "../../../main.ts";
+import {apiBaseUri} from "../../utils/envUtils.ts";
 
 async function getTrainerTrainees(skip: number | null, limit: number | null, name: string | null, gender: string | null): Promise<TrainerTrainees> {
     let url = `${apiBaseUri}/api/trainer/trainees`

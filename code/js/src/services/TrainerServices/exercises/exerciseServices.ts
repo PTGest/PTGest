@@ -1,10 +1,11 @@
 import CreateCustomExerciseRequest from "../../../views/user/TrainerViews/models/exercises/CreateCustomExerciseRequest.ts"
-import fetchData from "../../utils/fetchData.ts"
+import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import router from "../../../plugins/router.ts"
 import ExerciseDetails from "../../../views/user/TrainerViews/models/exercises/ExerciseDetails.ts";
 import Exercises from "../../../views/user/TrainerViews/models/exercises/Exercises.ts";
-import handleFilters from "../../utils/handleFilters.ts";
-import {apiBaseUri} from "../../../main.ts";
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
+import {apiBaseUri} from "../../utils/envUtils.ts";
+
 
 async function createExercise(exercise: CreateCustomExerciseRequest): Promise<void> {
     try {
