@@ -257,23 +257,23 @@ class TrainerController(
 
     @GetMapping(Uris.Exercise.GET_EXERCISES)
     fun getExercises(
-        @RequestParam skip: Int?,
-        @RequestParam limit: Int?,
         @RequestParam name: String?,
         @RequestParam muscleGroup: MuscleGroup?,
         @RequestParam modality: Modality?,
         @RequestParam favorite: Boolean?,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (exercises, total) = trainerService.getExercises(
             authenticatedUser.id,
             authenticatedUser.role,
-            skip,
-            limit,
             name?.trim(),
             muscleGroup,
             modality,
-            favorite ?: false
+            favorite ?: false,
+            skip,
+            limit
         )
 
         return HttpResponse.ok(

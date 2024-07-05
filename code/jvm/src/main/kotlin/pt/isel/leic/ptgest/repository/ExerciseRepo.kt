@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.repository
 
 import pt.isel.leic.ptgest.domain.exercise.model.Exercise
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
+import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import java.util.*
@@ -32,22 +33,44 @@ interface ExerciseRepo {
         modality: Modality?
     ): Int
 
+    fun getCompanyTrainerExercises(
+        companyId: UUID,
+        trainerId: UUID,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?,
+        isFavorite: Boolean,
+        skip: Int,
+        limit: Int?
+    ): List<TrainerExercise>
+
+    fun getTotalCompanyTrainerExercises(
+        companyId: UUID,
+        trainerId: UUID,
+        name: String?,
+        muscleGroup: MuscleGroup?,
+        modality: Modality?,
+        isFavorite: Boolean
+    ): Int
+
     fun getCompanyExerciseDetails(companyId: UUID, exerciseId: Int): ExerciseDetails?
 
     fun getTrainerExercises(
         trainerId: UUID,
-        skip: Int,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
-    ): List<Exercise>
+        modality: Modality?,
+        isFavorite: Boolean,
+        skip: Int,
+        limit: Int?
+    ): List<TrainerExercise>
 
     fun getTotalTrainerExercises(
         trainerId: UUID,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
+        modality: Modality?,
+        isFavorite: Boolean
     ): Int
 
     fun favoriteExercise(trainerId: UUID, exerciseId: Int)
@@ -55,24 +78,6 @@ interface ExerciseRepo {
     fun unfavoriteExercise(trainerId: UUID, exerciseId: Int)
 
     fun isFavoriteExercise(trainerId: UUID, exerciseId: Int): Boolean
-
-    fun getFavoriteExercises(trainerId: UUID): List<Int>
-
-    fun getFavoriteExercises(
-        trainerId: UUID,
-        skip: Int,
-        limit: Int?,
-        name: String?,
-        muscleGroup: MuscleGroup?,
-        modality: Modality?
-    ): List<Exercise>
-
-    fun getTotalFavoriteExercises(
-        trainerId: UUID,
-        name: String?,
-        muscleGroup: MuscleGroup?,
-        modality: Modality?
-    ): Int
 
     fun getTrainerExerciseDetails(trainerId: UUID, exerciseId: Int): ExerciseDetails?
 }

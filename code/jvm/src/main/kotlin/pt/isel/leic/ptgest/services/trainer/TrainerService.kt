@@ -5,7 +5,6 @@ import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.common.Source
-import pt.isel.leic.ptgest.domain.exercise.model.Exercise
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.exercise.model.TrainerExercise
 import pt.isel.leic.ptgest.domain.report.model.Report
@@ -338,13 +337,13 @@ class TrainerService(
 
     fun getExercises(
         trainerId: UUID,
-        userRole: Role,
-        skip: Int?,
-        limit: Int?,
+        trainerRole: Role,
         name: String?,
         muscleGroup: MuscleGroup?,
         modality: Modality?,
-        favorite: Boolean
+        isFavorite: Boolean,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<TrainerExercise>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -353,24 +352,15 @@ class TrainerService(
         )
 
         return transactionManager.run {
-            val exerciseRepo = it.exerciseRepo
-
-            val (exercises, total) = it.getExercises(
+            return@run it.getExercises(
                 trainerId,
-                skip,
-                limit,
                 name,
                 muscleGroup,
                 modality,
-                favorite
+                isFavorite,
+                skip,
+                limit
             )
-
-            val trainerExercises = exercises.map { exercise ->
-                val isFavorite = exerciseRepo.isFavoriteExercise(trainerId, exercise.id)
-                TrainerExercise(exercise, isFavorite)
-            }
-
-            return@run Pair(trainerExercises, total)
         }
     }
 
@@ -400,13 +390,9 @@ class TrainerService(
                 ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteExercises = exerciseRepo.getFavoriteExercises(trainerId)
-
-            if (exerciseId in favoriteExercises) {
+            if (exerciseRepo.isFavoriteExercise(trainerId, exerciseId)) {
                 throw TrainerError.ResourceAlreadyFavoriteError
             }
-//          todo: verify error
-            require(exerciseId !in favoriteExercises) { "Exercise is already favorited." }
 
             exerciseRepo.favoriteExercise(trainerId, exerciseId)
         }
@@ -423,9 +409,7 @@ class TrainerService(
                 ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteExercises = exerciseRepo.getFavoriteExercises(trainerId)
-
-            if (exerciseId !in favoriteExercises) {
+            if (!exerciseRepo.isFavoriteExercise(trainerId, exerciseId)) {
                 throw TrainerError.ResourceNotFavoriteError
             }
 
@@ -510,11 +494,11 @@ class TrainerService(
 
     fun getSets(
         trainerId: UUID,
-        skip: Int?,
-        limit: Int?,
         type: SetType?,
         name: String?,
-        favorite: Boolean
+        isFavorite: Boolean,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<TrainerSet>, Int> {
         Validators.validate(
             Validators.ValidationRequest(limit, "Limit must be a positive number.") { it as Int > 0 },
@@ -525,7 +509,7 @@ class TrainerService(
         return transactionManager.run {
             val setRepo = it.setRepo
 
-            return@run if (favorite) {
+            return@run if (isFavorite) {
                 val sets = setRepo.getFavoriteSets(trainerId, skip ?: 0, limit, type, name)
                     .map { set ->
                         val isFavorite = setRepo.isSetFavorite(trainerId, set.id)
@@ -1127,39 +1111,38 @@ class TrainerService(
 
     private fun Transaction.getExercises(
         trainerId: UUID,
-        skip: Int?,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
         modality: Modality?,
-        favorite: Boolean
-    ): Pair<List<Exercise>, Int> {
+        isFavorite: Boolean,
+        skip: Int?,
+        limit: Int?
+    ): Pair<List<TrainerExercise>, Int> {
         val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
 
-        val resultList = mutableListOf<Exercise>()
+        val resultList = mutableListOf<TrainerExercise>()
         var totalExercises = 0
-
-        if (favorite) {
-            return getFavoriteExercises(trainerId, skip, limit, name, muscleGroup, modality)
-        }
 
         getTrainerExercises(
             trainerId,
-            skip,
-            limit,
             name,
             muscleGroup,
             modality,
+            isFavorite,
+            skip,
+            limit,
             { resultList += it },
             { totalExercises += it }
         )
         getCompanyExercises(
             companyId,
-            skip,
-            limit,
+            trainerId,
             name,
             muscleGroup,
             modality,
+            isFavorite,
+            skip,
+            limit,
             { resultList += it },
             { totalExercises += it }
         )
@@ -1167,55 +1150,32 @@ class TrainerService(
         return Pair(resultList, totalExercises)
     }
 
-    private fun Transaction.getFavoriteExercises(
-        trainerId: UUID,
-        skip: Int?,
-        limit: Int?,
-        name: String?,
-        muscleGroup: MuscleGroup?,
-        modality: Modality?
-    ): Pair<List<Exercise>, Int> {
-        val favoriteExercises = exerciseRepo.getFavoriteExercises(
-            trainerId,
-            skip ?: 0,
-            limit,
-            name,
-            muscleGroup,
-            modality
-        )
-        val totalFavoriteExercises = exerciseRepo.getTotalFavoriteExercises(
-            trainerId,
-            name,
-            muscleGroup,
-            modality
-        )
-
-        return Pair(favoriteExercises, totalFavoriteExercises)
-    }
-
     private fun Transaction.getTrainerExercises(
         trainerId: UUID,
-        skip: Int?,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
         modality: Modality?,
-        addExercises: (List<Exercise>) -> Unit,
+        isFavorite: Boolean,
+        skip: Int?,
+        limit: Int?,
+        addExercises: (List<TrainerExercise>) -> Unit,
         addTotalExercises: (Int) -> Unit
     ) {
         val trainerExercises = exerciseRepo.getTrainerExercises(
             trainerId,
-            skip ?: 0,
-            limit,
             name,
             muscleGroup,
-            modality
+            modality,
+            isFavorite,
+            skip ?: 0,
+            limit
         )
         val totalTrainerExercises = exerciseRepo.getTotalTrainerExercises(
             trainerId,
             name,
             muscleGroup,
-            modality
+            modality,
+            isFavorite
         )
 
         addExercises(trainerExercises)
@@ -1224,28 +1184,34 @@ class TrainerService(
 
     private fun Transaction.getCompanyExercises(
         companyId: UUID?,
-        skip: Int?,
-        limit: Int?,
+        trainerId: UUID,
         name: String?,
         muscleGroup: MuscleGroup?,
         modality: Modality?,
-        addExercises: (List<Exercise>) -> Unit,
+        isFavorite: Boolean,
+        skip: Int?,
+        limit: Int?,
+        addExercises: (List<TrainerExercise>) -> Unit,
         addTotalExercises: (Int) -> Unit
     ) {
         companyId?.let {
-            val companyExercises = exerciseRepo.getCompanyExercises(
+            val companyExercises = exerciseRepo.getCompanyTrainerExercises(
                 companyId,
+                trainerId,
+                name,
+                muscleGroup,
+                modality,
+                isFavorite,
                 skip ?: 0,
-                limit,
-                name,
-                muscleGroup,
-                modality
+                limit
             )
-            val totalCompanyExercises = exerciseRepo.getTotalCompanyExercises(
+            val totalCompanyExercises = exerciseRepo.getTotalCompanyTrainerExercises(
                 companyId,
+                trainerId,
                 name,
                 muscleGroup,
-                modality
+                modality,
+                isFavorite
             )
 
             addExercises(companyExercises)
