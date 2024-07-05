@@ -35,4 +35,6 @@ interface WorkoutRepo {
     fun favoriteWorkout(trainerId: UUID, workoutId: Int)
 
     fun unfavoriteWorkout(trainerId: UUID, workoutId: Int)
+
+    fun isWorkoutOwner(trainerId: UUID, workoutId: Int): Boolean
 }

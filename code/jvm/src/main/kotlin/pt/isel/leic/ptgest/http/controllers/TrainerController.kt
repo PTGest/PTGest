@@ -335,7 +335,8 @@ class TrainerController(
         setDetails: CreateSetRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val setId = trainerService.searchSet(
+        val setId = trainerService.searchSimilarSet(
+            authenticatedUser.id,
             setDetails.type,
             setDetails.setExercises
         )
@@ -439,7 +440,8 @@ class TrainerController(
         workoutDetails: CreateWorkoutRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val workoutId = trainerService.searchWorkout(
+        val workoutId = trainerService.searchSimilarWorkout(
+            authenticatedUser.id,
             workoutDetails.sets
         )
 

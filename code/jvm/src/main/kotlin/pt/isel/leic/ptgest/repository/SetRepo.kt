@@ -40,5 +40,7 @@ interface SetRepo {
 
     fun getSetByExercises(exerciseIds: List<Int>): List<Int>
 
+    fun isSetOwner(trainerId: UUID, setId: Int): Boolean
+
     fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean
 }

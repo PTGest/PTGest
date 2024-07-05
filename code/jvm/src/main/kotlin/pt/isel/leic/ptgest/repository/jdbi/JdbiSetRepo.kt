@@ -235,6 +235,26 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .mapTo<Int>()
             .list()
 
+    override fun isSetOwner(trainerId: UUID, setId: Int): Boolean {
+        return handle.createQuery(
+            """
+            select exists(
+                select 1
+                from set_trainer
+                where trainer_id = :trainerId and set_id = :setId
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "setId" to setId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
+    }
+
     override fun validateSetExerciseDetails(setId: Int, exerciseId: Int, details: String): Boolean {
         return handle.createQuery(
             """

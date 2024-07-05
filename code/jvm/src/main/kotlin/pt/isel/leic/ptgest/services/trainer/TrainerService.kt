@@ -458,7 +458,8 @@ class TrainerService(
         }
     }
 
-    fun searchSet(
+    fun searchSimilarSet(
+        trainerId: UUID,
         setType: SetType,
         setExercises: List<SetExercise>
     ): Int? {
@@ -474,6 +475,7 @@ class TrainerService(
 
         return transactionManager.run {
             val setRepo = it.setRepo
+            val trainerRepo = it.trainerRepo
 
             val sets = setRepo.getSetByExercises(setExercises.map { it.exerciseId })
 
@@ -484,6 +486,10 @@ class TrainerService(
                 }
 
                 if (validSet) {
+                    if (!setRepo.isSetOwner(trainerId, set)) {
+                        trainerRepo.associateTrainerToSet(trainerId, set)
+                    }
+
                     return@run set
                 }
             }
@@ -593,12 +599,23 @@ class TrainerService(
         }
     }
 
-    fun searchWorkout(
+    fun searchSimilarWorkout(
+        trainerId: UUID,
         sets: List<Int>
     ): Int? =
         transactionManager.run {
             val workoutRepo = it.workoutRepo
-            return@run workoutRepo.getWorkoutBySets(sets)
+            val trainerRepo = it.trainerRepo
+
+            val workout = workoutRepo.getWorkoutBySets(sets)
+
+            if (workout != null) {
+                if (!workoutRepo.isWorkoutOwner(trainerId, workout)) {
+                    trainerRepo.associateTrainerToWorkout(trainerId, workout)
+                }
+            }
+
+            return@run workout
         }
 
     fun getWorkouts(
