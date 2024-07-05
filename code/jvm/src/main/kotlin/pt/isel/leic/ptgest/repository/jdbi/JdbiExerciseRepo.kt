@@ -119,7 +119,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         return handle.createQuery(
             """
             select e.id, e.name, e.muscle_group, e.modality,
-                   case when tfe.exercise_id is not null then true else false end as isFavorite
+                   case when tfe.exercise_id is not null then true else false end as is_favorite
             from exercise_company ec
             join exercise e on ec.exercise_id = e.id
             left join trainer_favorite_exercise tfe on e.id = tfe.exercise_id and tfe.trainer_id = :trainerId
@@ -211,7 +211,7 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
         return handle.createQuery(
             """
             select e.id, e.name, e.muscle_group, e.modality,
-                case when tfe.exercise_id is not null then true else false end as isFavorite
+                case when tfe.exercise_id is not null then true else false end as is_favorite
             from exercise_trainer ec
             join exercise e on ec.exercise_id = e.id
             left join trainer_favorite_exercise tfe on ec.trainer_id = tfe.trainer_id and e.id = tfe.exercise_id

@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.leic.ptgest.domain.set.model.Set
 import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
+import pt.isel.leic.ptgest.domain.set.model.TrainerSet
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutSet
 import pt.isel.leic.ptgest.repository.SetRepo
@@ -62,94 +63,61 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .mapTo<Int>()
             .firstOrNull()
 
-    override fun getSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
-        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+    override fun getSets(
+        trainerId: UUID,
+        name: String?,
+        type: SetType?,
+        isFavorite: Boolean,
+        skip: Int,
+        limit: Int?
+    ): List<TrainerSet> {
         val nameCondition = name?.let { "and name like :name" } ?: ""
+        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+        val isFavoriteCondition = if (isFavorite) "and tfs.set_id is not null" else ""
 
         return handle.createQuery(
             """
             select id, name, notes, type
-            from set s join set_trainer st on s.id = st.set_id
-            where st.trainer_id = :trainerId $typeCondition $nameCondition
+                case when tfs.set_id is not null then true else false end as is_favorite
+            from set s 
+            join set_trainer st on s.id = st.set_id
+            left join trainer_favorite_set tfs on s.id = tfs.set_id and tfs.trainer_id = :trainerId
+            where st.trainer_id = :trainerId $typeCondition $nameCondition $isFavoriteCondition
             limit :limit offset :skip
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "trainerId" to trainerId,
-                    "skip" to skip,
-                    "limit" to limit,
+                    "name" to "%$name%",
                     "type" to type?.name,
-                    "name" to "%$name%"
+                    "skip" to skip,
+                    "limit" to limit
                 )
             )
-            .mapTo<Set>()
+            .mapTo<TrainerSet>()
             .list()
     }
 
-    override fun getTotalSets(trainerId: UUID, type: SetType?, name: String?): Int {
-        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+    override fun getTotalSets(trainerId: UUID, name: String?, type: SetType?, isFavorite: Boolean): Int {
         val nameCondition = name?.let { "and name like :name" } ?: ""
+        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+        val isFavoriteCondition = if (isFavorite) "and tfs.set_id is not null" else ""
 
         return handle.createQuery(
             """
             select count(*)
-            from set s join set_trainer st on s.id = st.set_id
-            where st.trainer_id = :trainerId $typeCondition $nameCondition
+            from set s 
+            join set_trainer st on s.id = st.set_id
+            left join trainer_favorite_set tfs on s.id = tfs.set_id and tfs.trainer_id = :trainerId
+            where st.trainer_id = :trainerId $typeCondition $nameCondition $isFavoriteCondition
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "trainerId" to trainerId,
-                    "type" to type?.name,
-                    "name" to "%$name%"
-                )
-            )
-            .mapTo<Int>()
-            .one()
-    }
-
-    override fun getFavoriteSets(trainerId: UUID, skip: Int, limit: Int?, type: SetType?, name: String?): List<Set> {
-        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
-        val nameCondition = name?.let { "and name like :name" } ?: ""
-
-        return handle.createQuery(
-            """
-            select s.id, s.name, s.notes, s.type
-            from set s join trainer_favorite_set tfs on s.id = tfs.set_id
-            where trainer_id = :trainerId $typeCondition $nameCondition
-            limit :limit offset :skip
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "trainerId" to trainerId,
-                    "skip" to skip,
-                    "limit" to limit,
-                    "type" to type?.name,
-                    "name" to "%$name%"
-                )
-            )
-            .mapTo<Set>()
-            .list()
-    }
-
-    override fun getTotalFavoriteSets(trainerId: UUID, type: SetType?, name: String?): Int {
-        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
-        val nameCondition = name?.let { "and name like :name" } ?: ""
-
-        return handle.createQuery(
-            """
-            select count(*)
-            from set s join trainer_favorite_set tfs on s.id = tfs.set_id
-            where trainer_id = :trainerId $typeCondition $nameCondition
-            """.trimIndent()
-        )
-            .bindMap(
-                mapOf(
-                    "trainerId" to trainerId,
-                    "type" to type?.name,
-                    "name" to "%$name%"
+                    "name" to "%$name%",
+                    "type" to type?.name
                 )
             )
             .mapTo<Int>()
@@ -221,19 +189,6 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .bind("setId", setId)
             .mapTo<SetExerciseDetails>()
             .list()
-
-    override fun getFavoriteSetsByTrainerId(trainerId: UUID): List<Int> {
-        return handle.createQuery(
-            """
-            select set_id
-            from trainer_favorite_set
-            where trainer_id = :trainerId
-            """.trimIndent()
-        )
-            .bind("trainerId", trainerId)
-            .mapTo<Int>()
-            .list()
-    }
 
     override fun favoriteSet(trainerId: UUID, setId: Int) {
         handle.createUpdate(

@@ -363,20 +363,20 @@ class TrainerController(
 
     @GetMapping(Uris.Set.GET_SETS)
     fun getSets(
-        @RequestParam skip: Int?,
-        @RequestParam limit: Int?,
         @RequestParam type: SetType?,
         @RequestParam name: String?,
-        @RequestParam favorite: Boolean?,
+        @RequestParam isFavorite: Boolean?,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (sets, total) = trainerService.getSets(
             authenticatedUser.id,
-            skip,
-            limit,
             type,
             name?.trim(),
-            favorite ?: false
+            isFavorite ?: false,
+            skip,
+            limit
         )
 
         return HttpResponse.ok(

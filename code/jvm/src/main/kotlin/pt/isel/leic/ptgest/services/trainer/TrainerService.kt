@@ -509,25 +509,11 @@ class TrainerService(
         return transactionManager.run {
             val setRepo = it.setRepo
 
-            return@run if (isFavorite) {
-                val sets = setRepo.getFavoriteSets(trainerId, skip ?: 0, limit, type, name)
-                    .map { set ->
-                        val isFavorite = setRepo.isSetFavorite(trainerId, set.id)
-                        TrainerSet(set.id, set.name, set.notes, set.type, isFavorite)
-                    }
-                val totalSets = setRepo.getTotalFavoriteSets(trainerId, type, name)
+            val sets = setRepo.getSets(trainerId, name, type, isFavorite, skip ?: 0, limit)
 
-                Pair(sets, totalSets)
-            } else {
-                val sets = setRepo.getSets(trainerId, skip ?: 0, limit, type, name)
-                    .map { set ->
-                        val isFavorite = setRepo.isSetFavorite(trainerId, set.id)
-                        TrainerSet(set.id, set.name, set.notes, set.type, isFavorite)
-                    }
-                val totalSets = setRepo.getTotalSets(trainerId, type, name)
+            val totalSets = setRepo.getTotalSets(trainerId, name, type, isFavorite)
 
-                Pair(sets, totalSets)
-            }
+            return@run Pair(sets, totalSets)
         }
     }
 
@@ -552,9 +538,7 @@ class TrainerService(
             setRepo.getSet(trainerId, exerciseId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteSets = setRepo.getFavoriteSetsByTrainerId(trainerId)
-
-            if (exerciseId in favoriteSets) {
+            if (setRepo.isSetFavorite(trainerId, exerciseId)) {
                 throw TrainerError.ResourceAlreadyFavoriteError
             }
 
@@ -569,9 +553,7 @@ class TrainerService(
             setRepo.getSet(trainerId, exerciseId)
                 ?: throw TrainerError.ResourceNotFoundError
 
-            val favoriteSets = setRepo.getFavoriteSetsByTrainerId(trainerId)
-
-            if (exerciseId !in favoriteSets) {
+            if (!setRepo.isSetFavorite(trainerId, exerciseId)) {
                 throw TrainerError.ResourceNotFavoriteError
             }
 
