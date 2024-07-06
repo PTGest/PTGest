@@ -2,6 +2,7 @@
     <div class="ctner">
         <div class="trainee-profile">{{ trainee.traineeName }}</div>
         <div class="add-data-container">
+            <font-awesome-icon :icon="faX" @click="router.back()" class="icon"/>
             <TraineeNormalData @normalData="handleNormalData($event)" :data="new TraineeNormalDataModel(trainee.traineeName,null, null, gender, null)"/>
             <div v-if="isSkinFold == 'Skin Fold'" class="skin-fold-container">
                 <h2>Skin Folds</h2>
@@ -18,7 +19,7 @@
                 </FloatLabel>
             </div>
             <SelectButton class="skin-fold-button" v-model="isSkinFold" :options="options" aria-labelledby="basic" />
-            <Button class="btn" @click="addData" :disabled="isDisable">Add Data</Button>
+            <Button class="add-btn" @click="addData" >Add Data</Button>
         </div>
     </div>
 </template>
@@ -43,6 +44,9 @@ import {
     addTraineeData
 } from "@/services/TrainerServices/traineeDataServices/traineeDataServices.ts";
 import BodyCircumferences from "@/views/user/TrainerViews/models/traineeData/BodyCircumferences.ts";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import router from "@/plugins/router.ts";
+import {faX} from "@fortawesome/free-solid-svg-icons";
 
 
 const bodyFatPercentage = ref(0);
@@ -100,8 +104,7 @@ const isDisable = computed(() => {
 const addData = async() => {
     data.value = new AddTraineeDataRequest(trainee.value.traineeId, normalData.value.gender, normalData.value.weight,
         normalData.value.height,
-        new BodyCircumferences(1,1,1,1,1,1,1,1,
-            1,1,1), null,null);
+        normalData.value.bodyCircumferences);
 
     if(isSkinFold.value == 'Skin Fold'){
         data.value.skinFold = skinFoldMap.value;
@@ -110,11 +113,17 @@ const addData = async() => {
     }
     console.log("DATA",data.value)
     await addTraineeData(data.value);
+    router.back();
 }
 
 </script>
 
 <style scoped>
+.trainee-profile{
+    font-size: 2em;
+    font-weight: bold;
+    color: whitesmoke;
+}
 .trainee-profile-layout{
     position: relative;
     left: -10em;
@@ -146,6 +155,7 @@ const addData = async() => {
     transition: 0.2s ease-in;
 }
 .add-data-container{
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -188,9 +198,7 @@ label{
     color: whitesmoke;
 }
 
-.btn{
-    width: 10em;
-    padding: 1em;
+.add-btn{
     border-radius: 5px;
     border: none;
     font-size: 1em;
@@ -201,9 +209,15 @@ label{
     transition: 0.2s ease-in;
 }
 
-.btn:hover{
+.add-btn:hover{
     background-color: var(--main-primary-color);
     border: 1px solid var(--button-border-color);
     transition: 0.2s ease-out;
+}
+.icon{
+    position: absolute;
+    top: 1.5em;
+    right: 2em;
+    cursor: pointer;
 }
 </style>

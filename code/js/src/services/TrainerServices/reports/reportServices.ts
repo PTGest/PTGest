@@ -54,6 +54,7 @@ async function getReports(traineeId: string,filters: Map<string, any> | null): P
         throw error
     }
 }
+
 export {
     createReport,
     editReport,

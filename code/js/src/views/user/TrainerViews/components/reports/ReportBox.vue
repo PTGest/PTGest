@@ -1,6 +1,6 @@
 <template>
     <div @click="openReport" class="report-info">
-       Report {{ props.report.id }}
+       Report {{ props.report.date }}
         <font-awesome-icon v-if="report.visibility" :icon="faLock"/>
     </div>
 </template>
@@ -10,6 +10,7 @@ import Report from "@/views/user/TrainerViews/models/reports/Report.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faLock} from "@fortawesome/free-solid-svg-icons";
 import router from "@/plugins/router.ts";
+import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts";
 
 
 const props = defineProps<{
@@ -18,7 +19,7 @@ const props = defineProps<{
 
 
 const openReport = () => {
-    router.push({name: 'report', params: {reportId: props.report.id, traineeId: props.report.traineeId}});
+    router.push({name: 'report', params: {reportId: props.report.id, traineeId: router.currentRoute.value.params.traineeId}});
 }
 
 </script>

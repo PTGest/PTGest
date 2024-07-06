@@ -5,8 +5,8 @@
         <div>{{report.date}}</div>
         <font-awesome-icon v-if="report.visibility" :icon="faLock"/>
         <div class="textarea-container">
-            <font-awesome-icon @click="enableEdit" v-if="!isEdit" class="edit-icon" :icon="faPen"/>
-            <font-awesome-icon @click="handleEditReport" v-else class="edit-icon" :icon="faCheck"/>
+            <font-awesome-icon @click="enableEdit" v-if="!isEdit && (RBAC.isTrainer() || RBAC.isHiredTrainer())" class="edit-icon" :icon="faPen"/>
+            <font-awesome-icon @click="handleEditReport" v-else-if="RBAC.isHiredTrainer() || RBAC.isTrainer()" class="edit-icon" :icon="faCheck"/>
             <textarea v-model="report.report" :readonly="!isEdit"></textarea>
             <SelectButton v-if="isEdit" class="privacy-button" v-model="visibility" :options="options" aria-labelledby="basic" />
         </div>
@@ -23,6 +23,7 @@ import {faCheck, faLock, faPen, faX} from "@fortawesome/free-solid-svg-icons";
 import SelectButton from "primevue/selectbutton";
 import EditReportRequest from "@/views/user/TrainerViews/models/reports/EditReportRequest.ts";
 import {editReport, getReportDetails} from "@/services/TrainerServices/reports/reportServices.js";
+import {getTraineeReportDetails} from "@/services/TraineeServices/TraineeServices.ts";
 
 
 const report = ref(new ReportDetails());
@@ -30,8 +31,13 @@ const isEdit = ref(false);
 const visibility = ref('');
 const options = ['Public', 'Private'];
 (async () => {
-    report.value = await getReportDetails(router.currentRoute.value.params.traineeId,router.currentRoute.value.params.reportId);
-    visibility.value = report.value.visibility ? 'Private' : 'Public';
+    if(RBAC.isTrainer() || RBAC.isHiredTrainer()) {
+        report.value = await getReportDetails(router.currentRoute.value.params.traineeId,router.currentRoute.value.params.reportId);
+        visibility.value = report.value.visibility ? 'Private' : 'Public';
+    }else{
+        report.value = await getTraineeReportDetails(router.currentRoute.value.params.reportId);
+        visibility.value = report.value.visibility ? 'Private' : 'Public';
+    }
 })();
 
 const enableEdit = () => {

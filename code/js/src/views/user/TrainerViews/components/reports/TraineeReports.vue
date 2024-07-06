@@ -10,7 +10,7 @@
                 <ReportBox v-if="(RBAC.isTrainee() && !report.visibility)|| RBAC.isTrainer() || RBAC.isHiredTrainer()" :report="report"></ReportBox>
               </div>
          </div>
-        <router-link class="add-report" :to="{name:'addReport', params:{traineeId:store.getters.traineeInfo.id}}">Add Report</router-link>
+        <router-link v-if="RBAC.isHiredTrainer() || RBAC.isTrainer()" class="add-report" :to="{name:'addReport', params:{traineeId:router.currentRoute.value.params.traineeId}}">Add Report</router-link>
     </div>
 </template>
 
@@ -25,12 +25,18 @@ import {getReports} from "@/services/TrainerServices/reports/reportServices.js";
 import router from "@/plugins/router.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
+import {getTraineeReports} from "@/services/TraineeServices/TraineeServices.ts";
 
 const reports = ref(new Reports());
 
 (async () => {
-    reports.value = await getReports(router.currentRoute.value.params.traineeId, null);
-    console.log(reports);
+   if(RBAC.isTrainer() || RBAC.isHiredTrainer()){
+       reports.value = await getReports(router.currentRoute.value.params.traineeId, null);
+       console.log(reports);
+   }else{
+         reports.value = await getTraineeReports(null);
+
+   }
 })();
 
 

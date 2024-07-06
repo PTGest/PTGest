@@ -1,35 +1,31 @@
 <template>
     <div class="trainee-profile-layout">
         <UserProfile :user-id="router.currentRoute.value.params.traineeId"></UserProfile>
-        <router-link :to="{name:'traineeReports', params:{traineeId:router.currentRoute.value.params.traineeId}}" class="reports-link">Reports</router-link>
-        <AddTraineeData v-if="isAddDataOpen"></AddTraineeData>
+        <div class="trainer-options" v-if="RBAC.isHiredTrainer() || RBAC.isTrainer() || RBAC.isTrainee()">
+            <router-link :to="{name:'traineeReports', params:{traineeId:router.currentRoute.value.params.traineeId}}" class="reports-link">
+                Reports
+                <font-awesome-icon :icon="faBookOpen" class="icon"/>
+            </router-link>
+            <router-link :to="{name: 'dataHistory', params:{traineeId: router.currentRoute.value.params.traineeId}}" class="reports-link">
+                Data History
+                <font-awesome-icon :icon="faFileWaveform" class="icon"/>
+            </router-link>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import AddTraineeData from "@/views/user/TrainerViews/components/trainees/AddTraineeData.vue";
 import router from "@/plugins/router.ts";
-import {
-    getTraineeData,
-} from "@/services/TrainerServices/traineeDataServices/traineeDataServices.ts";
-import {ref} from "vue";
-import TraineeDataHistory from "@/views/user/TrainerViews/models/trainees/TraineeDataHistory.ts";
 import UserProfile from "@/views/user/UserProfile/UserProfile.vue";
-
-const traineeData = ref(new TraineeDataHistory());
-const isAddDataOpen = ref(false);
-
-(async () => {
-    traineeData.value = await getTraineeData(router.currentRoute.value.params.traineeId);
-    console.log("Hello from TraineeProfile.vue")
-})();
+import RBAC from "@/services/utils/RBAC/RBAC.ts";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faBookOpen, faFileWaveform} from "@fortawesome/free-solid-svg-icons";
+import store from "@/store";
 
 </script>
 
 <style scoped>
 .trainee-profile-layout{
-    position: relative;
-    left: -10em;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -58,4 +54,20 @@ const isAddDataOpen = ref(false);
     transition: 0.2s ease-in;
 }
 
+.trainer-options{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    padding: 1em;
+    border-radius: 10px;
+    background-color: var(--main-primary-color);
+    width: 100%;
+}
+.icon{
+    margin-left: 0.5em;
+}
 </style>

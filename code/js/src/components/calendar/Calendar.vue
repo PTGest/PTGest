@@ -77,7 +77,7 @@ const getDaysInMonth = () => {
         // loop through all days of current month
         if (i === new Date().getDate() && currMonth === new Date().getMonth()) {
             classString = (trainDays.value.find(day => day.day == i) ? "active-train" : "active")
-        } else if ((trainDays.value.find(day => day.day == i && day.day > currDay && currMonth == day.month)) && currMonth === new Date().getMonth()) {
+        } else if ((trainDays.value.find(day => day.day == i && currMonth == day.month)) && currMonth === new Date().getMonth()) {
             classString = "train"
         }
         currentMonthDays.push(new Day(`${i}`, classString))

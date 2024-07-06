@@ -6,7 +6,6 @@ import Signup from "../views/auth/signUp/Signup.vue"
 import ForgetPassword from "../views/auth/forgetPassword/ForgetPassword.vue"
 import Error from "../views/Error.vue"
 import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue"
-// import UserProfile from "../views/user/UserProfile/UserProfile.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
 import Students from "../views/user/TrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue"
@@ -31,6 +30,9 @@ import Report from "../views/user/TrainerViews/components/reports/Report.vue";
 import isSigned from "../services/AuthServices/isSigned.ts";
 import CancelSession from "../views/user/TrainerViews/components/sessions/CancelSession.vue";
 import TraineeProfile from "../views/user/TrainerViews/components/trainees/TraineeProfile.vue";
+import TraineeDataHistory from "../views/user/UserProfile/components/TraineeDataHistory.vue";
+import TraineeDataHistoryDetails from "../views/user/UserProfile/components/TraineeDataHistoryDetails.vue";
+import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -71,7 +73,7 @@ const routes: RouteRecordRaw[] = [
 
     { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
-    { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/sessions/:traineeId", name: "traineeSessions", component: TraineeSessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/:traineeId/add-session", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/session/:sessionId", name: " sessionDetails", component: SessionDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
@@ -80,8 +82,11 @@ const routes: RouteRecordRaw[] = [
     { path: "/reports/:traineeId", name: "traineeReports", component: TraineeReports, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/reports/:traineeId/add-report", name: "addReport", component: AddReport, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/reports/:traineeId/:reportId", name: "report", component: Report, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
+    { path: "/:traineeId/profile", name: "traineeProfile", component: TraineeProfile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
 
-    { path: "/:traineeId/profile", name: "traineeProfile", component: TraineeProfile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/trainee/:traineeId/data-history", name: "dataHistory", component: TraineeDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
+    { path: "/trainee/:traineeId/data-history/:dataId", name: "dataHistoryDetails", component: TraineeDataHistoryDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
+    { path: "/trainee/:traineeId/data-history/add", name: "addDataHistory", component: TraineeAddDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     //Error Views
     { path: "/error", name: "error", component: Error },
     //{ path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },

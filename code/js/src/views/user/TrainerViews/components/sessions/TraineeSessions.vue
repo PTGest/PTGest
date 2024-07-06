@@ -27,9 +27,9 @@ import store from "../../../../../store";
 const traineeTrainDays: Ref<Sessions> = ref(new Sessions())
 
 ;(async () => {
-    const map = new Map<string, any>()
-    map.set('date', new Date())
-    traineeTrainDays.value = await getTraineeSessions(router.currentRoute.value.params.traineeId, map)
+    // const map = new Map<string, any>()
+    // map.set('date', new Date())
+    traineeTrainDays.value = await getTraineeSessions(router.currentRoute.value.params.traineeId, null)
     traineeTrainDays.value.sessions =
     traineeTrainDays.value.sessions.filter((session: Session) =>
         !session.cancelled
