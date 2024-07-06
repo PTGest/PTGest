@@ -16,7 +16,11 @@ import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
-import pt.isel.leic.ptgest.http.model.common.response.*
+import pt.isel.leic.ptgest.http.model.common.response.GetExerciseDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
+import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.trainee.request.CancelSessionRequest
 import pt.isel.leic.ptgest.http.model.trainee.response.GetReportDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainee.response.GetSessionDetailsResponse

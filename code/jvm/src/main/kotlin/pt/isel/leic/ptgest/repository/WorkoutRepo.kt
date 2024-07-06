@@ -26,8 +26,6 @@ interface WorkoutRepo {
 
     fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?, isFavorite: Boolean): Int
 
-    fun getFavoriteWorkouts(trainerId: UUID, skip: Int, limit: Int?, name: String?, muscleGroup: MuscleGroup?): List<Workout>
-
     fun isWorkoutFavorite(trainerId: UUID, workoutId: Int): Boolean
 
     fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout?
@@ -38,8 +36,5 @@ interface WorkoutRepo {
 
     fun unfavoriteWorkout(trainerId: UUID, workoutId: Int)
 
-    fun getTotalFavoriteWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?): Int
-
-    fun getFavoriteWorkoutsByTrainerId(trainerId: UUID): List<Int>
-
+    fun isWorkoutOwner(trainerId: UUID, workoutId: Int): Boolean
 }

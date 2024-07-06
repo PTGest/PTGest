@@ -43,7 +43,7 @@ class JdbiTraineeDataRepo(private val handle: Handle) : TraineeDataRepo {
         from trainee_data
         where trainee_id = :traineeId
         order by date $orderDirection
-        """.trimIndent()
+            """.trimIndent()
         )
 
         // Append limit and offset
@@ -66,7 +66,6 @@ class JdbiTraineeDataRepo(private val handle: Handle) : TraineeDataRepo {
             .mapTo<TraineeData>()
             .list()
     }
-
 
     override fun getTotalTraineeData(traineeId: UUID): Int =
         handle.createQuery(
