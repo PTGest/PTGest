@@ -46,6 +46,25 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .one()
     }
 
+    override fun getTrainerSessions(trainerId: UUID, date: Date): List<Int> =
+        handle.createQuery(
+            """
+            select s.id
+            from session s
+            join session_trainer st on s.id = st.session_id
+            left join cancelled_session cs on s.id = cs.session_id
+            where trainer_id = :trainerId and DATE(s.begin_date) = DATE(:date) and cs.session_id is null
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "trainerId" to trainerId,
+                    "date" to date
+                )
+            )
+            .mapTo<Int>()
+            .list()
+
     override fun getTrainerSessions(trainerId: UUID, date: Date?, skip: Int, limit: Int?): List<TrainerSession> {
         val dateCondition = date?.let { "and DATE(s.begin_date) = DATE(:date)" } ?: ""
 
@@ -332,7 +351,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getSetSessionFeedback(
         feedbackId: Int,
         sessionId: Int,
-        workoutId: Int,
         setOrderId: Int,
         setId: Int
     ): SetSessionFeedback? =
@@ -341,7 +359,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             select id, set_order_id, set_id, source, feedback, date
             from feedback f
             join session_set_feedback ssf on f.id = ssf.feedback_id
-            where f.id = :feedbackId and ssf.session_id = :sessionId and ssf.workout_id = :workoutId 
+            where f.id = :feedbackId and ssf.session_id = :sessionId
             and ssf.set_order_id = :setOrderId and ssf.set_id = :setId
             """.trimIndent()
         )
@@ -349,7 +367,6 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                 mapOf(
                     "feedbackId" to feedbackId,
                     "sessionId" to sessionId,
-                    "workoutId" to workoutId,
                     "setOrderId" to setOrderId,
                     "setId" to setId
                 )
@@ -373,7 +390,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .execute()
     }
 
-    override fun validateSessionSet(sessionId: Int, setOrderId: Int, setId: Int): Boolean =
+    override fun validateSessionSet(sessionId: Int, setId: Int, setOrderId: Int): Boolean =
         handle.createQuery(
             """
             select exists (

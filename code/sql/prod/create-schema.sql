@@ -12,22 +12,23 @@ create type prod.muscle_group as enum ('BICEPS', 'CHEST', 'CORE', 'FOREARMS', 'F
     'QUADS', 'SHOULDERS', 'TRIPEPS', 'UPPER_BACK_NECK', 'UPPER_BODY');
 create type prod.modality as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
 create type prod.session_type as enum ('TRAINER_GUIDED', 'PLAN_BASED');
-create type prod.source as enum ('TRAINER', 'TRAINEE');
+create type prod.source_feedback as enum ('TRAINER', 'TRAINEE');
+create type prod.source_cancel_session as enum ('TRAINER', 'TRAINEE', 'COMPANY');
 
 create table if not exists prod."user"
 (
-    id            uuid default uuid_generate_v4() primary key,
+    id            uuid    default uuid_generate_v4() primary key,
     name          varchar(40) check (name <> '')                                    not null,
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
     password_hash varchar(256) check (password_hash <> '')                          not null,
-    role          prod.role                                                          not null,
+    role          prod.role                                                         not null,
     active        boolean default true                                              not null
 );
 
 create table if not exists prod.token_version
 (
-    user_id  uuid primary key references prod."user" (id) on delete cascade,
+    user_id uuid primary key references prod."user" (id) on delete cascade,
     version int default 1 not null
 );
 
@@ -55,7 +56,7 @@ create table if not exists prod.trainee
 (
     id           uuid primary key references prod."user" (id) on delete cascade,
     gender       prod.gender not null,
-    birthdate    date       not null,
+    birthdate    date        not null,
     phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
@@ -101,7 +102,7 @@ create table if not exists prod.report
 
 create table if not exists prod.report_trainer
 (
-    report_id   int references prod.report (id) on delete cascade,
+    report_id  int references prod.report (id) on delete cascade,
     trainer_id uuid references prod.trainer (id) on delete cascade,
     primary key (report_id, trainer_id)
 );
@@ -110,7 +111,7 @@ create table if not exists prod.report_trainer
 create table if not exists prod.workout
 (
     id           serial primary key,
-    name         varchar(50)        not null,
+    name         varchar(50)         not null,
     description  text,
     muscle_group prod.muscle_group[] not null
 );
@@ -118,7 +119,7 @@ create table if not exists prod.workout
 create table if not exists prod.set
 (
     id    serial primary key,
-    name  varchar(50)  not null,
+    name  varchar(50)   not null,
     notes text,
     type  prod.set_type not null
 );
@@ -126,7 +127,7 @@ create table if not exists prod.set
 create table if not exists prod.exercise
 (
     id           serial primary key,
-    name         varchar(50)        not null,
+    name         varchar(50)         not null,
     description  text,
     muscle_group prod.muscle_group[] not null,
     modality     prod.modality       not null,
@@ -139,16 +140,16 @@ create table if not exists prod.session
     trainee_id uuid references prod.trainee (id) on delete cascade,
     workout_id int references prod.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
-    end_date   timestamp check ( end_date > begin_date and end_date > now() )  ,
+    end_date   timestamp check ( end_date > begin_date and end_date > now() ),
     location   varchar(50),
-    type       prod.session_type                                                 not null,
+    type       prod.session_type                                                not null,
     notes      text
 );
 
 create table if not exists prod.cancelled_session
 (
     session_id int primary key references prod.session (id) on delete cascade,
-    source     prod.source not null,
+    source     prod.source_cancel_session not null,
     reason     text
 );
 
@@ -228,7 +229,7 @@ create table if not exists prod.trainer_favorite_exercise
 create table if not exists prod.feedback
 (
     id       serial primary key,
-    source   prod.source                       not null,
+    source   prod.source_feedback             not null,
     feedback text                             not null,
     date     timestamp check ( date < now() ) not null
 );

@@ -1,7 +1,8 @@
-package pt.isel.leic.ptgest.services.company
+package pt.isel.leic.ptgest.services
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
+import pt.isel.leic.ptgest.domain.common.Source
 import pt.isel.leic.ptgest.domain.exercise.model.Exercise
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.trainee.model.Trainee
@@ -10,21 +11,25 @@ import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.workout.Modality
 import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.errors.CompanyError
+import pt.isel.leic.ptgest.services.errors.ResourceNotFoundError
+import pt.isel.leic.ptgest.services.errors.UserError
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.*
 
 @Service
 class CompanyService(
+    private val mailService: MailService,
     private val transactionManager: TransactionManager
 ) {
     fun getCompanyTrainers(
         companyId: UUID,
-        skip: Int?,
-        limit: Int?,
         gender: Gender?,
         availability: Order,
         name: String?,
-        excludeTraineeTrainer: UUID?
+        excludeTraineeTrainer: UUID?,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<Trainer>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -35,7 +40,6 @@ class CompanyService(
         return transactionManager.run {
             val companyRepo = it.companyRepo
 
-            val totalResults = companyRepo.getTotalTrainers(companyId, gender, name, excludeTraineeTrainer)
             val trainers = companyRepo.getTrainers(
                 companyId,
                 skip ?: 0,
@@ -45,6 +49,7 @@ class CompanyService(
                 name,
                 excludeTraineeTrainer
             )
+            val totalResults = companyRepo.getTotalTrainers(companyId, gender, name, excludeTraineeTrainer)
 
             return@run Pair(trainers, totalResults)
         }
@@ -52,10 +57,10 @@ class CompanyService(
 
     fun getCompanyTrainees(
         companyId: UUID,
-        skip: Int?,
-        limit: Int?,
         gender: Gender?,
-        name: String?
+        name: String?,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<Trainee>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -73,7 +78,6 @@ class CompanyService(
         }
     }
 
-    //  TODO: check if the trainee already exists or is from the same company
     fun assignTrainerToTrainee(
         trainerId: UUID,
         traineeId: UUID,
@@ -85,6 +89,10 @@ class CompanyService(
             val trainer = companyRepo.getTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
+            if (!companyRepo.isTraineeFromCompany(traineeId, companyId)) {
+                throw CompanyError.TraineeNotFromCompany
+            }
+
             if (trainer.assignedTrainees >= trainer.capacity) {
                 throw CompanyError.TrainerCapacityReached
             }
@@ -93,15 +101,23 @@ class CompanyService(
         }
     }
 
-    //  TODO: check if the trainee already exists or is from the same company
     fun reassignTrainer(
         trainerId: UUID,
         traineeId: UUID,
         companyId: UUID
     ) {
-        transactionManager.run {
+        val traineeMail = transactionManager.run {
             val companyRepo = it.companyRepo
             val traineeRepo = it.traineeRepo
+            val sessionRepo = it.sessionRepo
+            val userRepo = it.userRepo
+
+            val traineeDetails = userRepo.getUserDetails(traineeId)
+                ?: throw UserError.UserNotFound
+
+            if (!companyRepo.isTraineeFromCompany(traineeId, companyId)) {
+                throw CompanyError.TraineeNotFromCompany
+            }
 
             val newTrainer = companyRepo.getTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
@@ -110,14 +126,25 @@ class CompanyService(
                 throw CompanyError.TrainerCapacityReached
             }
 
-            val trainerAssigned = traineeRepo.getTrainerAssigned(traineeId)
-
-            if (newTrainer.id == trainerAssigned) {
+            if (traineeRepo.isTraineeAssignedToTrainer(traineeId, trainerId)) {
                 throw CompanyError.TrainerAlreadyAssociatedToTrainee
             }
 
+            sessionRepo.getTrainerSessions(trainerId, Date())
+                .forEach { session ->
+                    sessionRepo.cancelSession(session, Source.COMPANY, "Trainer reassigned.")
+                }
             companyRepo.reassignTrainer(trainerId, traineeId)
+
+            return@run traineeDetails.email
         }
+
+        mailService.sendMail(
+            traineeMail,
+            "Trainer reassigned",
+            "Your trainer has been reassigned. All sessions with the previous trainer have been cancelled. \n" +
+                "You can now schedule new sessions with your new trainer."
+        )
     }
 
     fun updateTrainerCapacity(
@@ -173,11 +200,11 @@ class CompanyService(
 
     fun getExercises(
         companyId: UUID,
-        skip: Int?,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
+        modality: Modality?,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<Exercise>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },
@@ -190,11 +217,11 @@ class CompanyService(
 
             val exercises = exerciseRepo.getCompanyExercises(
                 companyId,
-                skip ?: 0,
-                limit,
                 name,
                 muscleGroup,
-                modality
+                modality,
+                skip ?: 0,
+                limit
             )
 
             val totalExercises = exerciseRepo.getTotalCompanyExercises(
@@ -216,6 +243,6 @@ class CompanyService(
             val exerciseRepo = it.exerciseRepo
 
             return@run exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId)
-                ?: throw CompanyError.ExerciseNotFoundError
+                ?: throw ResourceNotFoundError
         }
 }

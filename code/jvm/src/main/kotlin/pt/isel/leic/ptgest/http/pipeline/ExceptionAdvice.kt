@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.servlet.NoHandlerFoundException
 import pt.isel.leic.ptgest.http.media.Problem
 import pt.isel.leic.ptgest.http.media.Problem.Companion.PROBLEMS_DOCS_URI
-import pt.isel.leic.ptgest.services.auth.AuthError
-import pt.isel.leic.ptgest.services.company.CompanyError
-import pt.isel.leic.ptgest.services.user.UserError
+import pt.isel.leic.ptgest.services.errors.AuthError
+import pt.isel.leic.ptgest.services.errors.BodyCompositionCalculationError
+import pt.isel.leic.ptgest.services.errors.CompanyError
+import pt.isel.leic.ptgest.services.errors.InaccessibleRecourse
+import pt.isel.leic.ptgest.services.errors.ResourceNotFoundError
+import pt.isel.leic.ptgest.services.errors.TrainerError
+import pt.isel.leic.ptgest.services.errors.UserError
 import java.net.URI
 
 @ControllerAdvice
@@ -37,8 +41,7 @@ class ExceptionAdvice {
     @ExceptionHandler(
         value = [
             IllegalArgumentException::class,
-            IllegalStateException::class,
-            CompanyError.TrainerCapacityReached::class
+            IllegalStateException::class
         ]
     )
     fun handleBadRequest(ex: Exception): ResponseEntity<Problem> =
@@ -74,16 +77,13 @@ class ExceptionAdvice {
 
     @ExceptionHandler(
         value = [
-            AuthError.TokenError.TokenExpired::class,
-            AuthError.TokenError.TokenExpirationMismatchException::class,
-            AuthError.TokenError.InvalidRefreshToken::class,
-            AuthError.TokenError.InvalidPasswordResetToken::class,
-            AuthError.TokenError.UserIdMismatch::class,
-            AuthError.UserAuthenticationError.InvalidPassword::class,
-            AuthError.UserAuthenticationError.TokenNotProvided::class,
             io.jsonwebtoken.SignatureException::class,
             io.jsonwebtoken.ExpiredJwtException::class,
-            AuthenticationException::class
+            AuthenticationException::class,
+            AuthError.UserAuthenticationError.PasswordRequestExpired::class,
+            AuthError.UserAuthenticationError.InvalidTokenVersion::class,
+            AuthError.UserAuthenticationError.InvalidPassword::class,
+            AuthError.UserAuthenticationError.TokenNotProvided::class
         ]
     )
     fun handleUnauthorized(ex: Exception): ResponseEntity<Problem> =
@@ -96,7 +96,8 @@ class ExceptionAdvice {
     @ExceptionHandler(
         value = [
             AuthError.UserAuthenticationError.UnauthorizedRole::class,
-            AuthError.UserAuthenticationError.InvalidUserRoleException::class
+            AuthError.UserAuthenticationError.InvalidUserRoleException::class,
+            InaccessibleRecourse::class
         ]
     )
     fun handleForbidden(ex: Exception): ResponseEntity<Problem> =
@@ -111,8 +112,11 @@ class ExceptionAdvice {
             NoHandlerFoundException::class,
             NotImplementedError::class,
             AuthError.UserAuthenticationError.UserNotFound::class,
-            UserError.UserNotFound::class,
-            CompanyError.TrainerNotFound::class
+            CompanyError.TrainerNotFound::class,
+            CompanyError.TraineeNotFromCompany::class,
+            ResourceNotFoundError::class,
+            TrainerError.TrainerNotAssignedToTraineeError::class,
+            UserError.UserNotFound::class
         ]
     )
     fun handleNotFound(ex: Exception): ResponseEntity<Problem> =
@@ -124,7 +128,10 @@ class ExceptionAdvice {
 
     @ExceptionHandler(
         value = [
-            AuthError.UserRegistrationError.UserAlreadyExists::class
+            AuthError.UserRegistrationError.UserAlreadyExists::class,
+            CompanyError.TrainerAlreadyAssociatedToTrainee::class,
+            TrainerError.ResourceAlreadyFavoriteError::class,
+            TrainerError.ResourceNotFavoriteError::class
         ]
     )
     fun handleConflict(ex: Exception): ResponseEntity<Problem> =
@@ -169,7 +176,9 @@ class ExceptionAdvice {
 
     @ExceptionHandler(
         value = [
-            Exception::class
+            Exception::class,
+            RuntimeException::class,
+            BodyCompositionCalculationError::class
         ]
     )
     fun handleInternalServerError(ex: Exception): ResponseEntity<Problem> =
@@ -177,5 +186,17 @@ class ExceptionAdvice {
             type = URI.create(PROBLEMS_DOCS_URI + ex.toProblemType()),
             title = ex.message ?: "Internal Server Error",
             status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+        ).toResponse().also { logger.error(ex.message, ex) }
+
+    @ExceptionHandler(
+        value = [
+            CompanyError.TrainerCapacityReached::class
+        ]
+    )
+    fun handleUnprocessableEntity(ex: Exception): ResponseEntity<Problem> =
+        Problem(
+            type = URI.create(PROBLEMS_DOCS_URI + ex.toProblemType()),
+            title = ex.message ?: "Unprocessable Entity",
+            status = HttpStatus.UNPROCESSABLE_ENTITY.value()
         ).toResponse().also { logger.error(ex.message, ex) }
 }

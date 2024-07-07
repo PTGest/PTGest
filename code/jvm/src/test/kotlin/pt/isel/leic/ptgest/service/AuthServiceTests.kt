@@ -17,9 +17,9 @@
 // import pt.isel.leic.ptgest.service.MockServices.buildMockAuthServices
 // import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
 // import pt.isel.leic.ptgest.services.MailService
-// import pt.isel.leic.ptgest.services.auth.AuthError
-// import pt.isel.leic.ptgest.services.auth.AuthService
-// import pt.isel.leic.ptgest.services.auth.JwtService
+// import pt.isel.leic.ptgest.services.errors.AuthError
+// import pt.isel.leic.ptgest.services.AuthService
+// import pt.isel.leic.ptgest.services.JwtService
 // import java.util.*
 // import kotlin.test.Test
 // import kotlin.test.assertEquals

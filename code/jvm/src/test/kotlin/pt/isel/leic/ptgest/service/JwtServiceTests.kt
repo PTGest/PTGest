@@ -15,8 +15,8 @@
 // import pt.isel.leic.ptgest.domain.user.Role
 // import pt.isel.leic.ptgest.domain.user.model.UserDetails
 // import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
-// import pt.isel.leic.ptgest.services.auth.AuthError
-// import pt.isel.leic.ptgest.services.auth.JwtService
+// import pt.isel.leic.ptgest.services.errors.AuthError
+// import pt.isel.leic.ptgest.services.JwtService
 // import java.util.Calendar
 // import java.util.Date
 // import java.util.UUID

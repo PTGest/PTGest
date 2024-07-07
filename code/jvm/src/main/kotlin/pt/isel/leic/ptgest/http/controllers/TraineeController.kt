@@ -27,7 +27,7 @@ import pt.isel.leic.ptgest.http.model.trainee.response.GetSessionDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
-import pt.isel.leic.ptgest.services.trainee.TraineeService
+import pt.isel.leic.ptgest.services.TraineeService
 import java.util.Date
 
 @RestController

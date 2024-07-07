@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.auth
+package pt.isel.leic.ptgest.services
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -9,6 +9,7 @@ import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.errors.AuthError
 import java.util.*
 
 @Service
@@ -64,7 +65,7 @@ class JwtService(
             it.validateUser(accessTokenDetails.userId, accessTokenDetails.role)
 
             if (authRepo.getTokenVersion(accessTokenDetails.userId) != version) {
-                throw AuthError.TokenError.InvalidTokenVersion
+                throw AuthError.UserAuthenticationError.InvalidTokenVersion
             }
         }
 

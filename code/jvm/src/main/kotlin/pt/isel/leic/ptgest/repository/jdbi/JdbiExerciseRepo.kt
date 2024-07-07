@@ -40,11 +40,11 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
 
     override fun getCompanyExercises(
         companyId: UUID,
-        skip: Int,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
+        modality: Modality?,
+        skip: Int,
+        limit: Int?
     ): List<Exercise> {
         val nameCondition = name?.let { "and name like :name" } ?: ""
         val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
@@ -331,6 +331,18 @@ class JdbiExerciseRepo(private val handle: Handle) : ExerciseRepo {
                     "trainer_id" to trainerId
                 )
             )
+            .mapTo<ExerciseDetails>()
+            .firstOrNull()
+
+    override fun getExerciseDetails(exerciseId: Int): ExerciseDetails? =
+        handle.createQuery(
+            """
+            select id, name, description, muscle_group, modality, ref
+            from exercise
+            where id = :id
+            """.trimIndent()
+        )
+            .bind("id", exerciseId)
             .mapTo<ExerciseDetails>()
             .firstOrNull()
 }

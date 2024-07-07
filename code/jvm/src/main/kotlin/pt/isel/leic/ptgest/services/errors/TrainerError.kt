@@ -1,17 +1,12 @@
-package pt.isel.leic.ptgest.services.trainer
+package pt.isel.leic.ptgest.services.errors
 
 import pt.isel.leic.ptgest.domain.utils.BaseError
 
 sealed class TrainerError : BaseError() {
 
-    data object TraineeNotAssignedToTrainerError : TrainerError() {
-        private fun readResolve(): Any = TraineeNotAssignedToTrainerError
-        override val message: String get() = "Trainee not assigned to the trainer."
-    }
-
-    data object ResourceNotFoundError : TrainerError() {
-        private fun readResolve(): Any = ResourceNotFoundError
-        override val message: String get() = "Resource not found."
+    data object TrainerNotAssignedToTraineeError : TrainerError() {
+        private fun readResolve(): Any = TrainerNotAssignedToTraineeError
+        override val message: String get() = "Trainer not assigned to trainee."
     }
 
     data object ResourceAlreadyFavoriteError : TrainerError() {

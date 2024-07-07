@@ -103,19 +103,6 @@ class JdbiTrainerRepo(private val handle: Handle) : TrainerRepo {
             .execute()
     }
 
-    override fun getTraineeIdByName(name: String): UUID? {
-        return handle.createQuery(
-            """
-            select id
-            from "user" join trainee on id = trainee_id
-            where name = :name
-            """.trimIndent()
-        )
-            .bind("name", name)
-            .mapTo<UUID>()
-            .firstOrNull()
-    }
-
     override fun associateTrainerToExercise(trainerId: UUID, exerciseId: Int) {
         handle.createUpdate(
             """

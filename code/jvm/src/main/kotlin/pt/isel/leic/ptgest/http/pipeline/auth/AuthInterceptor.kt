@@ -11,9 +11,9 @@ import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
-import pt.isel.leic.ptgest.services.auth.AuthError
-import pt.isel.leic.ptgest.services.auth.AuthService
-import pt.isel.leic.ptgest.services.auth.JwtService
+import pt.isel.leic.ptgest.services.AuthService
+import pt.isel.leic.ptgest.services.JwtService
+import pt.isel.leic.ptgest.services.errors.AuthError
 import java.util.*
 
 @Component
@@ -58,13 +58,15 @@ class AuthInterceptor(
         val authenticationRequiredFromClass = handler.beanType.getAnnotation(AuthenticationRequired::class.java)?.role
         val authenticationRequiredFromMethod = handler.method.getAnnotation(AuthenticationRequired::class.java)?.role
 
-        if (authenticationRequiredFromClass?.isEmpty() != false && authenticationRequiredFromMethod?.isEmpty() != false) {
+        val authenticationRequired = if (authenticationRequiredFromMethod?.isNotEmpty() == true) {
+            authenticationRequiredFromMethod
+        } else if (authenticationRequiredFromClass?.isNotEmpty() == true) {
+            authenticationRequiredFromClass
+        } else {
             return
         }
 
-        if ((authenticationRequiredFromClass != null && !authenticationRequiredFromClass.contains(tokenDetails.role)) ||
-            (authenticationRequiredFromMethod != null && !authenticationRequiredFromMethod.contains(tokenDetails.role))
-        ) {
+        if (authenticationRequired.none { it == tokenDetails.role }) {
             throw AuthError.UserAuthenticationError.UnauthorizedRole
         }
     }
@@ -103,7 +105,6 @@ class AuthInterceptor(
         }
     }
 
-//  todo check headers
     private fun refreshTokens(
         refreshToken: String,
         response: HttpServletResponse,
@@ -112,6 +113,9 @@ class AuthInterceptor(
         val tokens = authService.refreshToken(refreshToken, currentDate)
 
         setCookies(response, tokens, currentDate)
+
+        response.addHeader("Authorization", "Bearer ${tokens.accessToken.token}")
+        response.addHeader("Refresh-Token", "Bearer ${tokens.refreshToken.token}")
 
         return jwtService.extractToken(refreshToken)
     }

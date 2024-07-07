@@ -20,7 +20,7 @@ interface AuthRepo {
 
     fun createPasswordResetToken(tokenHash: String, userId: UUID, expirationDate: Date)
 
-    fun getPasswordResetToken(tokenHash: String): TokenDetails?
+    fun getPasswordResetRequest(tokenHash: String): TokenDetails?
 
     fun removeOldPasswordResetTokens(userId: UUID)
 

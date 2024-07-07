@@ -28,7 +28,43 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             .mapTo<Int>()
             .one()
 
-    override fun getReports(traineeId: UUID, skip: Int, limit: Int?): List<Report> =
+//  correct the query
+    override fun getTraineeReports(traineeId: UUID, skip: Int, limit: Int?): List<Report> =
+        handle.createQuery(
+            """
+            select id, date, visibility
+            from report
+            where trainee_id = :traineeId and visibility = true
+            limit :limit offset :skip
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "skip" to skip,
+                    "limit" to limit
+                )
+            )
+            .mapTo<Report>()
+            .list()
+
+    override fun getTotalTraineeReports(traineeId: UUID): Int =
+        handle.createQuery(
+            """
+            select count(*)
+            from report
+            where trainee_id = :traineeId and visibility = true
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId
+                )
+            )
+            .mapTo<Int>()
+            .one()
+
+    override fun getTrainerReports(traineeId: UUID, skip: Int, limit: Int?): List<Report> =
         handle.createQuery(
             """
             select id, date, visibility
@@ -47,7 +83,7 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
             .mapTo<Report>()
             .list()
 
-    override fun getTotalReports(traineeId: UUID): Int =
+    override fun getTotalTrainerReports(traineeId: UUID): Int =
         handle.createQuery(
             """
             select count(*)
@@ -66,9 +102,11 @@ class JdbiReportRepo(private val handle: Handle) : ReportRepo {
     override fun getReportDetails(traineeId: UUID, reportId: Int): ReportDetails? =
         handle.createQuery(
             """
-            select u.name as trainee, r.date, r.report, r.visibility
+            select  t.name as trainer, u.name as trainee, r.date, r.report, r.visibility
             from report r
+            join report_trainer rt on r.id = rt.report_id
             join "user" u on r.trainee_id = u.id
+            join "user" t on rt.trainer_id = t.id
             where trainee_id = :traineeId and r.id = :reportId
             """.trimIndent()
         )

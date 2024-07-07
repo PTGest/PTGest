@@ -118,7 +118,7 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             .execute()
     }
 
-    override fun getPasswordResetToken(tokenHash: String): TokenDetails? =
+    override fun getPasswordResetRequest(tokenHash: String): TokenDetails? =
         handle.createQuery(
             """
             select token_hash, user_id, expiration

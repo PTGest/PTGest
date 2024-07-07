@@ -40,7 +40,7 @@ import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSessionDetails
 import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
-import pt.isel.leic.ptgest.services.trainer.TrainerService
+import pt.isel.leic.ptgest.services.TrainerService
 import java.util.Date
 import java.util.UUID
 
@@ -631,9 +631,9 @@ class TrainerController(
             sessionDetails.workoutId,
             sessionDetails.beginDate,
             sessionDetails.endDate,
-            sessionDetails.location,
+            sessionDetails.location?.trim(),
             sessionDetails.type,
-            sessionDetails.notes
+            sessionDetails.notes?.trim()
         )
 
         return HttpResponse.ok(

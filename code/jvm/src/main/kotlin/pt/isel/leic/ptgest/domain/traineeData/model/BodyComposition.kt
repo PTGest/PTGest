@@ -1,11 +1,19 @@
 package pt.isel.leic.ptgest.domain.traineeData.model
 
+import pt.isel.leic.ptgest.services.errors.BodyCompositionCalculationError
+
 data class BodyComposition(
     val bmi: Double,
     val bodyFatPercentage: Double? = null,
     val bodyFatMass: Double? = null,
     val fatFreeMass: Double? = null
 ) {
+    init {
+        if (bmi < 0) throw BodyCompositionCalculationError
+        if (bodyFatPercentage != null && (bodyFatPercentage < 0 || bodyFatPercentage > 100)) throw BodyCompositionCalculationError
+        if (bodyFatMass != null && bodyFatMass < 0) throw BodyCompositionCalculationError
+        if (fatFreeMass != null && fatFreeMass < 0) throw BodyCompositionCalculationError
+    }
 
     constructor(weight: Double, height: Double, bodyFatPercentage: Double) : this(
         bmi = calculateBMI(weight, height),

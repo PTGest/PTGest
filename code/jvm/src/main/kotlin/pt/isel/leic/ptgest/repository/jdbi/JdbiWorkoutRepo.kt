@@ -174,6 +174,18 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .mapTo<Workout>()
             .firstOrNull()
 
+    override fun getWorkoutDetails(workoutId: Int): Workout? =
+        handle.createQuery(
+            """
+            select id, name, description, muscle_group
+            from workout
+            where id = :workoutId
+            """.trimIndent()
+        )
+            .bind("workoutId", workoutId)
+            .mapTo<Workout>()
+            .firstOrNull()
+
     override fun getWorkoutSetIds(workoutId: Int): List<Int> =
         handle.createQuery(
             """

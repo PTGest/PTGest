@@ -4,7 +4,7 @@ import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.trainee.model.Trainee
 import pt.isel.leic.ptgest.domain.trainer.model.Trainer
 import pt.isel.leic.ptgest.domain.user.Gender
-import java.util.UUID
+import java.util.*
 
 interface CompanyRepo {
 
@@ -36,6 +36,8 @@ interface CompanyRepo {
     fun getTotalTrainees(companyId: UUID, gender: Gender?, name: String?): Int
 
     fun getTrainer(trainerId: UUID, companyId: UUID): Trainer?
+
+    fun isTraineeFromCompany(traineeId: UUID, companyId: UUID): Boolean
 
     fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID)
 

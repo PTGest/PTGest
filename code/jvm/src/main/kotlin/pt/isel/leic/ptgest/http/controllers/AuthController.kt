@@ -28,7 +28,7 @@ import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.http.utils.createTokensHeaders
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
-import pt.isel.leic.ptgest.services.auth.AuthService
+import pt.isel.leic.ptgest.services.AuthService
 import java.util.Date
 
 @RestController

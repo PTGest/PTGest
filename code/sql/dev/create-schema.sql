@@ -12,11 +12,12 @@ create type dev.muscle_group as enum ('BICEPS', 'CHEST', 'CORE', 'FOREARMS', 'FU
     'QUADS', 'SHOULDERS', 'TRIPEPS', 'UPPER_BACK_NECK', 'UPPER_BODY');
 create type dev.modality as enum ('BODYWEIGHT', 'WEIGHTLIFT', 'RUNNING', 'CYCLING', 'OTHER');
 create type dev.session_type as enum ('TRAINER_GUIDED', 'PLAN_BASED');
-create type dev.source as enum ('TRAINER', 'TRAINEE');
+create type dev.source_feedback as enum ('TRAINER', 'TRAINEE');
+create type dev.source_cancel_session as enum ('TRAINER', 'TRAINEE', 'COMPANY');
 
 create table if not exists dev."user"
 (
-    id            uuid    default uuid_generate_v4() primary key,
+    id            uuid default uuid_generate_v4() primary key,
     name          varchar(40) check (name <> '')                                    not null,
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
@@ -27,7 +28,7 @@ create table if not exists dev."user"
 
 create table if not exists dev.token_version
 (
-    user_id uuid primary key references dev."user" (id) on delete cascade,
+    user_id  uuid primary key references dev."user" (id) on delete cascade,
     version int default 1 not null
 );
 
@@ -101,7 +102,7 @@ create table if not exists dev.report
 
 create table if not exists dev.report_trainer
 (
-    report_id  int references dev.report (id) on delete cascade,
+    report_id   int references dev.report (id) on delete cascade,
     trainer_id uuid references dev.trainer (id) on delete cascade,
     primary key (report_id, trainer_id)
 );
@@ -139,7 +140,7 @@ create table if not exists dev.session
     trainee_id uuid references dev.trainee (id) on delete cascade,
     workout_id int references dev.workout (id) on delete cascade,
     begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
-    end_date   timestamp check ( end_date > begin_date and end_date > now() ),
+    end_date   timestamp check ( end_date > begin_date and end_date > now() )  ,
     location   varchar(50),
     type       dev.session_type                                                 not null,
     notes      text
@@ -148,7 +149,7 @@ create table if not exists dev.session
 create table if not exists dev.cancelled_session
 (
     session_id int primary key references dev.session (id) on delete cascade,
-    source     dev.source not null,
+    source     dev.source_cancel_session not null,
     reason     text
 );
 
@@ -228,7 +229,7 @@ create table if not exists dev.trainer_favorite_exercise
 create table if not exists dev.feedback
 (
     id       serial primary key,
-    source   dev.source                       not null,
+    source   dev.source_feedback                       not null,
     feedback text                             not null,
     date     timestamp check ( date < now() ) not null
 );

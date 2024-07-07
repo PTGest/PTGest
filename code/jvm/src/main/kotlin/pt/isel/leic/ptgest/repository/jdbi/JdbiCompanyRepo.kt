@@ -176,6 +176,25 @@ class JdbiCompanyRepo(private val handle: Handle) : CompanyRepo {
             .mapTo<Trainer>()
             .firstOrNull()
 
+    override fun isTraineeFromCompany(traineeId: UUID, companyId: UUID): Boolean =
+        handle.createQuery(
+            """
+            select exists(
+                select 1
+                from company_trainee
+                where trainee_id = :traineeId and company_id = :companyId
+            )
+            """.trimIndent()
+        )
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "companyId" to companyId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
+
     override fun assignTrainerToTrainee(trainerId: UUID, traineeId: UUID) {
         handle.createUpdate(
             """

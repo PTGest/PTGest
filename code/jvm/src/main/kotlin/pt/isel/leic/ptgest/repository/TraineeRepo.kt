@@ -7,5 +7,5 @@ interface TraineeRepo {
 
     fun getTraineeDetails(traineeId: UUID): TraineeDetails?
 
-    fun getTrainerAssigned(traineeId: UUID): UUID?
+    fun isTraineeAssignedToTrainer(traineeId: UUID, trainerId: UUID): Boolean
 }

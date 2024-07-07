@@ -24,6 +24,11 @@ interface SessionRepo {
 
     fun getTrainerSessions(
         trainerId: UUID,
+        date: Date
+    ): List<Int>
+
+    fun getTrainerSessions(
+        trainerId: UUID,
         date: Date?,
         skip: Int,
         limit: Int?
@@ -99,7 +104,6 @@ interface SessionRepo {
     fun getSetSessionFeedback(
         feedbackId: Int,
         sessionId: Int,
-        workoutId: Int,
         setOrderId: Int,
         setId: Int
     ): SetSessionFeedback?
@@ -111,8 +115,8 @@ interface SessionRepo {
 
     fun validateSessionSet(
         sessionId: Int,
-        setOrderId: Int,
-        setId: Int
+        setId: Int,
+        setOrderId: Int
     ): Boolean
 
     fun createSessionSetFeedback(

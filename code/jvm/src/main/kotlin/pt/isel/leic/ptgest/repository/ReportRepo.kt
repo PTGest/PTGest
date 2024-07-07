@@ -13,9 +13,13 @@ interface ReportRepo {
         visibility: Boolean
     ): Int
 
-    fun getReports(traineeId: UUID, skip: Int, limit: Int?): List<Report>
+    fun getTraineeReports(traineeId: UUID, skip: Int, limit: Int?): List<Report>
 
-    fun getTotalReports(traineeId: UUID): Int
+    fun getTotalTraineeReports(traineeId: UUID): Int
+
+    fun getTrainerReports(traineeId: UUID, skip: Int, limit: Int?): List<Report>
+
+    fun getTotalTrainerReports(traineeId: UUID): Int
 
     fun getReportDetails(traineeId: UUID, reportId: Int): ReportDetails?
 

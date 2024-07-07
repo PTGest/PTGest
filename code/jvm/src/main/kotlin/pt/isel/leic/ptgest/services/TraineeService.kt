@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.trainee
+package pt.isel.leic.ptgest.services
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.common.Order
@@ -17,7 +17,8 @@ import pt.isel.leic.ptgest.domain.traineeData.model.TraineeDataDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutDetails
 import pt.isel.leic.ptgest.domain.workout.model.WorkoutSetDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import pt.isel.leic.ptgest.services.trainer.TrainerError
+import pt.isel.leic.ptgest.services.errors.InaccessibleRecourse
+import pt.isel.leic.ptgest.services.errors.ResourceNotFoundError
 import pt.isel.leic.ptgest.services.utils.Validators
 import java.util.*
 
@@ -38,8 +39,8 @@ class TraineeService(
         return transactionManager.run {
             val reportRepo = it.reportRepo
 
-            val reports = reportRepo.getReports(traineeId, skip ?: 0, limit)
-            val totalReports = reportRepo.getTotalReports(traineeId)
+            val reports = reportRepo.getTraineeReports(traineeId, skip ?: 0, limit)
+            val totalReports = reportRepo.getTotalTraineeReports(traineeId)
 
             return@run Pair(reports, totalReports)
         }
@@ -52,8 +53,14 @@ class TraineeService(
         transactionManager.run {
             val reportRepo = it.reportRepo
 
-            return@run reportRepo.getReportDetails(traineeId, reportId)
-                ?: throw TrainerError.ResourceNotFoundError
+            val report = reportRepo.getReportDetails(traineeId, reportId)
+                ?: throw ResourceNotFoundError
+
+            if (!report.visibility) {
+                throw InaccessibleRecourse
+            }
+
+            return@run report
         }
 
     fun getTraineeDataHistory(
@@ -91,7 +98,7 @@ class TraineeService(
             val traineeDataRepo = it.traineeDataRepo
 
             return@run traineeDataRepo.getTraineeBodyDataDetails(traineeId, dataId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
         }
 
     fun getExerciseDetails(
@@ -99,17 +106,10 @@ class TraineeService(
         exerciseId: Int
     ): ExerciseDetails =
         transactionManager.run {
-            val trainerRepo = it.trainerRepo
-            val traineeRepo = it.traineeRepo
             val exerciseRepo = it.exerciseRepo
 
-            val trainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssignedError
-            val companyId = trainerRepo.getCompanyAssignedTrainer(trainerId)
-
-            exerciseRepo.getTrainerExerciseDetails(traineeId, exerciseId)
-                ?: companyId?.let { exerciseRepo.getCompanyExerciseDetails(companyId, exerciseId) }
-                ?: throw TraineeError.ExerciseNotFoundError
+            exerciseRepo.getExerciseDetails(exerciseId)
+                ?: throw ResourceNotFoundError
         }
 
     fun getSetDetails(
@@ -117,14 +117,11 @@ class TraineeService(
         setId: Int
     ): SetDetails =
         transactionManager.run {
-            val traineeRepo = it.traineeRepo
             val setRepo = it.setRepo
 
-            val trainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssignedError
+            val set = setRepo.getSetDetails(setId)
+                ?: throw ResourceNotFoundError
 
-            val set = setRepo.getSet(trainerId, setId)
-                ?: throw TraineeError.SetNotFoundError
             val exercises = setRepo.getSetExercises(setId)
 
             return@run SetDetails(set, exercises)
@@ -135,15 +132,11 @@ class TraineeService(
         workoutId: Int
     ): WorkoutDetails =
         transactionManager.run {
-            val traineeRepo = it.traineeRepo
             val workoutRepo = it.workoutRepo
             val setRepo = it.setRepo
 
-            val trainerId = traineeRepo.getTrainerAssigned(traineeId)
-                ?: throw TraineeError.TraineeNotAssignedError
-
-            val workout = workoutRepo.getWorkoutDetails(trainerId, workoutId)
-                ?: throw TraineeError.WorkoutNotFoundError
+            val workout = workoutRepo.getWorkoutDetails(workoutId)
+                ?: throw ResourceNotFoundError
 
             val sets = workoutRepo.getWorkoutSetIds(workoutId).mapNotNull { setId ->
                 val set = setRepo.getWorkoutSet(workoutId, setId) ?: return@mapNotNull null
@@ -184,7 +177,7 @@ class TraineeService(
             val sessionRepo = it.sessionRepo
 
             val sessionDetails = sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             val feedbacks = sessionRepo.getSessionFeedbacks(sessionId)
 
@@ -199,13 +192,14 @@ class TraineeService(
         Validators.validate(
             Validators.ValidationRequest(reason, "Reason must be a non-empty string.") { it is String && it.isNotBlank() }
         )
+
         transactionManager.run {
             val sessionRepo = it.sessionRepo
 
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
-            require(isCurrentDate24BeforeDate(session.beginDate)) { "Session can be canceled only 24 hours before the begin date." }
+            require(Validators.isCurrentDate24BeforeDate(session.beginDate)) { "Session can only be cancelled 24 hours before the session begin date." }
 
             sessionRepo.cancelSession(sessionId, Source.TRAINEE, reason)
         }
@@ -221,7 +215,7 @@ class TraineeService(
             val sessionRepo = it.sessionRepo
 
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             require(requestDate.after(session.beginDate)) { "Feedback can be created only after the session begin date." }
 
@@ -242,12 +236,12 @@ class TraineeService(
             val sessionRepo = it.sessionRepo
 
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             require(requestDate.after(session.beginDate)) { "Feedback can be edited only after the session begin date." }
 
             sessionRepo.getSessionFeedback(feedbackId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
@@ -265,7 +259,7 @@ class TraineeService(
             val sessionRepo = it.sessionRepo
 
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             require(requestDate.after(session.beginDate)) { "Feedback can be created only after the session begin date." }
 
@@ -288,13 +282,13 @@ class TraineeService(
             val sessionRepo = it.sessionRepo
 
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             require(requestDate.after(session.beginDate)) { "Feedback can be edited only after the session begin date." }
-            require(sessionRepo.validateSessionSet(sessionId, setOrderId, setId)) { "Set must be part of the session." }
+            require(sessionRepo.validateSessionSet(sessionId, setId, setOrderId)) { "Set must be part of the session." }
 
-            sessionRepo.getSetSessionFeedback(feedbackId, sessionId, session.workoutId, setOrderId, setId)
-                ?: throw TrainerError.ResourceNotFoundError
+            sessionRepo.getSetSessionFeedback(feedbackId, sessionId, setOrderId, setId)
+                ?: throw ResourceNotFoundError
 
             sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
@@ -308,20 +302,8 @@ class TraineeService(
             val sessionRepo = it.sessionRepo
 
             sessionRepo.getSessionDetails(traineeId, sessionId)
-                ?: throw TrainerError.ResourceNotFoundError
+                ?: throw ResourceNotFoundError
 
             sessionRepo.getSetSessionFeedbacks(sessionId)
         }
-
-    private fun isCurrentDate24BeforeDate(date: Date): Boolean {
-        val calendar = Calendar.getInstance()
-
-        val currentDate = calendar.time
-
-        calendar.time = date
-        calendar.add(Calendar.HOUR, -24)
-        val date24HoursBefore = calendar.time
-
-        return currentDate.before(date24HoursBefore)
-    }
 }

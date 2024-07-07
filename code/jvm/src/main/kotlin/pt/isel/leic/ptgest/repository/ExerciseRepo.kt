@@ -19,11 +19,11 @@ interface ExerciseRepo {
 
     fun getCompanyExercises(
         companyId: UUID,
-        skip: Int,
-        limit: Int?,
         name: String?,
         muscleGroup: MuscleGroup?,
-        modality: Modality?
+        modality: Modality?,
+        skip: Int,
+        limit: Int?
     ): List<Exercise>
 
     fun getTotalCompanyExercises(
@@ -80,4 +80,6 @@ interface ExerciseRepo {
     fun isFavoriteExercise(trainerId: UUID, exerciseId: Int): Boolean
 
     fun getTrainerExerciseDetails(trainerId: UUID, exerciseId: Int): ExerciseDetails?
+
+    fun getExerciseDetails(exerciseId: Int): ExerciseDetails?
 }

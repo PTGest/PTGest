@@ -30,6 +30,8 @@ interface SetRepo {
 
     fun getSet(trainerId: UUID, setId: Int): Set?
 
+    fun getSetDetails(setId: Int): Set?
+
     fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet?
 
     fun getSetExercises(setId: Int): List<SetExerciseDetails>

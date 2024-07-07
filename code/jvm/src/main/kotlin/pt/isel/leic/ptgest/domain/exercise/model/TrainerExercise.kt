@@ -9,12 +9,4 @@ data class TrainerExercise(
     val muscleGroup: List<MuscleGroup>,
     val modality: Modality,
     val isFavorite: Boolean
-) {
-    constructor(exercise: Exercise, isFavorite: Boolean) : this(
-        exercise.id,
-        exercise.name,
-        exercise.muscleGroup,
-        exercise.modality,
-        isFavorite
-    )
-}
+)

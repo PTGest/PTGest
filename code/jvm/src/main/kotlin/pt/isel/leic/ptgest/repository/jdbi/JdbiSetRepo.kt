@@ -161,6 +161,18 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
             .mapTo<Set>()
             .firstOrNull()
 
+    override fun getSetDetails(setId: Int): Set? =
+        handle.createQuery(
+            """
+            select id, name, notes, type
+            from set
+            where id = :setId
+            """.trimIndent()
+        )
+            .bind("setId", setId)
+            .mapTo<Set>()
+            .firstOrNull()
+
     override fun getWorkoutSet(workoutId: Int, setId: Int): WorkoutSet? = handle.createQuery(
         """
             select s.id, ws.order_id, s.name, s.notes, s.type

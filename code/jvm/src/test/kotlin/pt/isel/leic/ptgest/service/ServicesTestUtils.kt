@@ -18,8 +18,8 @@
 // import pt.isel.leic.ptgest.repository.transaction.Transaction
 // import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 // import pt.isel.leic.ptgest.services.MailService
-// import pt.isel.leic.ptgest.services.auth.AuthService
-// import pt.isel.leic.ptgest.services.auth.JwtService
+// import pt.isel.leic.ptgest.services.AuthService
+// import pt.isel.leic.ptgest.services.JwtService
 //
 // object MockRepos {
 //    val mockAuthRepo: AuthRepo = mock(AuthRepo::class.java)

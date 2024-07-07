@@ -1,10 +1,11 @@
-package pt.isel.leic.ptgest.services.user
+package pt.isel.leic.ptgest.services
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.trainee.model.TraineeDetails
 import pt.isel.leic.ptgest.domain.trainer.model.TrainerDetails
 import pt.isel.leic.ptgest.domain.user.model.UserDetails
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.errors.UserError
 import java.util.*
 
 @Service

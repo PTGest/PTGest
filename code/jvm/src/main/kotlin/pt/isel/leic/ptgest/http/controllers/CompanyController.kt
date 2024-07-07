@@ -2,7 +2,6 @@ package pt.isel.leic.ptgest.http.controllers
 
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -27,7 +26,7 @@ import pt.isel.leic.ptgest.http.model.company.request.AssignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.ReassignTrainerRequest
 import pt.isel.leic.ptgest.http.model.company.request.UpdateTrainerCapacityRequest
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
-import pt.isel.leic.ptgest.services.company.CompanyService
+import pt.isel.leic.ptgest.services.CompanyService
 import java.util.UUID
 
 @RestController
@@ -48,12 +47,12 @@ class CompanyController(
     ): ResponseEntity<*> {
         val (trainers, total) = companyService.getCompanyTrainers(
             authenticatedUser.id,
-            skip,
-            limit,
             gender,
             availability,
             name?.trim(),
-            excludeTraineeTrainer
+            excludeTraineeTrainer,
+            skip,
+            limit
         )
 
         return HttpResponse.ok(
@@ -72,10 +71,10 @@ class CompanyController(
     ): ResponseEntity<*> {
         val (trainees, total) = companyService.getCompanyTrainees(
             authenticatedUser.id,
-            skip,
-            limit,
             gender,
-            name?.trim()
+            name?.trim(),
+            skip,
+            limit
         )
 
         return HttpResponse.ok(
@@ -123,14 +122,6 @@ class CompanyController(
         )
     }
 
-    //  todo: implement this endpoint
-    @DeleteMapping(Uris.Company.REMOVE_TRAINER)
-    fun removeTrainer(
-        authenticatedUser: AuthenticatedUser
-    ): ResponseEntity<*> {
-        throw NotImplementedError()
-    }
-
     @PostMapping(Uris.Exercise.CREATE_CUSTOM_EXERCISE)
     @AuthenticationRequired(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
     fun createCustomExercise(
@@ -165,11 +156,11 @@ class CompanyController(
         val (exercises, total) =
             companyService.getExercises(
                 authenticatedUser.id,
-                skip,
-                limit,
                 name?.trim(),
                 muscleGroup,
-                modality
+                modality,
+                skip,
+                limit
             )
 
         return HttpResponse.ok(

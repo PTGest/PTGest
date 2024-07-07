@@ -9,7 +9,7 @@ import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.model.user.response.UserDetailsResponse
-import pt.isel.leic.ptgest.services.user.UserService
+import pt.isel.leic.ptgest.services.UserService
 import java.util.*
 
 @RestController

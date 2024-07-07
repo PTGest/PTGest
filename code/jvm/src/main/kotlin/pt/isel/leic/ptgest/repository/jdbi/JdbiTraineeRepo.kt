@@ -20,15 +20,22 @@ class JdbiTraineeRepo(private val handle: Handle) : TraineeRepo {
             .mapTo<TraineeDetails>()
             .firstOrNull()
 
-    override fun getTrainerAssigned(traineeId: UUID): UUID? =
+    override fun isTraineeAssignedToTrainer(traineeId: UUID, trainerId: UUID): Boolean =
         handle.createQuery(
             """
-            select trainer_id
-            from trainer_trainee
-            where trainee_id = :traineeId
+            select exists(
+                select 1
+                from trainer_trainee
+                where trainee_id = :traineeId and trainer_id = :trainerId
+            )
             """.trimIndent()
         )
-            .bind("traineeId", traineeId)
-            .mapTo<UUID>()
-            .firstOrNull()
+            .bindMap(
+                mapOf(
+                    "traineeId" to traineeId,
+                    "trainerId" to trainerId
+                )
+            )
+            .mapTo<Boolean>()
+            .one()
 }

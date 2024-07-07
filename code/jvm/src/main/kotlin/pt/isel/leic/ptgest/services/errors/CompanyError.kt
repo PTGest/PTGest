@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.company
+package pt.isel.leic.ptgest.services.errors
 
 import pt.isel.leic.ptgest.domain.utils.BaseError
 
@@ -19,8 +19,8 @@ sealed class CompanyError : BaseError() {
         override val message: String get() = "Trainer is already associated to the trainee."
     }
 
-    data object ExerciseNotFoundError : CompanyError() {
-        private fun readResolve(): Any = ExerciseNotFoundError
-        override val message: String get() = "Exercise not found."
+    data object TraineeNotFromCompany : CompanyError() {
+        private fun readResolve(): Any = TraineeNotFromCompany
+        override val message: String get() = "Trainee is not from the company."
     }
 }

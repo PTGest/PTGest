@@ -30,6 +30,8 @@ interface WorkoutRepo {
 
     fun getWorkoutDetails(trainerId: UUID, workoutId: Int): Workout?
 
+    fun getWorkoutDetails(workoutId: Int): Workout?
+
     fun getWorkoutSetIds(workoutId: Int): List<Int>
 
     fun favoriteWorkout(trainerId: UUID, workoutId: Int)

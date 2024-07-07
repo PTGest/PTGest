@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.services.auth
+package pt.isel.leic.ptgest.services
 
 import org.springframework.stereotype.Service
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
@@ -9,7 +9,7 @@ import pt.isel.leic.ptgest.domain.user.Gender
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
-import pt.isel.leic.ptgest.services.MailService
+import pt.isel.leic.ptgest.services.errors.AuthError
 import java.util.*
 
 @Service
@@ -160,11 +160,11 @@ class AuthService(
         transactionManager.run {
             val authRepo = it.authRepo
 
-            val resetToken = authRepo.getPasswordResetToken(tokenHash)
-                ?: throw AuthError.TokenError.InvalidPasswordResetToken
+            val resetToken = authRepo.getPasswordResetRequest(tokenHash)
+                ?: throw AuthError.UserAuthenticationError.InvalidPasswordResetRequest
 
             if (resetToken.expiration.before(Date())) {
-                throw AuthError.TokenError.TokenExpired
+                throw AuthError.UserAuthenticationError.PasswordRequestExpired
             }
         }
     }
@@ -179,14 +179,14 @@ class AuthService(
             val authRepo = it.authRepo
             val userRepo = it.userRepo
 
-            val resetToken = authRepo.getPasswordResetToken(tokenHash)
-                ?: throw AuthError.TokenError.InvalidPasswordResetToken
+            val resetToken = authRepo.getPasswordResetRequest(tokenHash)
+                ?: throw AuthError.UserAuthenticationError.InvalidPasswordResetRequest
 
             val userDetails = userRepo.getUserDetails(resetToken.userId)
                 ?: throw AuthError.UserAuthenticationError.UserNotFound
 
             if (resetToken.expiration.before(Date())) {
-                throw AuthError.TokenError.TokenExpired
+                throw AuthError.UserAuthenticationError.PasswordRequestExpired
             }
 
             val passwordHash = authDomain.hashPassword(password)

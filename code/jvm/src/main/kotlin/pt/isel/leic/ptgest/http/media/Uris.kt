@@ -26,7 +26,6 @@ object Uris {
         const val ASSIGN_TRAINER = "/trainee/{traineeId}/assign-trainer"
         const val REASSIGN_TRAINER = "/trainee/{traineeId}/reassign-trainer"
         const val UPDATE_TRAINER_CAPACITY = "/trainer/{trainerId}/update-capacity"
-        const val REMOVE_TRAINER = "/trainer/{trainerId}"
     }
 
     object Trainer {
