@@ -4,6 +4,7 @@ import router from "../../../plugins/router.ts"
 import WorkoutDetails from "../../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts";
 import Workouts from "../../../views/user/TrainerViews/models/workouts/Workouts.ts";
 import {apiBaseUri} from "../../utils/envUtils.ts";
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
 
 async function createCustomWorkout(workoutRequest: CreateCustomWorkoutRequest) {
     try {
@@ -29,9 +30,15 @@ async function getWorkoutDetails(workoutId: string): Promise<WorkoutDetails> {
 }
 
 
-async function getWorkouts(): Promise<Workouts> {
+async function getWorkouts(filters: Map<string, any> | null): Promise<Workouts> {
+    const uri = `${apiBaseUri}/api/trainer/workouts`
+    let postFiltersUri = uri
+
+    if (filters != null) {
+        postFiltersUri = handleFilters(uri, filters)
+    }
     try {
-        const response = await fetchData(`${apiBaseUri}/api/trainer/workouts`, "GET", null)
+        const response = await fetchData(postFiltersUri, "GET", null)
         return new Workouts(response.details.items, response.details.total)
     } catch (error) {
         console.error("Error fetching workouts:", error)
@@ -39,8 +46,38 @@ async function getWorkouts(): Promise<Workouts> {
     }
 }
 
+
+async function likeWorkout(workoutId: string): Promise<void> {
+    const uri = `${apiBaseUri}/api/trainer/workout/${workoutId}/favorite`
+
+    try {
+        await fetchData(uri, "POST", null)
+        return
+    } catch (error) {
+        console.error("Error fetching set details:", error)
+        throw error
+    }
+}
+
+
+async function unlikeWorkout(workoutId: string): Promise<void> {
+    const uri = `${apiBaseUri}/api/trainer/workout/${workoutId}/unfavorite`
+
+    try {
+        await fetchData(uri, "DELETE", null)
+        return
+    } catch (error) {
+        console.error("Error fetching set details:", error)
+        throw error
+    }
+}
+
+
+
 export {
     createCustomWorkout,
     getWorkoutDetails,
-    getWorkouts
+    getWorkouts,
+    likeWorkout,
+    unlikeWorkout
 }

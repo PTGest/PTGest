@@ -32,7 +32,6 @@ const daySessionsFiltered : Ref<TrainerSession[]| Session[]> = ref(props.daySess
 
 ))
 console.log("DAY SESSIONS", daySessionsFiltered.value)
-const userId = router.currentRoute.value.params.traineeId
 
 
 const sessionDetails = (id: number) => {

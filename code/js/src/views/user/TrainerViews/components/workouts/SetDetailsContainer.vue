@@ -7,6 +7,14 @@
         <div v-if="isOpen" class="setDetails">
             <div class="type">{{ props.set.type }}</div>
 
+            <div class="exercise-details" v-if="isSessionDetails">
+                <div class="feedbacks-label">
+                    {{`Feedbacks (${setFeedbacks.length})`}}
+                    <font-awesome-icon @click="addSetFeedbackOpen = true" class="plus-icon" :icon="faPlus" />
+                </div>
+                <AddSetFeedback @close="addSetFeedbackOpen = false" class="set-feedback-container" v-if="addSetFeedbackOpen"></AddSetFeedback>
+            </div>
+
             <div class="exercise-details">
                 <div class="label">Exercises</div>
                 <WorkoutExerciseDetails v-bind="exercise" v-for="exercise in props.set.setExerciseDetails" :exercise="exercise"></WorkoutExerciseDetails>
@@ -24,15 +32,28 @@
 import SetDetails from "@/views/user/TrainerViews/models/sets/SetDetails.ts"
 import Textarea from "primevue/textarea"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faCaretLeft } from "@fortawesome/free-solid-svg-icons"
+import {faCaretLeft, faPlus} from "@fortawesome/free-solid-svg-icons"
 import { Ref, ref } from "vue"
 import WorkoutExerciseDetails from "@/views/user/TrainerViews/components/workouts/WorkoutExerciseDetails.vue"
+import store from "../../../../../store";
+import {getTrainerSetFeedback} from "@/services/TrainerServices/sessions/sessionServices.ts";
+import SetSessionFeedback from "@/views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts";
+import AddSetFeedback from "@/views/user/TrainerViews/components/sessions/AddSetFeedback.vue";
 
 const props = defineProps<{
-    set: SetDetails
+    set: SetDetails,
+    isSessionDetails: boolean
 }>()
+const addSetFeedbackOpen = ref(false);
 const notes: Ref<string | null> = ref(props.set.notes)
-const isOpen = ref(false)
+const isOpen = ref(false);
+const setFeedbacks : Ref<SetSessionFeedback[]> = ref(new Array<SetSessionFeedback>());
+(async() => {
+    if (props.isSessionDetails) {
+       setFeedbacks.value =  await getTrainerSetFeedback(store.getters.sessionDetails.workoutId);
+       console.log("SET FEEDBACKS",setFeedbacks.value);
+    }
+})();
 
 const openDetails = () => {
     isOpen.value = !isOpen.value
@@ -88,12 +109,21 @@ const openDetails = () => {
     width: 100%;
 }
 
-.label {
+.label, .feedbacks-label{
     font-weight: bold;
     font-size: 0.7rem;
     color: white;
     padding: 0.5em;
 }
+
+.feedbacks-label{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
 .details,
 .exercise-details {
     display: flex;
@@ -106,5 +136,19 @@ const openDetails = () => {
 
 .type {
     font-weight: bold;
+}
+.plus-icon {
+    cursor: pointer;
+    color: white;
+    font-size: 1rem;
+}
+
+.set-feedback-container{
+    position: absolute;
+    width: 20em;
+    height: 20em;
+    top: 25%;
+    left: 25%;
+    border-radius: 10px;
 }
 </style>

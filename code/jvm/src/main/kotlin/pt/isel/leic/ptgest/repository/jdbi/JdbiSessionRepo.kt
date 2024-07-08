@@ -338,15 +338,16 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun getSetSessionFeedbacks(sessionId: Int): List<SetSessionFeedback> =
         handle.createQuery(
             """
-            select id, set_order_id, set_id source, feedback, date
-            from feedback
-            join session_set_feedback ssf on feedback.id = ssf.feedback_id
-            where ssf.session_id = :sessionId
-            """.trimIndent()
+        select id, set_order_id, set_id as setId, source, feedback, date
+        from feedback
+        join session_set_feedback ssf on feedback.id = ssf.feedback_id
+        where ssf.session_id = :sessionId
+        """.trimIndent()
         )
             .bind("sessionId", sessionId)
             .mapTo<SetSessionFeedback>()
             .list()
+
 
     override fun getSetSessionFeedback(
         feedbackId: Int,

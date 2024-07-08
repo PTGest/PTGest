@@ -9,34 +9,47 @@
                     </th>
                     <th>Description</th>
                     <th>Muscle Group</th>
+                    <th>Favorite</th>
+                    <th>Details</th>
                 </tr>
             </thead>
             <tbody>
-                <tr @click="openDetails(workout)" class="table-row" v-for="workout in props.workouts" :key="workout.id">
+                <tr class="table-row" v-for="workout in props.workouts" :key="workout.id">
                     <td>{{ workout.name }}</td>
                     <td>
                         <textarea rows="5" readonly>{{ workout.description }}</textarea>
                     </td>
                     <td>{{ workout.muscleGroup.join(",") }}</td>
+                    <td class="like-button-box">
+                        <LikeExercise :id="workout.id" :is-liked="workout.isFavorite"></LikeExercise>
+                    </td>
+                    <td class="circle-info-box" @click="openDetails(workout)">
+                       <font-awesome-icon :icon="faCircleInfo" />
+                    </td>
+
                 </tr>
             </tbody>
         </table>
     </div>
-    <WorkoutDetails @close="closeDetails" v-if="isDetailsOpen" :workout="workoutSelected" />
+    <WorkoutDetails @close="closeDetails" v-if="isDetailsOpen" :workoutId="workoutSelected.id" />
 </template>
 
 <script setup lang="ts">
 import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faDumbbell } from "@fortawesome/free-solid-svg-icons"
+import {faCircleInfo, faDumbbell} from "@fortawesome/free-solid-svg-icons"
 import WorkoutDetails from "@/views/user/TrainerViews/components/workouts/WorkoutDetails.vue"
-import { ref } from "vue"
+import {Ref, ref} from "vue"
+import LikeExercise from "@/views/user/TrainerViews/components/utils/LikeButton.vue";
+import workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
 
 const props = defineProps<{
     workouts: Workout[]
 }>()
+console.log("WORKOUTS", props.workouts)
+
 const isDetailsOpen = ref(false)
-const workoutSelected = ref<Workout | null>(null)
+const workoutSelected: Ref<Workout| null> = ref(null)
 
 const openDetails = (workout: Workout) => {
     isDetailsOpen.value = !isDetailsOpen.value
@@ -55,7 +68,7 @@ const closeDetails = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 30em;
+    width: 40em;
     align-items: center;
     background-color: var(--main-primary-color);
     border-radius: 10px;
@@ -80,11 +93,6 @@ tr {
     border-bottom: 1px solid var(--main-secondary-color);
 }
 
-.table-row:hover {
-    border: 2px solid var(--button-border-color);
-    color: whitesmoke;
-    cursor: pointer;
-}
 
 textarea {
     resize: none;
@@ -100,5 +108,11 @@ textarea {
 
 textarea:focus {
     outline: none;
+}
+
+.circle-info-box{
+    color: whitesmoke;
+    font-size: 1.5em;
+    cursor: pointer;
 }
 </style>

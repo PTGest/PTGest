@@ -10,10 +10,12 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref } from "vue"
 
 import {likeExercise, unlikeExercise} from "@/services/TrainerServices/exercises/exerciseServices.js";
+import {likeWorkout, unlikeWorkout} from "@/services/TrainerServices/workouts/workoutServices.ts";
 
 
 const props = defineProps<{
-    exerciseId: number
+    id: number
+    isExercise: boolean
     isLiked: boolean
 }>()
 
@@ -21,14 +23,35 @@ const isLiked = ref(props.isLiked)
 
 const handleLike = () => {
     console.log("Liked", isLiked.value)
-    if (!isLiked.value) {
-        likeExercise(props.exerciseId)
-        isLiked.value = true
-    } else {
-        unlikeExercise(props.exerciseId)
-        isLiked.value = false
+
+    switch (props.isExercise) {
+        case true:{
+            if (!isLiked.value) {
+                likeExercise(props.id)
+                isLiked.value = true
+            } else {
+                unlikeExercise(props.id)
+                isLiked.value = false
+            }
+            console.log("Liked", isLiked.value)
+            break
+        }
+        case false: {
+            if (!isLiked.value) {
+                likeWorkout(props.id)
+                isLiked.value = true
+            } else {
+                unlikeWorkout(props.id)
+                isLiked.value = false
+            }
+            break
+        }
+
+
     }
-    console.log("Liked", isLiked.value)
+
+
+
 }
 </script>
 

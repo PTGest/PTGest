@@ -1,3 +1,5 @@
+import SessionFeedback from "./SessionFeedback.ts";
+
 class TrainerSessionDetails {
     id: number
     traineeName: string
@@ -10,6 +12,7 @@ class TrainerSessionDetails {
     cancelled: boolean = false
     reason: string | null
     source: string | null
+    feedbacks: SessionFeedback[]
 
     constructor(
         id: number,
@@ -22,7 +25,8 @@ class TrainerSessionDetails {
         notes: string | null,
         cancelled: boolean,
         reason: string | null,
-        source: string | null
+        source: string | null,
+        feedbacks: SessionFeedback[]
     ) {
         this.id = id
         this.traineeName = traineeName
@@ -35,6 +39,7 @@ class TrainerSessionDetails {
         this.cancelled = cancelled
         this.reason = reason
         this.source = source
+        this.feedbacks = feedbacks
     }
 }
 export default TrainerSessionDetails

@@ -1,5 +1,5 @@
 <template>
-    <div class="sets-container">
+    <div class="sets-container" v-if="!filtersOpen">
         <div class="title-row">
             Sets
             <button @click="openAddSet" class="add-btn">
@@ -7,14 +7,16 @@
                 Add Set
             </button>
         </div>
+        <FiltersRow @input="searchBar = $event" @open="filtersOpen = true" @reset="resetFilters"  placeholder="Search set name"/>
         <div class="label-row">
             <div>Name</div>
             <div>Notes</div>
             <div>Type</div>
         </div>
         <Divider />
-        <SetRowView v-for="set in props.sets" :key="set.id" :set="set" />
+        <SetRowView v-for="set in sets.filter((set) => set.name.includes(searchBar))" :key="set.id" :set="set" />
     </div>
+    <Filters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false"  filters-type="sets"/>
 </template>
 
 <script setup lang="ts">
@@ -24,9 +26,27 @@ import SetRowView from "./SetRowView.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import router from "@/plugins/router.ts"
+import FiltersRow from "@/views/user/TrainerViews/components/utils/FiltersRow.vue";
+import {Ref, ref} from "vue";
+import {getSets} from "@/services/TrainerServices/sets/setServices.ts";
+import Filters from "@/views/user/TrainerViews/components/utils/Filters.vue";
 const props = defineProps<{
     sets: Set[]
 }>()
+
+const sets : Ref<Set[]> = ref(props.sets)
+const searchBar = ref("")
+const filtersOpen = ref(false)
+
+const applyFilters = (newSets: any) => {
+    console.log("Filters applied", newSets)
+    sets.value = newSets
+}
+
+const resetFilters = async() => {
+    filtersOpen.value = false
+    sets.value = (await getSets(null)).sets
+}
 
 const openAddSet = () => {
     router.push({ name: "addSet" })

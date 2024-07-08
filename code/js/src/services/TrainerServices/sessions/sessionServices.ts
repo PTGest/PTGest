@@ -7,6 +7,8 @@ import Sessions from "../../../views/user/TrainerViews/models/sessions/Sessions.
 import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
 import TrainerSessions from "../../../views/user/TrainerViews/models/sessions/TrainerSessions.ts";
 import {apiBaseUri} from "../../utils/envUtils.ts";
+import CreateFeedbackRequest from "../../../views/user/TrainerViews/models/sessions/CreateFeedbackRequest.ts";
+import SetSessionFeedback from "../../../views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts";
 
 
 async function cancelSession(sessionId: number, reason: CancelSessionRequest): Promise<void> {
@@ -81,21 +83,31 @@ async function getTrainerSessions(filters: Map<string, any> | null): Promise<Tra
     }
 }
 
-// async function getTrainerSessionsByDate(filters: Map<string, any> | null): Promise<TrainerSessions> {
-//     const uri = `${apiBaseUri}/api/trainer/sessions`
-//     let postFiltersUri = uri
-//
-//     if (filters != null) {
-//         postFiltersUri = handleFilters(uri, filters)
-//     }
-//     try {
-//         const response = await fetchData(postFiltersUri, "GET", null)
-//         return new TrainerSessions(response.details.items, response.details.total)
-//     } catch (error) {
-//         console.error("Error fetching set:", error)
-//         throw error
-//     }
-// }
+async function addTrainerSessionsFeedback(feedback: string, sessionId: string): Promise<void> {
+    const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/feedback`
+
+    try {
+        await fetchData(uri, "POST", new CreateFeedbackRequest(feedback))
+        return
+    } catch (error) {
+        console.error("Error fetching set:", error)
+        throw error
+    }
+}
+
+async function getTrainerSetFeedback(sessionId: string): Promise<SetSessionFeedback[]> {
+    const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/sets/feedback`
+    try {
+        const response = await fetchData(uri, "GET", null)
+        return response.details.feedbacks
+    } catch (error) {
+        console.error("Error fetching set:", error)
+        throw error
+    }
+}
+
+
+
 
 
 export {
@@ -104,5 +116,7 @@ export {
     editSession,
     getSessionDetails,
     getTraineeSessions,
-    getTrainerSessions
+    getTrainerSessions,
+    addTrainerSessionsFeedback,
+    getTrainerSetFeedback
 }

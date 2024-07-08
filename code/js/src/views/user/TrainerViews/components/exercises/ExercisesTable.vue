@@ -17,7 +17,7 @@
                 {{ exercise.modality }}
             </td>
             <td class="like-button-box">
-                <LikeExercise :exercise-id="exercise.id" :is-liked="exercise.isFavorite"></LikeExercise>
+                <LikeExercise :id="exercise.id" :is-liked="exercise.isFavorite" is-exercise></LikeExercise>
             </td>
         </tr>
     </table>
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import Exercise from "../../models/exercises/Exercise.ts"
-import LikeExercise from "@/views/user/TrainerViews/components/exercises/LikeExercise.vue"
+import LikeExercise from "@/views/user/TrainerViews/components/utils/LikeButton.vue"
 
 const props = defineProps<{
     exercises: Exercise[]

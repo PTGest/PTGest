@@ -1,9 +1,9 @@
 <template>
-    <div class="ExerciseFilters">
+    <div class="filters">
         <div class="title">Filters</div>
         <font-awesome-icon @click="emit('close')" class="close-icon" :icon="faTimes" />
 
-        <ExercisesDropdown @dropdownOption="modality = $event" :options="modalityOptions" placeholder="Filter by Modality"></ExercisesDropdown>
+        <ExercisesDropdown v-if="props.filtersType == 'exercises'" @dropdownOption="modality = $event" :options="modalityOptions" placeholder="Filter by Modality"></ExercisesDropdown>
         <ExercisesDropdown @dropdownOption="selectedMuscleGroups = $event" :options="muscleGroupOptions" placeholder="Filter by Muscle Groups" />
 
         <div class="liked-exercises">
@@ -12,7 +12,6 @@
                 <font-awesome-icon :class="[isLiked ? 'heart-icon-active' : 'heart-icon']" :icon="faHeart" />
             </div>
         </div>
-
 
         <button class="applyFilters" @click="applyFilters">Apply Filters</button>
     </div>
@@ -24,8 +23,14 @@ import { ref } from "vue"
 import ExercisesDropdown from "../exercises/ExercisesDropdown.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import {faHeart, faTimes} from "@fortawesome/free-solid-svg-icons"
-import LikeExercise from "@/views/user/TrainerViews/components/exercises/LikeExercise.vue";
+import Set from "@/views/user/TrainerViews/models/sets/Set.ts";
 import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
+import {getWorkouts} from "@/services/TrainerServices/workouts/workoutServices.ts";
+import {getSets} from "@/services/TrainerServices/sets/setServices.ts";
+import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
+import Exercises from "@/views/user/TrainerViews/models/exercises/Exercises.ts";
+
+
 
 const modality = ref<string>("")
 const selectedMuscleGroups = ref<string>("")
@@ -33,6 +38,9 @@ const emit = defineEmits(["filtersApplied", "close"])
 const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING" }, { name: "CYCLING" }, { name: "OTHER" }]
 const isLiked = ref(false);
 
+const props = defineProps<{
+   filtersType: string
+}>()
 const handleLike = () => {
     isLiked.value = !isLiked.value
 }
@@ -59,7 +67,7 @@ const muscleGroupOptions = ref([
 
 const applyFilters = async () => {
     const filters = new Map<string, any>()
-    if (modality.value !== "") {
+    if (modality.value !== "" ) {
         filters.set("modality", modality.value.name)
     }
     if (selectedMuscleGroups.value !== "") {
@@ -68,15 +76,34 @@ const applyFilters = async () => {
     if (isLiked.value) {
         filters.set("isFavorite", isLiked.value)
     }
-    const exercises = await getExercises(filters)
-    emit("filtersApplied", exercises)
-    emit("close")
+
+    switch (props.filtersType) {
+
+        case "exercises":{
+            const exercises : Exercises = await getExercises(filters)
+            emit("filtersApplied", exercises)
+            emit("close")
+            break;
+        }
+        case "sets": {
+            const sets : Set[] = (await getSets(filters)).sets
+            emit("filtersApplied", sets)
+            emit("close")
+            break;
+        }
+        case "workouts":{
+            const workouts : Workout[] = (await getWorkouts(filters)).workouts
+            emit("filtersApplied", workouts)
+            emit("close")
+        }
+
+    }
     console.log("Filters applied")
 }
 </script>
 
 <style scoped>
-.ExerciseFilters {
+.filters {
     position: relative;
     display: flex;
     flex-direction: column;

@@ -8,32 +8,24 @@
             </button>
         </div>
 
-        <div class="input-row">
-            <font-awesome-icon class="search-icon" :icon="faMagnifyingGlass" />
-            <input v-model="searchBar" class="bar" placeholder="Search exercise name" />
-            <button class="filters" @click="handleFiltersView">
-                <font-awesome-icon :icon="faFilter" />
-                Filters
-            </button>
-            <font-awesome-icon @click="resetFilters" class="reset-filters-icon" :icon="faArrowsRotate" />
-        </div>
+        <FiltersRow @input="searchBar = $event" @open="filtersOpen = true" @reset="resetFilters"  placeholder="Search exercise name"/>
 
         <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises.filter((exercise) => exercise.name.includes(searchBar))" />
         <div v-else class="not-found">Does not found any exercise</div>
     </div>
-    <ExerciseFilters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false" />
+    <Filters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false"  filters-type="exercises"/>
 </template>
 
 <script setup lang="ts">
 import { Ref, ref } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import {faArrowsRotate, faFilter, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons"
+import {faPlus} from "@fortawesome/free-solid-svg-icons"
 import ExercisesTable from "./components/exercises/ExercisesTable.vue"
 import Exercises from "./models/exercises/Exercises.ts"
-
 import router from "@/plugins/router.ts"
-import ExerciseFilters from "@/views/user/TrainerViews/components/exercises/exerciseFilters.vue"
 import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
+import FiltersRow from "@/views/user/TrainerViews/components/utils/FiltersRow.vue";
+import Filters from "@/views/user/TrainerViews/components/utils/Filters.vue";
 
 const filtersOpen = ref(false)
 const searchBar = ref("")
@@ -41,17 +33,12 @@ const exercises: Ref<Exercises> = ref({
     exercises: [],
     nOfExercises: 0,
 })
-const handleFiltersView = () => {
-    console.log("openFilters", filtersOpen.value)
-    filtersOpen.value = !filtersOpen.value
-}
 
 const applyFilters = (newExercises: any) => {
     console.log("Filters applied", newExercises)
     exercises.value = newExercises
 }
 const resetFilters = async () => {
-    searchBar.value = ""
     filtersOpen.value = false
     exercises.value = await getExercises(null)
 }
@@ -64,7 +51,6 @@ const openAddExercise = () => {
 (async () => {
     try {
         exercises.value = await getExercises(null)
-        console.log(exercises.value)
     } catch (error) {
         console.error("Error getting user info:", error)
     }
@@ -110,54 +96,6 @@ const openAddExercise = () => {
     color: whitesmoke;
     cursor: pointer;
     font-size: 15px;
-}
-
-.input-row {
-    position: relative;
-    left: -0.5em;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 1em;
-    margin-bottom: 1em;
-    gap: 1em;
-}
-
-.bar {
-    margin-left: 1em;
-    margin-bottom: 0;
-    height: 2.5em;
-    width: 100%;
-    padding: 0.5em;
-    border-radius: 5px;
-    font-family: Poppins, sans-serif;
-    font-size: 0.9rem;
-    border: none;
-}
-
-.search-icon {
-    position: relative;
-    right: -1.5em;
-}
-
-.filters {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--main-secondary-color);
-    padding: 0.5em;
-    border-radius: 5px;
-    font-family: Poppins, sans-serif;
-    font-size: 1.05rem;
-    color: whitesmoke;
-    transition: 0.2s ease-in;
-}
-
-.filters:hover {
-    background-color: var(--light-blue);
-    transition: 0.2s ease-out;
 }
 
 .not-found {

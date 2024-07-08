@@ -71,25 +71,25 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         skip: Int,
         limit: Int?
     ): List<TrainerSet> {
-        val nameCondition = name?.let { "and name like :name" } ?: ""
-        val typeCondition = type?.let { "and type = :type::set_type" } ?: ""
+        val nameCondition = name?.let { "and s.name like :name" } ?: ""
+        val typeCondition = type?.let { "and s.type = :type::set_type" } ?: ""
         val isFavoriteCondition = if (isFavorite) "and tfs.set_id is not null" else ""
 
         return handle.createQuery(
             """
-            select id, name, notes, type
-                case when tfs.set_id is not null then true else false end as is_favorite
-            from set s 
-            join set_trainer st on s.id = st.set_id
-            left join trainer_favorite_set tfs on s.id = tfs.set_id and tfs.trainer_id = :trainerId
-            where st.trainer_id = :trainerId $typeCondition $nameCondition $isFavoriteCondition
-            limit :limit offset :skip
-            """.trimIndent()
+        select s.id, s.name, s.notes, s.type,
+            case when tfs.set_id is not null then true else false end as is_favorite
+        from set s 
+        join set_trainer st on s.id = st.set_id
+        left join trainer_favorite_set tfs on s.id = tfs.set_id and tfs.trainer_id = :trainerId
+        where st.trainer_id = :trainerId $nameCondition $typeCondition $isFavoriteCondition
+        limit :limit offset :skip
+        """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "trainerId" to trainerId,
-                    "name" to "%$name%",
+                    "name" to name?.let { "%$it%" },
                     "type" to type?.name,
                     "skip" to skip,
                     "limit" to limit

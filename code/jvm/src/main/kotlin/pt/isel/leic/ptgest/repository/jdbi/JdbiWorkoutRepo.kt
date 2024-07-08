@@ -84,53 +84,54 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         skip: Int,
         limit: Int?
     ): List<TrainerWorkout> {
-        val nameCondition = name?.let { "and name like :name" } ?: ""
-        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val nameCondition = name?.let { "and w.name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(w.muscle_group)" } ?: ""
         val isFavoriteCondition = if (isFavorite) "and tfw.workout_id is not null" else ""
 
-        return handle.createQuery(
-            """
-            select id, name, description, muscle_group
-                case when tfw.workout_id is not null then true else false end as is_favorite
-            from workout w 
-            join workout_trainer wt on wt.workout_id = w.id
-            left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
-            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
-            limit :limit offset :skip
-            """.trimIndent()
+        val query = """
+        select w.id, w.name, w.description, w.muscle_group,
+            case when tfw.workout_id is not null then true else false end as is_favorite
+        from workout w 
+        join workout_trainer wt on wt.workout_id = w.id
+        left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
+        where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
+        limit :limit offset :skip
+    """.trimIndent()
+
+        val queryMap = mutableMapOf<String, Any?>(
+            "trainerId" to trainerId,
+            "name" to name?.let { "%$it%" },
+            "muscleGroup" to muscleGroup?.name,
+            "skip" to skip
         )
-            .bindMap(
-                mapOf(
-                    "trainerId" to trainerId,
-                    "name" to "%$name%",
-                    "muscleGroup" to muscleGroup?.name,
-                    "skip" to skip,
-                    "limit" to limit
-                )
-            )
+
+        limit?.let { queryMap["limit"] = it } ?: run { queryMap["limit"] = Integer.MAX_VALUE }
+
+        return handle.createQuery(query)
+            .bindMap(queryMap)
             .mapTo<TrainerWorkout>()
             .list()
     }
 
+
     override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?, isFavorite: Boolean): Int {
-        val nameCondition = name?.let { "and name like :name" } ?: ""
-        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(muscle_group)" } ?: ""
+        val nameCondition = name?.let { "and w.name like :name" } ?: ""
+        val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(w.muscle_group)" } ?: ""
         val isFavoriteCondition = if (isFavorite) "and tfw.workout_id is not null" else ""
 
         return handle.createQuery(
             """
-            select count(*)
-            from workout w 
-            join workout_trainer wt on wt.workout_id = w.id
-            left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
-            where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
-            limit :limit offset :skip
-            """.trimIndent()
+        select count(*)
+        from workout w 
+        join workout_trainer wt on wt.workout_id = w.id
+        left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
+        where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
+        """.trimIndent()
         )
             .bindMap(
                 mapOf(
                     "trainerId" to trainerId,
-                    "name" to "%$name%",
+                    "name" to name?.let { "%$it%" },
                     "muscleGroup" to muscleGroup?.name
                 )
             )
