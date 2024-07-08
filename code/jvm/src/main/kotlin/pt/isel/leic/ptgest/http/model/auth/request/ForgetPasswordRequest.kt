@@ -1,12 +1,11 @@
 package pt.isel.leic.ptgest.http.model.auth.request
 
-import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotEmpty
 
 data class ForgetPasswordRequest(
-    @field:Pattern(
-        regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
-        message = "Invalid email address."
-    )
+    @field:NotEmpty(message = "Email cannot be empty.")
+    @field:Email(message = "Invalid email address.")
     val email: String
 ) {
     init {

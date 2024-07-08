@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
@@ -25,10 +26,8 @@ sealed class SignupRequest {
         @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @field:Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
-            message = "Invalid email address."
-        )
+        @field:NotEmpty(message = "Email cannot be empty.")
+        @field:Email(message = "Invalid email address.")
         val email: String,
 
         @field:Size(min = 8, message = "Password must have at least 8 characters.")
@@ -46,10 +45,8 @@ sealed class SignupRequest {
         @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @field:Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
-            message = "Invalid email address."
-        )
+        @field:NotEmpty(message = "Email cannot be empty.")
+        @field:Email(message = "Invalid email address.")
         val email: String,
 
         @field:Size(min = 8, message = "Password must have at least 8 characters.")
@@ -57,6 +54,7 @@ sealed class SignupRequest {
 
         val gender: Gender,
 
+        @field:NotEmpty(message = "Phone number cannot be empty.")
         @field:Pattern(
             regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$",
             message = "Invalid phone number."

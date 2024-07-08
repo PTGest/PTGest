@@ -65,7 +65,7 @@ class TraineeService(
 
     fun getTraineeDataHistory(
         traineeId: UUID,
-        order: Order?,
+        order: Order,
         skip: Int?,
         limit: Int?
     ): Pair<List<TraineeData>, Int> {
@@ -79,7 +79,7 @@ class TraineeService(
 
             val traineeData = traineeDataRepo.getTraineeData(
                 traineeId,
-                order ?: Order.DESC,
+                order,
                 skip ?: 0,
                 limit
             )

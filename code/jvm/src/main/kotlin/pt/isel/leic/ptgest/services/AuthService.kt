@@ -152,10 +152,10 @@ class AuthService(
         )
     }
 
-    fun validatePasswordResetToken(token: String) {
-        require(token.isNotBlank()) { "Invalid token." }
+    fun validatePasswordResetRequest(requestToken: String) {
+        require(requestToken.isNotBlank()) { "Invalid token." }
 
-        val tokenHash = authDomain.hashToken(token)
+        val tokenHash = authDomain.hashToken(requestToken)
 
         transactionManager.run {
             val authRepo = it.authRepo

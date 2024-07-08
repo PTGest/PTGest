@@ -16,16 +16,16 @@ import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
+import pt.isel.leic.ptgest.http.model.common.request.CancelSessionRequest
+import pt.isel.leic.ptgest.http.model.common.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.common.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
+import pt.isel.leic.ptgest.http.model.common.response.GetReportDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.GetSetDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.ListResponse
-import pt.isel.leic.ptgest.http.model.trainee.request.CancelSessionRequest
-import pt.isel.leic.ptgest.http.model.trainee.response.GetReportDetailsResponse
 import pt.isel.leic.ptgest.http.model.trainee.response.GetSessionDetailsResponse
-import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
-import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.services.TraineeService
 import java.util.Date
@@ -68,7 +68,7 @@ class TraineeController(
 
     @GetMapping(Uris.Trainee.GET_TRAINEE_DATA_HISTORY)
     fun getTraineeDataHistory(
-        @RequestParam order: Order?,
+        @RequestParam(defaultValue = "DESC") order: Order,
         @RequestParam skip: Int?,
         @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
@@ -131,7 +131,7 @@ class TraineeController(
 
         return HttpResponse.ok(
             message = "Set details retrieved successfully.",
-            details = GetSetDetails(setDetails)
+            details = GetSetDetailsResponse(setDetails)
         )
     }
 

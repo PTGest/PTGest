@@ -53,10 +53,10 @@ class TrainerService(
 
     fun getTrainerTrainees(
         trainerId: UUID,
-        skip: Int?,
-        limit: Int?,
         gender: Gender?,
-        name: String?
+        name: String?,
+        skip: Int?,
+        limit: Int?
     ): Pair<List<Trainee>, Int> {
         Validators.validate(
             Validators.ValidationRequest(skip, "Skip must be a positive number.") { it as Int >= 0 },

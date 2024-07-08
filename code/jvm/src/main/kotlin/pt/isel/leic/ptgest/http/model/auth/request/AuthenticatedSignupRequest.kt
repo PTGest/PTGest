@@ -3,6 +3,7 @@ package pt.isel.leic.ptgest.http.model.auth.request
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Pattern
 import pt.isel.leic.ptgest.domain.user.Gender
@@ -24,16 +25,15 @@ sealed class AuthenticatedSignupRequest {
         @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @field:Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
-            message = "Invalid email address."
-        )
+        @field:NotEmpty(message = "Email cannot be empty.")
+        @field:Email(message = "Invalid email address.")
         val email: String,
 
         val gender: Gender,
 
         val capacity: Int,
 
+        @field:NotEmpty(message = "Phone Number cannot be empty.")
         @field:Pattern(
             regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$",
             message = "Invalid phone number."
@@ -52,16 +52,15 @@ sealed class AuthenticatedSignupRequest {
         @field:NotEmpty(message = "Name cannot be empty.")
         val name: String,
 
-        @field:Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$",
-            message = "Invalid email address."
-        )
+        @field:NotEmpty(message = "Email cannot be empty.")
+        @field:Email(message = "Invalid email address.")
         val email: String,
 
         val birthdate: Date,
 
         val gender: Gender,
 
+        @field:NotEmpty(message = "Phone Number cannot be empty.")
         @field:Pattern(
             regexp = "^\\+?(\\d[\\d-. ]+)?(\\([\\d-. ]+\\))?[\\d-. ]+\\d\$",
             message = "Invalid phone number."

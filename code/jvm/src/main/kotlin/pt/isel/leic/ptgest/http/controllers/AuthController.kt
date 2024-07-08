@@ -66,9 +66,9 @@ class AuthController(private val service: AuthService) {
     @PostMapping(Uris.Auth.AUTHENTICATED_SIGNUP)
     @AuthenticationRequired(Role.COMPANY, Role.INDEPENDENT_TRAINER)
     fun authenticatedSignup(
-        authenticatedUser: AuthenticatedUser,
         @Valid @RequestBody
-        userInfo: AuthenticatedSignupRequest
+        userInfo: AuthenticatedSignupRequest,
+        authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         when (userInfo) {
             is AuthenticatedSignupRequest.Trainee -> {
@@ -86,7 +86,6 @@ class AuthController(private val service: AuthService) {
                     details = AuthenticatedSignupResponse(traineeId)
                 )
             }
-
             is AuthenticatedSignupRequest.HiredTrainer -> {
                 val trainerId = service.signUpHiredTrainer(
                     authenticatedUser.id,
@@ -117,11 +116,11 @@ class AuthController(private val service: AuthService) {
         )
     }
 
-    @GetMapping(Uris.Auth.VALIDATE_PASSWORD_RESET_TOKEN)
-    fun validatePasswordResetToken(
-        @PathVariable token: String
+    @GetMapping(Uris.Auth.VALIDATE_PASSWORD_RESET_REQUEST)
+    fun validatePasswordResetRequest(
+        @PathVariable requestToken: String
     ): ResponseEntity<*> {
-        service.validatePasswordResetToken(token.trim())
+        service.validatePasswordResetRequest(requestToken.trim())
 
         return HttpResponse.ok(
             message = "Password reset token validated successfully."

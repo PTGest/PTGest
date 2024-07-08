@@ -79,9 +79,9 @@ class CompanyService(
     }
 
     fun assignTrainerToTrainee(
+        companyId: UUID,
         trainerId: UUID,
-        traineeId: UUID,
-        companyId: UUID
+        traineeId: UUID
     ) {
         transactionManager.run {
             val companyRepo = it.companyRepo
@@ -102,9 +102,9 @@ class CompanyService(
     }
 
     fun reassignTrainer(
-        trainerId: UUID,
-        traineeId: UUID,
-        companyId: UUID
+        companyId: UUID,
+        newTrainerId: UUID,
+        traineeId: UUID
     ) {
         val traineeMail = transactionManager.run {
             val companyRepo = it.companyRepo
@@ -119,22 +119,22 @@ class CompanyService(
                 throw CompanyError.TraineeNotFromCompany
             }
 
-            val newTrainer = companyRepo.getTrainer(trainerId, companyId)
+            val newTrainer = companyRepo.getTrainer(newTrainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
             if (newTrainer.assignedTrainees >= newTrainer.capacity) {
                 throw CompanyError.TrainerCapacityReached
             }
 
-            if (traineeRepo.isTraineeAssignedToTrainer(traineeId, trainerId)) {
+            if (traineeRepo.isTraineeAssignedToTrainer(traineeId, newTrainerId)) {
                 throw CompanyError.TrainerAlreadyAssociatedToTrainee
             }
 
-            sessionRepo.getTrainerSessions(trainerId, Date())
+            sessionRepo.getTrainerSessions(newTrainerId, Date())
                 .forEach { session ->
                     sessionRepo.cancelSession(session, Source.COMPANY, "Trainer reassigned.")
                 }
-            companyRepo.reassignTrainer(trainerId, traineeId)
+            companyRepo.reassignTrainer(newTrainerId, traineeId)
 
             return@run traineeDetails.email
         }

@@ -77,14 +77,11 @@ class AuthInterceptor(
     ): AccessTokenDetails {
         val currentDate = Date()
 
-        val accessTokenCookie = request.cookies?.firstOrNull { it.name == "access_token" }?.value
-        val refreshTokenCookie = request.cookies?.firstOrNull { it.name == "refresh_token" }?.value
+        val accessToken = request.cookies?.firstOrNull { it.name == "access_token" }?.value
+            ?: request.getHeader("Authorization")?.removePrefix("Bearer ")
 
-        val accessTokenHeader = request.getHeader("Authorization")?.removePrefix("Bearer ")
-        val refreshTokenHeader = request.getHeader("Refresh-Token")?.removePrefix("Bearer ")
-
-        val accessToken = accessTokenCookie ?: accessTokenHeader
-        val refreshToken = refreshTokenCookie ?: refreshTokenHeader
+        val refreshToken = request.cookies?.firstOrNull { it.name == "refresh_token" }?.value
+            ?: request.getHeader("Refresh-Token")?.removePrefix("Bearer ")
 
         return when {
             accessToken != null -> {

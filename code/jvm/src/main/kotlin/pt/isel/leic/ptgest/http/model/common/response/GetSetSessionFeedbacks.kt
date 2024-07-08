@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.model.trainer.response
+package pt.isel.leic.ptgest.http.model.common.response
 
 import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
 

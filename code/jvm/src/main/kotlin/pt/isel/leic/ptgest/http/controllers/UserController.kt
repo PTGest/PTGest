@@ -26,12 +26,10 @@ class UserController(private val service: UserService) {
                 val traineeDetails = service.getTraineeDetails(id)
                 UserDetailsResponse.TraineeUserDetails(userDetails, traineeDetails)
             }
-
             Role.HIRED_TRAINER, Role.INDEPENDENT_TRAINER -> {
                 val trainerDetails = service.getTrainerDetails(id)
                 UserDetailsResponse.TrainerUserDetails(userDetails, trainerDetails)
             }
-
             Role.COMPANY -> UserDetailsResponse.CompanyUserDetails(userDetails)
         }
 

@@ -4,7 +4,7 @@ import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.workout.SetType
 
-data class GetSetDetails(
+data class GetSetDetailsResponse(
     val name: String,
     val notes: String?,
     val type: SetType,

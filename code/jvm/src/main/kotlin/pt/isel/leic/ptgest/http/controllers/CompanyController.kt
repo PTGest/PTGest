@@ -37,12 +37,12 @@ class CompanyController(
 ) {
     @GetMapping(Uris.Company.TRAINERS)
     fun getCompanyTrainers(
-        @RequestParam skip: Int?,
-        @RequestParam limit: Int?,
         @RequestParam gender: Gender?,
         @RequestParam(defaultValue = "DESC") availability: Order,
         @RequestParam name: String?,
         @RequestParam excludeTraineeTrainer: UUID?,
+        @RequestParam limit: Int?,
+        @RequestParam skip: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (trainers, total) = companyService.getCompanyTrainers(
@@ -63,10 +63,10 @@ class CompanyController(
 
     @GetMapping(Uris.Company.TRAINEES)
     fun getCompanyTrainees(
-        @RequestParam skip: Int?,
-        @RequestParam limit: Int?,
         @RequestParam gender: Gender?,
         @RequestParam name: String?,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (trainees, total) = companyService.getCompanyTrainees(
@@ -89,7 +89,7 @@ class CompanyController(
         @RequestBody trainerInfo: AssignTrainerRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        companyService.assignTrainerToTrainee(trainerInfo.trainerId, traineeId, authenticatedUser.id)
+        companyService.assignTrainerToTrainee(authenticatedUser.id, trainerInfo.trainerId, traineeId)
 
         return HttpResponse.created(
             message = "Trainer assigned to trainee successfully."
@@ -102,7 +102,7 @@ class CompanyController(
         @RequestBody trainerInfo: ReassignTrainerRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        companyService.reassignTrainer(trainerInfo.newTrainerId, traineeId, authenticatedUser.id)
+        companyService.reassignTrainer(authenticatedUser.id, trainerInfo.newTrainerId, traineeId)
 
         return HttpResponse.ok(
             message = "Trainer reassigned to trainee successfully."
@@ -115,7 +115,7 @@ class CompanyController(
         @RequestBody capacityInfo: UpdateTrainerCapacityRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        companyService.updateTrainerCapacity(trainerId, authenticatedUser.id, capacityInfo.capacity)
+        companyService.updateTrainerCapacity(authenticatedUser.id, trainerId, capacityInfo.capacity)
 
         return HttpResponse.ok(
             message = "Trainer capacity updated successfully to ${capacityInfo.capacity}."
@@ -123,7 +123,6 @@ class CompanyController(
     }
 
     @PostMapping(Uris.Exercise.CREATE_CUSTOM_EXERCISE)
-    @AuthenticationRequired(Role.INDEPENDENT_TRAINER, Role.HIRED_TRAINER, Role.COMPANY)
     fun createCustomExercise(
         @Valid @RequestBody
         exerciseDetails: CreateExerciseRequest,
@@ -146,11 +145,11 @@ class CompanyController(
 
     @GetMapping(Uris.Exercise.GET_EXERCISES)
     fun getExercises(
-        @RequestParam skip: Int?,
-        @RequestParam limit: Int?,
         @RequestParam name: String?,
         @RequestParam muscleGroup: MuscleGroup?,
         @RequestParam modality: Modality?,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (exercises, total) =

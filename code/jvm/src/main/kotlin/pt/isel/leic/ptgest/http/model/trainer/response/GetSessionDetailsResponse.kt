@@ -6,7 +6,7 @@ import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import java.util.*
 
-data class GetSessionDetails(
+data class GetSessionDetailsResponse(
     val id: Int,
     val traineeName: String,
     val workoutId: Int,

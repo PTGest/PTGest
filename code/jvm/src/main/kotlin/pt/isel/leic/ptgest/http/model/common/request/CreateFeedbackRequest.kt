@@ -1,4 +1,4 @@
-package pt.isel.leic.ptgest.http.model.trainer.request
+package pt.isel.leic.ptgest.http.model.common.request
 
 import jakarta.validation.constraints.NotEmpty
 

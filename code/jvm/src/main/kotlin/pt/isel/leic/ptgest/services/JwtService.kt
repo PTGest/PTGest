@@ -39,10 +39,7 @@ class JwtService(
 
         claims["version"] = version
 
-        require(
-            currentDate.before(expirationDate) ||
-                currentDate == expirationDate
-        ) { "Expiration date must be after or equal to creation date" }
+        require(currentDate.before(expirationDate)) { "Expiration date must be after current date" }
 
         return createToken(claims, userId, role, expirationDate)
     }

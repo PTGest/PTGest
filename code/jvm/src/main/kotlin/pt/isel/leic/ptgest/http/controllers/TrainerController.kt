@@ -21,24 +21,25 @@ import pt.isel.leic.ptgest.domain.workout.MuscleGroup
 import pt.isel.leic.ptgest.domain.workout.SetType
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
+import pt.isel.leic.ptgest.http.model.common.request.CancelSessionRequest
 import pt.isel.leic.ptgest.http.model.common.request.CreateExerciseRequest
+import pt.isel.leic.ptgest.http.model.common.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.common.response.CreateResourceResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetExerciseDetailsResponse
-import pt.isel.leic.ptgest.http.model.common.response.GetSetDetails
+import pt.isel.leic.ptgest.http.model.common.response.GetReportDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.GetSetDetailsResponse
+import pt.isel.leic.ptgest.http.model.common.response.GetSetSessionFeedbacks
 import pt.isel.leic.ptgest.http.model.common.response.GetTraineeDataDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.GetWorkoutDetailsResponse
 import pt.isel.leic.ptgest.http.model.common.response.ListResponse
 import pt.isel.leic.ptgest.http.model.trainer.request.AddTraineeDataRequest
-import pt.isel.leic.ptgest.http.model.trainer.request.CancelSessionRequest
-import pt.isel.leic.ptgest.http.model.trainer.request.CreateFeedbackRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateReportRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSessionRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateSetRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.CreateWorkoutRequest
 import pt.isel.leic.ptgest.http.model.trainer.request.EditReportRequest
-import pt.isel.leic.ptgest.http.model.trainer.response.GetReportDetailsResponse
-import pt.isel.leic.ptgest.http.model.trainer.response.GetSessionDetails
-import pt.isel.leic.ptgest.http.model.trainer.response.GetSetSessionFeedbacks
+import pt.isel.leic.ptgest.http.model.trainer.request.EditSessionRequest
+import pt.isel.leic.ptgest.http.model.trainer.response.GetSessionDetailsResponse
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.services.TrainerService
 import java.util.Date
@@ -52,18 +53,18 @@ class TrainerController(
 ) {
     @GetMapping(Uris.Trainer.TRAINEES)
     fun getTrainerTrainees(
-        @RequestParam skip: Int?,
         @RequestParam name: String?,
-        @RequestParam limit: Int?,
         @RequestParam gender: Gender?,
+        @RequestParam skip: Int?,
+        @RequestParam limit: Int?,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         val (trainees, total) = trainerService.getTrainerTrainees(
             authenticatedUser.id,
-            skip,
-            limit,
             gender,
-            name?.trim()
+            name?.trim(),
+            skip,
+            limit
         )
 
         return HttpResponse.ok(
@@ -373,7 +374,6 @@ class TrainerController(
     ): ResponseEntity<*> {
         val (sets, total) = trainerService.getSets(
             authenticatedUser.id,
-
             type,
             name?.trim(),
             isFavorite ?: false,
@@ -399,7 +399,7 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Set details retrieved successfully.",
-            details = GetSetDetails(setDetails)
+            details = GetSetDetailsResponse(setDetails)
         )
     }
 
@@ -615,14 +615,14 @@ class TrainerController(
 
         return HttpResponse.ok(
             message = "Session details retrieved successfully.",
-            details = GetSessionDetails(sessionDetails, feedbacks)
+            details = GetSessionDetailsResponse(sessionDetails, feedbacks)
         )
     }
 
     @PutMapping(Uris.Session.EDIT_SESSION)
     fun editSession(
         @PathVariable sessionId: Int,
-        @RequestBody sessionDetails: CreateSessionRequest,
+        @RequestBody sessionDetails: EditSessionRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
         trainerService.editSession(
