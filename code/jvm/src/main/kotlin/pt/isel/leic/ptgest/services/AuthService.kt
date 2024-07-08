@@ -236,6 +236,25 @@ class AuthService(
         return createTokens(currentDate, refreshTokenDetails.userId, refreshTokenDetails.role)
     }
 
+    fun changePassword(userId: UUID, currentPassword: String, newPassword: String) {
+        transactionManager.run {
+            val authRepo = it.authRepo
+            val userRepo = it.userRepo
+
+            val user = userRepo.getUserDetails(userId)
+                ?: throw AuthError.UserAuthenticationError.UserNotFound
+
+            if (!authDomain.validatePassword(currentPassword, user.passwordHash)) {
+                throw AuthError.UserAuthenticationError.InvalidPassword
+            }
+
+            val newPasswordHash = authDomain.hashPassword(newPassword)
+
+            authRepo.resetPassword(userId, newPasswordHash)
+            authRepo.updateTokenVersion(userId)
+        }
+    }
+
     private fun createTokens(currentDate: Date, userId: UUID, userRole: Role): TokenPair {
         val accessExpirationDate = authDomain.createAccessTokenExpirationDate(currentDate)
         val refreshExpirationDate = authDomain.createRefreshTokenExpirationDate(currentDate)

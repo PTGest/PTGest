@@ -342,12 +342,11 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         from feedback
         join session_set_feedback ssf on feedback.id = ssf.feedback_id
         where ssf.session_id = :sessionId
-        """.trimIndent()
+            """.trimIndent()
         )
             .bind("sessionId", sessionId)
             .mapTo<SetSessionFeedback>()
             .list()
-
 
     override fun getSetSessionFeedback(
         feedbackId: Int,

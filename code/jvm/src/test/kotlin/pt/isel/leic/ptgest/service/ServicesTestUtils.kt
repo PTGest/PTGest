@@ -1,27 +1,24 @@
- package pt.isel.leic.ptgest.service
+package pt.isel.leic.ptgest.service
 
- import org.jdbi.v3.core.transaction.TransactionIsolationLevel
- import org.mockito.Mockito.mock
- import pt.isel.leic.ptgest.domain.auth.AuthDomain
- import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
- import pt.isel.leic.ptgest.repository.AuthRepo
- import pt.isel.leic.ptgest.repository.CompanyRepo
- import pt.isel.leic.ptgest.repository.ExerciseRepo
- import pt.isel.leic.ptgest.repository.ReportRepo
- import pt.isel.leic.ptgest.repository.SessionRepo
- import pt.isel.leic.ptgest.repository.SetRepo
- import pt.isel.leic.ptgest.repository.TraineeDataRepo
- import pt.isel.leic.ptgest.repository.TraineeRepo
- import pt.isel.leic.ptgest.repository.TrainerRepo
- import pt.isel.leic.ptgest.repository.UserRepo
- import pt.isel.leic.ptgest.repository.WorkoutRepo
- import pt.isel.leic.ptgest.repository.transaction.Transaction
- import pt.isel.leic.ptgest.repository.transaction.TransactionManager
- import pt.isel.leic.ptgest.services.MailService
- import pt.isel.leic.ptgest.services.AuthService
- import pt.isel.leic.ptgest.services.JwtService
+import org.jdbi.v3.core.transaction.TransactionIsolationLevel
+import org.mockito.Mockito.mock
+import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
+import pt.isel.leic.ptgest.repository.AuthRepo
+import pt.isel.leic.ptgest.repository.CompanyRepo
+import pt.isel.leic.ptgest.repository.ExerciseRepo
+import pt.isel.leic.ptgest.repository.ReportRepo
+import pt.isel.leic.ptgest.repository.SessionRepo
+import pt.isel.leic.ptgest.repository.SetRepo
+import pt.isel.leic.ptgest.repository.TraineeDataRepo
+import pt.isel.leic.ptgest.repository.TraineeRepo
+import pt.isel.leic.ptgest.repository.TrainerRepo
+import pt.isel.leic.ptgest.repository.UserRepo
+import pt.isel.leic.ptgest.repository.WorkoutRepo
+import pt.isel.leic.ptgest.repository.transaction.Transaction
+import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.JwtService
 
- object MockRepos {
+object MockRepos {
     val mockAuthRepo: AuthRepo = mock(AuthRepo::class.java)
     val mockUserRepo: UserRepo = mock(UserRepo::class.java)
     val mockWorkoutRepo: WorkoutRepo = mock(WorkoutRepo::class.java)
@@ -33,9 +30,9 @@
     val mockSetRepo: SetRepo = mock(SetRepo::class.java)
     val mockExerciseRepo: ExerciseRepo = mock(ExerciseRepo::class.java)
     val mockReportRepo: ReportRepo = mock(ReportRepo::class.java)
- }
+}
 
- object MockServices {
+object MockServices {
 
     val mockTransaction = object : Transaction {
         override val authRepo: AuthRepo = MockRepos.mockAuthRepo
@@ -67,16 +64,4 @@
             jwtSecret,
             mockTransactionManager
         )
-
-    fun buildMockAuthServices(
-        authDomain: AuthDomain,
-        jwtService: JwtService,
-        mailService: MailService
-    ): AuthService =
-        AuthService(
-            authDomain,
-            jwtService,
-            mailService,
-            mockTransactionManager
-        )
- }
+}

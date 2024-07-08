@@ -84,7 +84,7 @@ class JdbiSetRepo(private val handle: Handle) : SetRepo {
         left join trainer_favorite_set tfs on s.id = tfs.set_id and tfs.trainer_id = :trainerId
         where st.trainer_id = :trainerId $nameCondition $typeCondition $isFavoriteCondition
         limit :limit offset :skip
-        """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(

@@ -17,6 +17,7 @@ import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.http.media.HttpResponse
 import pt.isel.leic.ptgest.http.media.Uris
 import pt.isel.leic.ptgest.http.model.auth.request.AuthenticatedSignupRequest
+import pt.isel.leic.ptgest.http.model.auth.request.ChagePasswordRequest
 import pt.isel.leic.ptgest.http.model.auth.request.ForgetPasswordRequest
 import pt.isel.leic.ptgest.http.model.auth.request.LoginRequest
 import pt.isel.leic.ptgest.http.model.auth.request.ResetPasswordRequest
@@ -196,6 +197,20 @@ class AuthController(private val service: AuthService) {
     fun validateAuthentication(): ResponseEntity<*> {
         return HttpResponse.ok(
             message = "User authenticated successfully."
+        )
+    }
+
+    @AuthenticationRequired
+    @PutMapping(Uris.Auth.CHANGE_PASSWORD)
+    fun changePassword(
+        @Valid @RequestBody
+        passwordRequest: ChagePasswordRequest,
+        authenticatedUser: AuthenticatedUser
+    ): ResponseEntity<*> {
+        service.changePassword(authenticatedUser.id, passwordRequest.currentPassword, passwordRequest.newPassword)
+
+        return HttpResponse.ok(
+            message = "Password changed successfully."
         )
     }
 

@@ -96,7 +96,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
         where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
         limit :limit offset :skip
-    """.trimIndent()
+        """.trimIndent()
 
         val queryMap = mutableMapOf<String, Any?>(
             "trainerId" to trainerId,
@@ -113,7 +113,6 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .list()
     }
 
-
     override fun getTotalWorkouts(trainerId: UUID, name: String?, muscleGroup: MuscleGroup?, isFavorite: Boolean): Int {
         val nameCondition = name?.let { "and w.name like :name" } ?: ""
         val muscleGroupCondition = muscleGroup?.let { "and :muscleGroup::muscle_group = any(w.muscle_group)" } ?: ""
@@ -126,7 +125,7 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
         join workout_trainer wt on wt.workout_id = w.id
         left join trainer_favorite_workout tfw on w.id = tfw.workout_id and tfw.trainer_id = :trainerId
         where wt.trainer_id = :trainerId $nameCondition $muscleGroupCondition $isFavoriteCondition
-        """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(
