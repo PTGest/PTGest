@@ -1,12 +1,9 @@
 package pt.isel.leic.ptgest
 
 object ServerConfig {
-
-    private const val KEY_DB_URL = "DB_HOST"
-
     val dbUrl: String
-        get() = System.getenv(KEY_DB_URL)
-            ?: throw IllegalStateException("Missing environment variable $KEY_DB_URL")
+        get() = System.getenv("DB_HOST")
+            ?: throw IllegalStateException("Missing environment variable DB_HOST")
 
     val secret: String
         get() = System.getenv("SECRET")
