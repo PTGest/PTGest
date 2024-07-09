@@ -1,6 +1,6 @@
 <template>
     <div class="login-container">
-        <img class="image" src="../../../assets/login.png" alt="Login Image" />
+        <img class="image" src="../../assets/login.png" alt="Login Image" />
         <div class="container">
             <h1>Login</h1>
             <div class="login-inputs-container">
@@ -28,10 +28,10 @@
 import { faEye } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { computed, ref } from "vue"
-import { loginUserServices } from "../../../services/AuthServices/loginServices.ts"
+import { loginUserServices } from "../../services/AuthServices/loginServices.ts"
 import { Ref } from "vue/dist/vue"
-import LoginUserData from "../../../models/authModels/LoginUserData.ts"
-import DefaultButton from "../../../components/utils/DefaultButton.vue"
+import LoginUserData from "../../models/authModels/LoginUserData.ts"
+import DefaultButton from "../../components/utils/DefaultButton.vue"
 
 const loginUserData: Ref<LoginUserData> = ref({
     email: "",

@@ -1,6 +1,6 @@
 <template>
     <div class="reset-password-container">
-        <img class="image" src="../../../assets/resetPassword.png" alt="ResetPasswordImage" />
+        <img class="image" src="../../assets/resetPassword.png" alt="ResetPasswordImage" />
         <div class="reset-password-input-container">
             <div class="reset-text-container">
                 <div class="reset-text">Reset</div>
@@ -36,11 +36,11 @@
 </template>
 
 <script setup lang="ts">
-import InputBar from "../../../components/utils/InputBar.vue"
+import InputBar from "../../components/utils/InputBar.vue"
 import { ref } from "vue"
-import DefaultButton from "../../../components/utils/DefaultButton.vue"
-import { resetPasswordServices } from "../../../services/AuthServices/resetPassword.ts"
-import ResetPasswordData from "../../../models/authModels/ResetPasswordData.ts"
+import DefaultButton from "../../components/utils/DefaultButton.vue"
+import { resetPasswordServices } from "../../services/AuthServices/resetPassword.ts"
+import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
 import { useRoute } from "vue-router"
 
 const params = useRoute().params

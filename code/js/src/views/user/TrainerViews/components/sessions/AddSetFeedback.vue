@@ -2,7 +2,7 @@
    <div class="setFeedback">
        <font-awesome-icon class="x-icon" :icon="faX" @click="$emit('close')"/>
        Set Feedback
-       <textarea></textarea>
+       <textarea v-model="feedback"></textarea>
        <Button @click="addSetFeedback" class="btn">Add Feedback</Button>
    </div>
 </template>
@@ -10,9 +10,18 @@
 <script setup lang="ts">
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faX} from "@fortawesome/free-solid-svg-icons";
+import {addTrainerSessionsSetFeedback} from "@/services/TrainerServices/sessions/sessionServices.ts";
+import {ref} from "vue";
+import router from "@/plugins/router.ts";
+import store from "@/store";
 
-const addSetFeedback = () => {
-
+const feedback = ref("")
+const props = defineProps<{
+    setId: number
+    setOrderId: number
+}>()
+const addSetFeedback = async () => {
+    await addTrainerSessionsSetFeedback(feedback.value, store.getters.sessionDetails.id, props.setId ,props.setOrderId)
     console.log("Adding set feedback")
 }
 

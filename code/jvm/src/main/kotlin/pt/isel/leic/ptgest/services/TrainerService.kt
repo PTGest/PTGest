@@ -864,7 +864,7 @@ class TrainerService(
             sessionRepo.getSessionFeedback(sessionId, feedbackId)
                 ?: throw ResourceNotFoundError
 
-            sessionRepo.editFeedback(sessionId, feedback, requestDate)
+            sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
     }
 
@@ -1148,7 +1148,7 @@ class TrainerService(
         }
 
     private fun Transaction.isTrainerAssignedToTrainee(trainerId: UUID, traineeId: UUID) {
-        if (traineeRepo.isTraineeAssignedToTrainer(traineeId, trainerId)) {
+        if (!traineeRepo.isTraineeAssignedToTrainer(traineeId, trainerId)) {
             throw TrainerError.TrainerNotAssignedToTraineeError
         }
     }

@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
-import Login from "../views/auth/login/Login.vue"
+import Login from "../views/auth/Login.vue"
 import About from ".././views/AboutPage.vue"
 import Home from "../views/home/HomePage.vue"
-import Signup from "../views/auth/signUp/Signup.vue"
-import ForgetPassword from "../views/auth/forgetPassword/ForgetPassword.vue"
+import Signup from "../views/auth/Signup.vue"
+import ForgetPassword from "../views/auth/ForgetPassword.vue"
 import Error from "../views/Error.vue"
-import ResetPassword from "../views/auth/resetPassword/ResetPassword.vue"
+import ResetPassword from "../views/auth/ResetPassword.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
 import Students from "../views/user/TrainerViews/Trainees.vue"
 import Trainers from "../views/user/CompaniesViews/Trainers.vue"
@@ -33,6 +33,7 @@ import TraineeProfile from "../views/user/TrainerViews/components/trainees/Train
 import TraineeDataHistory from "../views/user/UserProfile/components/TraineeDataHistory.vue";
 import TraineeDataHistoryDetails from "../views/user/UserProfile/components/TraineeDataHistoryDetails.vue";
 import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue";
+import Profile from "../views/user/TrainerViews/Profile.vue";
 
 
 const routes: RouteRecordRaw[] = [
@@ -87,6 +88,8 @@ const routes: RouteRecordRaw[] = [
     { path: "/trainee/:traineeId/data-history", name: "dataHistory", component: TraineeDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/trainee/:traineeId/data-history/:dataId", name: "dataHistoryDetails", component: TraineeDataHistoryDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/trainee/:traineeId/data-history/add", name: "addDataHistory", component: TraineeAddDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+
+    { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     //Error Views
     { path: "/error", name: "error", component: Error },
     //{ path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },

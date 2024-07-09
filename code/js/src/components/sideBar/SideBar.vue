@@ -57,8 +57,10 @@
                                  class="nav-link" :to="{ name: 'traineeProfile', params:{traineeId:store.getters.userData.id}}">Profile</router-link>
                 </div>
 
-                <UserIcon @click="handleMenu" class="userIcon" :isOpen="is_open" v-if="isLogged && (!is_mobile_view ||
-                    (is_mobile_view && is_open)) " :isMobileView="is_mobile_view" />
+                <router-link to="/profile" class="nav-link" link>
+                    <Avatar :image="icon" class="mr-2" size="large" shape="circle" />
+                    <div v-if="is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Profile</div>
+                </router-link>
 
                 <LogoutButton :isOpen="is_open" v-if="isLogged"
                               :isMobileView="is_mobile_view" />
@@ -73,8 +75,11 @@ import { faBars, faHouse, faUserPlus, faUser } from "@fortawesome/free-solid-svg
 import { computed, ref } from "vue"
 import store from "../../store"
 import LogoutButton from "./components/LogoutButton.vue"
-import UserIcon from "../../components/sideBar/components/UserIcon.vue"
+import Avatar from "primevue/avatar"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
+import icon from '@/assets/userIcons/man.png'
+
+
 
 // Define a computed property to track changes to userData
 const isLogged = computed(() => {

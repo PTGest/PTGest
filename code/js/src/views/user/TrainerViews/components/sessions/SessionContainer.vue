@@ -8,10 +8,10 @@
             <h1>Session Details</h1>
             <font-awesome-icon @click="handleEdit" v-if="!isEdit && canCancel" class="icon" :icon="faPenToSquare"></font-awesome-icon>
         </div>
-        <Button class="btn" @click="workoutDetailsOpen = true">Workout</Button>
         <div class="details">
             <p v-if="RBAC.isCompany()">Session Trainer: {{ sessionDetails.trainer }}</p>
             <h2>{{ store.getters.traineeInfo.name }}</h2>
+            <div class="details-btn" @click="workoutDetailsOpen = true">Workout Details</div>
             <p>{{ sessionDetails.type }}</p>
             <p>Begin Date: {{ dateFormatter(sessionDetails.beginDate) }}</p>
             <p v-if="sessionDetails.endDate != null">Session End Date: {{ dateFormatter(sessionDetails.endDate) }}</p>
@@ -35,7 +35,7 @@ import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import store from "../../../../../store"
 import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import {faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons"
+import {faInfo, faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons"
 import {getSessionDetails} from "@/services/TrainerServices/sessions/sessionServices.js";
 import SessionFeedback from "@/views/user/TrainerViews/components/sessions/SessionFeedback.vue";
 import ProgressSpinner from "primevue/progressspinner";
@@ -140,5 +140,17 @@ h1 {
     background-color: var(--main-primary-color);
     border-radius: 10px;
     padding: 1em;
+}
+
+.details-btn{
+    padding: 1em;
+    background-color: var(--main-secondary-color);
+    border-radius: 10px;
+}
+
+.details-btn:hover{
+    cursor: pointer;
+    color: var(--main-primary-color);
+    transition: 0.2s ease-in;
 }
 </style>

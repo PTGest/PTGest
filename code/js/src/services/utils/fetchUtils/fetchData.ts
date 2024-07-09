@@ -8,7 +8,7 @@ async function fetchData(uri: string, method: string, bodyData: any | null): Pro
 
     const body = bodyData ? JSON.stringify(bodyData) : null
     const response = await fetch(uri, {
-        method: method,
+        method: method.trim(),
         headers: {
             "Content-Type": "application/json",
         },

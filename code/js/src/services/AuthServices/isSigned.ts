@@ -2,8 +2,6 @@ import fetchData from "../utils/fetchUtils/fetchData.ts";
 import store from "../../store";
 import {apiBaseUri} from "../utils/envUtils.ts";
 
-
-
 async function isSigned() {
     const uri = `${apiBaseUri}/api/auth/validate`;
 

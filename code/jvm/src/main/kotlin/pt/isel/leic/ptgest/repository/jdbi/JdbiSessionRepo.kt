@@ -317,7 +317,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .mapTo<SessionFeedback>()
             .list()
 
-    override fun getSessionFeedback(feedbackId: Int, sessionId: Int): SessionFeedback? =
+    override fun getSessionFeedback(sessionId: Int, feedbackId: Int): SessionFeedback? =
         handle.createQuery(
             """
             select id, source, feedback, date
@@ -438,10 +438,10 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
     override fun editFeedback(feedbackId: Int, feedback: String, date: Date) {
         handle.createUpdate(
             """
-            update feedback
-            set feedback = :feedback and date = :date
-            where id = :feedbackId
-            """.trimIndent()
+        update feedback
+        set feedback = :feedback, date = :date
+        where id = :feedbackId
+        """.trimIndent()
         )
             .bindMap(
                 mapOf(

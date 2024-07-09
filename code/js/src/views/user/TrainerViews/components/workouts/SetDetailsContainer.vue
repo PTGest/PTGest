@@ -12,7 +12,9 @@
                     {{`Feedbacks (${setFeedbacks.length})`}}
                     <font-awesome-icon @click="addSetFeedbackOpen = true" class="plus-icon" :icon="faPlus" />
                 </div>
-                <AddSetFeedback @close="addSetFeedbackOpen = false" class="set-feedback-container" v-if="addSetFeedbackOpen"></AddSetFeedback>
+                <AddSetFeedback @close="addSetFeedbackOpen = false" class="set-feedback-container"
+                                v-if="addSetFeedbackOpen" :set-order-id="props.set.orderId" :set-id="props.set.id">
+                </AddSetFeedback>
             </div>
 
             <div class="exercise-details">
