@@ -59,17 +59,12 @@ class AuthService(
 
     fun signUpHiredTrainer(
         companyId: UUID,
-        userRole: Role,
         name: String,
         email: String,
         gender: Gender,
         capacity: Int,
         phoneNumber: String?
     ): UUID {
-        if (userRole != Role.COMPANY) {
-            throw AuthError.UserAuthenticationError.UnauthorizedRole
-        }
-
         require(capacity > 0) { "Invalid capacity must be greater than 0." }
 
         val trainerId = transactionManager.run {
@@ -169,11 +164,11 @@ class AuthService(
         }
     }
 
-    fun resetPassword(token: String, password: String) {
-        require(token.isNotBlank()) { "Invalid token." }
+    fun resetPassword(requestToken: String, password: String) {
+        require(requestToken.isNotBlank()) { "Invalid token." }
 
         val currentDate = Date()
-        val tokenHash = authDomain.hashToken(token)
+        val tokenHash = authDomain.hashToken(requestToken)
 
         val userDetails = transactionManager.run {
             val authRepo = it.authRepo
@@ -192,6 +187,7 @@ class AuthService(
             val passwordHash = authDomain.hashPassword(password)
 
             authRepo.resetPassword(resetToken.userId, passwordHash)
+            authRepo.revokePasswordResetToken(tokenHash)
 
             if (authRepo.getTokenVersion(resetToken.userId) != null) {
                 authRepo.updateTokenVersion(resetToken.userId)
@@ -291,7 +287,7 @@ class AuthService(
         password: String,
         role: Role
     ): UUID {
-        if (userRepo.getUserDetails(email) != null) {
+        if (userRepo.userExists(email)) {
             throw AuthError.UserRegistrationError.UserAlreadyExists
         }
 

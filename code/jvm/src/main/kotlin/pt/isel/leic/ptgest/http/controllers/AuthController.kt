@@ -30,6 +30,7 @@ import pt.isel.leic.ptgest.http.utils.createTokensHeaders
 import pt.isel.leic.ptgest.http.utils.revokeCookies
 import pt.isel.leic.ptgest.http.utils.setCookies
 import pt.isel.leic.ptgest.services.AuthService
+import pt.isel.leic.ptgest.services.errors.AuthError
 import java.util.Date
 
 @RestController
@@ -88,9 +89,12 @@ class AuthController(private val service: AuthService) {
                 )
             }
             is AuthenticatedSignupRequest.HiredTrainer -> {
+                if (authenticatedUser.role != Role.COMPANY) {
+                    throw AuthError.UserAuthenticationError.UnauthorizedRole
+                }
+
                 val trainerId = service.signUpHiredTrainer(
                     authenticatedUser.id,
-                    authenticatedUser.role,
                     userInfo.name,
                     userInfo.email,
                     userInfo.gender,

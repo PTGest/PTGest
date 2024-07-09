@@ -26,6 +26,8 @@ interface AuthRepo {
 
     fun resetPassword(userId: UUID, newPasswordHash: String)
 
+    fun revokePasswordResetToken(requestToken: String)
+
     fun createTokenVersion(userId: UUID): Int
 
     fun getTokenVersion(userId: UUID): Int?

@@ -40,6 +40,19 @@ class JdbiUserRepo(private val handle: Handle) : UserRepo {
             .execute()
     }
 
+    override fun userExists(email: String): Boolean =
+        handle.createQuery(
+            """
+            select exists(
+                select 1 from "user"
+                where email = :email
+            )
+            """.trimIndent()
+        )
+            .bind("email", email)
+            .mapTo<Boolean>()
+            .first()
+
     override fun getUserDetails(email: String): UserDetails? =
         handle.createQuery(
             """

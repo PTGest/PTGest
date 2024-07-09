@@ -22,7 +22,7 @@ create table if not exists dev."user"
     email         varchar(50)
         check ( email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ) unique not null,
     password_hash varchar(256) check (password_hash <> '')                          not null,
-    role          dev.role                                                         not null,
+    role          dev.role                                                          not null,
     active        boolean default true                                              not null
 );
 
@@ -36,7 +36,7 @@ create table if not exists dev.forget_password_request
 (
     token_hash varchar(256) check (token_hash <> '') primary key,
     user_id    uuid references dev."user" (id) on delete cascade,
-    expiration timestamp check ( expiration > now() ) not null
+    expiration timestamp not null
 );
 
 -- User's personal data
@@ -56,7 +56,7 @@ create table if not exists dev.trainee
 (
     id           uuid primary key references dev."user" (id) on delete cascade,
     gender       dev.gender not null,
-    birthdate    date        not null,
+    birthdate    date       not null,
     phone_number varchar(20) check ( phone_number ~ '^[+]{1}(?:[0-9\\-\\(\\)\\/\\.]\s?){6,15}[0-9]{1}$' )
 );
 
@@ -111,7 +111,7 @@ create table if not exists dev.report_trainer
 create table if not exists dev.workout
 (
     id           serial primary key,
-    name         varchar(50)         not null,
+    name         varchar(50)        not null,
     description  text,
     muscle_group dev.muscle_group[] not null
 );
@@ -119,7 +119,7 @@ create table if not exists dev.workout
 create table if not exists dev.set
 (
     id    serial primary key,
-    name  varchar(50)   not null,
+    name  varchar(50)  not null,
     notes text,
     type  dev.set_type not null
 );
@@ -127,7 +127,7 @@ create table if not exists dev.set
 create table if not exists dev.exercise
 (
     id           serial primary key,
-    name         varchar(50)         not null,
+    name         varchar(50)        not null,
     description  text,
     muscle_group dev.muscle_group[] not null,
     modality     dev.modality       not null,
@@ -139,10 +139,10 @@ create table if not exists dev.session
     id         serial primary key,
     trainee_id uuid references dev.trainee (id) on delete cascade,
     workout_id int references dev.workout (id) on delete cascade,
-    begin_date timestamp check ( begin_date < end_date and begin_date > now() ) not null,
-    end_date   timestamp check ( end_date > begin_date and end_date > now() ),
+    begin_date timestamp check ( begin_date < end_date ) not null,
+    end_date   timestamp check ( end_date > begin_date ),
     location   varchar(50),
-    type       dev.session_type                                                not null,
+    type       dev.session_type                          not null,
     notes      text
 );
 
@@ -229,9 +229,9 @@ create table if not exists dev.trainer_favorite_exercise
 create table if not exists dev.feedback
 (
     id       serial primary key,
-    source   dev.source_feedback             not null,
-    feedback text                             not null,
-    date     timestamp check ( date < now() ) not null
+    source   dev.source_feedback not null,
+    feedback text                not null,
+    date     timestamp           not null
 );
 
 create table if not exists dev.session_feedback

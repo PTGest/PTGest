@@ -158,6 +158,17 @@ class JdbiAuthRepo(private val handle: Handle) : AuthRepo {
             .execute()
     }
 
+    override fun revokePasswordResetToken(requestToken: String) {
+        handle.createUpdate(
+            """
+            delete from forget_password_request
+            where token_hash = :token
+            """.trimIndent()
+        )
+            .bind("token", requestToken)
+            .execute()
+    }
+
     override fun createTokenVersion(userId: UUID): Int =
         handle.createUpdate(
             """

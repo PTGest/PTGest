@@ -2,6 +2,7 @@ package pt.isel.leic.ptgest.service
 
 import org.jdbi.v3.core.transaction.TransactionIsolationLevel
 import org.mockito.Mockito.mock
+import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.repository.AuthRepo
 import pt.isel.leic.ptgest.repository.CompanyRepo
@@ -16,7 +17,10 @@ import pt.isel.leic.ptgest.repository.UserRepo
 import pt.isel.leic.ptgest.repository.WorkoutRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
+import pt.isel.leic.ptgest.services.AuthService
 import pt.isel.leic.ptgest.services.JwtService
+import pt.isel.leic.ptgest.services.MailService
+import pt.isel.leic.ptgest.services.UserService
 
 object MockRepos {
     val mockAuthRepo: AuthRepo = mock(AuthRepo::class.java)
@@ -62,6 +66,19 @@ object MockServices {
     fun buildMockJwtService(jwtSecret: JWTSecret): JwtService =
         JwtService(
             jwtSecret,
+            mockTransactionManager
+        )
+
+    fun buildMockUserService(): UserService =
+        UserService(
+            mockTransactionManager
+        )
+
+    fun buildMockAuthService(mockAuthDomain: AuthDomain, mockJwtService: JwtService): AuthService =
+        AuthService(
+            mockAuthDomain,
+            mockJwtService,
+            mock(MailService::class.java),
             mockTransactionManager
         )
 }

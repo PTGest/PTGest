@@ -11,5 +11,7 @@ interface UserRepo {
 
     fun getUserDetails(email: String): UserDetails?
 
+    fun userExists(email: String): Boolean
+
     fun getUserDetails(userId: UUID): UserDetails?
 }
