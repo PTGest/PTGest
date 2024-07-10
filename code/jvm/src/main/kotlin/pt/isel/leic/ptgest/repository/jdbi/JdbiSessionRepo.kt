@@ -441,7 +441,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         update feedback
         set feedback = :feedback, date = :date
         where id = :feedbackId
-        """.trimIndent()
+            """.trimIndent()
         )
             .bindMap(
                 mapOf(

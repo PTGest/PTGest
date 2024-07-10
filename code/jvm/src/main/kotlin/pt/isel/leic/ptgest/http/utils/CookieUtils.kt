@@ -50,7 +50,7 @@ private fun setCookie(
         .path("/api")
         .maxAge((expirationDate.time - currentDate.time) / 1000)
         .build()
-    
+
     response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString())
 }
 

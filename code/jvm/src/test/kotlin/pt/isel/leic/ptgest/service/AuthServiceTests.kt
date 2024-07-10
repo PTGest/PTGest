@@ -1,62 +1,62 @@
- package pt.isel.leic.ptgest.service
+package pt.isel.leic.ptgest.service
 
- import org.junit.jupiter.api.AfterEach
- import org.junit.jupiter.api.BeforeAll
- import org.junit.jupiter.api.Nested
- import org.mockito.Mockito.reset
- import org.mockito.Mockito.spy
- import org.mockito.Mockito.`when`
- import org.springframework.beans.factory.annotation.Autowired
- import org.springframework.boot.test.context.SpringBootTest
- import pt.isel.leic.ptgest.domain.auth.AuthDomain
- import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
- import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
- import pt.isel.leic.ptgest.domain.user.Gender
- import pt.isel.leic.ptgest.domain.user.Role
- import pt.isel.leic.ptgest.domain.user.model.UserDetails
- import pt.isel.leic.ptgest.service.MockServices.buildMockAuthService
- import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
- import pt.isel.leic.ptgest.services.errors.AuthError
- import pt.isel.leic.ptgest.services.AuthService
- import pt.isel.leic.ptgest.services.JwtService
- import java.util.*
- import kotlin.test.Test
- import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.`when`
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
+import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
+import pt.isel.leic.ptgest.domain.user.Gender
+import pt.isel.leic.ptgest.domain.user.Role
+import pt.isel.leic.ptgest.domain.user.model.UserDetails
+import pt.isel.leic.ptgest.service.MockServices.buildMockAuthService
+import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
+import pt.isel.leic.ptgest.services.AuthService
+import pt.isel.leic.ptgest.services.JwtService
+import pt.isel.leic.ptgest.services.errors.AuthError
+import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
- @SpringBootTest
- class AuthServiceTests {
+@SpringBootTest
+class AuthServiceTests {
 
     private val mockAuthRepo = MockRepos.mockAuthRepo
     private val mockUserRepo = MockRepos.mockUserRepo
 
-     @Nested
-     inner class SignUpCompanyTests {
-            @Test
-            fun `should sign up company successfully`() {
-                `when`(mockUserRepo.userExists(email))
-                    .then { false }
+    @Nested
+    inner class SignUpCompanyTests {
+        @Test
+        fun `should sign up company successfully`() {
+            `when`(mockUserRepo.userExists(email))
+                .then { false }
 
-                val passwordHash = mockAuthDomain.hashPassword(password)
+            val passwordHash = mockAuthDomain.hashPassword(password)
 
-                `when`(mockAuthDomain.hashPassword(password))
-                    .then { passwordHash }
+            `when`(mockAuthDomain.hashPassword(password))
+                .then { passwordHash }
 
-                `when`(mockAuthRepo.createUser(username, email, passwordHash, Role.COMPANY))
-                    .then { userId }
+            `when`(mockAuthRepo.createUser(username, email, passwordHash, Role.COMPANY))
+                .then { userId }
 
+            mockAuthService.signUpCompany(username, email, password)
+        }
+
+        @Test
+        fun `should fail to sign up company when user already exists`() {
+            `when`(mockUserRepo.userExists(email))
+                .then { true }
+
+            assertFailsWith<AuthError.UserRegistrationError.UserAlreadyExists> {
                 mockAuthService.signUpCompany(username, email, password)
             }
-
-            @Test
-            fun `should fail to sign up company when user already exists`() {
-                `when`(mockUserRepo.userExists(email))
-                    .then { true }
-
-                assertFailsWith<AuthError.UserRegistrationError.UserAlreadyExists> {
-                    mockAuthService.signUpCompany(username, email, password)
-                }
-            }
-     }
+        }
+    }
 
     @Nested
     inner class SignUpIndependentTrainerTests {
@@ -166,9 +166,15 @@
             `when`(mockUserRepo.getUserDetails(email))
                 .then { userDetails }
 
-            mockAuthService.signUpTrainee(userId, Role.COMPANY,
-                username, email, validBirthdate, gender,
-                phoneNumber)
+            mockAuthService.signUpTrainee(
+                userId,
+                Role.COMPANY,
+                username,
+                email,
+                validBirthdate,
+                gender,
+                phoneNumber
+            )
         }
 
         @Test
@@ -187,15 +193,29 @@
             `when`(mockUserRepo.getUserDetails(email))
                 .then { userDetails }
 
-            mockAuthService.signUpTrainee(userId,
-                Role.INDEPENDENT_TRAINER, username, email, validBirthdate, gender, phoneNumber)
+            mockAuthService.signUpTrainee(
+                userId,
+                Role.INDEPENDENT_TRAINER,
+                username,
+                email,
+                validBirthdate,
+                gender,
+                phoneNumber
+            )
         }
 
         @Test
         fun `should fail to sign up trainee when the trainee birthdate is invalid`() {
             assertFailsWith<IllegalArgumentException> {
-                mockAuthService.signUpTrainee(userId,
-                    Role.INDEPENDENT_TRAINER, username, email, Date(), gender, phoneNumber)
+                mockAuthService.signUpTrainee(
+                    userId,
+                    Role.INDEPENDENT_TRAINER,
+                    username,
+                    email,
+                    Date(),
+                    gender,
+                    phoneNumber
+                )
             }
         }
 
@@ -450,21 +470,20 @@
     }
 
     @Nested
-    inner class LoginTests {}
+    inner class LoginTests
 
     @Nested
-    inner class RefreshTokenTests {}
+    inner class RefreshTokenTests
 
     @Nested
-    inner class ChangePasswordTests {}
+    inner class ChangePasswordTests
 
-     private val username = "username"
-     private val password = "password"
-     private val email = "email"
-     private val userId = UUID.randomUUID()
-     private val gender = Gender.UNDEFINED
-     private val phoneNumber = "phoneNumber"
-
+    private val username = "username"
+    private val password = "password"
+    private val email = "email"
+    private val userId = UUID.randomUUID()
+    private val gender = Gender.UNDEFINED
+    private val phoneNumber = "phoneNumber"
 
     @AfterEach
     fun cleanUp() {
@@ -480,11 +499,11 @@
         @BeforeAll
         fun setUp(
             @Autowired authDomain: AuthDomain,
-            @Autowired jwtSecret: JWTSecret,
+            @Autowired jwtSecret: JWTSecret
         ) {
             mockAuthDomain = spy(authDomain)
             mockJwtService = buildMockJwtService(jwtSecret)
             mockAuthService = buildMockAuthService(mockAuthDomain, mockJwtService)
         }
     }
- }
+}
