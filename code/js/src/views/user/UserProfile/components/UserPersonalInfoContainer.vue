@@ -1,5 +1,6 @@
 <template>
     <div class="user-info-container">
+        <font-awesome-icon @click="$router.back()" :icon="faArrowLeft" class="icon"/>
         <h1>Personal Info</h1>
         <div class="user-info">
             <h2 class="info">{{ userInfo.name }}</h2>
@@ -12,10 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import UserInfo from "@/views/user/UserProfile/Models/UserInfo.ts"
-import { Ref, ref } from "vue"
-import { getUserInfo } from "@/services/UserServices/profileServices.ts"
-import { getYearFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
+import UserInfo from "@/views/user/UserProfile/Models/UserInfo.ts";
+import {Ref, ref} from "vue";
+import {getUserInfo} from "@/services/UserServices/profileServices.ts";
+import {getYearFromDate} from "@/services/utils/dateUtils/getFromDateUtils.js";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 const props = defineProps<{
     userId: string
@@ -32,6 +35,7 @@ const age: Ref<number | null> = ref(null)
 
 <style scoped>
 .user-info-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -68,5 +72,14 @@ h2 {
 }
 .info {
     padding: 0 2em 0 2em;
+}
+
+.icon{
+    cursor: pointer;
+    width: 1.5em;
+    height: 1.5em;
+    position: absolute;
+    top: -11em;
+    left: 1em;
 }
 </style>

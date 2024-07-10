@@ -12,7 +12,10 @@
                     {{ `Feedbacks (${setFeedbacks.length})` }}
                     <font-awesome-icon @click="addSetFeedbackOpen = true" class="plus-icon" :icon="faPlus" />
                 </div>
-                <AddSetFeedback @close="addSetFeedbackOpen = false" class="set-feedback-container" v-if="addSetFeedbackOpen" :set-order-id="props.set.orderId" :set-id="props.set.id"> </AddSetFeedback>
+                <AddSetFeedback @close="addSetFeedbackOpen = false" class="set-feedback-container"
+                                v-if="addSetFeedbackOpen" :set-order-id="props.set.orderId" :set-id="props.set.id">
+                </AddSetFeedback>
+                <SetFeedback v-for="feedback in setFeedbacks" :set-feedback="feedback"></SetFeedback>
             </div>
 
             <div class="exercise-details">
@@ -35,10 +38,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faCaretLeft, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { Ref, ref } from "vue"
 import WorkoutExerciseDetails from "@/views/user/TrainerViews/components/workouts/WorkoutExerciseDetails.vue"
-import store from "../../../../../store"
-import { getTrainerSetFeedback } from "@/services/TrainerServices/sessions/sessionServices.ts"
-import SetSessionFeedback from "@/views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts"
-import AddSetFeedback from "@/views/user/TrainerViews/components/sessions/AddSetFeedback.vue"
+import store from "../../../../../store";
+import {getTrainerSetFeedback} from "@/services/TrainerServices/sessions/sessionServices.ts";
+import SetSessionFeedback from "@/views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts";
+import AddSetFeedback from "@/views/user/TrainerViews/components/sessions/AddSetFeedback.vue";
+import SetFeedback from "@/views/user/TrainerViews/components/workouts/SetFeedback.vue";
 
 const props = defineProps<{
     set: SetDetails
@@ -50,8 +54,8 @@ const isOpen = ref(false)
 const setFeedbacks: Ref<SetSessionFeedback[]> = ref(new Array<SetSessionFeedback>())
 ;(async () => {
     if (props.isSessionDetails) {
-        setFeedbacks.value = await getTrainerSetFeedback(store.getters.sessionDetails.workoutId)
-        console.log("SET FEEDBACKS", setFeedbacks.value)
+       setFeedbacks.value =  await getTrainerSetFeedback(store.getters.sessionDetails.id);
+       console.log("SET FEEDBACKS",setFeedbacks.value);
     }
 })()
 

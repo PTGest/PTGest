@@ -1,6 +1,9 @@
 <template>
     <h2>{{ text }}</h2>
-    <div v-if="!isLoading" class="trainee-register">
+    <div v-if="isLoading" class="loading">
+        <ProgressSpinner />
+    </div>
+    <div v-else class="trainee-register">
         <InputBar @value="update('name', $event)" padding="0em 0.5em 0 0.5em" is_password width="18em" class-name="trainee-input" text="Trainee Name" placeholder="Enter Trainee Name" height="3em" />
         <InputBar
             @value="update('email', $event)"
@@ -54,13 +57,10 @@
 
         <default-button class="register-button" display-text="Register Trainee" :click-handler="authSign" :is-disabled="isDisabled" />
     </div>
-
-    <div v-else class="loading">
-        <h1>Loading...</h1>
-    </div>
 </template>
 
 <script setup lang="ts">
+import ProgressSpinner from 'primevue/progressspinner';
 import { ref, computed } from "vue"
 import TraineeRegisterData from "../../../views/user/UserRegister/models/TraineeRegisterData.ts"
 import HiredTrainerRegisterData from "../../../models/authModels/HiredTrainerRegisterData.ts"
@@ -128,21 +128,18 @@ function update(paramName: string, value: any) {
     }
 }
 
-const authSign = async () => {
+const authSign = async() => {
     isLoading.value = true // Set loading state to true before API request
-    console.log("isLoader", isLoading.value)
+    console.log("START LOADING", isLoading.value)
     trainee_Data.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
     try {
         const userData = isTrainee.value
             ? new TraineeRegisterData(trainee_Data.value.name, trainee_Data.value.email, trainee_Data.value.birthdate, trainee_Data.value.gender, trainee_Data.value.phoneNumber, "trainee")
             : new HiredTrainerRegisterData(trainee_Data.value.name, trainee_Data.value.email, trainee_Data.value.gender, capacity.value, trainee_Data.value.phoneNumber, "hired_trainer")
         await authenticatedSignup(userData)
-        console.log("isLoader", isLoading.value)
+        console.log("LOADING", isLoading.value)
     } catch (error) {
         console.error("Error:", error)
-    } finally {
-        isLoading.value = false // Reset loading state after API request is completed
-        console.log("isLoader", isLoading.value)
     }
 }
 </script>

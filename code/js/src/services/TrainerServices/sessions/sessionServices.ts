@@ -102,7 +102,6 @@ async function editTrainerSessionsFeedback(feedback: string, sessionId: string, 
         throw error
     }
 }
-
 async function addTrainerSessionsSetFeedback(feedback: string, sessionId: number, setId: number, setOrderId: number): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/set/${setOrderId}/${setId}/feedback`
     try {
@@ -113,7 +112,6 @@ async function addTrainerSessionsSetFeedback(feedback: string, sessionId: number
         throw error
     }
 }
-
 async function getTrainerSetFeedback(sessionId: string): Promise<SetSessionFeedback[]> {
     const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/sets/feedback`
     try {
@@ -124,6 +122,21 @@ async function getTrainerSetFeedback(sessionId: string): Promise<SetSessionFeedb
         throw error
     }
 }
+async function editTrainerSetSessionsFeedback(feedback: string, sessionId: string, feedbackId: number, setId: number, setOrderId: number): Promise<void> {
+    const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/set/${setOrderId}/${setId}/edit-feedback/${feedbackId}`
+    try {
+        await fetchData(uri, "PUT", new CreateFeedbackRequest(feedback))
+        return
+    } catch (error) {
+        console.error("Error fetching set:", error)
+        throw error
+    }
+}
+
+
+
+
+
 
 export {
     cancelSession,
@@ -136,4 +149,5 @@ export {
     editTrainerSessionsFeedback,
     addTrainerSessionsSetFeedback,
     getTrainerSetFeedback,
+    editTrainerSetSessionsFeedback
 }

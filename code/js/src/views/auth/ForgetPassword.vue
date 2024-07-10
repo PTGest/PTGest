@@ -4,27 +4,30 @@
         <div class="text-container">
             <div class="forget-password-text">Forgot</div>
             <div class="forget-password-text">Your Password?</div>
-            <InputBar padding="0.5em 1em 0.5em 1em" :is_-password="false" width="20em" text="Email" class-name="email-input" placeholder="Enter your email" height="2.5em" @value="updateEmail" />
-            <DefaultButton class="button" display-text="Send Email" :click-handler="forgetPassword" :is-disabled="email == ''" />
+            <input placeholder="Enter your email" height="2.5em" v-model="email"/>
+            <DefaultButton class="button" display-text="Send Email" :click-handler="forgetPassword" :is-disabled="isDisable" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
 import InputBar from "../../components/utils/InputBar.vue"
 import { forgetPasswordServices } from "@/services/authServices/authServices.ts"
+import router from "../../plugins/router";
 
 const email = ref("")
-
-const forgetPassword = () => {
-    forgetPasswordServices(email.value)
-    console.log(email.value)
-}
-const updateEmail = (value: string) => {
-    console.log(value)
-    email.value = value
+const isDisable = computed(() => {return (email.value === "")});
+const isLoading = ref(false)
+const forgetPassword = async() => {
+    isLoading.value = true
+   try {
+       await forgetPasswordServices(email.value)
+       router.push({name: "emailSucessPage"})
+   }catch (e) {
+         console.log(e)
+   }
 }
 </script>
 
@@ -67,5 +70,13 @@ const updateEmail = (value: string) => {
 
 .button {
     width: 22em;
+}
+input{
+    padding: 1em;
+    width: 26.5em;
+    height: 3em;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 5px;
+    border: 0;
 }
 </style>

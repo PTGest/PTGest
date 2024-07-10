@@ -7,7 +7,7 @@
             </div>
         </template>
         <template #fallback>
-            <div>Loading...</div>
+            <ProgressSpinner />
         </template>
     </Suspense>
 </template>

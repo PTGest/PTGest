@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
 import Login from "../views/auth/Login.vue"
-import About from ".././views/AboutPage.vue"
+import About from "../views/utils/AboutPage.vue"
 import Home from "../views/home/HomePage.vue"
 import Signup from "../views/auth/Signup.vue"
 import ForgetPassword from "../views/auth/ForgetPassword.vue"
-import Error from "../views/Error.vue"
+import Error from "../views/utils/Error.vue"
 import ResetPassword from "../views/auth/ResetPassword.vue"
 import RegisterTrainee from "../views/user/UserRegister/RegisterTrainee.vue"
 import Students from "../views/user/TrainerViews/Trainees.vue"
@@ -96,7 +96,10 @@ const routes: RouteRecordRaw[] = [
     { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     //Error Views
     { path: "/error", name: "error", component: Error },
-    //{ path: "/:pathMatch(.*)*", redirect: { name: "error" }, name: "not-found" },
+    {path: "/:pathMatch(.*)*", redirect: {name: "notFound"}, name: "not-found"},
+
+    {path: "/email-sucess",name: "emailSucessPage", component:EmailSuccessPage},
+
 ]
 
 const router = createRouter({

@@ -4,7 +4,8 @@
         <font-awesome-icon @click="emit('close')" class="close-icon" :icon="faTimes" />
 
         <ExercisesDropdown v-if="props.filtersType == 'exercises'" @dropdownOption="modality = $event" :options="modalityOptions" placeholder="Filter by Modality"></ExercisesDropdown>
-        <ExercisesDropdown @dropdownOption="selectedMuscleGroups = $event" :options="muscleGroupOptions" placeholder="Filter by Muscle Groups" />
+        <ExercisesDropdown @dropdownOption="selectedMuscleGroups = $event" :options="muscleGroupOptions" placeholder="Filter by Muscle Groups"
+                           v-if="props.filtersType.includes('exercises') || props.filtersType.includes('workouts')"/>
 
         <div class="liked-exercises">
             Filter by Favorites

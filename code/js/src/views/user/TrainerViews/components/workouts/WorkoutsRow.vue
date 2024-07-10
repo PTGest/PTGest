@@ -67,7 +67,6 @@ const closeDetails = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 40em;
     align-items: center;
     background-color: var(--main-primary-color);
     border-radius: 10px;

@@ -918,7 +918,7 @@ class TrainerService(
             sessionRepo.getSetSessionFeedback(feedbackId, sessionId, setOrderId, setId)
                 ?: throw ResourceNotFoundError
 
-            sessionRepo.editFeedback(sessionId, feedback, requestDate)
+            sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
     }
 

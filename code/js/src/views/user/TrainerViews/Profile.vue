@@ -4,8 +4,8 @@
     </div>
     <div v-else>
         <div class="profile-container">
-            <img class="image" :src="icon" alt="user-icon" width="150" height="150" />
-            <div class="profile-info">
+            <img class="image" :src="icon" alt="user-icon" width="150" height="150">
+            <div class="profile-info" v-if="!isChangePasswordOpen">
                 <div class="info-row">
                     <font-awesome-icon :icon="faUser" class="icon" />
                     {{ userInfo.name }}
@@ -15,49 +15,64 @@
                     {{ userInfo.email }}
                 </div>
                 <div class="info-row">
-                    <font-awesome-icon :icon="faPhone" class="icon" />
-                    {{ formatPhoneNumber(userInfo.phoneNumber) }}
+                    <font-awesome-icon :icon="faPhone" class="icon"/>
+                    {{formatPhoneNumber(userInfo.phoneNumber)}}
+                </div>
+                <div class="change-password-btn" @click="isChangePasswordOpen = true">
+                   Change Password
                 </div>
                 <div class="change-password-btn">Change Password</div>
             </div>
-        </div>
-        <div class="new-password-container">
-            <p>New Password</p>
-            <input v-model="newPassword" placeholder="Enter new password" />
-            <Button @click="changePassword" class="submit-btn">Submit</Button>
+            <div class="new-password-container" v-else>
+                <font-awesome-icon @click="isChangePasswordOpen = false" :icon="faX" class="x-icon"/>
+                <h2>Change Password</h2>
+                <div class="input-row">
+                    <font-awesome-icon :icon="faKey" class="key-icon"/>
+                    <input v-model="currentPassword" type="password" placeholder="Enter current password"/>
+                </div>
+                <div class="input-row">
+                    <font-awesome-icon :icon="faKey" class="key-icon"/>
+                    <input v-model="newPassword" type="password" placeholder="Enter new password"/>
+                </div>
+                <Button @click="changePassword" class="submit-btn">Submit</Button>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import Button from "primevue/button"
-import ProgressSpinner from "primevue/progressspinner"
-import store from "@/store"
-import { getUserInfo } from "@/services/UserServices/profileServices.ts"
-import { Ref, ref } from "vue"
-import UserInfo from "@/views/user/UserProfile/Models/UserInfo.ts"
-import icon from "@/assets/userIcons/man.png"
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faEnvelope, faPhone, faUser } from "@fortawesome/free-solid-svg-icons"
-import formatPhoneNumber from "../../../services/utils/formatPhoneNumber.ts"
-import { changeUserPassword } from "@/services/authServices/authServices.ts"
+import Button from "primevue/button";
+import ProgressSpinner from "primevue/progressspinner";
+import store from "@/store";
+import {getUserInfo} from "@/services/UserServices/profileServices.ts";
+import {Ref, ref} from "vue";
+import UserInfo from "@/views/user/UserProfile/Models/UserInfo.ts";
+import icon from "@/assets/userIcons/man.png";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faEnvelope, faKey, faPhone, faUser, faX} from "@fortawesome/free-solid-svg-icons";
+import formatPhoneNumber from "../../../services/utils/formatPhoneNumber.ts";
+import {changeUserPassword} from "@/services/AuthServices/changePassword.ts";
 
-const newPassword = ref("")
-const loading = ref(true)
-const userInfo: Ref<UserInfo> = ref(new UserInfo())
-;(async () => {
+const isChangePasswordOpen = ref(false);
+const currentPassword = ref("");
+const newPassword = ref("");
+const loading = ref(true);
+const userInfo : Ref<UserInfo> = ref(new UserInfo());
+( async () => {
     userInfo.value = await getUserInfo(store.getters.userData.id)
     loading.value = false
     console.log("USER INFO", userInfo)
 })()
 
 const changePassword = async () => {
-    await changeUserPassword("", newPassword.value)
+    await changeUserPassword(currentPassword.value, newPassword.value);
+    isChangePasswordOpen.value = false;
 }
 </script>
 
 <style scoped>
-.profile-container {
+.profile-container{
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -112,14 +127,18 @@ const changePassword = async () => {
     transition: color 0.2s ease-in-out;
 }
 
-.new-password-container {
+.new-password-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: var(--main-primary-color);
     border-radius: 20px;
-    padding: 1.2em;
+    padding: 2em;
     gap: 1em;
 }
 
@@ -127,9 +146,9 @@ const changePassword = async () => {
     padding: 0.2em;
     margin: 0;
 }
-.new-password-container input {
-    padding: 0.5em;
-    border-radius: 10px;
+.new-password-container input{
+    padding: 1em;
+    border-radius: 5px;
     border: 1px solid var(--main-tertiary-color);
     font-family: "Poppins", sans-serif;
     width: 15em;
@@ -149,5 +168,19 @@ const changePassword = async () => {
     background-color: var(--main-primary-color);
     border: 1px solid var(--button-border-color);
     transition: background-color 0.2s ease-in-out;
+}
+.x-icon{
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    cursor: pointer;
+}
+
+.input-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
 }
 </style>

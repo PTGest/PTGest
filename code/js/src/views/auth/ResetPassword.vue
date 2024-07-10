@@ -1,6 +1,9 @@
 <template>
-    <div class="reset-password-container">
-        <img class="image" src="../../assets/resetPassword.png" alt="ResetPasswordImage" />
+    <div v-if="isLoading" class="loading">
+        <ProgressSpinner />
+    </div>
+    <div v-else class="reset-password-container">
+        <img class="image" src="../../assets/resetPassword.png" alt="ResetPassword" />
         <div class="reset-password-input-container">
             <div class="reset-text-container">
                 <div class="reset-text">Reset</div>
@@ -8,7 +11,7 @@
                 <input-bar
                     @value="updatePasswordValue"
                     class-name="reset-password-input"
-                    is-password="true"
+                    is-password
                     placeholder="New Password"
                     is_-password
                     text="Password"
@@ -20,7 +23,7 @@
                     @value="updateConfirmPasswordValue"
                     @change="verifyPasswords"
                     class-name="reset-password-input"
-                    is-password="true"
+                    is-password
                     placeholder="New Password"
                     is_-password
                     text="Confirm Password"
@@ -29,7 +32,6 @@
                     width="20em"
                 />
             </div>
-
             <DefaultButton class="reset-button" display-text="Reset Password" :is-disabled="!equalPasswords" :click-handler="resetPassword" />
         </div>
     </div>
@@ -42,9 +44,10 @@ import DefaultButton from "../../components/utils/DefaultButton.vue"
 import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
 import { useRoute } from "vue-router"
 import { resetPasswordServices, verifyToken } from "@/services/authServices/authServices.ts"
+import ProgressSpinner from "primevue/progressspinner";
 
 const params = useRoute().params
-
+const isLoading = ref(false)
 const password = ref("")
 const confirm_password = ref("")
 const equalPasswords = ref(false)
@@ -68,8 +71,15 @@ const verifyPasswords = () => {
         equalPasswords.value = true
     }
 }
-const resetPassword = () => {
-    resetPasswordServices(new ResetPasswordData(password.value), params.token)
+const resetPassword = async() => {
+    isLoading.value = true
+    try {
+        await resetPasswordServices(new ResetPasswordData(password.value), params.token)
+    }catch (error) {
+        console.log(error)
+    }finally {
+        isLoading.value = false
+    }
 }
 </script>
 
