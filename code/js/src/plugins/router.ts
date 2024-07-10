@@ -27,13 +27,13 @@ import EditSessionDetails from "../views/user/TrainerViews/components/sessions/E
 import TraineeReports from "../views/user/TrainerViews/components/reports/TraineeReports.vue";
 import AddReport from "../views/user/TrainerViews/components/reports/createReport.vue";
 import Report from "../views/user/TrainerViews/components/reports/Report.vue";
-import isSigned from "../services/authServices/isSigned.ts";
 import CancelSession from "../views/user/TrainerViews/components/sessions/CancelSession.vue";
 import TraineeProfile from "../views/user/TrainerViews/components/trainees/TraineeProfile.vue";
 import TraineeDataHistory from "../views/user/UserProfile/components/TraineeDataHistory.vue";
 import TraineeDataHistoryDetails from "../views/user/UserProfile/components/TraineeDataHistoryDetails.vue";
 import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue";
 import Profile from "../views/user/TrainerViews/Profile.vue";
+import isSigned from "../services/authServices/isSigned.ts"
 
 
 const routes: RouteRecordRaw[] = [
