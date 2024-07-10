@@ -1,8 +1,8 @@
 <template>
-<!--    <RouterLink class="user-icon-container" :to="{ name: 'userProfile', params: { userId: userId } }">-->
-<!--        <img class="user-icon" src="../../../assets/userIcons/man.png" alt="User Icon" />-->
-<!--        <div v-if="isOpen">Profile</div>-->
-<!--    </RouterLink>-->
+    <!--    <RouterLink class="user-icon-container" :to="{ name: 'userProfile', params: { userId: userId } }">-->
+    <!--        <img class="user-icon" src="../../../assets/userIcons/man.png" alt="User Icon" />-->
+    <!--        <div v-if="isOpen">Profile</div>-->
+    <!--    </RouterLink>-->
 </template>
 
 <script setup lang="ts">

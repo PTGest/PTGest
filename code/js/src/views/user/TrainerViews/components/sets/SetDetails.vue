@@ -19,7 +19,7 @@ import { faX } from "@fortawesome/free-solid-svg-icons"
 import SetDetailsExerciseDetails from "@/views/user/TrainerViews/components/sets/SetDetailsExerciseDetails.vue"
 import router from "@/plugins/router.ts"
 
-const setDetails = ref(new SetDetails());
+const setDetails = ref(new SetDetails())
 
 ;(async () => {
     setDetails.value = await getSetDetails(router.currentRoute.value.params.setId)

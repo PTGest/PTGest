@@ -1,5 +1,5 @@
 import UpdateCapacity from "../../views/user/CompaniesViews/models/capacity.ts"
-import {apiBaseUri} from "../utils/envUtils.ts";
+import { apiBaseUri } from "../utils/envUtils.ts"
 
 export default async function changeTrainerCapacity(trainerId: string, newCapacity: number): Promise<void> {
     // Logic to sign up

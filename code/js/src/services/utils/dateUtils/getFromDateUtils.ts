@@ -1,22 +1,16 @@
 function getDayFromDate(dateString: string): number {
-    const date = new Date(dateString);
-    return date.getUTCDate();
+    const date = new Date(dateString)
+    return date.getUTCDate()
 }
 
-
 function getMonthFromDate(dateString: string): number {
-    const date = new Date(dateString);
-    return date.getUTCMonth();
+    const date = new Date(dateString)
+    return date.getUTCMonth()
 }
 
 function getYearFromDate(dateString: string): number {
-    const date = new Date(dateString);
-    return date.getUTCFullYear();
+    const date = new Date(dateString)
+    return date.getUTCFullYear()
 }
 
-export {
-    getDayFromDate,
-    getMonthFromDate,
-    getYearFromDate
-};
-
+export { getDayFromDate, getMonthFromDate, getYearFromDate }

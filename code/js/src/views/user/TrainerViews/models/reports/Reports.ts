@@ -1,6 +1,6 @@
-import Report from './Report'
+import Report from "./Report"
 
-class Reports{
+class Reports {
     reports: Report[]
     total: number
     constructor(reports: Report[], total: number) {

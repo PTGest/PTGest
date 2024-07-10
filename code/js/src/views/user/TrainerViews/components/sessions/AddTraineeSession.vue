@@ -58,11 +58,10 @@ import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 
 import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
 import store from "@/store"
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faX} from "@fortawesome/free-solid-svg-icons";
-import {getWorkouts} from "@/services/TrainerServices/workouts/workoutServices.js";
-import {editSession} from "@/services/TrainerServices/sessions/sessionServices.js";
-
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faX } from "@fortawesome/free-solid-svg-icons"
+import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.js"
+import { editSession } from "@/services/TrainerServices/sessions/sessionServices.js"
 
 const props = defineProps<{
     isEdit: boolean
@@ -239,7 +238,7 @@ textarea {
     align-items: center;
 }
 
-.x-icon{
+.x-icon {
     align-self: flex-end;
     cursor: pointer;
 }

@@ -1,4 +1,4 @@
-class Report{
+class Report {
     id: number
     trainee: string
     date: string
@@ -12,4 +12,3 @@ class Report{
     }
 }
 export default Report
-

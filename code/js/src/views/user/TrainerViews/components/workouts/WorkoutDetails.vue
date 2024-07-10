@@ -17,9 +17,9 @@ import { faX } from "@fortawesome/free-solid-svg-icons"
 import WorkoutSetsDetails from "@/views/user/TrainerViews/components/workouts/WorkoutSetsDetails.vue"
 import WorkoutDetails from "@/views/user/TrainerViews/models/workouts/WorkoutDetails.ts"
 import { Ref, ref } from "vue"
-import {getWorkoutDetails} from "@/services/TrainerServices/workouts/workoutServices.js";
-import {getTraineeWorkoutDetails} from "@/services/TraineeServices/TraineeServices.ts";
-import RBAC from "@/services/utils/RBAC/RBAC.ts";
+import { getWorkoutDetails } from "@/services/TrainerServices/workouts/workoutServices.js"
+import { getTraineeWorkoutDetails } from "@/services/TraineeServices/TraineeServices.ts"
+import RBAC from "@/services/utils/RBAC/RBAC.ts"
 
 const props = defineProps<{
     workoutId: number
@@ -28,13 +28,11 @@ const props = defineProps<{
 
 const workoutDetails: Ref<WorkoutDetails> = ref(new WorkoutDetails())
 ;(async () => {
-    if(RBAC.isTrainer() || RBAC.isHiredTrainer()){
+    if (RBAC.isTrainer() || RBAC.isHiredTrainer()) {
         workoutDetails.value = await getWorkoutDetails(props.workoutId)
-    }else{
+    } else {
         workoutDetails.value = await getTraineeWorkoutDetails(props.workoutId)
-
     }
-
 })()
 </script>
 

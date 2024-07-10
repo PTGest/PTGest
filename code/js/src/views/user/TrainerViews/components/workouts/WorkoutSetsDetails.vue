@@ -1,6 +1,6 @@
 <template>
     <div class="details">
-        <SetDetailsContainer v-bind="set" v-for="set in props.sets" :set="set" :is-session-details="props.isSessionDetails"/>
+        <SetDetailsContainer v-bind="set" v-for="set in props.sets" :set="set" :is-session-details="props.isSessionDetails" />
     </div>
 </template>
 
@@ -9,7 +9,7 @@ import SetDetails from "@/views/user/TrainerViews/models/sets/SetDetails.ts"
 import SetDetailsContainer from "@/views/user/TrainerViews/components/workouts/SetDetailsContainer.vue"
 
 const props = defineProps<{
-    sets: SetDetails[],
+    sets: SetDetails[]
     isSessionDetails: boolean
 }>()
 </script>

@@ -24,17 +24,16 @@ import TraineeSessions from "../views/user/TrainerViews/components/sessions/Trai
 import AddTraineeSession from "../views/user/TrainerViews/components/sessions/AddTraineeSession.vue"
 import SessionContainer from "../views/user/TrainerViews/components/sessions/SessionContainer.vue"
 import EditSessionDetails from "../views/user/TrainerViews/components/sessions/EditSessionDetails.vue"
-import TraineeReports from "../views/user/TrainerViews/components/reports/TraineeReports.vue";
-import AddReport from "../views/user/TrainerViews/components/reports/createReport.vue";
-import Report from "../views/user/TrainerViews/components/reports/Report.vue";
-import CancelSession from "../views/user/TrainerViews/components/sessions/CancelSession.vue";
-import TraineeProfile from "../views/user/TrainerViews/components/trainees/TraineeProfile.vue";
-import TraineeDataHistory from "../views/user/UserProfile/components/TraineeDataHistory.vue";
-import TraineeDataHistoryDetails from "../views/user/UserProfile/components/TraineeDataHistoryDetails.vue";
-import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue";
-import Profile from "../views/user/TrainerViews/Profile.vue";
-import { isSigned } from "../services/authServices/signed.ts"
-
+import TraineeReports from "../views/user/TrainerViews/components/reports/TraineeReports.vue"
+import AddReport from "../views/user/TrainerViews/components/reports/createReport.vue"
+import Report from "../views/user/TrainerViews/components/reports/Report.vue"
+import CancelSession from "../views/user/TrainerViews/components/sessions/CancelSession.vue"
+import TraineeProfile from "../views/user/TrainerViews/components/trainees/TraineeProfile.vue"
+import TraineeDataHistory from "../views/user/UserProfile/components/TraineeDataHistory.vue"
+import TraineeDataHistoryDetails from "../views/user/UserProfile/components/TraineeDataHistoryDetails.vue"
+import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue"
+import Profile from "../views/user/TrainerViews/Profile.vue"
+import { isSigned } from "../services/authServices/authServices.ts"
 
 const routes: RouteRecordRaw[] = [
     { path: "/", name: "home", component: Home, meta: { requiresAuth: false } },
@@ -86,7 +85,12 @@ const routes: RouteRecordRaw[] = [
     { path: "/:traineeId/profile", name: "traineeProfile", component: TraineeProfile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
 
     { path: "/trainee/:traineeId/data-history", name: "dataHistory", component: TraineeDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
-    { path: "/trainee/:traineeId/data-history/:dataId", name: "dataHistoryDetails", component: TraineeDataHistoryDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
+    {
+        path: "/trainee/:traineeId/data-history/:dataId",
+        name: "dataHistoryDetails",
+        component: TraineeDataHistoryDetails,
+        meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] },
+    },
     { path: "/trainee/:traineeId/data-history/add", name: "addDataHistory", component: TraineeAddDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
     { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
@@ -100,16 +104,15 @@ const router = createRouter({
     history: createWebHistory(),
 })
 
-router.beforeEach(async (to, from) => {
-
+router.beforeEach(async (to) => {
     if (to.meta.requiresAuth) {
         await isSigned()
         if (!store.getters.isLogged) {
-            return {name: "login"}
+            return { name: "login" }
         }
     }
-    if ((to.name === "login" || to.name === 'signup') && store.getters.isLogged) {
-        return {name: "home"}
+    if ((to.name === "login" || to.name === "signup") && store.getters.isLogged) {
+        return { name: "home" }
     }
 })
 

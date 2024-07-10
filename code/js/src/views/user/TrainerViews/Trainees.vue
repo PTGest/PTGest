@@ -44,9 +44,9 @@ const traineesRef = ref<CompanyTrainees | TrainerTrainees>({
 ;(async () => {
     try {
         if (RBAC.isCompany()) {
-            traineesRef.value = <CompanyTrainees> await getCompanyTrainersOrTrainees(skip.value, null, null, null, true, null)
+            traineesRef.value = <CompanyTrainees>await getCompanyTrainersOrTrainees(skip.value, null, null, null, true, null)
         } else {
-            traineesRef.value = <TrainerTrainees> await getTrainerTrainees(skip.value, null, null, null)
+            traineesRef.value = <TrainerTrainees>await getTrainerTrainees(skip.value, null, null, null)
         }
     } catch (error) {
         console.error("Error getting user info:", error)

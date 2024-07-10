@@ -1,10 +1,10 @@
 import CreateCustomWorkoutRequest from "../../../views/user/TrainerViews/models/workouts/CreateCustomWorkoutRequest.ts"
 import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import router from "../../../plugins/router.ts"
-import WorkoutDetails from "../../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts";
-import Workouts from "../../../views/user/TrainerViews/models/workouts/Workouts.ts";
-import {apiBaseUri} from "../../utils/envUtils.ts";
-import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
+import WorkoutDetails from "../../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts"
+import Workouts from "../../../views/user/TrainerViews/models/workouts/Workouts.ts"
+import { apiBaseUri } from "../../utils/envUtils.ts"
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts"
 
 async function createCustomWorkout(workoutRequest: CreateCustomWorkoutRequest) {
     try {
@@ -29,7 +29,6 @@ async function getWorkoutDetails(workoutId: string): Promise<WorkoutDetails> {
     }
 }
 
-
 async function getWorkouts(filters: Map<string, any> | null): Promise<Workouts> {
     const uri = `${apiBaseUri}/api/trainer/workouts`
     let postFiltersUri = uri
@@ -46,7 +45,6 @@ async function getWorkouts(filters: Map<string, any> | null): Promise<Workouts> 
     }
 }
 
-
 async function likeWorkout(workoutId: string): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/workout/${workoutId}/favorite`
 
@@ -58,7 +56,6 @@ async function likeWorkout(workoutId: string): Promise<void> {
         throw error
     }
 }
-
 
 async function unlikeWorkout(workoutId: string): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/workout/${workoutId}/unfavorite`
@@ -72,12 +69,4 @@ async function unlikeWorkout(workoutId: string): Promise<void> {
     }
 }
 
-
-
-export {
-    createCustomWorkout,
-    getWorkoutDetails,
-    getWorkouts,
-    likeWorkout,
-    unlikeWorkout
-}
+export { createCustomWorkout, getWorkoutDetails, getWorkouts, likeWorkout, unlikeWorkout }

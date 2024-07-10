@@ -1,6 +1,6 @@
-import BodyCircumferences from "./BodyCircumferences.ts";
+import BodyCircumferences from "./BodyCircumferences.ts"
 
-class AddTraineeDataRequest{
+class AddTraineeDataRequest {
     traineeId: string
     gender: string
     weight: number
@@ -9,10 +9,7 @@ class AddTraineeDataRequest{
     bodyFatPercentage: number | null
     skinFold: Map<string, number> | null
 
-    constructor( traineeId: string, gender: string, weight: number, height: number,
-                 bodyCircumferences: BodyCircumferences, bodyFatPercentage: number | null,
-                 skinFold: Map<string, number> | null
-    ){
+    constructor(traineeId: string, gender: string, weight: number, height: number, bodyCircumferences: BodyCircumferences, bodyFatPercentage: number | null, skinFold: Map<string, number> | null) {
         this.traineeId = traineeId
         this.gender = gender
         this.weight = weight
@@ -22,4 +19,4 @@ class AddTraineeDataRequest{
         this.skinFold = skinFold
     }
 }
-export default AddTraineeDataRequest;
+export default AddTraineeDataRequest

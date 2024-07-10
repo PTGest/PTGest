@@ -22,24 +22,22 @@ import { ref } from "vue"
 
 import ExercisesDropdown from "../exercises/ExercisesDropdown.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import {faHeart, faTimes} from "@fortawesome/free-solid-svg-icons"
-import Set from "@/views/user/TrainerViews/models/sets/Set.ts";
-import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
-import {getWorkouts} from "@/services/TrainerServices/workouts/workoutServices.ts";
-import {getSets} from "@/services/TrainerServices/sets/setServices.ts";
-import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
-import Exercises from "@/views/user/TrainerViews/models/exercises/Exercises.ts";
-
-
+import { faHeart, faTimes } from "@fortawesome/free-solid-svg-icons"
+import Set from "@/views/user/TrainerViews/models/sets/Set.ts"
+import { getExercises } from "@/services/TrainerServices/exercises/exerciseServices.js"
+import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.ts"
+import { getSets } from "@/services/TrainerServices/sets/setServices.ts"
+import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
+import Exercises from "@/views/user/TrainerViews/models/exercises/Exercises.ts"
 
 const modality = ref<string>("")
 const selectedMuscleGroups = ref<string>("")
 const emit = defineEmits(["filtersApplied", "close"])
 const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING" }, { name: "CYCLING" }, { name: "OTHER" }]
-const isLiked = ref(false);
+const isLiked = ref(false)
 
 const props = defineProps<{
-   filtersType: string
+    filtersType: string
 }>()
 const handleLike = () => {
     isLiked.value = !isLiked.value
@@ -67,7 +65,7 @@ const muscleGroupOptions = ref([
 
 const applyFilters = async () => {
     const filters = new Map<string, any>()
-    if (modality.value !== "" ) {
+    if (modality.value !== "") {
         filters.set("modality", modality.value.name)
     }
     if (selectedMuscleGroups.value !== "") {
@@ -78,25 +76,23 @@ const applyFilters = async () => {
     }
 
     switch (props.filtersType) {
-
-        case "exercises":{
-            const exercises : Exercises = await getExercises(filters)
+        case "exercises": {
+            const exercises: Exercises = await getExercises(filters)
             emit("filtersApplied", exercises)
             emit("close")
-            break;
+            break
         }
         case "sets": {
-            const sets : Set[] = (await getSets(filters)).sets
+            const sets: Set[] = (await getSets(filters)).sets
             emit("filtersApplied", sets)
             emit("close")
-            break;
+            break
         }
-        case "workouts":{
-            const workouts : Workout[] = (await getWorkouts(filters)).workouts
+        case "workouts": {
+            const workouts: Workout[] = (await getWorkouts(filters)).workouts
             emit("filtersApplied", workouts)
             emit("close")
         }
-
     }
     console.log("Filters applied")
 }

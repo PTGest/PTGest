@@ -8,26 +8,25 @@
 </template>
 
 <script setup lang="ts">
-import Button from "primevue/button";
-import SessionFeedback from "@/views/user/TrainerViews/models/sessions/SessionFeedback.ts";
-import FeedbackDetailsContainer from "@/views/user/TrainerViews/components/sessions/FeedbackDetailsContainer.vue";
-import {ref} from "vue";
-import AddFeedbackView from "@/views/user/TrainerViews/components/sessions/AddFeedback.vue";
-import store from "@/store";
+import Button from "primevue/button"
+import SessionFeedback from "@/views/user/TrainerViews/models/sessions/SessionFeedback.ts"
+import FeedbackDetailsContainer from "@/views/user/TrainerViews/components/sessions/FeedbackDetailsContainer.vue"
+import { ref } from "vue"
+import AddFeedbackView from "@/views/user/TrainerViews/components/sessions/AddFeedback.vue"
+import store from "@/store"
 
-const isAddFeedbackOpen = ref(false);
-const isDetailsOpen = ref(false);
-const sessionFeedback : SessionFeedback= store.getters.sessionDetails.feedbacks;
+const isAddFeedbackOpen = ref(false)
+const isDetailsOpen = ref(false)
+const sessionFeedback: SessionFeedback = store.getters.sessionDetails.feedbacks
 
 console.log("Session Feedback", sessionFeedback)
 const addFeedback = () => {
-  isAddFeedbackOpen.value = true;
+    isAddFeedbackOpen.value = true
 }
-
 </script>
 
 <style scoped>
-.feedback-container{
+.feedback-container {
     display: flex;
     width: 20em;
     flex-direction: column;
@@ -38,7 +37,7 @@ const addFeedback = () => {
     border-radius: 5px;
     background-color: var(--main-primary-color);
 }
-.add-btn{
+.add-btn {
     background-color: var(--main-tertiary-color);
     color: whitesmoke;
     padding: 0.5em;
@@ -49,7 +48,7 @@ const addFeedback = () => {
     border: 1px solid var(--main-tertiary-color);
 }
 
-.add-btn:hover{
+.add-btn:hover {
     border: 1px solid var(--button-border-color);
     background-color: var(--main-secondary-color);
     transition: 0.2s ease-out;

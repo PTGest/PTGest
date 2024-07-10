@@ -1,67 +1,64 @@
 <template>
-        <div class="container" v-if="props.gender == 'MALE'">
-            <FloatLabel>
-                <InputText @change="handleInput" id="pectoral" v-model="pectoral" />
-                cm
-                <label for="pectoral">Pectoral</label>
-            </FloatLabel>
-            <FloatLabel>
-                <InputText @change="handleInput" id="abdominal" v-model="abdominal" />
-                cm
-                <label for="abdominal">Abdominal</label>
-            </FloatLabel>
-            <FloatLabel>
-                <InputText @change="handleInput" id="thigh" v-model="thigh" />
-                cm
-                <label for="thigh">Thigh</label>
-            </FloatLabel>
-        </div>
-        <div class="container" v-else>
-            <FloatLabel>
-                <InputText @change="handleInput" id="tricep" v-model="tricep" />
-                cm
-                <label for="tricep">Tricep</label>
-            </FloatLabel>
-            <FloatLabel>
-                <InputText @change="handleInput" id="suprailiac" v-model="suprailiac" />
-                cm
-                <label for="suprailiac">Suprailiac</label>
-            </FloatLabel>
-            <FloatLabel>
-                <InputText @change="handleInput" id="thigh" v-model="thigh" />
-                cm
-                <label for="thigh">Thigh</label>
-            </FloatLabel>
-        </div>
-
+    <div class="container" v-if="props.gender == 'MALE'">
+        <FloatLabel>
+            <InputText @change="handleInput" id="pectoral" v-model="pectoral" />
+            cm
+            <label for="pectoral">Pectoral</label>
+        </FloatLabel>
+        <FloatLabel>
+            <InputText @change="handleInput" id="abdominal" v-model="abdominal" />
+            cm
+            <label for="abdominal">Abdominal</label>
+        </FloatLabel>
+        <FloatLabel>
+            <InputText @change="handleInput" id="thigh" v-model="thigh" />
+            cm
+            <label for="thigh">Thigh</label>
+        </FloatLabel>
+    </div>
+    <div class="container" v-else>
+        <FloatLabel>
+            <InputText @change="handleInput" id="tricep" v-model="tricep" />
+            cm
+            <label for="tricep">Tricep</label>
+        </FloatLabel>
+        <FloatLabel>
+            <InputText @change="handleInput" id="suprailiac" v-model="suprailiac" />
+            cm
+            <label for="suprailiac">Suprailiac</label>
+        </FloatLabel>
+        <FloatLabel>
+            <InputText @change="handleInput" id="thigh" v-model="thigh" />
+            cm
+            <label for="thigh">Thigh</label>
+        </FloatLabel>
+    </div>
 </template>
 
 <script setup lang="ts">
-import FloatLabel from "primevue/floatlabel";
-import InputText from "primevue/inputtext";
-import {ref} from "vue";
+import FloatLabel from "primevue/floatlabel"
+import InputText from "primevue/inputtext"
+import { ref } from "vue"
 const props = defineProps<{
     gender: string
-}>();
+}>()
 
-console.log(props.gender);
+console.log(props.gender)
 
-const map = new Map<string, number>();
+const map = new Map<string, number>()
 
-const pectoral = ref(null);
-const abdominal = ref(null);
-const thigh = ref(null);
-const tricep = ref(null);
-const suprailiac = ref(null);
+const pectoral = ref(null)
+const abdominal = ref(null)
+const thigh = ref(null)
+const tricep = ref(null)
+const suprailiac = ref(null)
 
-const emits = defineEmits(['skinFoldData']);
+const emits = defineEmits(["skinFoldData"])
 const handleInput = (e: any) => {
-    map.set(e.target.id.toUpperCase(), e.target.value);
-    emits('skinFoldData', map);
+    map.set(e.target.id.toUpperCase(), e.target.value)
+    emits("skinFoldData", map)
 }
 </script>
-
-
 
 <style scoped>
 .container {
@@ -79,9 +76,8 @@ const handleInput = (e: any) => {
 ::placeholder {
     color: var(--main-primary-color);
     font-size: 1.2em;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
-
 
 input {
     margin: 0.5em;
@@ -90,7 +86,7 @@ input {
     border-radius: 10px;
     border: 1px solid var(--main-primary-color);
     font-size: 1em;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     text-align: center;
 }

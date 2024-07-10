@@ -1,8 +1,8 @@
 class CreateFeedbackRequest {
-    feedback: string;
+    feedback: string
 
     constructor(feedback: string) {
-        this.feedback = feedback;
+        this.feedback = feedback
     }
 }
-export default CreateFeedbackRequest;
+export default CreateFeedbackRequest

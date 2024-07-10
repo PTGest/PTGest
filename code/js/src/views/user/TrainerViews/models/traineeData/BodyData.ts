@@ -1,14 +1,14 @@
-import BodyCircumferences from "./BodyCircumferences.ts";
-import BodyComposition from "./BodyComposition.ts";
+import BodyCircumferences from "./BodyCircumferences.ts"
+import BodyComposition from "./BodyComposition.ts"
 
-class BodyData{
+class BodyData {
     weight: number
     height: number
     bodyCircumferences: BodyCircumferences
     bodyComposition: BodyComposition
     skinFolds: Map<string, number> | null = null
 
-    constructor(weight: number, height: number, bodyCircumferences: BodyCircumferences, bodyComposition: BodyComposition, skinFolds: Map<string, number> | null){
+    constructor(weight: number, height: number, bodyCircumferences: BodyCircumferences, bodyComposition: BodyComposition, skinFolds: Map<string, number> | null) {
         this.weight = weight
         this.height = height
         this.bodyCircumferences = bodyCircumferences
@@ -16,4 +16,4 @@ class BodyData{
         this.skinFolds = skinFolds
     }
 }
-export default BodyData;
+export default BodyData

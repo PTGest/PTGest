@@ -1,23 +1,21 @@
-import fetchData from "../../utils/fetchUtils/fetchData.ts";
-import CancelSessionRequest from "../../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts";
-import router from "../../../plugins/router.ts";
-import CreateSessionRequest from "../../../views/user/TrainerViews/models/sessions/CreateSessionRequest.ts";
-import TrainerSessionDetails from "../../../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts";
-import Sessions from "../../../views/user/TrainerViews/models/sessions/Sessions.ts";
-import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
-import TrainerSessions from "../../../views/user/TrainerViews/models/sessions/TrainerSessions.ts";
-import {apiBaseUri} from "../../utils/envUtils.ts";
-import CreateFeedbackRequest from "../../../views/user/TrainerViews/models/sessions/CreateFeedbackRequest.ts";
-import SetSessionFeedback from "../../../views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts";
-
+import fetchData from "../../utils/fetchUtils/fetchData.ts"
+import CancelSessionRequest from "../../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts"
+import router from "../../../plugins/router.ts"
+import CreateSessionRequest from "../../../views/user/TrainerViews/models/sessions/CreateSessionRequest.ts"
+import TrainerSessionDetails from "../../../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
+import Sessions from "../../../views/user/TrainerViews/models/sessions/Sessions.ts"
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts"
+import TrainerSessions from "../../../views/user/TrainerViews/models/sessions/TrainerSessions.ts"
+import { apiBaseUri } from "../../utils/envUtils.ts"
+import CreateFeedbackRequest from "../../../views/user/TrainerViews/models/sessions/CreateFeedbackRequest.ts"
+import SetSessionFeedback from "../../../views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts"
 
 async function cancelSession(sessionId: number, reason: CancelSessionRequest): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/cancel`
     try {
         const response = await fetchData(uri, "POST", reason)
         router.back()
-        return response;
-
+        return response
     } catch (error) {
         console.error("Error fetching set:", error)
         throw error
@@ -105,7 +103,6 @@ async function editTrainerSessionsFeedback(feedback: string, sessionId: string, 
     }
 }
 
-
 async function addTrainerSessionsSetFeedback(feedback: string, sessionId: number, setId: number, setOrderId: number): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/set/${setOrderId}/${setId}/feedback`
     try {
@@ -128,12 +125,6 @@ async function getTrainerSetFeedback(sessionId: string): Promise<SetSessionFeedb
     }
 }
 
-
-
-
-
-
-
 export {
     cancelSession,
     createSession,
@@ -144,5 +135,5 @@ export {
     addTrainerSessionsFeedback,
     editTrainerSessionsFeedback,
     addTrainerSessionsSetFeedback,
-    getTrainerSetFeedback
+    getTrainerSetFeedback,
 }

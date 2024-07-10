@@ -12,7 +12,7 @@
                 </router-link>
 
                 <template v-if="!isLogged">
-                    <router-link  @click="handleMenu" :to="{ name: 'login' }" class="nav-link" link>
+                    <router-link @click="handleMenu" :to="{ name: 'login' }" class="nav-link" link>
                         <font-awesome-icon v-if="is_open || is_mobile_view" :icon="faUser"></font-awesome-icon>
                         <div v-if="!is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Login</div>
                     </router-link>
@@ -23,38 +23,37 @@
                     </router-link>
                 </template>
 
-                <div v-if="RBAC.isCompany() || RBAC.isHiredTrainer() || RBAC.isTrainer() ">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'trainees'}">Trainees</router-link>
+                <div v-if="RBAC.isCompany() || RBAC.isHiredTrainer() || RBAC.isTrainer()">
+                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'trainees' }">Trainees</router-link>
                 </div>
                 <div v-if="RBAC.isCompany()">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'trainers'}">Trainers</router-link>
+                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'trainers' }">Trainers</router-link>
                 </div>
 
                 <div v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'exercises'}">Exercises</router-link>
+                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'exercises' }">Exercises</router-link>
                 </div>
 
                 <div v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'sets'}">Sets</router-link>
+                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'sets' }">Sets</router-link>
                 </div>
 
                 <div v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'workouts'}">Workouts</router-link>
+                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'workouts' }">Workouts</router-link>
                 </div>
 
                 <div v-if="RBAC.isTrainer() || RBAC.isHiredTrainer() || RBAC.isTrainee()">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'sessions'}">Sessions</router-link>
+                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))" class="nav-link" :to="{ name: 'sessions' }">Sessions</router-link>
                 </div>
 
                 <div v-if="RBAC.isTrainee()">
-                    <router-link @click="handleMenu" v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
-                                 class="nav-link" :to="{ name: 'traineeProfile', params:{traineeId:store.getters.userData.id}}">Profile</router-link>
+                    <router-link
+                        @click="handleMenu"
+                        v-if="isLogged && (!is_mobile_view || (is_mobile_view && is_open))"
+                        class="nav-link"
+                        :to="{ name: 'traineeProfile', params: { traineeId: store.getters.userData.id } }"
+                        >Profile</router-link
+                    >
                 </div>
 
                 <router-link to="/profile" class="nav-link" link>
@@ -62,8 +61,7 @@
                     <div v-if="is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Profile</div>
                 </router-link>
 
-                <LogoutButton :isOpen="is_open" v-if="isLogged"
-                              :isMobileView="is_mobile_view" />
+                <LogoutButton :isOpen="is_open" v-if="isLogged" :isMobileView="is_mobile_view" />
             </div>
         </div>
     </div>
@@ -77,15 +75,12 @@ import store from "../../store"
 import LogoutButton from "./components/LogoutButton.vue"
 import Avatar from "primevue/avatar"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
-import icon from '@/assets/userIcons/man.png'
-
-
+import icon from "@/assets/userIcons/man.png"
 
 // Define a computed property to track changes to userData
 const isLogged = computed(() => {
-    console.log('LOGGED',store.getters.isLogged)
-     return store.getters.isLogged
-
+    console.log("LOGGED", store.getters.isLogged)
+    return store.getters.isLogged
 })
 
 // Define other reactive variables

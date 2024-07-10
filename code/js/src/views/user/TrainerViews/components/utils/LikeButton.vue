@@ -9,9 +9,8 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref } from "vue"
 
-import {likeExercise, unlikeExercise} from "@/services/TrainerServices/exercises/exerciseServices.js";
-import {likeWorkout, unlikeWorkout} from "@/services/TrainerServices/workouts/workoutServices.ts";
-
+import { likeExercise, unlikeExercise } from "@/services/TrainerServices/exercises/exerciseServices.js"
+import { likeWorkout, unlikeWorkout } from "@/services/TrainerServices/workouts/workoutServices.ts"
 
 const props = defineProps<{
     id: number
@@ -25,7 +24,7 @@ const handleLike = () => {
     console.log("Liked", isLiked.value)
 
     switch (props.isExercise) {
-        case true:{
+        case true: {
             if (!isLiked.value) {
                 likeExercise(props.id)
                 isLiked.value = true
@@ -46,12 +45,7 @@ const handleLike = () => {
             }
             break
         }
-
-
     }
-
-
-
 }
 </script>
 

@@ -24,23 +24,22 @@
 </template>
 
 <script setup lang="ts">
-import FloatLabel from "primevue/floatlabel";
-import InputText from "primevue/inputtext";
-import {ref} from "vue";
+import FloatLabel from "primevue/floatlabel"
+import InputText from "primevue/inputtext"
+import { ref } from "vue"
 
-const map = new Map<string, number>();
+const map = new Map<string, number>()
 
-const tricep = ref(null);
-const abdominal = ref(null);
-const thigh = ref(null);
-const suprailiac = ref(null);
+const tricep = ref(null)
+const abdominal = ref(null)
+const thigh = ref(null)
+const suprailiac = ref(null)
 
-const emits = defineEmits(['skinFoldData']);
+const emits = defineEmits(["skinFoldData"])
 const handleInput = (e: any) => {
-    map.set(e.target.id.toUpperCase(), e.target.value);
-    emits('skinFoldData', map);
+    map.set(e.target.id.toUpperCase(), e.target.value)
+    emits("skinFoldData", map)
 }
-
 </script>
 
 <style scoped>
@@ -59,9 +58,8 @@ const handleInput = (e: any) => {
 ::placeholder {
     color: var(--main-primary-color);
     font-size: 1.2em;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
-
 
 input {
     margin: 0.5em;
@@ -70,7 +68,7 @@ input {
     border-radius: 10px;
     border: 1px solid var(--main-primary-color);
     font-size: 1em;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     text-align: center;
 }

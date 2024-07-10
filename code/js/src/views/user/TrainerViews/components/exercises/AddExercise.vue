@@ -39,7 +39,7 @@ import { computed, ref } from "vue"
 import MultiSelect from "primevue/multiselect"
 import Textarea from "primevue/textarea"
 import Button from "primevue/button"
-import {createExercise} from "../../../../../services/trainerServices/exercises/exerciseServices.ts"
+import { createExercise } from "../../../../../services/trainerServices/exercises/exerciseServices.ts"
 import CreateCustomExerciseRequest from "../../models/exercises/CreateCustomExerciseRequest.ts"
 
 const modalityOptions = [{ name: "BODYWEIGHT" }, { name: "WEIGHTLIFT" }, { name: "RUNNING" }, { name: "CYCLING" }, { name: "OTHER" }]
@@ -77,7 +77,6 @@ const modalityDropdownOption = (option: any) => {
     modalityOption.value = option.name
     console.log(modalityOption.value)
 }
-
 
 const submitExercise = async () => {
     console.log("submitting exercise")

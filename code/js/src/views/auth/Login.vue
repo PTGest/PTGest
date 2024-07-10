@@ -28,10 +28,10 @@
 import { faEye } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { computed, ref } from "vue"
-import { loginUserServices } from "../../services/authServices/loginServices.ts"
 import { Ref } from "vue/dist/vue"
 import LoginUserData from "../../models/authModels/LoginUserData.ts"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
+import { loginUserServices } from "@/services/authServices/authServices.ts"
 
 const loginUserData: Ref<LoginUserData> = ref({
     email: "",

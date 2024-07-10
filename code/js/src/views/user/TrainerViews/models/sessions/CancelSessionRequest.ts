@@ -1,7 +1,7 @@
 class CancelSessionRequest {
-    reason: string | null;
+    reason: string | null
     constructor(reason: string | null) {
-        this.reason = reason;
+        this.reason = reason
     }
 }
-export default CancelSessionRequest;
+export default CancelSessionRequest

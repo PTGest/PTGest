@@ -39,15 +39,20 @@
 import InputBar from "../../components/utils/InputBar.vue"
 import { ref } from "vue"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
-import { resetPasswordServices } from "../../services/authServices/resetPassword.ts"
 import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
 import { useRoute } from "vue-router"
+import { resetPasswordServices, verifyToken } from "@/services/authServices/authServices.ts"
 
 const params = useRoute().params
 
 const password = ref("")
 const confirm_password = ref("")
 const equalPasswords = ref(false)
+
+;(() => {
+    //  TODO(): token not valid page
+    verifyToken(params.token)
+})()
 
 const updatePasswordValue = (value: string) => {
     console.log(value)

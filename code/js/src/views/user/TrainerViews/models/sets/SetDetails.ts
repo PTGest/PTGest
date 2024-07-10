@@ -8,7 +8,7 @@ class SetDetails {
     orderId: number
     setExerciseDetails: SetExerciseDetails[]
 
-    constructor(id: number, name: string, notes: string, type: string, orderId: number,setExerciseDetails: SetExerciseDetails[]) {
+    constructor(id: number, name: string, notes: string, type: string, orderId: number, setExerciseDetails: SetExerciseDetails[]) {
         this.id = id
         this.name = name
         this.notes = notes

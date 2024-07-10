@@ -17,22 +17,21 @@ import router from "@/plugins/router.ts"
 import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import store from "../../../../../store"
-import {Session} from "node:inspector";
-import {getDayFromDate, getMonthFromDate} from "@/services/utils/dateUtils/getFromDateUtils.js";
-import {Ref, ref} from "vue";
+import { Session } from "node:inspector"
+import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
+import { Ref, ref } from "vue"
 
 const props = defineProps<{
     daySessions: TrainerSession[] | Session[]
     isTraineeSessions: boolean
 }>()
 
-const daySessionsFiltered : Ref<TrainerSession[]| Session[]> = ref(props.daySessions.filter((session: TrainerSession) =>
-    getDayFromDate(session.beginDate) >= new Date().getDay() && getMonthFromDate(session.beginDate) >= new Date().getMonth()
-    && !session.cancelled
-
-))
+const daySessionsFiltered: Ref<TrainerSession[] | Session[]> = ref(
+    props.daySessions.filter(
+        (session: TrainerSession) => getDayFromDate(session.beginDate) >= new Date().getDay() && getMonthFromDate(session.beginDate) >= new Date().getMonth() && !session.cancelled
+    )
+)
 console.log("DAY SESSIONS", daySessionsFiltered.value)
-
 
 const sessionDetails = (id: number) => {
     router.push("/sessions/session/" + id)

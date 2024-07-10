@@ -3,7 +3,7 @@
         <template #default>
             <div class="profile-container">
                 <ImageContainer class="image-container" :src="image" />
-                <UserPersonalInfoContainer class="user-personal-info" :userId="props.userId"/>
+                <UserPersonalInfoContainer class="user-personal-info" :userId="props.userId" />
             </div>
         </template>
         <template #fallback>
@@ -13,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-
-
 import ImageContainer from "../UserProfile/components/ImageContainer.vue"
 import image from "../../../assets/./userIcons/man.png"
 import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInfoContainer.vue"
@@ -22,7 +20,6 @@ import UserPersonalInfoContainer from "../UserProfile/components/UserPersonalInf
 const props = defineProps<{
     userId: string
 }>()
-
 </script>
 
 <style scoped>

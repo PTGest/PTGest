@@ -48,9 +48,9 @@ const store = createStore<State>({
                 notes: "",
                 cancelled: false,
                 reason: "",
-                source: ""
+                source: "",
             },
-            isLogged: false
+            isLogged: false,
         }
     },
     mutations: {

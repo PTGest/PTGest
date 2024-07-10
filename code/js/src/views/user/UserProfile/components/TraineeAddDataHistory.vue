@@ -3,11 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import AddTraineeData from "@/views/user/TrainerViews/components/trainees/AddTraineeData.vue";
+import AddTraineeData from "@/views/user/TrainerViews/components/trainees/AddTraineeData.vue"
 </script>
 
-
-
-<style scoped>
-
-</style>
+<style scoped></style>

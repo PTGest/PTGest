@@ -3,7 +3,7 @@
         <p>Body Circumferences</p>
         <div class="body-container">
             <FloatLabel>
-                <InputText @change="handleInput" id="neck" v-model="bodyCircumferences.neck"/>
+                <InputText @change="handleInput" id="neck" v-model="bodyCircumferences.neck" />
                 cm
                 <label for="neck">Neck</label>
             </FloatLabel>
@@ -13,7 +13,7 @@
                 <label for="chest">Chest</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText @change="handleInput"  id="waist" v-model="bodyCircumferences.waist" />
+                <InputText @change="handleInput" id="waist" v-model="bodyCircumferences.waist" />
                 cm
                 <label for="waist">Waist</label>
             </FloatLabel>
@@ -62,22 +62,19 @@
 </template>
 
 <script setup lang="ts">
-import BodyCircumferences from "@/views/user/TrainerViews/models/traineeData/BodyCircumferences.ts";
-import {ref} from "vue";
-import InputText from "primevue/inputtext";
-import FloatLabel from "primevue/floatlabel";
+import BodyCircumferences from "@/views/user/TrainerViews/models/traineeData/BodyCircumferences.ts"
+import { ref } from "vue"
+import InputText from "primevue/inputtext"
+import FloatLabel from "primevue/floatlabel"
 
-const emits = defineEmits(['bodyCircumferenceData']);
-const bodyCircumferences = ref(new BodyCircumferences());
+const emits = defineEmits(["bodyCircumferenceData"])
+const bodyCircumferences = ref(new BodyCircumferences())
 //11
 
 function handleInput() {
-    console.log("BODY CIRCUMFERENCES", bodyCircumferences.value);
-    emits('bodyCircumferenceData', bodyCircumferences.value);
+    console.log("BODY CIRCUMFERENCES", bodyCircumferences.value)
+    emits("bodyCircumferenceData", bodyCircumferences.value)
 }
-
-
-
 </script>
 
 <style scoped>
@@ -91,7 +88,7 @@ function handleInput() {
 }
 
 .body-main-container {
-    position : absolute;
+    position: absolute;
     top: -63%;
     right: -105%;
     display: flex;
@@ -101,7 +98,7 @@ function handleInput() {
     padding: 1em;
     border-radius: 10px;
     color: whitesmoke;
-    z-index:99;
+    z-index: 99;
     animation: slideInFromLeft 0.8s;
 }
 
@@ -113,7 +110,7 @@ function handleInput() {
 ::placeholder {
     color: var(--main-primary-color);
     font-size: 1.2em;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 input {
@@ -123,7 +120,7 @@ input {
     border-radius: 10px;
     border: 1px solid var(--main-primary-color);
     font-size: 1em;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     text-align: center;
 }
@@ -142,7 +139,7 @@ label {
     border-radius: 5px;
     text-align: center;
 }
-p{
+p {
     padding: 0em;
 }
 

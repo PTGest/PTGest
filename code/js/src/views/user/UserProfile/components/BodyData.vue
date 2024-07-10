@@ -1,12 +1,8 @@
 <template>
     <div class="body-data">
         <div class="data-first-col">
-            <div class="data-item">
-                <strong>Weight:</strong> {{ bodyData.weight }} kg
-            </div>
-            <div class="data-item">
-                <strong>Height:</strong> {{ bodyData.height }} cm
-            </div>
+            <div class="data-item"><strong>Weight:</strong> {{ bodyData.weight }} kg</div>
+            <div class="data-item"><strong>Height:</strong> {{ bodyData.height }} cm</div>
             <div class="expandable-section" v-if="bodyData.skinFolds" @click="toggleSection('skinFolds')">
                 <h3>
                     Skin Folds
@@ -46,9 +42,11 @@
                 </h3>
                 <div v-if="sections.composition">
                     <div class="data-item"><strong>BMI:</strong> {{ bodyData.bodyComposition.bmi }}</div>
-                    <div class="data-item"><strong>Body Fat Percentage:</strong> {{ bodyData.bodyComposition.bodyFatPercentage !== null ? bodyData.bodyComposition.bodyFatPercentage + '%' : 'N/A' }}</div>
-                    <div class="data-item"><strong>Body Fat Mass:</strong> {{ bodyData.bodyComposition.bodyFatMass !== null ? bodyData.bodyComposition.bodyFatMass + ' kg' : 'N/A' }}</div>
-                    <div class="data-item"><strong>Fat Free Mass:</strong> {{ bodyData.bodyComposition.fatFreeMass !== null ? bodyData.bodyComposition.fatFreeMass + ' kg' : 'N/A' }}</div>
+                    <div class="data-item">
+                        <strong>Body Fat Percentage:</strong> {{ bodyData.bodyComposition.bodyFatPercentage !== null ? bodyData.bodyComposition.bodyFatPercentage + "%" : "N/A" }}
+                    </div>
+                    <div class="data-item"><strong>Body Fat Mass:</strong> {{ bodyData.bodyComposition.bodyFatMass !== null ? bodyData.bodyComposition.bodyFatMass + " kg" : "N/A" }}</div>
+                    <div class="data-item"><strong>Fat Free Mass:</strong> {{ bodyData.bodyComposition.fatFreeMass !== null ? bodyData.bodyComposition.fatFreeMass + " kg" : "N/A" }}</div>
                 </div>
             </div>
         </div>
@@ -56,24 +54,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import BodyData from "@/views/user/TrainerViews/models/traineeData/BodyData.ts";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
+import { ref } from "vue"
+import BodyData from "@/views/user/TrainerViews/models/traineeData/BodyData.ts"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons"
 
 const props = defineProps<{
     bodyData: BodyData
-}>();
+}>()
 
 const sections = ref({
     circumferences: false,
     composition: false,
-    skinFolds: false
-});
+    skinFolds: false,
+})
 
 const toggleSection = (section: string) => {
-    sections.value[section] = !sections.value[section];
-};
+    sections.value[section] = !sections.value[section]
+}
 </script>
 
 <style scoped>
@@ -112,7 +110,7 @@ const toggleSection = (section: string) => {
 .expandable-section h3:after {
     transition: transform 0.3s ease;
 }
-.collapsed{
+.collapsed {
     margin-left: 10px;
 }
 .expandable-section h3.collapsed:after {
@@ -127,11 +125,9 @@ const toggleSection = (section: string) => {
         align-items: flex-start;
     }
 }
-.data-first-col{
+.data-first-col {
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 </style>
-
-

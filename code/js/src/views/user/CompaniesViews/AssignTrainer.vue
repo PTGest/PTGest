@@ -16,9 +16,9 @@ const skip = ref(0)
 const companyTrainersRef: Ref<CompanyTrainers> = ref({
     trainers: [],
     total: 0,
-});
+})
 
-(async () => {
+;(async () => {
     try {
         companyTrainersRef.value = <CompanyTrainers>await getCompanyTrainersOrTrainees(skip.value, null, null, null, false, null)
     } catch (error) {

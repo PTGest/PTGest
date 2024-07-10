@@ -62,7 +62,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import authenticatedSignup from "../../../services/authServices/AuthenticatedSignup.ts"
 import TraineeRegisterData from "../../../views/user/UserRegister/models/TraineeRegisterData.ts"
 import HiredTrainerRegisterData from "../../../models/authModels/HiredTrainerRegisterData.ts"
 import router from "../../../plugins/router.ts"
@@ -71,6 +70,7 @@ import DropdownMenu from "../../../components/utils/DropdownMenu.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import DefaultButton from "../../../components/utils/DefaultButton.vue"
 import InputBar from "../../../components/utils/InputBar.vue"
+import { authenticatedSignup } from "@/services/authServices/authServices.ts"
 
 const isTrainee = ref(router.currentRoute.value.params.isTrainee === "true")
 const text = computed(() => {

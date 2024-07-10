@@ -2,10 +2,10 @@ import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import CreateCustomSetRequest from "../../../views/user/TrainerViews/models/sets/CreateCustomSetRequest.ts"
 import mapToObject from "../../utils/fetchUtils/mapToObject.ts"
 import router from "../../../plugins/router.ts"
-import SetDetails from "../../../views/user/TrainerViews/models/sets/SetDetails.ts";
-import Sets from "../../../views/user/TrainerViews/models/sets/Sets.ts";
-import handleFilters from "../../utils/fetchUtils/handleFilters.ts";
-import {apiBaseUri} from "../../utils/envUtils.ts";
+import SetDetails from "../../../views/user/TrainerViews/models/sets/SetDetails.ts"
+import Sets from "../../../views/user/TrainerViews/models/sets/Sets.ts"
+import handleFilters from "../../utils/fetchUtils/handleFilters.ts"
+import { apiBaseUri } from "../../utils/envUtils.ts"
 
 // Function to convert Map to Object
 
@@ -36,7 +36,6 @@ async function getSetDetails(setId: number): Promise<SetDetails> {
     }
 }
 
-
 async function getSets(filters: Map<string, any> | null): Promise<Sets> {
     const uri = `${apiBaseUri}/api/trainer/sets`
     let postFiltersUri = uri
@@ -54,7 +53,6 @@ async function getSets(filters: Map<string, any> | null): Promise<Sets> {
     }
 }
 
-
 async function likeSet(setId: string): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/set/${setId}/favorite`
 
@@ -66,7 +64,6 @@ async function likeSet(setId: string): Promise<void> {
         throw error
     }
 }
-
 
 async function unlikeSet(setId: string): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/set/${setId}/unfavorite`
@@ -80,10 +77,4 @@ async function unlikeSet(setId: string): Promise<void> {
     }
 }
 
-export {
-    createSet,
-    getSetDetails,
-    getSets,
-    likeSet,
-    unlikeSet
-}
+export { createSet, getSetDetails, getSets, likeSet, unlikeSet }

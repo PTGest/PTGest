@@ -1,31 +1,30 @@
 <template>
     <div class="cancel-container">
-        <input v-model="reason" placeholder="Reason"/>
+        <input v-model="reason" placeholder="Reason" />
         <p>Are you sure you want to cancel this session?</p>
-       <div class="buttons-row">
-           <button class="yes-btn btn" @click="handleCancelSession">Yes</button>
-           <button class="no-btn btn" @click="router.back()">No</button>
-       </div>
+        <div class="buttons-row">
+            <button class="yes-btn btn" @click="handleCancelSession">Yes</button>
+            <button class="no-btn btn" @click="router.back()">No</button>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import router from "@/plugins/router.ts";
-import {ref} from "vue";
-import {cancelSession} from "@/services/TrainerServices/sessions/sessionServices.js";
-import CancelSessionRequest from "@/views/user/TrainerViews/models/sessions/CancelSessionRequest.ts";
+import router from "@/plugins/router.ts"
+import { ref } from "vue"
+import { cancelSession } from "@/services/TrainerServices/sessions/sessionServices.js"
+import CancelSessionRequest from "@/views/user/TrainerViews/models/sessions/CancelSessionRequest.ts"
 
 const reason = ref("")
 
 const handleCancelSession = async () => {
-    await cancelSession(router.currentRoute.value.params.sessionId,new CancelSessionRequest(reason.value))
+    await cancelSession(router.currentRoute.value.params.sessionId, new CancelSessionRequest(reason.value))
     console.log("Session Cancelled")
 }
-
 </script>
 
 <style scoped>
-.cancel-container{
+.cancel-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -37,7 +36,7 @@ const handleCancelSession = async () => {
     border: 1px solid black;
     border-radius: 10px;
 }
-.buttons-row{
+.buttons-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -45,15 +44,15 @@ const handleCancelSession = async () => {
     gap: 1em;
     width: 100%;
 }
-input{
+input {
     width: 100%;
     padding: 0.5em;
     border-radius: 5px;
     border: none;
-    outline : none;
+    outline: none;
     font-size: 1.2em;
 }
-.btn{
+.btn {
     padding: 0.5em 1em;
     border-radius: 5px;
     background-color: var(--main-secondary-color);
@@ -64,10 +63,9 @@ input{
     transition: 0.2s background-color;
 }
 
-.btn:hover{
+.btn:hover {
     background-color: var(--main-primary-color);
     border: 1px solid var(--button-border-color);
     transition: 0.2s background-color;
 }
-
 </style>

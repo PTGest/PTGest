@@ -1,10 +1,9 @@
-import fetchData from "../../utils/fetchUtils/fetchData.ts";
-import TraineeDataDetails from "../../../views/user/TrainerViews/models/traineeData/TraineeDataDetails.ts";
-import {apiBaseUri} from "../../utils/envUtils.ts";
-import addTraineeDataRequest from "../../../views/user/TrainerViews/models/traineeData/AddTraineeDataRequest.ts";
-import mapToObject from "../../utils/fetchUtils/mapToObject.ts";
-import TraineeDataHistory from "../../../views/user/TrainerViews/models/trainees/TraineeDataHistory.ts";
-
+import fetchData from "../../utils/fetchUtils/fetchData.ts"
+import TraineeDataDetails from "../../../views/user/TrainerViews/models/traineeData/TraineeDataDetails.ts"
+import { apiBaseUri } from "../../utils/envUtils.ts"
+import addTraineeDataRequest from "../../../views/user/TrainerViews/models/traineeData/AddTraineeDataRequest.ts"
+import mapToObject from "../../utils/fetchUtils/mapToObject.ts"
+import TraineeDataHistory from "../../../views/user/TrainerViews/models/trainees/TraineeDataHistory.ts"
 
 async function getTraineeData(traineeId: string) {
     const uri = `${apiBaseUri}/api/trainer/trainee/${traineeId}/data`
@@ -43,10 +42,4 @@ async function addTraineeData(data: addTraineeDataRequest) {
     }
 }
 
-
-
-export {
-    getTraineeData,
-    getTraineeDataDetails,
-    addTraineeData
-}
+export { getTraineeData, getTraineeDataDetails, addTraineeData }

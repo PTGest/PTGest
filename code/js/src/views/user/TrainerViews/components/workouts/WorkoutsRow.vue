@@ -24,9 +24,8 @@
                         <LikeExercise :id="workout.id" :is-liked="workout.isFavorite"></LikeExercise>
                     </td>
                     <td class="circle-info-box" @click="openDetails(workout)">
-                       <font-awesome-icon :icon="faCircleInfo" />
+                        <font-awesome-icon :icon="faCircleInfo" />
                     </td>
-
                 </tr>
             </tbody>
         </table>
@@ -37,11 +36,11 @@
 <script setup lang="ts">
 import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import {faCircleInfo, faDumbbell} from "@fortawesome/free-solid-svg-icons"
+import { faCircleInfo, faDumbbell } from "@fortawesome/free-solid-svg-icons"
 import WorkoutDetails from "@/views/user/TrainerViews/components/workouts/WorkoutDetails.vue"
-import {Ref, ref} from "vue"
-import LikeExercise from "@/views/user/TrainerViews/components/utils/LikeButton.vue";
-import workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
+import { Ref, ref } from "vue"
+import LikeExercise from "@/views/user/TrainerViews/components/utils/LikeButton.vue"
+import workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 
 const props = defineProps<{
     workouts: Workout[]
@@ -49,7 +48,7 @@ const props = defineProps<{
 console.log("WORKOUTS", props.workouts)
 
 const isDetailsOpen = ref(false)
-const workoutSelected: Ref<Workout| null> = ref(null)
+const workoutSelected: Ref<Workout | null> = ref(null)
 
 const openDetails = (workout: Workout) => {
     isDetailsOpen.value = !isDetailsOpen.value
@@ -93,7 +92,6 @@ tr {
     border-bottom: 1px solid var(--main-secondary-color);
 }
 
-
 textarea {
     resize: none;
     text-align: center;
@@ -110,7 +108,7 @@ textarea:focus {
     outline: none;
 }
 
-.circle-info-box{
+.circle-info-box {
     color: whitesmoke;
     font-size: 1.5em;
     cursor: pointer;

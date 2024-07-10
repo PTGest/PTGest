@@ -1,16 +1,16 @@
-import TrainerSessions from "../../views/user/TrainerViews/models/sessions/TrainerSessions.ts";
-import {apiBaseUri} from "../utils/envUtils.ts";
-import handleFilters from "../utils/fetchUtils/handleFilters.ts";
-import fetchData from "../utils/fetchUtils/fetchData.ts";
-import TraineeDataHistory from "../../views/user/TrainerViews/models/trainees/TraineeDataHistory.ts";
-import Reports from "../../views/user/TrainerViews/models/reports/Reports.ts";
-import ReportDetails from "../../views/user/TrainerViews/models/reports/ReportDetails.ts";
-import TraineeDataDetails from "../../views/user/TrainerViews/models/traineeData/TraineeDataDetails.ts";
-import CreateFeedbackRequest from "../../views/user/TrainerViews/models/sessions/CreateFeedbackRequest.ts";
-import TrainerSessionDetails from "../../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts";
-import CancelSessionRequest from "../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts";
-import router from "../../plugins/router.ts";
-import WorkoutDetails from "../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts";
+import TrainerSessions from "../../views/user/TrainerViews/models/sessions/TrainerSessions.ts"
+import { apiBaseUri } from "../utils/envUtils.ts"
+import handleFilters from "../utils/fetchUtils/handleFilters.ts"
+import fetchData from "../utils/fetchUtils/fetchData.ts"
+import TraineeDataHistory from "../../views/user/TrainerViews/models/trainees/TraineeDataHistory.ts"
+import Reports from "../../views/user/TrainerViews/models/reports/Reports.ts"
+import ReportDetails from "../../views/user/TrainerViews/models/reports/ReportDetails.ts"
+import TraineeDataDetails from "../../views/user/TrainerViews/models/traineeData/TraineeDataDetails.ts"
+import CreateFeedbackRequest from "../../views/user/TrainerViews/models/sessions/CreateFeedbackRequest.ts"
+import TrainerSessionDetails from "../../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
+import CancelSessionRequest from "../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts"
+import router from "../../plugins/router.ts"
+import WorkoutDetails from "../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts"
 
 async function getTraineeSessions(filters: Map<string, any> | null): Promise<TrainerSessions> {
     const uri = `${apiBaseUri}/api/trainee/sessions`
@@ -58,7 +58,7 @@ async function getTraineeReports(filters: Map<string, any> | null): Promise<Repo
 async function getTraineeReportDetails(reportId: number): Promise<ReportDetails> {
     const uri = `${apiBaseUri}/api/trainee/report/${reportId}`
     try {
-        const response = await fetchData(uri, "GET", null);
+        const response = await fetchData(uri, "GET", null)
         return response.details
     } catch (error) {
         console.error("Error fetching set:", error)
@@ -94,8 +94,7 @@ async function cancelTraineeSession(sessionId: number, reason: CancelSessionRequ
     try {
         const response = await fetchData(uri, "POST", reason)
         router.back()
-        return response;
-
+        return response
     } catch (error) {
         console.error("Error fetching set:", error)
         throw error
@@ -126,8 +125,6 @@ async function getTraineeWorkoutDetails(workoutId: string): Promise<WorkoutDetai
     }
 }
 
-
-
 export {
     getTraineeSessions,
     getTTraineeData,
@@ -137,6 +134,5 @@ export {
     getTraineeSessionDetails,
     cancelTraineeSession,
     addTraineeSessionsFeedback,
-    getTraineeWorkoutDetails
+    getTraineeWorkoutDetails,
 }
-

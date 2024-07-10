@@ -28,52 +28,51 @@
 
 <script setup lang="ts">
 import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
-import {computed, Ref, ref} from "vue"
+import { computed, Ref, ref } from "vue"
 import router from "@/plugins/router.ts"
 
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import store from "../../../../../store"
 import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import {faInfo, faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons"
-import {getSessionDetails} from "@/services/TrainerServices/sessions/sessionServices.js";
-import SessionFeedback from "@/views/user/TrainerViews/components/sessions/SessionFeedback.vue";
-import ProgressSpinner from "primevue/progressspinner";
-import {getTraineeSessionDetails} from "@/services/TraineeServices/TraineeServices.ts";
-import WorkoutDetails from "@/views/user/TrainerViews/components/workouts/WorkoutDetails.vue";
-import workout from "@/views/user/TrainerViews/models/workouts/Workout.ts";
+import { faInfo, faPenToSquare, faX } from "@fortawesome/free-solid-svg-icons"
+import { getSessionDetails } from "@/services/TrainerServices/sessions/sessionServices.js"
+import SessionFeedback from "@/views/user/TrainerViews/components/sessions/SessionFeedback.vue"
+import ProgressSpinner from "primevue/progressspinner"
+import { getTraineeSessionDetails } from "@/services/TraineeServices/TraineeServices.ts"
+import WorkoutDetails from "@/views/user/TrainerViews/components/workouts/WorkoutDetails.vue"
+import workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 
 const workoutDetailsOpen = ref(false)
 const isEdit = ref(false)
 const isLoading = ref(true)
-const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails());
-const canGiveFeedback =  computed(() => {
+const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails())
+const canGiveFeedback = computed(() => {
     const today = new Date()
     return sessionDetails.value.beginDate != null && new Date(sessionDetails.value.beginDate) < today
-});
+})
 
 const canCancel = computed(() => {
-    const today = new Date();
-    const sessionDate = new Date(sessionDetails.value.beginDate);
+    const today = new Date()
+    const sessionDate = new Date(sessionDetails.value.beginDate)
 
     // Calculate the difference in milliseconds
-    const diff = sessionDate.getTime() - today.getTime();
+    const diff = sessionDate.getTime() - today.getTime()
 
     // Convert difference to hours
-    const diffInHours = diff / (1000 * 60 * 60);
+    const diffInHours = diff / (1000 * 60 * 60)
 
     // Check if the difference is more than 24 hours
-    return diffInHours > 24;
-});
+    return diffInHours > 24
+})
 
-(async () => {
-    if(RBAC.isTrainer()|| RBAC.isHiredTrainer()){
+;(async () => {
+    if (RBAC.isTrainer() || RBAC.isHiredTrainer()) {
         sessionDetails.value = await getSessionDetails(router.currentRoute.value.params.sessionId)
         isLoading.value = false
         store.commit("setSessionDetails", sessionDetails.value)
-    }
-    else{
-       sessionDetails.value = await getTraineeSessionDetails(router.currentRoute.value.params.sessionId)
+    } else {
+        sessionDetails.value = await getTraineeSessionDetails(router.currentRoute.value.params.sessionId)
         isLoading.value = false
         store.commit("setSessionDetails", sessionDetails.value)
     }
@@ -84,9 +83,8 @@ const handleEdit = () => {
 }
 
 const cancelSession = () => {
-    router.push({name: "cancelSession", params: {sessionId: router.currentRoute.value.params.sessionId}})
+    router.push({ name: "cancelSession", params: { sessionId: router.currentRoute.value.params.sessionId } })
 }
-
 </script>
 
 <style scoped>
@@ -120,16 +118,16 @@ h1 {
     right: -2em;
     cursor: pointer;
 }
-.x-icon{
+.x-icon {
     align-self: flex-end;
     cursor: pointer;
 }
-.cancel-btn{
+.cancel-btn {
     margin-top: 3em;
     background-color: rgba(255, 0, 0, 0.5);
     color: whitesmoke;
 }
-.session-feedback{
+.session-feedback {
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -142,13 +140,13 @@ h1 {
     padding: 1em;
 }
 
-.details-btn{
+.details-btn {
     padding: 1em;
     background-color: var(--main-secondary-color);
     border-radius: 10px;
 }
 
-.details-btn:hover{
+.details-btn:hover {
     cursor: pointer;
     color: var(--main-primary-color);
     transition: 0.2s ease-in;

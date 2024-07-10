@@ -2,11 +2,11 @@
     <div @click="openExerciseDetails" class="exercise-container">
         <h2>{{ props.exercise.name }}</h2>
         <h3>{{ props.exercise.modality }}</h3>
-        <h3 v-if="props.exercise.details['REPS']!=null">Reps: {{ props.exercise.details["REPS"] }}</h3>
-        <h3 v-if="props.exercise.details['WEIGHT']!=null">WEIGHT: {{ props.exercise.details["WEIGHT"] }}</h3>
+        <h3 v-if="props.exercise.details['REPS'] != null">Reps: {{ props.exercise.details["REPS"] }}</h3>
+        <h3 v-if="props.exercise.details['WEIGHT'] != null">WEIGHT: {{ props.exercise.details["WEIGHT"] }}</h3>
         <h3>
             Muscle Group:
-            <div  v-for="muscleGroup in props.exercise.muscleGroup">
+            <div v-for="muscleGroup in props.exercise.muscleGroup">
                 <div>{{ muscleGroup }}</div>
             </div>
         </h3>

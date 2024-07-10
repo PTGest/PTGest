@@ -8,24 +8,24 @@
             </button>
         </div>
 
-        <FiltersRow @input="searchBar = $event" @open="filtersOpen = true" @reset="resetFilters"  placeholder="Search exercise name"/>
+        <FiltersRow @input="searchBar = $event" @open="filtersOpen = true" @reset="resetFilters" placeholder="Search exercise name" />
 
         <ExercisesTable v-if="exercises.nOfExercises > 0" :exercises="exercises.exercises.filter((exercise) => exercise.name.includes(searchBar))" />
         <div v-else class="not-found">Does not found any exercise</div>
     </div>
-    <Filters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false"  filters-type="exercises"/>
+    <Filters v-else @filtersApplied="applyFilters($event)" @close="filtersOpen = false" filters-type="exercises" />
 </template>
 
 <script setup lang="ts">
 import { Ref, ref } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import {faPlus} from "@fortawesome/free-solid-svg-icons"
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import ExercisesTable from "./components/exercises/ExercisesTable.vue"
 import Exercises from "./models/exercises/Exercises.ts"
 import router from "@/plugins/router.ts"
-import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
-import FiltersRow from "@/views/user/TrainerViews/components/utils/FiltersRow.vue";
-import Filters from "@/views/user/TrainerViews/components/utils/Filters.vue";
+import { getExercises } from "@/services/TrainerServices/exercises/exerciseServices.js"
+import FiltersRow from "@/views/user/TrainerViews/components/utils/FiltersRow.vue"
+import Filters from "@/views/user/TrainerViews/components/utils/Filters.vue"
 
 const filtersOpen = ref(false)
 const searchBar = ref("")
@@ -43,12 +43,11 @@ const resetFilters = async () => {
     exercises.value = await getExercises(null)
 }
 
-
 const openAddExercise = () => {
     router.push({ name: "addExercise" })
-};
+}
 
-(async () => {
+;(async () => {
     try {
         exercises.value = await getExercises(null)
     } catch (error) {
@@ -109,7 +108,7 @@ const openAddExercise = () => {
     color: whitesmoke;
     text-align: center;
 }
-.reset-filters-icon{
+.reset-filters-icon {
     color: whitesmoke;
     font-size: 1.1rem;
     cursor: pointer;

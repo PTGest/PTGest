@@ -1,4 +1,4 @@
-import SessionFeedback from "./SessionFeedback.ts";
+import SessionFeedback from "./SessionFeedback.ts"
 
 class TrainerSessionDetails {
     id: number

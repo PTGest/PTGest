@@ -10,4 +10,4 @@ class ReportDetails {
         this.visibility = visibility
     }
 }
-export default ReportDetails;
+export default ReportDetails

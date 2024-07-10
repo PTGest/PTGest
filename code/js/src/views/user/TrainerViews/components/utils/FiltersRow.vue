@@ -11,11 +11,11 @@
 </template>
 
 <script setup lang="ts">
-import {faArrowsRotate, faFilter, faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
-import {ref} from "vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { faArrowsRotate, faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
+import { ref } from "vue"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 const searchBar = ref("")
-const emits = defineEmits(["input", "open","reset"])
+const emits = defineEmits(["input", "open", "reset"])
 
 const props = defineProps<{
     placeholder: string
@@ -34,10 +34,7 @@ const resetFilters = () => {
     emits("input", searchBar.value)
     emits("reset")
 }
-
 </script>
-
-
 
 <style scoped>
 .input-row {
@@ -88,7 +85,7 @@ const resetFilters = () => {
     transition: 0.2s ease-out;
 }
 
-.reset-filters-icon{
+.reset-filters-icon {
     color: whitesmoke;
     font-size: 1.1rem;
     cursor: pointer;
