@@ -39,7 +39,7 @@
 import InputBar from "../../components/utils/InputBar.vue"
 import { ref } from "vue"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
-import { resetPasswordServices } from "../../services/AuthServices/resetPassword.ts"
+import { resetPasswordServices } from "../../services/authServices/resetPassword.ts"
 import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
 import { useRoute } from "vue-router"
 

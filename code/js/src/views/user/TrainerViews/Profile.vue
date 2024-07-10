@@ -42,7 +42,7 @@ import icon from "@/assets/userIcons/man.png";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faEnvelope, faPhone, faUser} from "@fortawesome/free-solid-svg-icons";
 import formatPhoneNumber from "../../../services/utils/formatPhoneNumber.ts";
-import {changeUserPassword} from "@/services/AuthServices/changePassword.ts";
+import {changeUserPassword} from "@/services/authServices/changePassword.ts";
 
 const newPassword = ref("");
 const loading = ref(true);

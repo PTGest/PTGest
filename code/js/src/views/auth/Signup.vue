@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
-import { signupUserServices } from "../../services/AuthServices/signupServices.ts"
+import { signupUserServices } from "../../services/authServices/signupServices.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faBuilding, faEye, faPerson, faPlus } from "@fortawesome/free-solid-svg-icons"
 import DropdownMenu from "../../components/utils/DropdownMenu.vue"

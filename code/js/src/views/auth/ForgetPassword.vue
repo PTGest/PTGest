@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import forgetPasswordServices from "../../services/AuthServices/forgetPassword.ts"
+import forgetPasswordServices from "../../services/authServices/forgetPassword.ts"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
 import InputBar from "../../components/utils/InputBar.vue"
 

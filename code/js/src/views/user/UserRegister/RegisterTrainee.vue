@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import authenticatedSignup from "../../../services/AuthServices/AuthenticatedSignup.ts"
+import authenticatedSignup from "../../../services/authServices/AuthenticatedSignup.ts"
 import TraineeRegisterData from "../../../views/user/UserRegister/models/TraineeRegisterData.ts"
 import HiredTrainerRegisterData from "../../../models/authModels/HiredTrainerRegisterData.ts"
 import router from "../../../plugins/router.ts"
