@@ -33,7 +33,7 @@ import TraineeDataHistory from "../views/user/UserProfile/components/TraineeData
 import TraineeDataHistoryDetails from "../views/user/UserProfile/components/TraineeDataHistoryDetails.vue";
 import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue";
 import Profile from "../views/user/TrainerViews/Profile.vue";
-import isSigned from "../services/authServices/isSigned.ts"
+import { isSigned } from "../services/authServices/signed.ts"
 
 
 const routes: RouteRecordRaw[] = [
