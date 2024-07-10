@@ -67,7 +67,7 @@ import Exercises from "../../models/exercises/Exercises.ts"
 import MultiSelect from "primevue/multiselect"
 import ExercisesDetails from "../exercises/ExercisesDetails.vue"
 import SetExercise from "../../models/sets/SetExercise.ts"
-import {createSet} from "../../../../../services/TrainerServices/sets/setServices.ts"
+import {createSet} from "../../../../../services/trainerServices/sets/setServices.ts"
 import CreateCustomSetRequest from "../../models/sets/CreateCustomSetRequest.ts"
 import router from "@/plugins/router.ts"
 import {getExercises} from "@/services/TrainerServices/exercises/exerciseServices.js";
