@@ -61,7 +61,7 @@ object Uris {
     }
 
     object Exercise {
-        const val CREATE_CUSTOM_EXERCISE = "/custom-exercise"
+        const val CREATE_CUSTOM_EXERCISE = "/exercise/create"
         const val GET_EXERCISES = "/exercises"
         const val GET_EXERCISE_DETAILS = "/exercise/{exerciseId}"
         const val FAVORITE_EXERCISE = "/exercise/{exerciseId}/favorite"
@@ -69,7 +69,7 @@ object Uris {
     }
 
     object Set {
-        const val CREATE_CUSTOM_SET = "/custom-set"
+        const val CREATE_CUSTOM_SET = "/set/create"
         const val GET_SETS = "/sets"
         const val GET_SET_DETAILS = "/set/{setId}"
         const val FAVORITE_SET = "/set/{setId}/favorite"
@@ -77,7 +77,7 @@ object Uris {
     }
 
     object Workout {
-        const val CREATE_CUSTOM_WORKOUT = "/custom-workout"
+        const val CREATE_CUSTOM_WORKOUT = "/workout/create"
         const val GET_WORKOUTS = "/workouts"
         const val GET_WORKOUT_DETAILS = "/workout/{workoutId}"
         const val FAVORITE_WORKOUT = "/workout/{workoutId}/favorite"
@@ -85,16 +85,16 @@ object Uris {
     }
 
     object Session {
-        const val CREATE_SESSION = "/session"
+        const val CREATE_SESSION = "/session/create"
         const val GET_SESSIONS = "/sessions"
         const val GET_TRAINEE_SESSIONS = "/trainee/{traineeId}/sessions"
         const val GET_SESSION_DETAILS = "/session/{sessionId}"
         const val EDIT_SESSION = "/session/{sessionId}/edit"
         const val CANCEL_SESSION = "/session/{sessionId}/cancel"
 
-        const val CREATE_SESSION_FEEDBACK = "/session/{sessionId}/feedback"
+        const val CREATE_SESSION_FEEDBACK = "/session/{sessionId}/feedback/create"
         const val EDIT_SESSION_FEEDBACK = "/session/{sessionId}/edit-feedback/{feedbackId}"
-        const val CREATE_SESSION_SET_FEEDBACK = "/session/{sessionId}/set/{setOrderId}/{setId}/feedback"
+        const val CREATE_SESSION_SET_FEEDBACK = "/session/{sessionId}/set/{setOrderId}/{setId}/feedback/create"
         const val EDIT_SESSION_SET_FEEDBACK = "/session/{sessionId}/set/{setOrderId}/{setId}/edit-feedback/{feedbackId}"
         const val GET_SET_SESSION_FEEDBACKS = "/session/{sessionId}/sets/feedback"
     }

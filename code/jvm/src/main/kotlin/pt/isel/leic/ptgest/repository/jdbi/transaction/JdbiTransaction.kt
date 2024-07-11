@@ -28,7 +28,6 @@ import pt.isel.leic.ptgest.repository.transaction.Transaction
 class JdbiTransaction(
     private val handle: Handle
 ) : Transaction {
-
     override val authRepo: AuthRepo = JdbiAuthRepo(handle)
     override val companyRepo: CompanyRepo = JdbiCompanyRepo(handle)
     override val exerciseRepo: ExerciseRepo = JdbiExerciseRepo(handle)
