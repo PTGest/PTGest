@@ -12,14 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
-import router from "@/plugins/router.ts"
+
 import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
-import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import store from "../../../../../store"
 import { Session } from "node:inspector"
 import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
 import { Ref, ref } from "vue"
+import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts";
+import router from "@/plugins/router.ts";
 
 const props = defineProps<{
     daySessions: TrainerSession[] | Session[]
