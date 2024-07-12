@@ -19,6 +19,7 @@ import {faCheck, faPen} from "@fortawesome/free-solid-svg-icons";
 import RBAC from "@/services/utils/RBAC/RBAC.ts";
 import {editTrainerSetSessionsFeedback} from "@/services/TrainerServices/sessions/sessionServices.ts";
 import store from "@/store";
+import {editTraineeSetSessionsFeedback} from "@/services/TraineeServices/TraineeServices.ts";
 
 const props = defineProps<{
     setFeedback: SetSessionFeedback
@@ -27,8 +28,13 @@ const isEdit = ref(false);
 const feedback = ref(props.setFeedback.feedback)
 
 const editFeedback = async() => {
-    await editTrainerSetSessionsFeedback(feedback.value, store.getters.sessionDetails.id,props.setFeedback.id,
-        props.setFeedback.setId, props.setFeedback.setOrderId);
+   if(RBAC.isTrainer()|| RBAC.isHiredTrainer()){
+       await editTrainerSetSessionsFeedback(feedback.value, store.getters.sessionDetails.id,props.setFeedback.id,
+           props.setFeedback.setId, props.setFeedback.setOrderId);
+   }else{
+       await editTraineeSetSessionsFeedback(feedback.value, store.getters.sessionDetails.id,props.setFeedback.id,
+           props.setFeedback.setId, props.setFeedback.setOrderId);
+   }
     isEdit.value = false;
 }
 </script>

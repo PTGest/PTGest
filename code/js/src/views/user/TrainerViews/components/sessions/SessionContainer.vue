@@ -49,7 +49,7 @@ const isLoading = ref(true)
 const sessionDetails: Ref<TrainerSessionDetails> = ref(new TrainerSessionDetails())
 const canGiveFeedback = computed(() => {
     const today = new Date()
-    return sessionDetails.value.beginDate != null && new Date(sessionDetails.value.beginDate) < today
+    return sessionDetails.value.beginDate != null && new Date(sessionDetails.value.beginDate) <= today
 })
 
 const canCancel = computed(() => {
@@ -95,7 +95,6 @@ const cancelSession = () => {
     justify-content: start;
     align-items: center;
     width: 25em;
-    height: 33.5em;
     background-color: var(--main-primary-color);
     border-radius: 10px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
@@ -124,6 +123,7 @@ h1 {
 }
 .cancel-btn {
     margin-top: 3em;
+    margin-bottom: 2em;
     background-color: rgba(255, 0, 0, 0.5);
     color: whitesmoke;
 }

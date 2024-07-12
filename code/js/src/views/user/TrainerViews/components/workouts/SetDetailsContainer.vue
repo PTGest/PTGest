@@ -43,6 +43,8 @@ import {getTrainerSetFeedback} from "@/services/TrainerServices/sessions/session
 import SetSessionFeedback from "@/views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts";
 import AddSetFeedback from "@/views/user/TrainerViews/components/sessions/AddSetFeedback.vue";
 import SetFeedback from "@/views/user/TrainerViews/components/workouts/SetFeedback.vue";
+import RBAC from "@/services/utils/RBAC/RBAC.ts";
+import {getTraineeSetFeedback} from "@/services/TraineeServices/TraineeServices.ts";
 
 const props = defineProps<{
     set: SetDetails
@@ -54,8 +56,11 @@ const isOpen = ref(false)
 const setFeedbacks: Ref<SetSessionFeedback[]> = ref(new Array<SetSessionFeedback>())
 ;(async () => {
     if (props.isSessionDetails) {
-       setFeedbacks.value =  await getTrainerSetFeedback(store.getters.sessionDetails.id);
-       console.log("SET FEEDBACKS",setFeedbacks.value);
+       if(RBAC.isHiredTrainer()|| RBAC.isTrainer()){
+           setFeedbacks.value =  await getTrainerSetFeedback(store.getters.sessionDetails.id);
+       }else{
+           setFeedbacks.value =  await getTraineeSetFeedback(store.getters.sessionDetails.id);
+       }
     }
 })()
 

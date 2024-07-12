@@ -8,11 +8,11 @@ import { apiBaseUri } from "../../utils/envUtils.ts"
 
 async function createExercise(exercise: CreateCustomExerciseRequest): Promise<void> {
     try {
-        const response = await fetchData(`${apiBaseUri}/api/trainer/custom-exercise`, "POST", exercise)
+        const response = await fetchData(`${apiBaseUri}/api/trainer/exercise/create`, "POST", exercise)
         router.go(-1)
         return response.resourceId
     } catch (error) {
-        console.error("Error fetching exercises:", error)
+        console.error("Error creating exercise:", error)
         throw error
     }
 }
@@ -22,10 +22,9 @@ async function getExerciseDetails(exerciseId: number): Promise<ExerciseDetails> 
 
     try {
         const response = await fetchData(uri, "GET", null)
-
         return new ExerciseDetails(exerciseId, response.details.name, response.details.description, response.details.muscleGroup, response.details.type, response.details.ref)
     } catch (error) {
-        console.error("Error fetching exercises:", error)
+        console.error("Error fetching exercise details:", error)
         throw error
     }
 }
@@ -55,7 +54,7 @@ async function likeExercise(exerciseId: string): Promise<void> {
         await fetchData(uri, "POST", null)
         return
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error liking exercise:", error)
         throw error
     }
 }
@@ -67,7 +66,7 @@ async function unlikeExercise(exerciseId: string): Promise<void> {
         await fetchData(uri, "DELETE", null)
         return
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error unliking exercise:", error)
         throw error
     }
 }

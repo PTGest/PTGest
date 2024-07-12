@@ -21,7 +21,6 @@
                 <div class="change-password-btn" @click="isChangePasswordOpen = true">
                    Change Password
                 </div>
-                <div class="change-password-btn">Change Password</div>
             </div>
             <div class="new-password-container" v-else>
                 <font-awesome-icon @click="isChangePasswordOpen = false" :icon="faX" class="x-icon"/>
@@ -51,7 +50,8 @@ import icon from "@/assets/userIcons/man.png";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faEnvelope, faKey, faPhone, faUser, faX} from "@fortawesome/free-solid-svg-icons";
 import formatPhoneNumber from "../../../services/utils/formatPhoneNumber.ts";
-import {changeUserPassword} from "@/services/AuthServices/changePassword.ts";
+import {changeUserPassword} from "@/services/authServices/authServices.ts";
+
 
 const isChangePasswordOpen = ref(false);
 const currentPassword = ref("");

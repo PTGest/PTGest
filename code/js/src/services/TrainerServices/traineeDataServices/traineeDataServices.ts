@@ -12,7 +12,7 @@ async function getTraineeData(traineeId: string) {
         const response = await fetchData(uri, "GET", null)
         return new TraineeDataHistory(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error fetching trainee data:", error)
         throw error
     }
 }
@@ -24,7 +24,7 @@ async function getTraineeDataDetails(traineeId: string, dataId: string) {
         const response = await fetchData(uri, "GET", null)
         return new TraineeDataDetails(response.details.date, response.details.bodyData)
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error fetching trainee data details:", error)
         throw error
     }
 }
@@ -37,7 +37,7 @@ async function addTraineeData(data: addTraineeDataRequest) {
         const response = await fetchData(uri, "POST", data)
         return new TraineeDataDetails(response.details.date, response.details.bodyData)
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error creating trainee body data:", error)
         throw error
     }
 }

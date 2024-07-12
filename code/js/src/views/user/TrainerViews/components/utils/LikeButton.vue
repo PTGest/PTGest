@@ -21,8 +21,6 @@ const props = defineProps<{
 const isLiked = ref(props.isLiked)
 
 const handleLike = () => {
-    console.log("Liked", isLiked.value)
-
     switch (props.isExercise) {
         case true: {
             if (!isLiked.value) {

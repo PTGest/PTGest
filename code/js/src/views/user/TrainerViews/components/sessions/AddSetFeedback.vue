@@ -14,6 +14,8 @@ import { addTrainerSessionsSetFeedback } from "@/services/TrainerServices/sessio
 import { ref } from "vue"
 import router from "@/plugins/router.ts"
 import store from "@/store"
+import RBAC from "@/services/utils/RBAC/RBAC.ts";
+import {addTraineeSessionsSetFeedback} from "@/services/TraineeServices/TraineeServices.ts";
 
 const feedback = ref("")
 const props = defineProps<{
@@ -21,8 +23,11 @@ const props = defineProps<{
     setOrderId: number
 }>()
 const addSetFeedback = async () => {
-    await addTrainerSessionsSetFeedback(feedback.value, store.getters.sessionDetails.id, props.setId, props.setOrderId)
-    console.log("Adding set feedback")
+    if(RBAC.isTrainer()||RBAC.isHiredTrainer()){
+        await addTrainerSessionsSetFeedback(feedback.value, store.getters.sessionDetails.id, props.setId, props.setOrderId)
+    }else{
+        await addTraineeSessionsSetFeedback(feedback.value, store.getters.sessionDetails.id, props.setId, props.setOrderId)
+    }
 }
 </script>
 

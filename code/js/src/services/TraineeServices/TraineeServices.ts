@@ -11,6 +11,7 @@ import TrainerSessionDetails from "../../views/user/TrainerViews/models/sessions
 import CancelSessionRequest from "../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts"
 import router from "../../plugins/router.ts"
 import WorkoutDetails from "../../views/user/TrainerViews/models/workouts/WorkoutDetails.ts"
+import SetSessionFeedback from "../../views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts";
 
 async function getTraineeSessions(filters: Map<string, any> | null): Promise<TrainerSessions> {
     const uri = `${apiBaseUri}/api/trainee/sessions`
@@ -23,7 +24,7 @@ async function getTraineeSessions(filters: Map<string, any> | null): Promise<Tra
         const response = await fetchData(postFiltersUri, "GET", null)
         return new TrainerSessions(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error fetching trainee sessions:", error)
         throw error
     }
 }
@@ -34,7 +35,7 @@ async function getTTraineeData() {
         const response = await fetchData(uri, "GET", null)
         return new TraineeDataHistory(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error fetching trainee body data:", error)
         throw error
     }
 }
@@ -50,7 +51,7 @@ async function getTraineeReports(filters: Map<string, any> | null): Promise<Repo
         const response = await fetchData(postFiltersUri, "GET", null)
         return new Reports(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error fetching trainee reports:", error)
         throw error
     }
 }
@@ -61,7 +62,7 @@ async function getTraineeReportDetails(reportId: number): Promise<ReportDetails>
         const response = await fetchData(uri, "GET", null)
         return response.details
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error fetching trainee report details:", error)
         throw error
     }
 }
@@ -73,7 +74,7 @@ async function getTTraineeDataDetails(dataId: string) {
         const response = await fetchData(uri, "GET", null)
         return new TraineeDataDetails(response.details.date, response.details.bodyData)
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error fetching trainee body data details:", error)
         throw error
     }
 }
@@ -84,7 +85,7 @@ async function getTraineeSessionDetails(sessionId: number): Promise<TrainerSessi
         const response = await fetchData(uri, "GET", null)
         return response.details
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error fetching trainee session details:", error)
         throw error
     }
 }
@@ -96,7 +97,7 @@ async function cancelTraineeSession(sessionId: number, reason: CancelSessionRequ
         router.back()
         return response
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error canceling session:", error)
         throw error
     }
 }
@@ -108,7 +109,7 @@ async function addTraineeSessionsFeedback(feedback: string, sessionId: string): 
         await fetchData(uri, "POST", new CreateFeedbackRequest(feedback))
         return
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error creating session feedback:", error)
         throw error
     }
 }
@@ -125,6 +126,42 @@ async function getTraineeWorkoutDetails(workoutId: string): Promise<WorkoutDetai
     }
 }
 
+async function addTraineeSessionsSetFeedback(feedback: string, sessionId: number, setId: number, setOrderId: number): Promise<void> {
+    const uri = `${apiBaseUri}/api/trainee/session/${sessionId}/set/${setOrderId}/${setId}/feedback/create`
+    try {
+        await fetchData(uri, "POST", new CreateFeedbackRequest(feedback))
+        return
+    } catch (error) {
+        console.error("Error creating trainee session set feedback:", error)
+        throw error
+    }
+}
+async function getTraineeSetFeedback(sessionId: string): Promise<SetSessionFeedback[]> {
+    const uri = `${apiBaseUri}/api/trainee/session/${sessionId}/sets/feedback`
+    try {
+        const response = await fetchData(uri, "GET", null)
+        return response.details.feedbacks
+    } catch (error) {
+        console.error("Error fetching trainee session set feedback:", error)
+        throw error
+    }
+}
+
+
+async function editTraineeSetSessionsFeedback(feedback: string, sessionId: string, feedbackId: number, setId: number, setOrderId: number): Promise<void> {
+    const uri = `${apiBaseUri}/api/trainee/session/${sessionId}/set/${setOrderId}/${setId}/edit-feedback/${feedbackId}`
+    try {
+        await fetchData(uri, "PUT", new CreateFeedbackRequest(feedback))
+        return
+    } catch (error) {
+        console.error("Error editing trainee session set feedback:", error)
+        throw error
+    }
+}
+
+
+
+
 export {
     getTraineeSessions,
     getTTraineeData,
@@ -135,4 +172,7 @@ export {
     cancelTraineeSession,
     addTraineeSessionsFeedback,
     getTraineeWorkoutDetails,
+    editTraineeSetSessionsFeedback,
+    addTraineeSessionsSetFeedback,
+    getTraineeSetFeedback
 }

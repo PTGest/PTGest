@@ -13,7 +13,7 @@ async function createReport(reportData: CreateReportRequest): Promise<void> {
         await fetchData(uri, "POST", reportData)
         return
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error creating report:", error)
         throw error
     }
 }
@@ -24,7 +24,7 @@ async function editReport(reportId: number, reportData: EditReportRequest): Prom
         router.go(-1)
         return
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error editing report:", error)
         throw error
     }
 }
@@ -34,7 +34,7 @@ async function getReportDetails(traineeId: string, reportId: number): Promise<Re
         const response = await fetchData(uri, "GET", null)
         return response.details
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error fetching report details:", error)
         throw error
     }
 }
@@ -50,7 +50,7 @@ async function getReports(traineeId: string, filters: Map<string, any> | null): 
         const response = await fetchData(postFiltersUri, "GET", null)
         return new Reports(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error fetching set:", error)
+        console.error("Error fetching reports:", error)
         throw error
     }
 }

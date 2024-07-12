@@ -34,6 +34,7 @@ import TraineeDataHistoryDetails from "../views/user/UserProfile/components/Trai
 import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeAddDataHistory.vue"
 import Profile from "../views/user/TrainerViews/Profile.vue"
 import { isSigned } from "../services/authServices/authServices.ts"
+import EmailSuccessPage from "../views/utils/EmailSuccessPage.vue";
 
 const routes: RouteRecordRaw[] = [
     { path: "/", name: "home", component: Home, meta: { requiresAuth: false } },
@@ -49,9 +50,6 @@ const routes: RouteRecordRaw[] = [
         props: (route) => ({ token: route.params.token }),
         meta: { requiresAuth: false },
     },
-    //UserServices Views
-    // { path: "/user/profile/:userId", name: "userProfile", component: UserProfile, props: true, meta: { requiresAuth: true,
-    //         roleNeeded : ['TRAINEE', 'COMPANY', 'INDEPENDENT_TRAINER', 'HIRED_TRAINER'] } },
     //Company and Independent Trainer Views
     {
         path: "/trainees",
@@ -61,26 +59,26 @@ const routes: RouteRecordRaw[] = [
     },
     { path: "/trainers", name: "trainers", component: Trainers, meta: { requiresAuth: true, roleNeeded: ["COMPANY"] } },
     { path: "/trainees/:traineeId/:assignTrainer", name: "assignTrainer", component: AssignTrainer, meta: { requiresAuth: true, roleNeeded: ["COMPANY"] } },
-    { path: "/register-trainees/:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true, roleNeeded: ["COMPANY", "INDEPENDENT_TRAINER"] } },
-    { path: "/register-trainers/:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true, roleNeeded: ["COMPANY"] } },
+    { path: "/register-trainees?trainee=:isTrainee", name: "registerTrainee", component: RegisterTrainee, meta: { requiresAuth: true, roleNeeded: ["COMPANY", "INDEPENDENT_TRAINER"] } },
+    { path: "/register-trainers?trainee=:isTrainee", name: "registerTrainer", component: RegisterTrainee, meta: { requiresAuth: true, roleNeeded: ["COMPANY"] } },
     //Trainers Views
     { path: "/exercises", name: "exercises", component: Exercises, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    { path: "/exercises/add-exercise", name: "addExercise", component: AddExercise, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/exercises/create", name: "addExercise", component: AddExercise, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sets", name: "sets", component: Sets, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    { path: "/sets/custom-set", name: "addSet", component: AddSet, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/sets/create", name: "addSet", component: AddSet, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/workouts", name: "workouts", component: Workouts, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    { path: "/workouts/add-workout", name: "addWorkout", component: AddWorkout, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/workouts/create", name: "addWorkout", component: AddWorkout, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
     { path: "/sets/setDetails/:setId", name: "setDetails", component: SetDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
     { path: "/sessions", name: "sessions", component: Sessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/sessions/:traineeId", name: "traineeSessions", component: TraineeSessions, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
-    { path: "/sessions/:traineeId/add-session", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/sessions/:traineeId/create", name: "addTraineeSessions", component: AddTraineeSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/session/:sessionId", name: " sessionDetails", component: SessionContainer, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/sessions/session/:sessionId/edit", name: " editSessionDetails", component: EditSessionDetails, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/sessions/:sessionId/cancel", name: "cancelSession", component: CancelSession, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/reports/:traineeId", name: "traineeReports", component: TraineeReports, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
-    { path: "/reports/:traineeId/add-report", name: "addReport", component: AddReport, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/reports/:traineeId/report/create", name: "addReport", component: AddReport, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     { path: "/reports/:traineeId/:reportId", name: "report", component: Report, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
     { path: "/:traineeId/profile", name: "traineeProfile", component: TraineeProfile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
 
@@ -91,14 +89,14 @@ const routes: RouteRecordRaw[] = [
         component: TraineeDataHistoryDetails,
         meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] },
     },
-    { path: "/trainee/:traineeId/data-history/add", name: "addDataHistory", component: TraineeAddDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/trainee/:traineeId/data-history/create", name: "addDataHistory", component: TraineeAddDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
-    { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "TRAINEE"] } },
+    { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     //Error Views
     { path: "/error", name: "error", component: Error },
     {path: "/:pathMatch(.*)*", redirect: {name: "notFound"}, name: "not-found"},
 
-    {path: "/email-sucess",name: "emailSucessPage", component:EmailSuccessPage},
+        {path: "/email-sucess",name: "emailSucessPage", component:EmailSuccessPage},
 
 ]
 

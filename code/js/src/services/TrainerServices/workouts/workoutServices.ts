@@ -8,7 +8,7 @@ import handleFilters from "../../utils/fetchUtils/handleFilters.ts"
 
 async function createCustomWorkout(workoutRequest: CreateCustomWorkoutRequest) {
     try {
-        const response = await fetchData(`${apiBaseUri}/api/trainer/custom-workout`, "POST", workoutRequest)
+        const response = await fetchData(`${apiBaseUri}/api/trainer/workout/create`, "POST", workoutRequest)
         router.go(-1)
         return response.resourceId
     } catch (error) {
@@ -52,7 +52,7 @@ async function likeWorkout(workoutId: string): Promise<void> {
         await fetchData(uri, "POST", null)
         return
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error liking workout:", error)
         throw error
     }
 }
@@ -64,7 +64,7 @@ async function unlikeWorkout(workoutId: string): Promise<void> {
         await fetchData(uri, "DELETE", null)
         return
     } catch (error) {
-        console.error("Error fetching set details:", error)
+        console.error("Error unliking workout:", error)
         throw error
     }
 }

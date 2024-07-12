@@ -30,7 +30,7 @@ async function getTrainerTrainees(skip: number | null, limit: number | null, nam
         const response = await fetchData(url, "GET", null)
         return new TrainerTrainees(response.details.items, response.details.total)
     } catch (error) {
-        console.error("Error creating set:", error)
+        console.error("Error fetching trainer trainees:", error)
         throw error
     }
 }

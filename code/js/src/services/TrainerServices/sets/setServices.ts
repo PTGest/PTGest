@@ -15,7 +15,7 @@ async function createSet(setData: CreateCustomSetRequest): Promise<number> {
         setData.setExercises.map((setExercise) => {
             setExercise.details = mapToObject(setExercise.details)
         })
-        const response = await fetchData(`${apiBaseUri}/api/trainer/custom-set`, "POST", setData)
+        const response = await fetchData(`${apiBaseUri}/api/trainer/set/create`, "POST", setData)
         router.go(0)
         return response.resourceId
     } catch (error) {
@@ -29,7 +29,7 @@ async function getSetDetails(setId: number): Promise<SetDetails> {
 
     try {
         const response = await fetchData(uri, "GET", null)
-        return new SetDetails(response.details.name, response.details.notes, response.details.type, response.details.setExerciseDetails)
+        return response.details
     } catch (error) {
         console.error("Error fetching set details:", error)
         throw error

@@ -18,15 +18,13 @@ const props = defineProps<{
 const isLiked = ref(props.isFavorite)
 
 const handleLike = () => {
-    if (!isLiked.value) {
-        likeSet(props.setId)
-        isLiked.value = true
+    if (isLiked.value) {
+        unlikeSet(props.setId);
     } else {
-        unlikeSet(props.setId)
-        isLiked.value = false
+        likeSet(props.setId);
     }
-    console.log("Liked", isLiked.value)
-}
+    isLiked.value = !isLiked.value;
+};
 </script>
 
 <style scoped>

@@ -10,7 +10,7 @@ import { faRightToBracket } from "@fortawesome/free-solid-svg-icons"
 import { computed } from "vue"
 import store from "../../../store"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { logoutServices } from "@/services/authServices/authServices.ts"
+import { logoutServices } from "@/services/authServices/authServices.js"
 
 const props = defineProps({
     isOpen: Boolean,

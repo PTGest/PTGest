@@ -9,7 +9,7 @@
                 class="data-row"
                 v-for="data in traineeData.traineeData"
             >
-                {{ store.getters.traineeInfo.name + " Data " + data.id }}
+                {{ store.getters.traineeInfo.name + " Data " + dateFormatter(data.date.toString()) }}
             </router-link>
             <div v-else class="no-data">No Data Available</div>
             <router-link v-if="RBAC.isHiredTrainer() || RBAC.isTrainer()" :to="{ name: 'addDataHistory', params: { traineeId: router.currentRoute.value.params.traineeId } }" class="btn"
@@ -29,6 +29,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import { getTTraineeData } from "@/services/TraineeServices/TraineeServices.ts"
+import dateFormatter from "../../../../services/utils/dateUtils/dateFormatter.ts";
 
 const traineeData = ref(new TraineeDataHistory())
 
