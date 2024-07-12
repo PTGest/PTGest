@@ -16,4 +16,8 @@ object ServerConfig {
     val mailPassword: String
         get() = System.getenv("MAIL_PASSWORD")
             ?: throw IllegalStateException("Missing environment variable MAIL_PASSWORD")
+
+    val frontendUrl: String
+        get() = System.getenv("FRONTEND_URL")
+            ?: "http://localhost:5173/"
 }

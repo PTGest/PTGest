@@ -68,7 +68,7 @@ class PipelineConfigurer(
 class CorsConfiguration : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:5173/")
+            .allowedOrigins(ServerConfig.frontendUrl)
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedHeaders("*")
             .allowCredentials(true)

@@ -1,6 +1,7 @@
 package pt.isel.leic.ptgest.services
 
 import org.springframework.stereotype.Service
+import pt.isel.leic.ptgest.ServerConfig
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticationDetails
 import pt.isel.leic.ptgest.domain.auth.model.Token
@@ -143,7 +144,7 @@ class AuthService(
             email,
             "PTGest - Password reset",
             "Click the following link to ${if (setPassword) "set" else "reset"} your password:\n" +
-                "http://localhost:5173/resetPassword/$token"
+                "${ServerConfig.frontendUrl}/resetPassword/$token"
         )
     }
 
