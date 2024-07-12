@@ -15,11 +15,11 @@
 
 import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import store from "../../../../../store"
-import { Session } from "node:inspector"
 import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
 import { Ref, ref } from "vue"
 import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts";
 import router from "@/plugins/router.ts";
+import Session from "@/views/user/TrainerViews/models/sessions/Session.ts";
 
 const props = defineProps<{
     daySessions: TrainerSession[] | Session[]
