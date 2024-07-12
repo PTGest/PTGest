@@ -8,6 +8,6 @@
 // Example usage
 
 const apiBaseUri = import.meta.env.VITE_API_URI
-const vueBaseUri = import.meta.env.VITE_VUE_PORT
+const vuePort = import.meta.env.VITE_VUE_PORT
 
-export { apiBaseUri, vueBaseUri }
+export { apiBaseUri, vuePort }
