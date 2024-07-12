@@ -1,6 +1,6 @@
 <template>
     <div class="login-container">
-        <img class="image" src="../../assets/login.png" alt="Login Image" />
+        <img class="image" src="../../assets/login.png" alt="Login" />
         <div class="container">
             <h1>Login</h1>
             <div class="login-inputs-container">
@@ -27,8 +27,7 @@
 <script setup lang="ts">
 import { faEye } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { computed, ref } from "vue"
-import { Ref } from "vue/dist/vue"
+import {computed, Ref, ref} from "vue"
 import LoginUserData from "../../models/authModels/LoginUserData.ts"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
 import { loginUserServices } from "@/services/authServices/authServices.ts"
