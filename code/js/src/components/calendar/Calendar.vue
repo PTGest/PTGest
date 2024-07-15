@@ -30,7 +30,7 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import { ref } from "vue"
 import Day from "../calendar/Day.ts"
 import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
-import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
+import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.ts"
 
 const emits = defineEmits(["getDate"])
 

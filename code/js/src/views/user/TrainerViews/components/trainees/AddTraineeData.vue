@@ -28,7 +28,7 @@
 import Button from "primevue/button"
 import { computed, ref } from "vue"
 import Trainee from "@/views/user/CompaniesViews/models/Trainee.ts"
-import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.js"
+import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.ts"
 import TrainerTrainees from "@/views/user/TrainerViews/models/trainees/TrainerTrainees.ts"
 import store from "@/store"
 import SelectButton from "primevue/selectbutton"

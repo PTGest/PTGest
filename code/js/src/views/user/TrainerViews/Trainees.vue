@@ -29,7 +29,7 @@ import TraineesBox from "./components/trainees/TraineesBox.vue"
 import Filters from "@/views/user/CompaniesViews/Components/Filters.vue"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import TrainerTrainees from "../TrainerViews/models/trainees/TrainerTrainees.ts"
-import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.js"
+import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.ts"
 
 const skip = ref(0)
 const areFiltersVisible = ref(false)

@@ -35,6 +35,7 @@ import TraineeAddDataHistory from "../views/user/UserProfile/components/TraineeA
 import Profile from "../views/user/TrainerViews/Profile.vue"
 import EmailSuccessPage from "../views/utils/EmailSuccessPage.vue";
 import {isSigned} from "../services/authServices/authServices.ts";
+import TokenNotValid from "../views/utils/TokenNotValid.vue";
 
 const routes: RouteRecordRaw[] = [
     { path: "/", name: "home", component: Home, meta: { requiresAuth: false } },
@@ -94,10 +95,9 @@ const routes: RouteRecordRaw[] = [
     { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
     //Error Views
     { path: "/error", name: "error", component: Error },
+    { path: "/token-not-valid", name: "tokenNotValid", component: TokenNotValid },
     {path: "/:pathMatch(.*)*", redirect: {name: "notFound"}, name: "not-found"},
-
-        {path: "/email-sucess",name: "emailSucessPage", component:EmailSuccessPage},
-
+    {path: "/email-sucess",name: "emailSucessPage", component:EmailSuccessPage},
 ]
 
 const router = createRouter({

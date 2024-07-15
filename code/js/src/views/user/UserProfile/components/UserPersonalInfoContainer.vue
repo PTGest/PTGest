@@ -16,7 +16,7 @@
 import UserInfo from "@/views/user/UserProfile/Models/UserInfo.ts";
 import {Ref, ref} from "vue";
 import {getUserInfo} from "@/services/UserServices/profileServices.ts";
-import {getYearFromDate} from "@/services/utils/dateUtils/getFromDateUtils.js";
+import {getYearFromDate} from "@/services/utils/dateUtils/getFromDateUtils.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 

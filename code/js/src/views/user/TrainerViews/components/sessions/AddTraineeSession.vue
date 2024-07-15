@@ -51,7 +51,7 @@ import CreateSessionRequest from "@/views/user/TrainerViews/models/sessions/Crea
 import Calendar from "primevue/calendar"
 import RadioButton from "primevue/radiobutton"
 import ExercisesDropdown from "@/views/user/TrainerViews/components/exercises/ExercisesDropdown.vue"
-import { createSession } from "@/services/TrainerServices/sessions/sessionServices.js"
+import { createSession } from "@/services/TrainerServices/sessions/sessionServices.ts"
 import router from "@/plugins/router.ts"
 import Button from "primevue/button"
 import Workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
@@ -60,8 +60,8 @@ import TrainerSessionDetails from "@/views/user/TrainerViews/models/sessions/Tra
 import store from "@/store"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"
-import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.js"
-import { editSession } from "@/services/TrainerServices/sessions/sessionServices.js"
+import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.ts"
+import { editSession } from "@/services/TrainerServices/sessions/sessionServices.ts"
 
 const props = defineProps<{
     isEdit: boolean

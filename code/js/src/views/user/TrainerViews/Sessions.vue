@@ -11,14 +11,14 @@
 <script setup lang="ts">
 import Calendar from "../../../components/calendar/Calendar.vue"
 
-import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.js"
+import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
 import { Ref, ref } from "vue"
-import formattedDate from "@/components/utils/formatDate.js"
+import formattedDate from "@/components/utils/formatDate.ts"
 import TrainerSessions from "@/views/user/TrainerViews/models/sessions/TrainerSessions.ts"
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
-import { getTrainerSessions } from "@/services/TrainerServices/sessions/sessionServices.js"
+import { getTrainerSessions } from "@/services/TrainerServices/sessions/sessionServices.ts"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
-import { getTraineeSessions } from "@/services/TraineeServices/TraineeServices.js"
+import { getTraineeSessions } from "@/services/TraineeServices/TraineeServices.ts"
 
 const selectedDay: Ref<string> = ref(formattedDate(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())))
 const daySessions: Ref<TrainerSession[]> = ref([])

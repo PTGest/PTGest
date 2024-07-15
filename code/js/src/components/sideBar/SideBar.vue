@@ -56,7 +56,7 @@
                     >
                 </div>
 
-                <router-link to="/profile" class="nav-link" link v-if="isLogged && !RBAC.isTrainee()">
+                <router-link to="/profile" class="nav-link" link v-if="isLogged && (!RBAC.isTrainee() || !RBAC.isCompany())">
                     <Avatar :image="icon" class="mr-2" size="large" shape="circle" />
                     <div v-if="is_mobile_view || (is_mobile_view && is_open)" class="navbar-item">Profile</div>
                 </router-link>

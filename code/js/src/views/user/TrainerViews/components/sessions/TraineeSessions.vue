@@ -19,8 +19,8 @@ import { Ref, ref } from "vue"
 import Sessions from "@/views/user/TrainerViews/models/sessions/Sessions.ts"
 import Session from "@/views/user/TrainerViews/models/sessions/Session.ts"
 import SessionInfoContainer from "@/views/user/TrainerViews/components/sessions/SessionInfoContainer.vue"
-import { getDayFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
-import { getTraineeSessions } from "@/services/TrainerServices/sessions/sessionServices.js"
+import { getDayFromDate } from "@/services/utils/dateUtils/getFromDateUtils.ts"
+import { getTraineeSessions } from "@/services/TrainerServices/sessions/sessionServices.ts"
 import store from "../../../../../store"
 
 const traineeTrainDays: Ref<Sessions> = ref(new Sessions())

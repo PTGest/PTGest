@@ -40,9 +40,9 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faArrowDownWideShort, faArrowUpWideShort, faPerson, faPersonDress, faPersonHalfDress, faX } from "@fortawesome/free-solid-svg-icons"
 import { ref } from "vue"
-import getCompanyTrainersOrTrainees from "@/services/companyServices/getCompanyTrainersOrTrainees.js"
+import getCompanyTrainersOrTrainees from "@/services/companyServices/getCompanyTrainersOrTrainees.ts"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
-import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.js"
+import getTrainerTrainees from "@/services/TrainerServices/trainees/traineesServices.ts"
 const skip = ref(4)
 const gender = ref("")
 const isSortedDown = ref(false)

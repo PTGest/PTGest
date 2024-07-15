@@ -70,7 +70,7 @@ import SetExercise from "../../models/sets/SetExercise.ts"
 import { createSet } from "@/services/TrainerServices/sets/setServices.ts"
 import CreateCustomSetRequest from "../../models/sets/CreateCustomSetRequest.ts"
 import router from "@/plugins/router.ts"
-import { getExercises } from "@/services/TrainerServices/exercises/exerciseServices.js"
+import { getExercises } from "@/services/TrainerServices/exercises/exerciseServices.ts"
 
 const selectedExercises: Ref<{ id: number; name: string }[]> = ref([])
 const exercises: Ref<Exercises> = ref({

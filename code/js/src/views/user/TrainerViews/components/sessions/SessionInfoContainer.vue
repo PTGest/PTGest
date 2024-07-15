@@ -15,7 +15,7 @@
 
 import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter.ts"
 import store from "../../../../../store"
-import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.js"
+import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.ts"
 import { Ref, ref } from "vue"
 import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts";
 import router from "@/plugins/router.ts";

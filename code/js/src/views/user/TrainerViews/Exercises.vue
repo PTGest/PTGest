@@ -23,7 +23,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import ExercisesTable from "./components/exercises/ExercisesTable.vue"
 import Exercises from "./models/exercises/Exercises.ts"
 import router from "@/plugins/router.ts"
-import { getExercises } from "@/services/TrainerServices/exercises/exerciseServices.js"
+import { getExercises } from "@/services/TrainerServices/exercises/exerciseServices.ts"
 import FiltersRow from "@/views/user/TrainerViews/components/utils/FiltersRow.vue"
 import Filters from "@/views/user/TrainerViews/components/utils/Filters.vue"
 

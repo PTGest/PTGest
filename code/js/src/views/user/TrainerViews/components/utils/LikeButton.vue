@@ -9,7 +9,7 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref } from "vue"
 
-import { likeExercise, unlikeExercise } from "@/services/TrainerServices/exercises/exerciseServices.js"
+import { likeExercise, unlikeExercise } from "@/services/TrainerServices/exercises/exerciseServices.ts"
 import { likeWorkout, unlikeWorkout } from "@/services/TrainerServices/workouts/workoutServices.ts"
 
 const props = defineProps<{

@@ -17,7 +17,7 @@ import { faX } from "@fortawesome/free-solid-svg-icons"
 import WorkoutSetsDetails from "@/views/user/TrainerViews/components/workouts/WorkoutSetsDetails.vue"
 import WorkoutDetails from "@/views/user/TrainerViews/models/workouts/WorkoutDetails.ts"
 import { Ref, ref } from "vue"
-import { getWorkoutDetails } from "@/services/TrainerServices/workouts/workoutServices.js"
+import { getWorkoutDetails } from "@/services/TrainerServices/workouts/workoutServices.ts"
 import { getTraineeWorkoutDetails } from "@/services/TraineeServices/TraineeServices.ts"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 

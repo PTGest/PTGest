@@ -165,10 +165,13 @@ async function resetPasswordServices(resetPasswordData: ResetPasswordData, token
 
 async function isSigned() {
     const uri = `${apiBaseUri}/api/auth/validate`
-
-    const response = await fetchData(uri, "GET", null)
-    store.commit("setLogin", true)
-    return response
+    try {
+        const response = await fetchData(uri, "GET", null)
+        store.commit("setLogin", true)
+        return response
+    }catch (e) {
+        store.commit("setUserData", { id: undefined, role: undefined})
+    }
 }
 
 async function signupUserServices(userData: SignupPTData): Promise<void> {

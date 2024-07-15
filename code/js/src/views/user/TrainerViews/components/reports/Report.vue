@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faCheck, faLock, faPen, faX } from "@fortawesome/free-solid-svg-icons"
 import SelectButton from "primevue/selectbutton"
 import EditReportRequest from "@/views/user/TrainerViews/models/reports/EditReportRequest.ts"
-import { editReport, getReportDetails } from "@/services/TrainerServices/reports/reportServices.js"
+import { editReport, getReportDetails } from "@/services/TrainerServices/reports/reportServices.ts"
 import { getTraineeReportDetails } from "@/services/TraineeServices/TraineeServices.ts"
 
 const report = ref(new ReportDetails())

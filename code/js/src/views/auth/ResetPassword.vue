@@ -45,6 +45,7 @@ import ResetPasswordData from "../../models/authModels/ResetPasswordData.ts"
 import { useRoute } from "vue-router"
 import { resetPasswordServices, verifyToken } from "@/services/authServices/authServices.ts"
 import ProgressSpinner from "primevue/progressspinner";
+import router from "@/plugins/router.ts";
 
 const params = useRoute().params
 const isLoading = ref(false)
@@ -53,8 +54,11 @@ const confirm_password = ref("")
 const equalPasswords = ref(false)
 
 ;(() => {
-    //  TODO(): token not valid page
-    verifyToken(params.token)
+    try {
+        verifyToken(params.token)
+    } catch (e) {
+        router.push("/token-not-valid")
+    }
 })()
 
 const updatePasswordValue = (value: string) => {

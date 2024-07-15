@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import Trainee from "../../../CompaniesViews/models/Trainee.ts"
-import RBAC from "@/services/utils/RBAC/RBAC.js"
+import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import router from "@/plugins/router.ts"
 import store from "@/store"
 import TraineeInfo from "@/views/user/TrainerViews/models/trainees/TraineeInfo.ts"

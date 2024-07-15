@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import ProgressSpinner from "primevue/progressspinner"
 import SetsContainer from "./components/sets/SetsContainer.vue"
-import { getSets } from "@/services/TrainerServices/sets/setServices.js"
+import { getSets } from "@/services/TrainerServices/sets/setServices.ts"
 import { Ref, ref, onMounted } from "vue"
 import Sets from "@/views/user/TrainerViews/models/sets/Sets.ts"
 

@@ -29,7 +29,7 @@ import { onMounted, Ref, ref } from "vue"
 import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts"
 
 import router from "@/plugins/router.ts"
-import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.js"
+import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.ts"
 import FiltersRow from "@/views/user/TrainerViews/components/utils/FiltersRow.vue"
 import Filters from "@/views/user/TrainerViews/components/utils/Filters.vue"
 import { getSets } from "@/services/TrainerServices/sets/setServices.ts"
