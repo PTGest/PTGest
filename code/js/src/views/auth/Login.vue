@@ -1,5 +1,8 @@
 <template>
-    <div class="login-container">
+    <div v-if="isLoading" class="loading">
+        <ProgressSpinner />
+    </div>
+    <div class="login-container" v-else>
         <img class="image" src="../../assets/login.png" alt="Login" />
         <div class="container">
             <h1>Login</h1>
@@ -31,7 +34,9 @@ import {computed, Ref, ref} from "vue"
 import LoginUserData from "../../models/authModels/LoginUserData.ts"
 import DefaultButton from "../../components/utils/DefaultButton.vue"
 import { loginUserServices } from "@/services/authServices/authServices.ts"
+import ProgressSpinner from "primevue/progressspinner";
 
+const isLoading = ref(false) // Loading state variable
 const loginUserData: Ref<LoginUserData> = ref({
     email: "",
     password: "",
@@ -45,8 +50,12 @@ const updateVisibility = () => {
     }
 }
 const login = () => {
-    console.log(loginUserData.value.email)
-    loginUserServices(loginUserData.value)
+    isLoading.value = true // Set loading state to true before API request
+    try {
+        loginUserServices(loginUserData.value)
+    }catch (e) {
+        console.log(e)
+    }
 }
 
 function isFullOfData(data: LoginUserData): boolean {
