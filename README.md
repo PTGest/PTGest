@@ -15,10 +15,6 @@ The platform allows personal trainers to create training plans for their clients
 The trainers can create progress reports for their clients. These reports are composed of the client's measurements, such as weight, body fat percentage and additional information that the trainer thinks its relevant.
 
 
-
-
-
-
 ## Technologies
 ## Frontend
 
@@ -35,3 +31,5 @@ The trainers can create progress reports for their clients. These reports are co
 ## Supervisors
 
 - [Felipe Freitas](https://github.com/fbfreitas)
+
+To test this prject, access the following link: https://ptgest.onrender.com
