@@ -1,7 +1,7 @@
 import { createStore } from "vuex"
 import UserData from "../models/UserData.ts"
 import VuexPersistence from "vuex-persist"
-import { UserInfo } from "../views/user/UserProfile/Models/UserInfo.ts"
+import UserInfo  from "../views/user/UserProfile/Models/UserInfo.ts"
 import TrainerSessionDetails from "../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
 import TraineeInfo from "../views/user/TrainerViews/models/trainees/TraineeInfo.ts"
 
@@ -78,6 +78,15 @@ const store = createStore<State>({
         setSessionDetails(state: State, sessionDetails: TrainerSessionDetails) {
             state.sessionDetails = sessionDetails
         },
+        setClearUserData(state: State) {
+            state.userData = new UserData(undefined, undefined)
+            state.userInfo = new UserInfo("", "", "", new Date(), "")
+            state.traineeInfo = new TraineeInfo("", "")
+            state.sessionDetails = new TrainerSessionDetails(-1, "", -1, "",
+                "", "", "", "", false, "", null, [])
+            state.userBio = ""
+            state.isLogged = false
+        }
     },
     actions: {
         setAuthentication({ commit }: any, userData: UserData) {

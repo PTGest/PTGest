@@ -170,7 +170,7 @@ async function isSigned() {
         store.commit("setLogin", true)
         return response
      }else{
-         store.commit("setLogin", false)
+         store.commit("setClearUserData")
      }
 }
 
