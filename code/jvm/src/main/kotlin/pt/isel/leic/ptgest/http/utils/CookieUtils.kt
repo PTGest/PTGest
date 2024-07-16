@@ -46,8 +46,8 @@ private fun setCookie(
     val responseCookie = ResponseCookie.from(name, value)
         .httpOnly(true)
         .secure(true)
-        .sameSite("Strict")
-        .path("/api")
+        .sameSite("None")
+        .path("/")
         .maxAge((expirationDate.time - currentDate.time) / 1000)
         .build()
 
@@ -58,8 +58,8 @@ private fun revokeCookie(name: String, response: HttpServletResponse) {
     val responseCookie = ResponseCookie.from(name, "")
         .httpOnly(true)
         .secure(true)
-        .sameSite("Strict")
-        .path("/api")
+        .sameSite("None")
+        .path("/")
         .maxAge(0)
         .build()
 

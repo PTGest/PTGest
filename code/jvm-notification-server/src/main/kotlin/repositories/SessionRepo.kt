@@ -1,6 +1,5 @@
 package repositories
 
-import model.SessionType
 import model.TraineeSession
 import model.TrainerSession
 import org.jdbi.v3.core.Jdbi
@@ -24,8 +23,8 @@ class SessionRepo(private val jdbi: Jdbi) {
             handle.createQuery("""
                         select trainer_id
                         from session_trainer st
-                        left join session on st.session_id = session.id
-                        where DATE(session.begin_date) = DATE(:date)
+                        left join session s on st.session_id = s.id
+                        where DATE(s.begin_date) = DATE(:date)
                         and not exists (
                             select 1 from cancelled_session cs
                             where cs.session_id = st.session_id
@@ -42,12 +41,12 @@ class SessionRepo(private val jdbi: Jdbi) {
         jdbi.withHandle<List<UUID>, Exception> { handle ->
             handle.createQuery("""
                         select trainee_id
-                        from session
-                        where DATE(session.begin_date) = DATE(:date)
+                        from session s
+                        where DATE(begin_date) = DATE(:date)
                         and not exists (
                             select 1 from cancelled_session cs
-                            where cs.session_id = session.id
-                        )
+                            where cs.session_id = s.id
+                        ) and type = 'TRAINER_GUIDED'
                         group by trainee_id
                     """.trimIndent()
             )
@@ -61,17 +60,17 @@ class SessionRepo(private val jdbi: Jdbi) {
             handle.createQuery("""
                 select
                     trainee.name as trainee_name,
-                    session.begin_date,
-                    session.end_date
-                    session.location
-                from session
-                join "user" trainee on session.trainee_id = trainee.id
-                join session_trainer st on session.id = st.session_id
+                    s.begin_date,
+                    s.end_date
+                    s.location
+                from session_trainer st
+                left join session s on st.session_id = s.id
+                join "user" trainee on s.trainee_id = trainee.id
                 where st.trainer_id = :trainerId
-                and DATE(session.begin_date) = DATE(:date)
+                and DATE(s.begin_date) = DATE(:date)
                 and not exists (
                     select 1 from cancelled_session cs
-                    where cs.session_id = session.id
+                    where cs.session_id = s.id
                 )
                 """.trimIndent()
             )
@@ -84,8 +83,8 @@ class SessionRepo(private val jdbi: Jdbi) {
                 .map { rs, _ ->
                     TrainerSession(
                         rs.getString("trainee_name"),
-                        parseDate(rs) ?: throw IllegalStateException("Date is null"),
-                        parseDate(rs) ?: throw IllegalStateException("Date is null"),
+                        rs.parseDate("begin_date"),
+                        rs.parseDate("end_date"),
                         rs.getString("location")
                     )
                 }
@@ -107,11 +106,12 @@ class SessionRepo(private val jdbi: Jdbi) {
                 left join session_trainer st on s.id = st.session_id
                 left join "user" t on st.trainer_id = t.id
                 where s.trainee_id = :traineeId
-                and DATE(session.begin_date) = DATE(:date)
+                and DATE(s.begin_date) = DATE(:date)
                 and not exists (
                     select 1 from cancelled_session cs
-                    where cs.session_id = session.id
+                    where cs.session_id = s.id
                 )
+                and s.type = 'TRAINER_GUIDED'
                 """.trimIndent()
             )
                 .bindMap(
@@ -123,9 +123,8 @@ class SessionRepo(private val jdbi: Jdbi) {
                 .map { rs, _ ->
                     TraineeSession(
                         rs.getString("trainer_name"),
-                        parseDate(rs) ?: throw IllegalStateException("Date is null"),
-                        parseDate(rs) ?: throw IllegalStateException("Date is null"),
-                        SessionType.valueOf(rs.getString("type")),
+                        rs.parseDate("begin_date"),
+                        rs.parseDate("end_date"),
                         rs.getString("location"),
                         rs.getString("notes")
                     )
@@ -134,8 +133,8 @@ class SessionRepo(private val jdbi: Jdbi) {
         }
 
 
-    private fun parseDate(rs: ResultSet): Date? {
-        val timestamp = rs.getTimestamp("begin_date")
-        return timestamp?.let { Date(it.time) }
+    private fun ResultSet.parseDate(columnLabel: String): Date {
+        val timestamp = this.getTimestamp(columnLabel)
+        return timestamp?.let { Date(it.time) } ?: throw IllegalStateException("Date is null")
     }
 }

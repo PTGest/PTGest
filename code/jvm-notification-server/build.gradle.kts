@@ -10,9 +10,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jdbi:jdbi3-core:3.26.0")
-    implementation("org.jdbi:jdbi3-kotlin:3.26.0")
-    implementation("org.jdbi:jdbi3-sqlobject:3.26.0")
+    implementation("org.jdbi:jdbi3-core:3.37.1")
+    implementation("org.jdbi:jdbi3-kotlin:3.37.1")
+    implementation("org.jdbi:jdbi3-postgres:3.37.1")
+    implementation("org.postgresql:postgresql:42.7.2")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("com.sun.mail:javax.mail:1.6.2")
     implementation("org.quartz-scheduler:quartz:2.3.2")

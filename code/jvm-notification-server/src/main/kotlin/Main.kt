@@ -2,6 +2,9 @@ import jobs.TraineesNotificationJob
 import jobs.TrainersNotificationJob
 import services.MailService
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.KotlinPlugin
+import org.jdbi.v3.postgres.PostgresPlugin
+import org.postgresql.ds.PGSimpleDataSource
 import org.quartz.DateBuilder
 import org.quartz.JobBuilder
 import org.quartz.SimpleScheduleBuilder
@@ -14,7 +17,15 @@ fun main() {
     val logger = LoggerFactory.getLogger("Main")
 
     try {
-        val jdbi = Jdbi.create(ServerConfig.dbUrl)
+        val jdbi = Jdbi.create(
+            PGSimpleDataSource().apply {
+                setURL(ServerConfig.dbUrl)
+                currentSchema = "prod"
+            }
+        ).apply {
+            installPlugin(KotlinPlugin())
+            installPlugin(PostgresPlugin())
+        }
         val mailService = MailService(ServerConfig.mailUsername, ServerConfig.mailPassword)
         val sessionRepo = SessionRepo(jdbi)
         val schedulerFactory = StdSchedulerFactory()
