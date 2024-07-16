@@ -4,7 +4,7 @@ import pt.isel.leic.ptgest.domain.auth.model.AuthenticationDetails
 import pt.isel.leic.ptgest.domain.user.Role
 import java.util.*
 
-internal data class LoginResponse(
+data class LoginResponse(
     val userId: UUID,
     val role: Role,
     val accessTokenExpirationDate: Date,
