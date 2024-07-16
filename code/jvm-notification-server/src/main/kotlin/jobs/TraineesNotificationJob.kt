@@ -30,10 +30,10 @@ class TraineesNotificationJob: Job {
             val text = "Hello trainee,\n\n" +
                     "You have the following sessions scheduled for tomorrow:\n\n" +
                     sessions.joinToString("\n") { session ->
-                        session.trainerName?.let { "Trainer: $it\n" } +
+                        "Trainer: ${session.trainerName}\n" +
                         "Begin date: ${session.beginDate}\n" +
-                        session.endDate?.let { "End date: $it\n" } +
-                        session.location?.let { "Location: $it\n" } +
+                        "End date: ${session.endDate}\n" +
+                        "Location: ${session.location}\n" +
                         session.notes?.let { "Notes: $it\n" }
                     }
 
