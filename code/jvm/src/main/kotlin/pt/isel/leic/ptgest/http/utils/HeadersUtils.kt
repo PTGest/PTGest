@@ -7,8 +7,8 @@ fun createTokensHeaders(
     tokens: TokenPair
 ): HttpHeaders {
     val headers = HttpHeaders()
-    headers.add("Authorization", "Bearer ${tokens.accessToken.token}")
-    headers.add("Refresh-Token", "Bearer ${tokens.refreshToken.token}")
+    headers.add("Authorization", "Bearer access_token=${tokens.accessToken.token}")
+    headers.add("Authorization", "Bearer refresh_token=${tokens.refreshToken.token}")
 
     return headers
 }

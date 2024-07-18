@@ -4,7 +4,7 @@ import pt.isel.leic.ptgest.domain.user.Role
 import java.util.Date
 import java.util.UUID
 
-data class AccessTokenDetails(
+data class AuthTokenDetails(
     val userId: UUID,
     val role: Role,
     val expirationDate: Date,

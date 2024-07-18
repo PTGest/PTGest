@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
-import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
+import pt.isel.leic.ptgest.domain.auth.model.AuthTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.AuthenticatedUser
 import pt.isel.leic.ptgest.http.utils.AuthenticationRequired
 import pt.isel.leic.ptgest.http.utils.revokeCookies
@@ -54,7 +54,7 @@ class AuthInterceptor(
         handler.method.isAnnotationPresent(AuthenticationRequired::class.java) ||
             handler.beanType.isAnnotationPresent(AuthenticationRequired::class.java)
 
-    private fun verifyRole(handler: HandlerMethod, tokenDetails: AccessTokenDetails) {
+    private fun verifyRole(handler: HandlerMethod, tokenDetails: AuthTokenDetails) {
         val authenticationRequiredFromClass = handler.beanType.getAnnotation(AuthenticationRequired::class.java)?.role
         val authenticationRequiredFromMethod = handler.method.getAnnotation(AuthenticationRequired::class.java)?.role
 
@@ -74,14 +74,16 @@ class AuthInterceptor(
     private fun processTokens(
         request: HttpServletRequest,
         response: HttpServletResponse
-    ): AccessTokenDetails {
+    ): AuthTokenDetails {
         val currentDate = Date()
 
+        val authHeaders = request.getHeaders("Authorization").toList()
+
         val accessToken = request.cookies?.firstOrNull { it.name == "access_token" }?.value
-            ?: request.getHeader("Authorization")?.removePrefix("Bearer ")
+            ?: authHeaders.firstOrNull { it.startsWith("Bearer access_token=") }?.removePrefix("Bearer access=")
 
         val refreshToken = request.cookies?.firstOrNull { it.name == "refresh_token" }?.value
-            ?: request.getHeader("Refresh-Token")?.removePrefix("Bearer ")
+            ?: authHeaders.firstOrNull { it.startsWith("Bearer refresh_token=") }?.removePrefix("Bearer refresh=")
 
         return when {
             accessToken != null -> {
@@ -106,13 +108,13 @@ class AuthInterceptor(
         refreshToken: String,
         response: HttpServletResponse,
         currentDate: Date
-    ): AccessTokenDetails {
+    ): AuthTokenDetails {
         val tokens = authService.refreshToken(refreshToken, currentDate)
 
         setCookies(response, tokens, currentDate)
 
-        response.addHeader("Authorization", "Bearer ${tokens.accessToken.token}")
-        response.addHeader("Refresh-Token", "Bearer ${tokens.refreshToken.token}")
+        response.addHeader("Authorization", "Bearer access_token=${tokens.accessToken.token}")
+        response.addHeader("Authorization", "Bearer refresh_token=${tokens.refreshToken.token}")
 
         return jwtService.extractToken(refreshToken)
     }

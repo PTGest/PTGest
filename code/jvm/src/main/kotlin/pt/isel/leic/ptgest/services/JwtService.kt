@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Service
-import pt.isel.leic.ptgest.domain.auth.model.AccessTokenDetails
+import pt.isel.leic.ptgest.domain.auth.model.AuthTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.repository.transaction.Transaction
@@ -44,13 +44,13 @@ class JwtService(
         return createToken(claims, userId, role, expirationDate)
     }
 
-    fun extractToken(token: String): AccessTokenDetails {
+    fun extractToken(token: String): AuthTokenDetails {
         val claims = getAllClaimsFromToken(token)
 
         val expirationDate = claims.expiration
         val version = claims["version"] as Int
 
-        val accessTokenDetails = AccessTokenDetails(
+        val authTokenDetails = AuthTokenDetails(
             userId = UUID.fromString(claims.id),
             role = Role.valueOf(claims.subject),
             expirationDate = Date(expirationDate.time),
@@ -59,14 +59,14 @@ class JwtService(
 
         transactionManager.run {
             val authRepo = it.authRepo
-            it.validateUser(accessTokenDetails.userId, accessTokenDetails.role)
+            it.validateUser(authTokenDetails.userId, authTokenDetails.role)
 
-            if (authRepo.getTokenVersion(accessTokenDetails.userId) != version) {
+            if (authRepo.getTokenVersion(authTokenDetails.userId) != version) {
                 throw AuthError.UserAuthenticationError.InvalidTokenVersion
             }
         }
 
-        return accessTokenDetails
+        return authTokenDetails
     }
 
     private fun getAllClaimsFromToken(token: String): Claims =
