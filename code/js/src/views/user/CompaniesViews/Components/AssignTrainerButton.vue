@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import DefaultButton from "../../../../components/utils/DefaultButton.vue"
 import assignOrReassignTrainer from "../../../../services/companyServices/assignOrReassignTrainer.ts"
+import router from "@/plugins/router.ts";
 
 const props = defineProps<{
     trainerId: string
@@ -22,6 +23,7 @@ const handleAssignTrainer = async () => {
     } else {
         await assignOrReassignTrainer(props.traineeId, props.trainerId, false)
     }
+    router.back()
 }
 </script>
 

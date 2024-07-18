@@ -1,5 +1,4 @@
 import AssignTrainerRequest from "../../views/user/CompaniesViews/models/AssignTrainerRequest.ts"
-import router from "../../plugins/router.ts"
 import ReassignTrainerRequest from "../../views/user/CompaniesViews/models/ReassignTrainerRequest.ts"
 import { apiBaseUri } from "../utils/envUtils.ts"
 
@@ -22,10 +21,6 @@ export default async function assignOrReassignTrainer(traineeId: string, trainer
         credentials: "include",
     }).then(async (response) => {
         switch (response.status) {
-            case 201:
-                return response.json().then(() => {
-                    router.push({ name: "trainees" })
-                })
             case 400:
                 throw new Error("Bad request")
             case 401:

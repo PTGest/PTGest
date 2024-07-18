@@ -19,5 +19,5 @@ object ServerConfig {
 
     val frontendUrl: String
         get() = System.getenv("FRONTEND_URL")
-            ?: "http://localhost:5173/"
+            ?: "http://localhost:5173"
 }

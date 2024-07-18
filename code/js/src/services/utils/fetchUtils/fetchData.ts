@@ -2,9 +2,6 @@ import store from "../../../store"
 import router from "../../../plugins/router.ts"
 
 async function fetchData(uri: string, method: string, bodyData: any | null): Promise<any> {
-    console.log("fetchData uri", uri)
-    console.log("BODY", bodyData)
-
     const body = bodyData ? JSON.stringify(bodyData) : null
     const response = await fetch(uri, {
         method: method.trim(),

@@ -62,19 +62,20 @@ class JdbiWorkoutRepo(private val handle: Handle) : WorkoutRepo {
             .execute()
     }
 
-    override fun getLastWorkoutNameId(trainerId: UUID): Int =
+    override fun getLastWorkoutNameId(trainerId: UUID): Int? =
         handle.createQuery(
             """
             select cast(substring(name FROM '#([0-9]+)${'$'}') as int) as workout_number
-            from workout
-            where name like 'Workout #%' and trainer_id = :trainerId
+            from workout w
+            left join workout_trainer wt on w.id = wt.workout_id
+            where name like 'Workout #%' and wt.trainer_id = :trainerId
             order by cast(substring(name FROM '#([0-9]+)${'$'}') as int) desc
             limit 1
             """
         )
             .bind("trainerId", trainerId)
             .mapTo<Int>()
-            .one()
+            .firstOrNull()
 
     override fun getWorkouts(
         trainerId: UUID,

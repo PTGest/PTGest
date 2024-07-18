@@ -3,7 +3,7 @@ class HiredTrainerRegisterData {
     email: string
     gender: string
     capacity: number
-    phone: string
+    phoneNumber: string
     user_type: string = "hired_trainer"
 
     constructor(name: string, email: string, gender: string, capacity: number, phone: string, user_type: string = "hired_trainer") {
@@ -11,7 +11,7 @@ class HiredTrainerRegisterData {
         this.name = name
         this.gender = gender
         this.capacity = capacity
-        this.phone = phone
+        this.phoneNumber = phone
         this.user_type = user_type
     }
 }

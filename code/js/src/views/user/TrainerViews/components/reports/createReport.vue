@@ -20,7 +20,7 @@ const reportRequestData = ref(new CreateReportRequest())
 
 const addReport = async () => {
     try {
-        reportRequestData.value.visibility = isPrivate.value !== "Public"
+        reportRequestData.value.visibility = isPrivate.value == "Public"
         reportRequestData.value.traineeId = router.currentRoute.value.params.traineeId
         await createReport(reportRequestData.value)
         router.go(-1)

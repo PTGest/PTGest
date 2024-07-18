@@ -13,7 +13,7 @@ interface WorkoutRepo {
 
     fun associateSetToWorkout(orderId: Int, setId: Int, workoutId: Int)
 
-    fun getLastWorkoutNameId(trainerId: UUID): Int
+    fun getLastWorkoutNameId(trainerId: UUID): Int?
 
     fun getWorkouts(
         trainerId: UUID,

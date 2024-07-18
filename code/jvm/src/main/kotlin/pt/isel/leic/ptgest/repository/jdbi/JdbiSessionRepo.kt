@@ -273,7 +273,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         handle.createUpdate(
             """
             insert into cancelled_session (session_id, source, reason)
-            values (:sessionId, :source::source, :reason)
+            values (:sessionId, :source::source_cancel_session, :reason)
             """.trimIndent()
         )
             .bindMap(
@@ -290,7 +290,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
         handle.createUpdate(
             """
             insert into feedback (source, feedback, date)
-            values (:source::source, :feedback, :date)
+            values (:source::source_feedback, :feedback, :date)
             """.trimIndent()
         )
             .bindMap(

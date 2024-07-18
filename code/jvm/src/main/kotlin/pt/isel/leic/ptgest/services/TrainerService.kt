@@ -1142,7 +1142,7 @@ class TrainerService(
             require(name.isNotEmpty()) { "Name must not be empty." }
             workoutRepo.createWorkout(name, description, muscleGroup)
         } else {
-            val lastWorkoutNameId = workoutRepo.getLastWorkoutNameId(trainerId)
+            val lastWorkoutNameId = workoutRepo.getLastWorkoutNameId(trainerId) ?: 0
             val nextWorkoutName = "Workout #${lastWorkoutNameId + 1}"
             workoutRepo.createWorkout(nextWorkoutName, description, muscleGroup)
         }

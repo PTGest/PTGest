@@ -18,7 +18,6 @@
 
         <AssignTrainerButton v-if="isAssignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId"></AssignTrainerButton>
         <AssignTrainerButton v-if="isReassignTrainer" :trainer-id="trainer.id" :trainee-id="$route.params.traineeId" is-reassign-trainer></AssignTrainerButton>
-        <font-awesome-icon :icon="faX" class="delete-icon"></font-awesome-icon>
     </div>
 </template>
 

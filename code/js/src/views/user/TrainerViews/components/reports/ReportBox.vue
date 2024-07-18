@@ -1,7 +1,7 @@
 <template>
     <div @click="openReport" class="report-info">
         Report {{ props.report.date }}
-        <font-awesome-icon v-if="report.visibility" :icon="faLock" />
+        <font-awesome-icon v-if="!report.visibility" :icon="faLock" />
     </div>
 </template>
 
@@ -15,7 +15,7 @@ import dateFormatter from "../../../../../services/utils/dateUtils/dateFormatter
 const props = defineProps<{
     report: Report
 }>()
-
+console.log(props.report)
 const openReport = () => {
     router.push({ name: "report", params: { reportId: props.report.id, traineeId: router.currentRoute.value.params.traineeId } })
 }

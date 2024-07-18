@@ -20,6 +20,11 @@
                     <td class="exercise-details-box">
                         <div v-if="props.exercise.details['REPS'] != null" class="label">Reps: {{ props.exercise.details["REPS"] }}</div>
                         <div v-if="props.exercise.details['WEIGHT'] != null" class="label">Weight: {{ props.exercise.details["WEIGHT"] }}</div>
+                        <div v-if="props.exercise.details['DURATION'] != null" class="label">Duration: {{ props.exercise.details["DURATION"] }}</div>
+                        <div v-if="props.exercise.details['DISTANCE'] != null" class="label">Distance: {{ props.exercise.details["DISTANCE"] }}</div>
+                        <div v-if="props.exercise.details['SPEED'] != null" class="label">Speed: {{ props.exercise.details["SPEED"] }}</div>
+                        <div v-if="props.exercise.details['REST_TIME'] != null" class="label">RestTime: {{ props.exercise.details["REST_TIME"] }}</div>
+                        <div v-if="props.exercise.details['RESISTANCE'] != null" class="label">Resistance: {{ props.exercise.details["RESISTANCE"] }}</div>
                     </td>
                 </tr>
             </tbody>

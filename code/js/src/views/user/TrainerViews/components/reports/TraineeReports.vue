@@ -5,7 +5,7 @@
         <div v-else>
             <font-awesome-icon class="icon" :icon="faX" @click="router.go(-1)"></font-awesome-icon>
             <div class="report-row-container" v-for="report in reports.reports" :key="report.id">
-                <ReportBox v-if="(RBAC.isTrainee() && !report.visibility) || RBAC.isTrainer() || RBAC.isHiredTrainer()" :report="report"></ReportBox>
+                <ReportBox v-if="RBAC.isTrainee() || RBAC.isTrainer() || RBAC.isHiredTrainer()" :report="report"></ReportBox>
             </div>
         </div>
         <router-link v-if="RBAC.isHiredTrainer() || RBAC.isTrainer()" class="add-report" :to="{ name: 'addReport', params: { traineeId: router.currentRoute.value.params.traineeId } }"
@@ -18,7 +18,7 @@
 import store from "../../../../../store"
 
 import Reports from "@/views/user/TrainerViews/models/reports/Reports.ts"
-import { ref } from "vue"
+import {Ref, ref} from "vue"
 import ReportBox from "@/views/user/TrainerViews/components/reports/ReportBox.vue"
 import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import { getReports } from "@/services/TrainerServices/reports/reportServices.ts"
@@ -27,14 +27,14 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"
 import { getTraineeReports } from "@/services/TraineeServices/TraineeServices.ts"
 
-const reports = ref(new Reports())
+const reports : Ref<Reports> = ref(new Reports())
 
 ;(async () => {
     if (RBAC.isTrainer() || RBAC.isHiredTrainer()) {
         reports.value = await getReports(router.currentRoute.value.params.traineeId, null)
-        console.log(reports)
     } else {
         reports.value = await getTraineeReports(null)
+        console.log(reports.value)
     }
 })()
 </script>

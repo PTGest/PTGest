@@ -3,7 +3,7 @@
         <font-awesome-icon @click="closeReport" class="x-icon" :icon="faX" />
         <h1 v-if="RBAC.isTrainer() || RBAC.isHiredTrainer()">{{ report.trainee + " Report" }}</h1>
         <div>{{ report.date }}</div>
-        <font-awesome-icon v-if="report.visibility" :icon="faLock" />
+        <font-awesome-icon v-if="!report.visibility" :icon="faLock" />
         <div class="textarea-container">
             <font-awesome-icon @click="enableEdit" v-if="!isEdit && (RBAC.isTrainer() || RBAC.isHiredTrainer())" class="edit-icon" :icon="faPen" />
             <font-awesome-icon @click="handleEditReport" v-else-if="RBAC.isHiredTrainer() || RBAC.isTrainer()" class="edit-icon" :icon="faCheck" />

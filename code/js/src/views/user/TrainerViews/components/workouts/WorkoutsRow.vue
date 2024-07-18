@@ -45,11 +45,8 @@ import workout from "@/views/user/TrainerViews/models/workouts/Workout.ts"
 const props = defineProps<{
     workouts: Workout[]
 }>()
-console.log("WORKOUTS", props.workouts)
-
 const isDetailsOpen = ref(false)
 const workoutSelected: Ref<Workout | null> = ref(null)
-
 const openDetails = (workout: Workout) => {
     isDetailsOpen.value = !isDetailsOpen.value
     workoutSelected.value = workout

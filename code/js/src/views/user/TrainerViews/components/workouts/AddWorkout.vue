@@ -92,11 +92,6 @@ const isDisable = computed(() => {
 })()
 
 const addWorkout = async () => {
-    console.log(workoutName.value)
-    console.log(description.value)
-    console.log(selectedSets.value)
-    console.log(selectedMuscleGroups.value)
-
     await createCustomWorkout(
         new CreateCustomWorkoutRequest(
             workoutName.value,
@@ -105,7 +100,6 @@ const addWorkout = async () => {
             selectedSets.value.map((set) => set.id)
         )
     )
-    console.log("workout added")
 }
 
 const closeAddWorkout = () => {
