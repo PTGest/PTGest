@@ -93,6 +93,7 @@ async function loginUserServices(userLoginData: LoginUserData): Promise<void> {
                     })
                     break
                 case 401:
+                    router.go(0)
                     if (!document.querySelector(".error-message")) {
                         const element = document.createElement("div")
                         element.innerHTML = "Invalid email or password"
