@@ -642,23 +642,22 @@ class TrainerService(
     }
 
     //  Session related Services
-    fun createSession(
+    fun createTrainerGuidedSession(
         trainerId: UUID,
         traineeId: UUID,
         workoutId: Int,
         beginDate: Date,
-        endDate: Date?,
-        location: String?,
-        type: SessionType,
+        endDate: Date,
+        location: String,
         notes: String?
     ): Int {
         require(beginDate.after(Date())) { "Begin date must be after the current date." }
+        require(endDate.after(beginDate)) { "End date must be after the begin date." }
+        require(location.isNotEmpty()) { "Location must not be empty." }
 
         Validators.validate(
             Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
         )
-
-        validateSessionDataLocation(beginDate, endDate, location, type)
 
         return transactionManager.run {
             val trainerRepo = it.trainerRepo
@@ -672,13 +671,43 @@ class TrainerService(
                 beginDate,
                 endDate,
                 location,
-                type,
+                SessionType.TRAINER_GUIDED,
                 notes
             )
 
-            if (type == SessionType.TRAINER_GUIDED) {
-                trainerRepo.associateSessionToTrainer(trainerId, sessionId)
-            }
+            trainerRepo.associateSessionToTrainer(trainerId, sessionId)
+
+            return@run sessionId
+        }
+    }
+
+    fun createPlanBasedSession(
+        trainerId: UUID,
+        traineeId: UUID,
+        workoutId: Int,
+        beginDate: Date,
+        notes: String?
+    ): Int {
+        require(beginDate.after(Date())) { "Begin date must be after the current date." }
+
+        Validators.validate(
+            Validators.ValidationRequest(notes, "Notes must not be empty.") { (it as String).isNotEmpty() }
+        )
+
+        return transactionManager.run {
+            val sessionRepo = it.sessionRepo
+
+            it.isTrainerAssignedToTrainee(trainerId, traineeId)
+
+            val sessionId = sessionRepo.createSession(
+                traineeId,
+                workoutId,
+                beginDate,
+                null,
+                null,
+                SessionType.PLAN_BASED,
+                notes
+            )
 
             return@run sessionId
         }
@@ -749,17 +778,18 @@ class TrainerService(
             return@run Pair(sessionDetails, feedback)
         }
 
-    fun editSession(
+    fun editTrainerGuidedSession(
         trainerId: UUID,
         sessionId: Int,
         workoutId: Int,
         beginDate: Date,
-        endDate: Date?,
-        location: String?,
-        type: SessionType,
+        endDate: Date,
+        location: String,
         notes: String?
     ) {
-        validateSessionDataLocation(beginDate, endDate, location, type)
+        require(beginDate.after(Date())) { "Begin date must be after the current date." }
+        require(endDate.after(beginDate)) { "End date must be after the begin date." }
+        require(location.isNotEmpty()) { "Location must not be empty." }
 
         val userDetails = transactionManager.run {
             val sessionRepo = it.sessionRepo
@@ -778,7 +808,7 @@ class TrainerService(
             require(Validators.isCurrentDate24BeforeDate(session.beginDate)) { "Session can only be edited 24 hours before the begin date." }
             require(beginDate.after(Date())) { "Begin date must be after the current date." }
 
-            sessionRepo.updateSession(sessionId, workoutId, beginDate, endDate, location, type, notes)
+            sessionRepo.updateSession(sessionId, workoutId, beginDate, endDate, location, SessionType.TRAINER_GUIDED, notes)
 
             return@run userDetails
         }
@@ -788,9 +818,58 @@ class TrainerService(
             "Session Updated",
             "Your session has been updated by your trainer.\n\n" +
                 "Begin Date: $beginDate\n" +
-                endDate?.let { "End Date: ${endDate}\n" } +
-                location?.let { "Location: ${location}\n" } +
-                "Type: $type\n" +
+                "End Date: ${endDate}\n" +
+                "Location: ${location}\n" +
+                "Type: ${SessionType.TRAINER_GUIDED.name}\n" +
+                notes?.let { "Notes: ${notes}\n" }
+        )
+    }
+
+    fun editPlanBasedSession(
+        trainerId: UUID,
+        sessionId: Int,
+        workoutId: Int,
+        beginDate: Date,
+        notes: String?
+    ) {
+        require(beginDate.after(Date())) { "Begin date must be after the current date." }
+
+        val userDetails = transactionManager.run {
+            val sessionRepo = it.sessionRepo
+            val userRepo = it.userRepo
+
+            val sessionTrainee = sessionRepo.getSessionTrainee(sessionId)
+
+            val userDetails = userRepo.getUserDetails(sessionTrainee)
+                ?: throw ResourceNotFoundError
+
+            it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
+
+            val session = sessionRepo.getSessionDetails(sessionId)
+                ?: throw ResourceNotFoundError
+
+            require(Validators.isCurrentDate24BeforeDate(session.beginDate)) { "Session can only be edited 24 hours before the begin date." }
+            require(beginDate.after(Date())) { "Begin date must be after the current date." }
+
+            sessionRepo.updateSession(
+                sessionId,
+                workoutId,
+                beginDate,
+                null,
+                null,
+                SessionType.PLAN_BASED,
+                notes
+            )
+
+            return@run userDetails
+        }
+
+        mailService.sendMail(
+            userDetails.email,
+            "Session Updated",
+            "Your session has been updated by your trainer.\n\n" +
+                "Begin Date: $beginDate\n" +
+                "Type: ${SessionType.PLAN_BASED}\n" +
                 notes?.let { "Notes: ${notes}\n" }
         )
     }
@@ -983,20 +1062,6 @@ class TrainerService(
         }
 
         return age
-    }
-
-    private fun validateSessionDataLocation(
-        beginDate: Date,
-        endDate: Date?,
-        location: String?,
-        type: SessionType
-    ) {
-        if (type == SessionType.TRAINER_GUIDED) {
-            requireNotNull(endDate) { "End date must be provided for predefined sessions." }
-            require(endDate.after(beginDate)) { "End date must be after the begin date." }
-            requireNotNull(location) { "Location must be provided for predefined sessions." }
-            require(location.isNotEmpty()) { "Location must not be empty." }
-        }
     }
 
     private fun Transaction.getExercises(

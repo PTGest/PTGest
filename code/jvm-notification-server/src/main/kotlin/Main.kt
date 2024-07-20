@@ -1,6 +1,5 @@
 import jobs.TraineesNotificationJob
 import jobs.TrainersNotificationJob
-import services.MailService
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin
@@ -11,7 +10,8 @@ import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
 import org.quartz.impl.StdSchedulerFactory
 import org.slf4j.LoggerFactory
-import repositories.SessionRepo
+import pt.isel.leic.ptgest.repository.jdbi.transaction.JdbiTransactionManager
+import services.MailService
 
 fun main() {
     val logger = LoggerFactory.getLogger("Main")
@@ -26,8 +26,9 @@ fun main() {
             installPlugin(KotlinPlugin())
             installPlugin(PostgresPlugin())
         }
+
         val mailService = MailService(ServerConfig.mailUsername, ServerConfig.mailPassword)
-        val sessionRepo = SessionRepo(jdbi)
+        val transactionManager = JdbiTransactionManager(jdbi)
         val schedulerFactory = StdSchedulerFactory()
         val scheduler = schedulerFactory.scheduler
 
@@ -38,7 +39,7 @@ fun main() {
             .build()
             .apply {
                 jobDataMap["mailSender"] = mailService
-                jobDataMap["sessionRepo"] = sessionRepo
+                jobDataMap["transactionManager"] = transactionManager
             }
 
         val trainersNotificationJob = JobBuilder.newJob(TrainersNotificationJob::class.java)
@@ -46,7 +47,7 @@ fun main() {
             .build()
             .apply {
                 jobDataMap["mailSender"] = mailService
-                jobDataMap["sessionRepo"] = sessionRepo
+                jobDataMap["transactionManager"] = transactionManager
             }
 
         val traineesNotificationTrigger = TriggerBuilder.newTrigger()

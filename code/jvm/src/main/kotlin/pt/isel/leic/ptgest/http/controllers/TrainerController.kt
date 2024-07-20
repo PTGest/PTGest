@@ -542,16 +542,28 @@ class TrainerController(
         @RequestBody sessionDetails: CreateSessionRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val sessionId = trainerService.createSession(
-            authenticatedUser.id,
-            sessionDetails.traineeId,
-            sessionDetails.workoutId,
-            sessionDetails.beginDate,
-            sessionDetails.endDate,
-            sessionDetails.location,
-            sessionDetails.type,
-            sessionDetails.notes
-        )
+        val sessionId = when (sessionDetails) {
+            is CreateSessionRequest.TrainerGuided -> {
+                trainerService.createTrainerGuidedSession(
+                    authenticatedUser.id,
+                    sessionDetails.traineeId,
+                    sessionDetails.workoutId,
+                    sessionDetails.beginDate,
+                    sessionDetails.endDate,
+                    sessionDetails.location.trim(),
+                    sessionDetails.notes?.trim()
+                )
+            }
+            is CreateSessionRequest.PlanBased -> {
+                trainerService.createPlanBasedSession(
+                    authenticatedUser.id,
+                    sessionDetails.traineeId,
+                    sessionDetails.workoutId,
+                    sessionDetails.beginDate,
+                    sessionDetails.notes?.trim()
+                )
+            }
+        }
 
         return HttpResponse.created(
             message = "Session created successfully.",
@@ -625,16 +637,28 @@ class TrainerController(
         @RequestBody sessionDetails: EditSessionRequest,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        trainerService.editSession(
-            authenticatedUser.id,
-            sessionId,
-            sessionDetails.workoutId,
-            sessionDetails.beginDate,
-            sessionDetails.endDate,
-            sessionDetails.location?.trim(),
-            sessionDetails.type,
-            sessionDetails.notes?.trim()
-        )
+        when (sessionDetails) {
+            is EditSessionRequest.TrainerGuided -> {
+                trainerService.editTrainerGuidedSession(
+                    authenticatedUser.id,
+                    sessionId,
+                    sessionDetails.workoutId,
+                    sessionDetails.beginDate,
+                    sessionDetails.endDate,
+                    sessionDetails.location.trim(),
+                    sessionDetails.notes?.trim()
+                )
+            }
+            is EditSessionRequest.PlanBased -> {
+                trainerService.editPlanBasedSession(
+                    authenticatedUser.id,
+                    sessionId,
+                    sessionDetails.workoutId,
+                    sessionDetails.beginDate,
+                    sessionDetails.notes?.trim()
+                )
+            }
+        }
 
         return HttpResponse.ok(
             message = "Session edited successfully."

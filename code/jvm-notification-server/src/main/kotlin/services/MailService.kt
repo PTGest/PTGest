@@ -1,6 +1,6 @@
 package services
 
-import java.util.Properties
+import java.util.*
 import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
