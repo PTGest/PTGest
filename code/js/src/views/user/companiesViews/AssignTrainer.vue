@@ -8,8 +8,9 @@
 <script setup lang="ts">
 import TrainerBox from "./components/TrainerBox.vue"
 import { Ref, ref } from "vue"
-import getCompanyTrainersOrTrainees from "../../../services/companyServices/getCompanyTrainersOrTrainees.ts"
-import CompanyTrainers from ".//models/CompanyTrainers.ts"
+
+import CompanyTrainers from "../../../views/user/CompaniesViews/models/CompanyTrainers.ts"
+import {getCompanyTrainersOrTrainees} from "@/services/companyServices/companyServices.ts";
 
 const skip = ref(0)
 

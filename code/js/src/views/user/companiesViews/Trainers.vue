@@ -30,10 +30,11 @@
 import { faChevronLeft, faChevronRight, faFilter, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { Ref, ref } from "vue"
-import CompanyTrainers from ".//models/CompanyTrainers.ts"
-import getCompanyTrainersOrTrainees from "../../../services/companyServices/getCompanyTrainersOrTrainees.ts"
-import TrainerBox from "./components/TrainerBox.vue"
-import Filters from "./components/Filters.vue"
+import CompanyTrainers from "../../../views/user/CompaniesViews/models/CompanyTrainers.ts"
+import {getCompanyTrainersOrTrainees} from "@/services/companyServices/companyServices.ts";
+import TrainerBox from "../../../views/user/CompaniesViews/Components/TrainerBox.vue"
+import Filters from "../../../views/user/CompaniesViews/Components/Filters.vue"
+
 
 const companyTrainersRef: Ref<CompanyTrainers> = ref({
     trainers: [],

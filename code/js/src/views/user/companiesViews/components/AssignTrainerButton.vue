@@ -4,8 +4,9 @@
 
 <script setup lang="ts">
 import DefaultButton from "../../../../components/utils/DefaultButton.vue"
-import assignOrReassignTrainer from "../../../../services/companyServices/assignOrReassignTrainer.ts"
+
 import router from "@/plugins/router.ts";
+import {assignOrReassignTrainer} from "@/services/companyServices/companyServices.ts";
 
 const props = defineProps<{
     trainerId: string
