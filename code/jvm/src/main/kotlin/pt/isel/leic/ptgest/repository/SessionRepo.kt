@@ -5,7 +5,7 @@ import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
-import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SessionSetFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import java.util.*
@@ -97,16 +97,16 @@ interface SessionRepo {
         feedbackId: Int
     ): SessionFeedback?
 
-    fun getSetSessionFeedbacks(
+    fun getSessionSetFeedbacks(
         sessionId: Int
-    ): List<SetSessionFeedback>
+    ): List<SessionSetFeedback>
 
-    fun getSetSessionFeedback(
+    fun getSessionSetFeedback(
         feedbackId: Int,
         sessionId: Int,
         setOrderId: Int,
         setId: Int
-    ): SetSessionFeedback?
+    ): SessionSetFeedback?
 
     fun createSessionFeedback(
         feedbackId: Int,

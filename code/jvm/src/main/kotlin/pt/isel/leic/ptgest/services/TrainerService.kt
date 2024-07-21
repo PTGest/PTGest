@@ -12,7 +12,7 @@ import pt.isel.leic.ptgest.domain.report.model.ReportDetails
 import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
-import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SessionSetFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.domain.set.ExerciseDetailsType
@@ -805,6 +805,7 @@ class TrainerService(
             val session = sessionRepo.getSessionDetails(sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(Validators.isCurrentDate24BeforeDate(session.beginDate)) { "Session can only be edited 24 hours before the begin date." }
             require(beginDate.after(Date())) { "Begin date must be after the current date." }
 
@@ -848,6 +849,7 @@ class TrainerService(
             val session = sessionRepo.getSessionDetails(sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(Validators.isCurrentDate24BeforeDate(session.beginDate)) { "Session can only be edited 24 hours before the begin date." }
             require(beginDate.after(Date())) { "Begin date must be after the current date." }
 
@@ -884,6 +886,11 @@ class TrainerService(
             val userDetails = userRepo.getUserDetails(sessionTrainee)
                 ?: throw ResourceNotFoundError
 
+            val sessionDetails = sessionRepo.getSessionDetails(sessionId)
+                ?: throw ResourceNotFoundError
+
+            require(!sessionDetails.cancelled) { "Session is already cancelled." }
+
             it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
 
             sessionRepo.cancelSession(sessionId, Source.TRAINER, reason)
@@ -914,6 +921,7 @@ class TrainerService(
 
             it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
 
             sessionRepo.createFeedback(Source.TRAINER, feedback, requestDate).also { feedbackId ->
@@ -938,6 +946,7 @@ class TrainerService(
 
             it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
 
             sessionRepo.getSessionFeedback(sessionId, feedbackId)
@@ -964,6 +973,7 @@ class TrainerService(
 
             it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
             require(sessionRepo.validateSessionSet(sessionId, setId, setOrderId)) { "Set must be part of the session." }
 
@@ -991,17 +1001,18 @@ class TrainerService(
 
             it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(requestDate.after(session.beginDate) && session.type == SessionType.TRAINER_GUIDED) { "Feedback can only be given after the session has started and for trainer guided sessions." }
-            require(sessionRepo.validateSessionSet(sessionId, setOrderId, setId)) { "Set must be part of the session." }
 
-            sessionRepo.getSetSessionFeedback(feedbackId, sessionId, setOrderId, setId)
-                ?: throw ResourceNotFoundError
+            if (sessionRepo.validateSessionSet(sessionId, setId, setOrderId)) {
+                throw ResourceNotFoundError
+            }
 
             sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
     }
 
-    fun getSetSessionFeedbacks(trainerId: UUID, sessionId: Int): List<SetSessionFeedback> =
+    fun getSetSessionFeedbacks(trainerId: UUID, sessionId: Int): List<SessionSetFeedback> =
         transactionManager.run {
             val sessionRepo = it.sessionRepo
 
@@ -1011,7 +1022,7 @@ class TrainerService(
 
             it.isTrainerAssignedToTrainee(trainerId, sessionTrainee)
 
-            sessionRepo.getSetSessionFeedbacks(sessionId)
+            sessionRepo.getSessionSetFeedbacks(sessionId)
         }
 
     private fun convertDataToJson(data: Any): String {
