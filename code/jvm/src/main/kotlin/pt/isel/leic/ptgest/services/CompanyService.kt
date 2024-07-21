@@ -163,7 +163,6 @@ class CompanyService(
             require(capacity >= trainer.assignedTrainees) { "Capacity must be greater than the number of assigned trainees." }
 
             companyRepo.updateTrainerCapacity(companyId, trainerId, capacity)
-
         }
     }
 

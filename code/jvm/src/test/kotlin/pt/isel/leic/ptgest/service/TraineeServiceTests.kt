@@ -10,7 +10,9 @@ import pt.isel.leic.ptgest.domain.common.Order
 import pt.isel.leic.ptgest.domain.exercise.model.ExerciseDetails
 import pt.isel.leic.ptgest.domain.report.model.Report
 import pt.isel.leic.ptgest.domain.report.model.ReportDetails
+import pt.isel.leic.ptgest.domain.set.model.Set
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
+import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyCircumferences
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyComposition
 import pt.isel.leic.ptgest.domain.traineeData.model.BodyData
@@ -24,10 +26,8 @@ import pt.isel.leic.ptgest.services.errors.InaccessibleRecourse
 import pt.isel.leic.ptgest.services.errors.ResourceNotFoundError
 import java.util.*
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import pt.isel.leic.ptgest. domain. set. model. Set
-import pt.isel.leic.ptgest.domain.set.model.SetExerciseDetails
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @SpringBootTest
 class TraineeServiceTests {
@@ -44,10 +44,10 @@ class TraineeServiceTests {
         @Test
         fun `should return reports successfully`() {
             `when`(mockReportRepo.getTraineeReports(traineeId, 0, null))
-                .then{ emptyList<Report>() }
+                .then { emptyList<Report>() }
 
             `when`(mockReportRepo.getTotalTraineeReports(traineeId))
-                .then{ 0 }
+                .then { 0 }
 
             mockTrainneService.getReports(traineeId, null, null)
         }
@@ -80,7 +80,7 @@ class TraineeServiceTests {
         @Test
         fun `should return report details successfully`() {
             `when`(mockReportRepo.getReportDetails(traineeId, 1))
-                .then{ reportDetails }
+                .then { reportDetails }
 
             mockTrainneService.getReportDetails(traineeId, 1)
         }
@@ -88,7 +88,7 @@ class TraineeServiceTests {
         @Test
         fun `should fail if report does not exist`() {
             `when`(mockReportRepo.getReportDetails(traineeId, 1))
-                .then{ null }
+                .then { null }
 
             assertFailsWith<ResourceNotFoundError> {
                 mockTrainneService.getReportDetails(traineeId, 1)
@@ -98,7 +98,7 @@ class TraineeServiceTests {
         @Test
         fun `should fail if report is not visible`() {
             `when`(mockReportRepo.getReportDetails(traineeId, 1))
-                .then{ reportDetails.copy(visibility = false) }
+                .then { reportDetails.copy(visibility = false) }
 
             assertFailsWith<InaccessibleRecourse> {
                 mockTrainneService.getReportDetails(traineeId, 1)
@@ -111,10 +111,10 @@ class TraineeServiceTests {
         @Test
         fun `should return trainee data history successfully`() {
             `when`(mockTraineeDataRepo.getTraineeData(traineeId, Order.ASC, 0, null))
-                .then{ emptyList<Report>() }
+                .then { emptyList<Report>() }
 
             `when`(mockTraineeDataRepo.getTotalTraineeData(traineeId))
-                .then{ 0 }
+                .then { 0 }
 
             mockTrainneService.getTraineeDataHistory(traineeId, Order.ASC, 0, null)
         }
@@ -157,7 +157,7 @@ class TraineeServiceTests {
                 bodyComposition = BodyComposition(
                     20.0,
                     20.0,
-                    20.0,
+                    20.0
                 ),
                 null
             )
@@ -166,7 +166,7 @@ class TraineeServiceTests {
         @Test
         fun `should return trainee data details successfully`() {
             `when`(mockTraineeDataRepo.getTraineeBodyDataDetails(traineeId, 1))
-                .then{ traineeDataDetails }
+                .then { traineeDataDetails }
 
             mockTrainneService.getTraineeDataDetails(traineeId, 1)
         }
@@ -174,7 +174,7 @@ class TraineeServiceTests {
         @Test
         fun `should fail if trainee data does not exist`() {
             `when`(mockTraineeDataRepo.getTraineeBodyDataDetails(traineeId, 1))
-                .then{ null }
+                .then { null }
 
             assertFailsWith<ResourceNotFoundError> {
                 mockTrainneService.getTraineeDataDetails(traineeId, 1)
@@ -196,7 +196,7 @@ class TraineeServiceTests {
         @Test
         fun `should return exercise details successfully`() {
             `when`(mockExerciseRepo.getExerciseDetails(1))
-                .then{ exerciseDetails }
+                .then { exerciseDetails }
 
             mockTrainneService.getExerciseDetails(traineeId, 1)
         }
@@ -204,7 +204,7 @@ class TraineeServiceTests {
         @Test
         fun `should fail if exercise does not exist`() {
             `when`(mockExerciseRepo.getExerciseDetails(1))
-                .then{ null }
+                .then { null }
 
             assertFailsWith<ResourceNotFoundError> {
                 mockTrainneService.getExerciseDetails(traineeId, 1)
@@ -232,11 +232,10 @@ class TraineeServiceTests {
         @Test
         fun `should return set details successfully`() {
             `when`(mockSetRepo.getSetDetails(1))
-                .then{ set }
+                .then { set }
 
             `when`(mockSetRepo.getSetExercises(1))
-                .then{ emptyList<SetExerciseDetails>() }
-
+                .then { emptyList<SetExerciseDetails>() }
 
             val result = mockTrainneService.getSetDetails(traineeId, 1)
 
@@ -246,7 +245,7 @@ class TraineeServiceTests {
         @Test
         fun `should fail if set does not exist`() {
             `when`(mockSetRepo.getSetDetails(1))
-                .then{ null }
+                .then { null }
 
             assertFailsWith<ResourceNotFoundError> {
                 mockTrainneService.getSetDetails(traineeId, 1)
@@ -255,38 +254,44 @@ class TraineeServiceTests {
     }
 
     @Nested
-    inner class GetWorkoutDetailsTests {}
+    inner class GetWorkoutDetailsTests
 
     @Nested
-    inner class GetSessionsTests {}
+    inner class GetSessionsTests
 
     @Nested
-    inner class GetSessionDetailsTests {}
+    inner class GetSessionDetailsTests
 
     @Nested
-    inner class CancelSessionTests {}
+    inner class CancelSessionTests
 
     @Nested
-    inner class CreateSessionFeedbackTests {}
+    inner class CreateSessionFeedbackTests
 
     @Nested
-    inner class EditSessionFeedbackTests {}
+    inner class EditSessionFeedbackTests
 
     @Nested
-    inner class CreateSessionSetFeedbackTests {}
+    inner class CreateSessionSetFeedbackTests
 
     @Nested
-    inner class EditSessionSetFeedbackTests {}
+    inner class EditSessionSetFeedbackTests
 
     @Nested
-    inner class GetSessionSetFeedbackTests {}
+    inner class GetSessionSetFeedbackTests
 
     private val traineeId = UUID.randomUUID()
 
     @AfterEach
     fun cleanUp() {
-        reset(mockReportRepo, mockTraineeDataRepo, mockExerciseRepo,
-            mockSetRepo, mockWorkoutRepo, mockSessionRepo)
+        reset(
+            mockReportRepo,
+            mockTraineeDataRepo,
+            mockExerciseRepo,
+            mockSetRepo,
+            mockWorkoutRepo,
+            mockSessionRepo
+        )
     }
 
     companion object {

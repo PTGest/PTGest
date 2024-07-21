@@ -426,7 +426,7 @@ class CompanyServiceTests {
         @Test
         fun `should fail if the capacity is less than the number of assigned trainees`() {
             `when`(mockCompanyRepo.getTrainer(trainer.id, companyId)).then { trainer.copy(assignedTrainees = 5) }
-            
+
             assertFailsWith<IllegalArgumentException> {
                 mockCompanyService.updateTrainerCapacity(
                     companyId,
@@ -442,13 +442,15 @@ class CompanyServiceTests {
 
         @Test
         fun `should create custom exercise successfully`() {
-            `when`(mockExerciseRepo.createExercise(
-                "name",
-                "description",
-                listOf(MuscleGroup.MID_BACK),
-                Modality.BODYWEIGHT,
-                null
-            )).then { 1 }
+            `when`(
+                mockExerciseRepo.createExercise(
+                    "name",
+                    "description",
+                    listOf(MuscleGroup.MID_BACK),
+                    Modality.BODYWEIGHT,
+                    null
+                )
+            ).then { 1 }
 
             mockCompanyService.createCustomExercise(
                 companyId,
@@ -493,21 +495,25 @@ class CompanyServiceTests {
     inner class GetExercisesTests {
         @Test
         fun `should get exercises successfully`() {
-            `when`(mockExerciseRepo.getCompanyExercises(
-                companyId,
-                "name",
-                MuscleGroup.MID_BACK,
-                Modality.BODYWEIGHT,
-                0,
-                10
-            )).then { emptyList<Exercise>() }
+            `when`(
+                mockExerciseRepo.getCompanyExercises(
+                    companyId,
+                    "name",
+                    MuscleGroup.MID_BACK,
+                    Modality.BODYWEIGHT,
+                    0,
+                    10
+                )
+            ).then { emptyList<Exercise>() }
 
-            `when`(mockExerciseRepo.getTotalCompanyExercises(
-                companyId,
-                "name",
-                MuscleGroup.MID_BACK,
-                Modality.BODYWEIGHT
-            )).then { 0 }
+            `when`(
+                mockExerciseRepo.getTotalCompanyExercises(
+                    companyId,
+                    "name",
+                    MuscleGroup.MID_BACK,
+                    Modality.BODYWEIGHT
+                )
+            ).then { 0 }
 
             mockCompanyService.getExercises(
                 companyId,
