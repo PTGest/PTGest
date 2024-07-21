@@ -37,7 +37,8 @@
                 <label for="trainer-guided" class="ml-2">Trainer Guided</label>
             </div>
         </div>
-
+        <label for="location">Location</label>
+        <input v-model="location" placeholder="Enter Location"/>
         <textarea class="text-area" v-model="setNotes" />
         <Button @click="addSession" label="submit" class="submit" :disabled="isDisable">{{ props.isEdit ? "Edit Session" : "Add Session" }}</Button>
     </div>
@@ -47,7 +48,7 @@
 import { computed, Ref, ref } from "vue"
 
 import Workouts from "@/views/user/TrainerViews/models/workouts/Workouts.ts"
-import CreateSessionRequest from "@/views/user/TrainerViews/models/sessions/CreateSessionRequest.ts"
+import CreateSessionRequestGuided from "@/views/user/TrainerViews/models/sessions/CreateSessionRequestGuided.js"
 import Calendar from "primevue/calendar"
 import RadioButton from "primevue/radiobutton"
 import ExercisesDropdown from "@/views/user/TrainerViews/components/exercises/ExercisesDropdown.vue"
@@ -62,6 +63,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"
 import { getWorkouts } from "@/services/TrainerServices/workouts/workoutServices.ts"
 import { editSession } from "@/services/TrainerServices/sessions/sessionServices.ts"
+import CreateSessionRequestPlanBased from "@/views/user/TrainerViews/models/sessions/CreateSessionRequestPlanBased.ts";
 
 const props = defineProps<{
     isEdit: boolean
@@ -76,7 +78,7 @@ const selectedWorkout = ref(props.isEdit ? props.sessionData.selectedWorkout : "
 const setNotes = ref<string | null>(props.isEdit ? props.sessionData.setNotes : null)
 const beginDate: Ref<Date> = ref(props.isEdit ? props.sessionData.beginDate : new Date())
 const endTime: Ref<Date> = ref(props.isEdit ? props.sessionData.endTime : new Date())
-const sessionRequestData: Ref<CreateSessionRequest> = ref(new CreateSessionRequest())
+const location = ref("")
 
 ;(async () => {
     workouts.value = await getWorkouts()
@@ -88,7 +90,7 @@ const updateWorkout = (workout: any) => {
 }
 
 const isDisable = computed(() => {
-    return !(selectedWorkout.value && beginDate.value && workoutType.value)
+    return !(selectedWorkout.value && beginDate.value && workoutType.value && location.value)
 })
 
 const addSession = async () => {
@@ -96,33 +98,39 @@ const addSession = async () => {
         if (workoutType.value == "TRAINER_GUIDED") {
             console.log(endTime.value.getHours())
             const endDate = new Date(beginDate.value)
+            const sessionRequestData: Ref<CreateSessionRequestGuided> = ref(new CreateSessionRequestGuided())
             endDate.setHours(endTime.value.getHours(), endTime.value.getMinutes(), endTime.value.getSeconds())
             sessionRequestData.value = {
                 traineeId: store.getters.traineeInfo.id,
                 workoutId: selectedWorkout.value.id,
                 beginDate: beginDate,
                 endDate: endDate,
-                location: "Gym",
-                type: workoutType.value,
+                location: location.value,
                 notes: setNotes.value,
+                type: "trainer_guided",
             }
+            if (!props.isEdit) {
+                await createSession(sessionRequestData.value)
+            } else {
+                await editSession(props.sessionData.id, sessionRequestData.value)
+            }
+            router.go(-1)
         } else {
+            const sessionRequestData: Ref<CreateSessionRequestPlanBased> = ref(new CreateSessionRequestPlanBased())
             sessionRequestData.value = {
                 traineeId: store.getters.traineeInfo.id,
                 workoutId: selectedWorkout.value.id,
                 beginDate: beginDate.value,
-                endDate: null,
-                location: "Gym",
-                type: workoutType.value,
                 notes: setNotes.value,
+                type: "plan_based",
             }
+            if (!props.isEdit) {
+                await createSession(sessionRequestData.value)
+            } else {
+                await editSession(props.sessionData.id, sessionRequestData.value)
+            }
+            router.go(-1)
         }
-        if (!props.isEdit) {
-            await createSession(sessionRequestData.value)
-        } else {
-            await editSession(props.sessionData.id, sessionRequestData.value)
-        }
-        router.go(-1)
     } catch (e) {
         console.log(e)
     }
@@ -241,5 +249,19 @@ textarea {
 .x-icon {
     align-self: flex-end;
     cursor: pointer;
+}
+input{
+    width: 24em;
+    background-color: var(--main-primary-color);
+    color: whitesmoke;
+    padding: 1em;
+    border-radius: 5px;
+    border: 1px solid rgba(245, 245, 245, 0.2);
+    outline: none;
+    transition: 0.2s ease-in;
+}
+
+::placeholder{
+    color: whitesmoke;
 }
 </style>

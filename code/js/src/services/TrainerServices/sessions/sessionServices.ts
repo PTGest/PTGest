@@ -1,7 +1,7 @@
 import fetchData from "../../utils/fetchUtils/fetchData.ts"
 import CancelSessionRequest from "../../../views/user/TrainerViews/models/sessions/CancelSessionRequest.ts"
 import router from "../../../plugins/router.ts"
-import CreateSessionRequest from "../../../views/user/TrainerViews/models/sessions/CreateSessionRequest.ts"
+import CreateSessionRequestGuided from "../../../views/user/TrainerViews/models/sessions/CreateSessionRequestGuided.ts"
 import TrainerSessionDetails from "../../../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
 import Sessions from "../../../views/user/TrainerViews/models/sessions/Sessions.ts"
 import handleFilters from "../../utils/fetchUtils/handleFilters.ts"
@@ -10,7 +10,7 @@ import { apiBaseUri } from "../../utils/envUtils.ts"
 import CreateFeedbackRequest from "../../../views/user/TrainerViews/models/sessions/CreateFeedbackRequest.ts"
 import SetSessionFeedback from "../../../views/user/TrainerViews/models/sessions/SetSessionFeedbacks.ts"
 
-async function createSession(sessionData: CreateSessionRequest): Promise<void> {
+async function createSession(sessionData: CreateSessionRequestGuided): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/session/create`
     try {
         return await fetchData(uri, "POST", sessionData)
@@ -30,7 +30,7 @@ async function cancelSession(sessionId: number, reason: CancelSessionRequest): P
         throw error
     }
 }
-async function editSession(sessionId: number, sessionData: CreateSessionRequest): Promise<void> {
+async function editSession(sessionId: number, sessionData: CreateSessionRequestGuided): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/session/${sessionId}/edit`
     try {
         const response = await fetchData(uri, "PUT", sessionData)

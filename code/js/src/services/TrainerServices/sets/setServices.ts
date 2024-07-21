@@ -43,7 +43,6 @@ async function getSets(filters: Map<string, any> | null): Promise<Sets> {
     if (filters != null) {
         postFiltersUri = handleFilters(uri, filters)
     }
-
     try {
         const response = await fetchData(postFiltersUri, "GET", null)
         return new Sets(response.details.items, response.details.total)
@@ -55,7 +54,6 @@ async function getSets(filters: Map<string, any> | null): Promise<Sets> {
 
 async function likeSet(setId: string): Promise<void> {
     const uri = `${apiBaseUri}/api/trainer/set/${setId}/favorite`
-
     try {
         await fetchData(uri, "POST", null)
         return

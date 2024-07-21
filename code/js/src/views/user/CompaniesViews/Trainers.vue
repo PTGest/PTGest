@@ -64,7 +64,7 @@ const handlePage = (isNext: boolean) => {
 }
 const getTrainers = async (skip: number) => {
     try {
-        companyTrainersRef.value = <CompanyTrainers>await getCompanyTrainersOrTrainees(skip, null, null, null, false)
+        companyTrainersRef.value = <CompanyTrainers>await getCompanyTrainersOrTrainees(skip, null, null, null, false, null)
     } catch (error) {
         console.error("Error getting user info:", error)
     }
