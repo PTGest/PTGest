@@ -8,6 +8,7 @@ import DefaultButton from "../../../../components/utils/DefaultButton.vue"
 import router from "@/plugins/router.ts";
 import {assignOrReassignTrainer} from "@/services/companyServices/companyServices.ts";
 
+
 const props = defineProps<{
     trainerId: string
     traineeId: string

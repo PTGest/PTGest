@@ -26,8 +26,9 @@ import Trainer from "../models/Trainer.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faCheck, faPen} from "@fortawesome/free-solid-svg-icons"
 import { ref } from "vue"
-import AssignTrainerButton from "@/views/user/CompaniesViews/Components/AssignTrainerButton.vue"
+
 import {changeTrainerCapacity} from "@/services/companyServices/companyServices.ts";
+import AssignTrainerButton from "@/views/user/companiesViews/components/AssignTrainerButton.vue";
 
 const isDisabled = ref(true)
 const props = defineProps<{

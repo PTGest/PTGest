@@ -1,9 +1,10 @@
-import AssignTrainerRequest from "../../views/user/CompaniesViews/models/AssignTrainerRequest.ts"
-import ReassignTrainerRequest from "../../views/user/CompaniesViews/models/ReassignTrainerRequest.ts"
-import { apiBaseUri } from "../utils/envUtils.ts"
-import UpdateCapacity from "../../views/user/CompaniesViews/models/capacity.ts";
-import CompanyTrainers from "../../views/user/CompaniesViews/models/CompanyTrainers.ts";
-import CompanyTrainees from "../../views/user/CompaniesViews/models/CompanyTrainees.ts";
+import {apiBaseUri} from "../utils/envUtils.ts";
+import AssignTrainerRequest from "../../views/user/companiesViews/models/AssignTrainerRequest.ts";
+import ReassignTrainerRequest from "../../views/user/companiesViews/models/ReassignTrainerRequest.ts";
+import UpdateCapacity from "../../views/user/companiesViews/models/UpdateCapacity.ts";
+import CompanyTrainers from "../../views/user/companiesViews/models/CompanyTrainers.ts";
+import CompanyTrainees from "../../views/user/companiesViews/models/CompanyTrainees.ts";
+
 
 async function assignOrReassignTrainer(traineeId: string, trainerId: string, isReassign: boolean): Promise<void> {
     let url = `${apiBaseUri}/api/company/trainee/${traineeId}/assign-trainer`

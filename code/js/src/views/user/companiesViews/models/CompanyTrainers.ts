@@ -1,4 +1,5 @@
-import Trainer from ".././models/Trainer.ts"
+import Trainer from "./Trainer.ts";
+
 class CompanyTrainers {
     trainers: Trainer[]
     total: number
