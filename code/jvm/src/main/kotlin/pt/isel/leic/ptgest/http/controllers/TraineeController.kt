@@ -291,7 +291,7 @@ class TraineeController(
         @PathVariable sessionId: Int,
         authenticatedUser: AuthenticatedUser
     ): ResponseEntity<*> {
-        val setSessionFeedbacks = traineeService.getSetSessionFeedbacks(
+        val setSessionFeedbacks = traineeService.getSessionSetFeedbacks(
             authenticatedUser.id,
             sessionId
         )

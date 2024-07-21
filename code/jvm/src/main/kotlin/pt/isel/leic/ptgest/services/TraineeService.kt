@@ -294,7 +294,7 @@ class TraineeService(
         }
     }
 
-    fun getSetSessionFeedbacks(
+    fun getSessionSetFeedbacks(
         traineeId: UUID,
         sessionId: Int
     ): List<SetSessionFeedback> =

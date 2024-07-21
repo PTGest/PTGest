@@ -1033,7 +1033,7 @@ class TrainerService(
             bodyFatPercentage != null -> {
                 require(bodyFatPercentage > 0) { "Body fat percentage must be a positive number." }
                 val bodyComposition = BodyComposition(weight, height, bodyFatPercentage)
-                BodyData(weight, height, bodyCircumferences, bodyComposition)
+                BodyData(weight, height, bodyCircumferences, bodyComposition, null)
             }
             skinFold != null -> {
                 val bodyFatPercentageResult = MeasurementTechnique.getTechnique(skinFold.size)
@@ -1048,7 +1048,7 @@ class TrainerService(
             }
             else -> {
                 val bodyComposition = BodyComposition(weight, height)
-                BodyData(weight, height, bodyCircumferences, bodyComposition)
+                BodyData(weight, height, bodyCircumferences, bodyComposition, null)
             }
         }
 

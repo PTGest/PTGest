@@ -46,19 +46,18 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .one()
     }
 
-    override fun getTrainerSessions(trainerId: UUID, date: Date): List<Int> =
+    override fun getTraineeSessions(traineeId: UUID, date: Date): List<Int> =
         handle.createQuery(
             """
             select s.id
             from session s
-            join session_trainer st on s.id = st.session_id
             left join cancelled_session cs on s.id = cs.session_id
-            where trainer_id = :trainerId and DATE(s.begin_date) = DATE(:date) and cs.session_id is null
+            where s.type = :type::session_type and DATE(s.begin_date) > DATE(:date) and cs.session_id is null
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
+                    "type" to SessionType.TRAINER_GUIDED.name,
                     "date" to date
                 )
             )

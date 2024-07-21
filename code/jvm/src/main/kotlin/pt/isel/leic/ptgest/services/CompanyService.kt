@@ -130,7 +130,7 @@ class CompanyService(
                 throw CompanyError.TrainerAlreadyAssociatedToTrainee
             }
 
-            sessionRepo.getTrainerSessions(newTrainerId, Date())
+            sessionRepo.getTraineeSessions(traineeId, Date())
                 .forEach { session ->
                     sessionRepo.cancelSession(session, Source.COMPANY, "Trainer reassigned.")
                 }
@@ -157,10 +157,13 @@ class CompanyService(
         transactionManager.run {
             val companyRepo = it.companyRepo
 
-            companyRepo.getTrainer(trainerId, companyId)
+            val trainer = companyRepo.getTrainer(trainerId, companyId)
                 ?: throw CompanyError.TrainerNotFound
 
+            require(capacity >= trainer.assignedTrainees) { "Capacity must be greater than the number of assigned trainees." }
+
             companyRepo.updateTrainerCapacity(companyId, trainerId, capacity)
+
         }
     }
 

@@ -22,8 +22,8 @@ interface SessionRepo {
         notes: String?
     ): Int
 
-    fun getTrainerSessions(
-        trainerId: UUID,
+    fun getTraineeSessions(
+        traineeId: UUID,
         date: Date
     ): List<Int>
 
