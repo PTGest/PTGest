@@ -1,5 +1,5 @@
-import CompanyTrainers from "../../views/user/CompaniesViews/models/CompanyTrainers.ts"
-import CompanyTrainees from "../../views/user/CompaniesViews/models/CompanyTrainees.ts"
+import CompanyTrainers from "../../views/user/companiesViews/models/CompanyTrainers.ts"
+import CompanyTrainees from "../../views/user/companiesViews/models/CompanyTrainees.ts"
 import { apiBaseUri } from "../utils/envUtils.ts"
 
 export default async function getCompanyTrainersOrTrainees(
@@ -44,18 +44,10 @@ export default async function getCompanyTrainersOrTrainees(
         switch (response.status) {
             case 200:
                 return response.json().then((data) => {
-                    console.log(data)
-
                     if (isTrainees) {
-                        console.log(data.details.trainees)
-                        console.log(data.details.total)
-                        const trainees = new CompanyTrainees(data.details.items, data.details.total)
-                        console.log(trainees)
-                        return trainees
+                        return new CompanyTrainees(data.details.items, data.details.total)
                     } else {
-                        const trainers = new CompanyTrainers(data.details.items, data.details.total)
-                        console.log(trainers)
-                        return trainers
+                        return  new CompanyTrainers(data.details.items, data.details.total)
                     }
                 })
             case 400:

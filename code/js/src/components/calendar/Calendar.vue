@@ -29,7 +29,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons"
 import { ref } from "vue"
 import Day from "../calendar/Day.ts"
-import TrainerSession from "@/views/user/TrainerViews/models/sessions/TrainerSession.ts"
+import TrainerSession from "@/views/user/trainerViews/models/sessions/TrainerSession.ts"
 import { getDayFromDate, getMonthFromDate } from "@/services/utils/dateUtils/getFromDateUtils.ts"
 
 const emits = defineEmits(["getDate"])
@@ -37,7 +37,6 @@ const emits = defineEmits(["getDate"])
 const props = defineProps<{
     trainDays: string[]
 }>()
-console.log("PROPS", props.trainDays)
 
 const trainDays = ref(
     props.trainDays.map((day: string) => ({
@@ -45,7 +44,6 @@ const trainDays = ref(
         month: getMonthFromDate(day),
     }))
 )
-console.log("TRAINDAYS", trainDays.value)
 
 // daysTag = document.getElementById("days"),
 const icons = document.querySelectorAll(".icon")
@@ -126,7 +124,6 @@ const getDate = (day: Day) => {
     const formattedDate = `${currYear}-${String(monthIndex).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`
     selectedDay.value = day.day
     emits("getDate", formattedDate)
-    console.log("CURRDAY", formattedDate)
 }
 </script>
 

@@ -1,3 +1,5 @@
 *.idea
 deploy-file.bat
 Dockerfile
+code/jvm-notification-server/deploy.bat
+code/jvm/deploy.bat

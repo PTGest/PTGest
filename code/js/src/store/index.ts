@@ -1,9 +1,9 @@
 import { createStore } from "vuex"
 import UserData from "../models/UserData.ts"
 import VuexPersistence from "vuex-persist"
-import UserInfo  from "../views/user/UserProfile/Models/UserInfo.ts"
-import TrainerSessionDetails from "../views/user/TrainerViews/models/sessions/TrainerSessionDetails.ts"
-import TraineeInfo from "../views/user/TrainerViews/models/trainees/TraineeInfo.ts"
+import UserInfo  from "../views/user/userProfile/models/UserInfo.ts"
+import TrainerSessionDetails from "../views/user/trainerViews/models/sessions/TrainerSessionDetails.ts"
+import TraineeInfo from "../views/user/trainerViews/models/trainees/TraineeInfo.ts"
 
 interface State {
     userData: UserData
@@ -90,7 +90,6 @@ const store = createStore<State>({
     },
     actions: {
         setAuthentication({ commit }: any, userData: UserData) {
-            console.log("setAuthentication", commit, userData)
             commit("setUserData", userData)
         },
         setLogin({ commit }: any, isLogged: boolean) {
@@ -100,7 +99,6 @@ const store = createStore<State>({
             commit("setMobileView", is_mobile_view)
         },
         userInfo({ commit }: any, userInfo: UserInfo) {
-            console.log("userBio", userInfo)
             commit("setUserInfo", userInfo)
         },
         logout({ commit }: any) {

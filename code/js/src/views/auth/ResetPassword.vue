@@ -62,7 +62,6 @@ const equalPasswords = ref(false)
 })()
 
 const updatePasswordValue = (value: string) => {
-    console.log(value)
     password.value = value
 }
 const updateConfirmPasswordValue = (value: string) => {

@@ -98,7 +98,6 @@ const updateGender = (value: string) => {
 const signUp = () => {
     signupUserData.value.phoneNumber = `+${countryNumber.value}${phoneNumber.value}`
     signupUserServices(signupUserData.value)
-    console.log(signupUserData.value)
 }
 </script>
 

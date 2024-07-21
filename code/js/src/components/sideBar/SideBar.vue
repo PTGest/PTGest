@@ -79,7 +79,6 @@ import icon from "@/assets/userIcons/man.png"
 
 // Define a computed property to track changes to userData
 const isLogged = computed(() => {
-    console.log("LOGGED", store.getters.isLogged)
     return store.getters.isLogged
 })
 

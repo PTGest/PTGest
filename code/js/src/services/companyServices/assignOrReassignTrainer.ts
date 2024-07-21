@@ -1,5 +1,5 @@
-import AssignTrainerRequest from "../../views/user/CompaniesViews/models/AssignTrainerRequest.ts"
-import ReassignTrainerRequest from "../../views/user/CompaniesViews/models/ReassignTrainerRequest.ts"
+import AssignTrainerRequest from "../../views/user/companiesViews/models/AssignTrainerRequest.ts"
+import ReassignTrainerRequest from "../../views/user/companiesViews/models/ReassignTrainerRequest.ts"
 import { apiBaseUri } from "../utils/envUtils.ts"
 
 export default async function assignOrReassignTrainer(traineeId: string, trainerId: string, isReassign: boolean): Promise<void> {

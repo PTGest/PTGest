@@ -1,4 +1,4 @@
-import UpdateCapacity from "../../views/user/CompaniesViews/models/capacity.ts"
+import UpdateCapacity from "../../views/user/companiesViews/models/UpdateCapacity.ts"
 import { apiBaseUri } from "../utils/envUtils.ts"
 
 export default async function changeTrainerCapacity(trainerId: string, newCapacity: number): Promise<void> {

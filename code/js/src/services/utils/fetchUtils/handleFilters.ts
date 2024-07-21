@@ -1,5 +1,4 @@
 function handleFilters(inputString: string, filters: Map<string, any>): string {
-    console.log(filters)
     let url = inputString
     const filterEntries = Array.from(filters.entries())
 
@@ -8,7 +7,6 @@ function handleFilters(inputString: string, filters: Map<string, any>): string {
         url += filterEntries.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join("&")
     }
 
-    console.log("url", url)
     return url
 }
 

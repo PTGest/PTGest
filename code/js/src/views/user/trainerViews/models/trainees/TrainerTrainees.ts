@@ -1,0 +1,11 @@
+import Trainee from "../../../companiesViews/models/Trainee.ts"
+
+class TrainerTrainees {
+    trainees: Trainee[]
+    nofTrainees: number
+    constructor(trainees: Trainee[], nofTrainees: number) {
+        this.trainees = trainees
+        this.nofTrainees = nofTrainees
+    }
+}
+export default TrainerTrainees

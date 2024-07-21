@@ -13,7 +13,6 @@ async function fetchData(uri: string, method: string, bodyData: any | null): Pro
     })
 
     if (response.ok) {
-        console.log("Operation successful")
         return await response.json()
     }
 
