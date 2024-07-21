@@ -24,10 +24,11 @@
 <script setup lang="ts">
 import Trainer from "../../../../views/user/CompaniesViews/models/Trainer.ts"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faCheck, faPen, faX } from "@fortawesome/free-solid-svg-icons"
+import { faCheck, faPen} from "@fortawesome/free-solid-svg-icons"
 import { ref } from "vue"
-import changeTrainerCapacity from "../../../../services/companyServices/changeTrainerCapacity.ts"
+
 import AssignTrainerButton from "@/views/user/CompaniesViews/Components/AssignTrainerButton.vue"
+import {changeTrainerCapacity} from "@/services/companyServices/companyServices.ts";
 
 const isDisabled = ref(true)
 const props = defineProps<{
