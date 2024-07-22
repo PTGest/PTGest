@@ -14,7 +14,7 @@
                     <font-awesome-icon :icon="faEnvelope" class="icon" />
                     {{ userInfo.email }}
                 </div>
-                <div class="info-row">
+                <div class="info-row" v-if="userInfo.phoneNumber">
                     <font-awesome-icon :icon="faPhone" class="icon"/>
                     {{formatPhoneNumber(userInfo.phoneNumber)}}
                 </div>
@@ -44,13 +44,14 @@ import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 import store from "@/store";
 import {getUserInfo} from "@/services/userServices/profileServices.ts";
-import {Ref, ref} from "vue";
+import {onMounted, Ref, ref} from "vue";
 import UserInfo from "@/views/user/userProfile/models/UserInfo.ts";
 import icon from "@/assets/userIcons/man.png";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faEnvelope, faKey, faPhone, faUser, faX} from "@fortawesome/free-solid-svg-icons";
 import formatPhoneNumber from "../../../services/utils/formatPhoneNumber.ts";
 import {changeUserPassword} from "@/services/authServices/authServices.ts";
+import {getSets} from "@/services/trainerServices/sets/setServices.ts";
 
 
 const isChangePasswordOpen = ref(false);
@@ -58,10 +59,11 @@ const currentPassword = ref("");
 const newPassword = ref("");
 const loading = ref(true);
 const userInfo : Ref<UserInfo> = ref(new UserInfo());
-( async () => {
+
+onMounted(async () => {
     userInfo.value = await getUserInfo(store.getters.userData.id)
     loading.value = false
-})()
+})
 
 const changePassword = async () => {
     await changeUserPassword(currentPassword.value, newPassword.value);

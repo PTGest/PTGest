@@ -91,7 +91,7 @@ const routes: RouteRecordRaw[] = [
     },
     { path: "/trainee/:traineeId/data-history/create", name: "addDataHistory", component: TraineeAddDataHistory, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
 
-    { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER"] } },
+    { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true, roleNeeded: ["INDEPENDENT_TRAINER", "HIRED_TRAINER", "COMPANY"] } },
     //Error Views
     { path: "/error", name: "error", component: Error },
     { path: "/token-not-valid", name: "tokenNotValid", component: TokenNotValid },
