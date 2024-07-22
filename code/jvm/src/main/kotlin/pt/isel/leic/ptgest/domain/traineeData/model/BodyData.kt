@@ -7,5 +7,5 @@ data class BodyData(
     val height: Double,
     val bodyCircumferences: BodyCircumferences,
     val bodyComposition: BodyComposition,
-    val skinFolds: Map<SkinFold, Double>? = null
+    val skinFolds: Map<SkinFold, Double>?
 )

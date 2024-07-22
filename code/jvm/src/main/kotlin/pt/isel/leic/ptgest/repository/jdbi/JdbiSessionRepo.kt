@@ -7,7 +7,7 @@ import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
-import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SessionSetFeedback
 import pt.isel.leic.ptgest.domain.session.model.TrainerSession
 import pt.isel.leic.ptgest.domain.session.model.TrainerSessionDetails
 import pt.isel.leic.ptgest.repository.SessionRepo
@@ -46,19 +46,18 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .one()
     }
 
-    override fun getTrainerSessions(trainerId: UUID, date: Date): List<Int> =
+    override fun getTraineeSessions(traineeId: UUID, date: Date): List<Int> =
         handle.createQuery(
             """
             select s.id
             from session s
-            join session_trainer st on s.id = st.session_id
             left join cancelled_session cs on s.id = cs.session_id
-            where trainer_id = :trainerId and DATE(s.begin_date) = DATE(:date) and cs.session_id is null
+            where s.type = :type::session_type and DATE(s.begin_date) > DATE(:date) and cs.session_id is null
             """.trimIndent()
         )
             .bindMap(
                 mapOf(
-                    "trainerId" to trainerId,
+                    "type" to SessionType.TRAINER_GUIDED.name,
                     "date" to date
                 )
             )
@@ -335,7 +334,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             .mapTo<SessionFeedback>()
             .firstOrNull()
 
-    override fun getSetSessionFeedbacks(sessionId: Int): List<SetSessionFeedback> =
+    override fun getSessionSetFeedbacks(sessionId: Int): List<SessionSetFeedback> =
         handle.createQuery(
             """
         select id, set_order_id, set_id as setId, source, feedback, date
@@ -345,15 +344,15 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
             """.trimIndent()
         )
             .bind("sessionId", sessionId)
-            .mapTo<SetSessionFeedback>()
+            .mapTo<SessionSetFeedback>()
             .list()
 
-    override fun getSetSessionFeedback(
+    override fun getSessionSetFeedback(
         feedbackId: Int,
         sessionId: Int,
         setOrderId: Int,
         setId: Int
-    ): SetSessionFeedback? =
+    ): SessionSetFeedback? =
         handle.createQuery(
             """
             select id, set_order_id, set_id, source, feedback, date
@@ -371,7 +370,7 @@ class JdbiSessionRepo(private val handle: Handle) : SessionRepo {
                     "setId" to setId
                 )
             )
-            .mapTo<SetSessionFeedback>()
+            .mapTo<SessionSetFeedback>()
             .firstOrNull()
 
     override fun createSessionFeedback(feedbackId: Int, sessionId: Int) {

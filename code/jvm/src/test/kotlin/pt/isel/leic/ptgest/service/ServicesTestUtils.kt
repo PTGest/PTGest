@@ -18,8 +18,10 @@ import pt.isel.leic.ptgest.repository.WorkoutRepo
 import pt.isel.leic.ptgest.repository.transaction.Transaction
 import pt.isel.leic.ptgest.repository.transaction.TransactionManager
 import pt.isel.leic.ptgest.services.AuthService
+import pt.isel.leic.ptgest.services.CompanyService
 import pt.isel.leic.ptgest.services.JwtService
 import pt.isel.leic.ptgest.services.MailService
+import pt.isel.leic.ptgest.services.TraineeService
 import pt.isel.leic.ptgest.services.UserService
 
 object MockRepos {
@@ -79,6 +81,17 @@ object MockServices {
             mockAuthDomain,
             mockJwtService,
             mock(MailService::class.java),
+            mockTransactionManager
+        )
+
+    fun buildMockCompanyService(): CompanyService =
+        CompanyService(
+            mock(MailService::class.java),
+            mockTransactionManager
+        )
+
+    fun buildMockTraineeService(): TraineeService =
+        TraineeService(
             mockTransactionManager
         )
 }

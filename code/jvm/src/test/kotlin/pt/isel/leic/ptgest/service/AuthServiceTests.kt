@@ -21,6 +21,7 @@ import pt.isel.leic.ptgest.services.JwtService
 import pt.isel.leic.ptgest.services.errors.AuthError
 import java.util.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 @SpringBootTest
@@ -470,13 +471,114 @@ class AuthServiceTests {
     }
 
     @Nested
-    inner class LoginTests
+    inner class LoginTests {
+        private val userDetails = UserDetails(
+            userId,
+            username,
+            email,
+            mockAuthDomain.hashPassword(password),
+            Role.TRAINEE,
+            true
+        )
+
+        @Test
+        fun `should login successfully`() {
+            val currentDate = Date()
+            `when`(mockUserRepo.getUserDetails(email))
+                .then { userDetails }
+
+            `when`(mockAuthDomain.validatePassword(password, userDetails.passwordHash))
+                .then { true }
+
+            `when`(mockUserRepo.getUserDetails(userDetails.id))
+                .then { userDetails }
+
+            `when`(mockAuthRepo.getTokenVersion(userId))
+                .then { 1 }
+
+            val authDetails = mockAuthService.login(currentDate, email, password)
+
+            assertEquals(userId, authDetails.id)
+            assertEquals(Role.TRAINEE, authDetails.role)
+        }
+
+        @Test
+        fun `should fail to login when the user does not exist`() {
+            `when`(mockUserRepo.getUserDetails(email))
+                .then { null }
+
+            assertFailsWith<AuthError.UserAuthenticationError.UserNotFound> {
+                mockAuthService.login(Date(), email, password)
+            }
+        }
+
+        @Test
+        fun `should fail to login when the password is invalid`() {
+            `when`(mockUserRepo.getUserDetails(email))
+                .then { userDetails }
+
+            `when`(mockAuthDomain.validatePassword(password, userDetails.passwordHash))
+                .then { false }
+
+            assertFailsWith<AuthError.UserAuthenticationError.InvalidPassword> {
+                mockAuthService.login(Date(), email, password)
+            }
+        }
+    }
 
     @Nested
-    inner class RefreshTokenTests
+    inner class ChangePasswordTests {
+        private val userDetails = UserDetails(
+            userId,
+            username,
+            email,
+            mockAuthDomain.hashPassword(password),
+            Role.TRAINEE,
+            true
+        )
 
-    @Nested
-    inner class ChangePasswordTests
+        @Test
+        fun `should change password successfully`() {
+            val newPassword = "newPassword"
+            val currentDate = Date()
+
+            `when`(mockUserRepo.getUserDetails(userId))
+                .then { userDetails }
+
+            `when`(mockAuthDomain.validatePassword(password, userDetails.passwordHash))
+                .then { true }
+
+            val newPasswordHash = mockAuthDomain.hashPassword(newPassword)
+
+            `when`(mockAuthDomain.hashPassword(newPassword))
+                .then { newPasswordHash }
+
+            mockAuthService.changePassword(userId, password, newPassword)
+        }
+
+        @Test
+        fun `should fail to change password when the user does not exist`() {
+            `when`(mockUserRepo.getUserDetails(userId))
+                .then { null }
+
+            assertFailsWith<AuthError.UserAuthenticationError.UserNotFound> {
+                mockAuthService.changePassword(userId, password, "newPassword")
+            }
+        }
+
+        @Test
+        fun `should fail to change password when the current password is invalid`() {
+            `when`(mockUserRepo.getUserDetails(userId))
+                .then { userDetails }
+
+            `when`(mockAuthDomain.validatePassword(password, userDetails.passwordHash))
+                .then { false }
+
+            assertFailsWith<AuthError.UserAuthenticationError.InvalidPassword> {
+                mockAuthService.changePassword(userId, password, "newPassword")
+            }
+        }
+    }
 
     private val username = "username"
     private val password = "password"

@@ -10,7 +10,7 @@ import pt.isel.leic.ptgest.domain.session.SessionType
 import pt.isel.leic.ptgest.domain.session.model.Session
 import pt.isel.leic.ptgest.domain.session.model.SessionDetails
 import pt.isel.leic.ptgest.domain.session.model.SessionFeedback
-import pt.isel.leic.ptgest.domain.session.model.SetSessionFeedback
+import pt.isel.leic.ptgest.domain.session.model.SessionSetFeedback
 import pt.isel.leic.ptgest.domain.set.model.SetDetails
 import pt.isel.leic.ptgest.domain.traineeData.model.TraineeData
 import pt.isel.leic.ptgest.domain.traineeData.model.TraineeDataDetails
@@ -199,6 +199,7 @@ class TraineeService(
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Session is already cancelled." }
             require(Validators.isCurrentDate24BeforeDate(session.beginDate)) { "Session can only be cancelled 24 hours before the session begin date." }
 
             sessionRepo.cancelSession(sessionId, Source.TRAINEE, reason)
@@ -217,6 +218,7 @@ class TraineeService(
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Feedback can't be created for a cancelled session." }
             require(requestDate.after(session.beginDate)) { "Feedback can be created only after the session begin date." }
 
             sessionRepo.createFeedback(Source.TRAINEE, feedback, requestDate).also { feedbackId ->
@@ -238,6 +240,7 @@ class TraineeService(
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Feedback can't be edited for a cancelled session." }
             require(requestDate.after(session.beginDate)) { "Feedback can be edited only after the session begin date." }
 
             sessionRepo.getSessionFeedback(feedbackId, sessionId)
@@ -261,7 +264,9 @@ class TraineeService(
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Feedback can't be created for a cancelled session." }
             require(requestDate.after(session.beginDate)) { "Feedback can be created only after the session begin date." }
+            require(sessionRepo.validateSessionSet(sessionId, setId, setOrderId)) { "Set must be part of the session." }
 
             sessionRepo.createFeedback(Source.TRAINEE, feedback, requestDate).also { feedbackId ->
                 sessionRepo.createSessionSetFeedback(feedbackId, sessionId, session.workoutId, setOrderId, setId)
@@ -284,26 +289,27 @@ class TraineeService(
             val session = sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw ResourceNotFoundError
 
+            require(!session.cancelled) { "Feedback can't be edited for a cancelled session." }
             require(requestDate.after(session.beginDate)) { "Feedback can be edited only after the session begin date." }
-            require(sessionRepo.validateSessionSet(sessionId, setId, setOrderId)) { "Set must be part of the session." }
 
-            sessionRepo.getSetSessionFeedback(feedbackId, sessionId, setOrderId, setId)
-                ?: throw ResourceNotFoundError
+            if (!sessionRepo.validateSessionSet(sessionId, setId, setOrderId)) {
+                throw ResourceNotFoundError
+            }
 
             sessionRepo.editFeedback(feedbackId, feedback, requestDate)
         }
     }
 
-    fun getSetSessionFeedbacks(
+    fun getSessionSetFeedbacks(
         traineeId: UUID,
         sessionId: Int
-    ): List<SetSessionFeedback> =
+    ): List<SessionSetFeedback> =
         transactionManager.run {
             val sessionRepo = it.sessionRepo
 
             sessionRepo.getSessionDetails(traineeId, sessionId)
                 ?: throw ResourceNotFoundError
 
-            sessionRepo.getSetSessionFeedbacks(sessionId)
+            sessionRepo.getSessionSetFeedbacks(sessionId)
         }
 }
