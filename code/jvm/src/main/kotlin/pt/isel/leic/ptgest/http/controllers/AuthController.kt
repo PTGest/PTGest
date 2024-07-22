@@ -173,8 +173,10 @@ class AuthController(private val service: AuthService) {
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<*> {
-        val refreshTokenCookie = request.cookies.firstOrNull { it.name == "refresh_token" }?.value
-        val refreshTokenHeader = request.getHeader("Refresh-Token")?.removePrefix("Bearer ")
+        val authHeaders = request.getHeaders("Authorization").toList()
+
+        val refreshTokenCookie = request.cookies?.firstOrNull { it.name == "refresh_token" }?.value
+        val refreshTokenHeader = authHeaders.firstOrNull { it.startsWith("Bearer refresh_token=") }?.removePrefix("Bearer refresh=")
 
         val currentDate = Date()
 
