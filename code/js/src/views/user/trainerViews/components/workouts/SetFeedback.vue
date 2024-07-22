@@ -57,6 +57,7 @@ Textarea, .edit-feedback{
     font-family: 'Poppins', sans-serif;
     background-color: var(--main-primary-color);
     border-radius: 5px;
+    margin-bottom: 0.5em;
 }
 .icon{
     color: whitesmoke;

@@ -18,6 +18,7 @@ import RBAC from "@/services/utils/RBAC/RBAC.ts"
 import { ref } from "vue"
 import { editTrainerSessionsFeedback } from "@/services/trainerServices/sessions/sessionServices.ts"
 import store from "@/store"
+import router from "@/plugins/router.ts";
 const isEdit = ref(false)
 const props = defineProps<{
     feedback: SessionFeedback
@@ -31,6 +32,7 @@ const openEdit = () => {
 const editFeedback = async () => {
     await editTrainerSessionsFeedback(feedback.value, store.getters.sessionDetails.id, props.feedback.id)
     isEdit.value = !isEdit.value
+    router.go(0)
 }
 </script>
 

@@ -31,7 +31,6 @@ import { Ref, ref } from "vue"
 import {getCompanyTrainersOrTrainees} from "@/services/companyServices/companyServices.ts";
 import CompanyTrainers from "@/views/user/companiesViews/models/CompanyTrainers.ts";
 import TrainerBox from "@/views/user/companiesViews/components/TrainerBox.vue";
-import Filters from "@/views/user/trainerViews/components/utils/Filters.vue";
 
 
 const companyTrainersRef: Ref<CompanyTrainers> = ref({
