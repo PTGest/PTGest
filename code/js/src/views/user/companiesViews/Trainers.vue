@@ -6,8 +6,6 @@
                 <router-link :to="{ name: 'registerTrainer', params: { isTrainee: false } }" class="add-trainer">
                     <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
                 </router-link>
-                <font-awesome-icon v-if="companyTrainersRef.trainers.length != 0" @click="handleFilters(true)" :icon="faFilter" class="filter-icon"></font-awesome-icon>
-                <Filters @visible="handleFilters($event)" v-if="areFiltersVisible"></Filters>
                 <div v-for="trainer in companyTrainersRef.trainers" class="trainer">
                     <TrainerBox :trainer="trainer"></TrainerBox>
                 </div>
@@ -27,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { faChevronLeft, faChevronRight, faFilter, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { Ref, ref } from "vue"
 import {getCompanyTrainersOrTrainees} from "@/services/companyServices/companyServices.ts";
