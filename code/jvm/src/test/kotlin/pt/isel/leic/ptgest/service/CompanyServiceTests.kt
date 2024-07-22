@@ -24,7 +24,6 @@ import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
-@SpringBootTest
 class CompanyServiceTests {
 
     private val mockUserRepo = MockRepos.mockUserRepo
