@@ -11,11 +11,14 @@ import org.mockito.Mockito.spy
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.Sha256TokenEncoder
 import pt.isel.leic.ptgest.domain.auth.model.AuthTokenDetails
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.user.Role
 import pt.isel.leic.ptgest.domain.user.model.UserDetails
+import pt.isel.leic.ptgest.service.AuthServiceTests.Companion
 import pt.isel.leic.ptgest.service.MockRepos.mockAuthRepo
 import pt.isel.leic.ptgest.service.MockServices.buildMockJwtService
 import pt.isel.leic.ptgest.services.JwtService
@@ -28,7 +31,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@SpringBootTest
 class JwtServiceTests {
 
     private val mockUserRepo = MockRepos.mockUserRepo
@@ -299,10 +301,14 @@ class JwtServiceTests {
 
         @JvmStatic
         @BeforeAll
-        fun setUp(@Autowired authDomain: AuthDomain, @Autowired secret: JWTSecret) {
-            mockAuthDomain = spy(authDomain)
-            mockJwtService = buildMockJwtService(secret)
-            testSecret = secret
+        fun setUp() {
+
+            val passwordEncoder = BCryptPasswordEncoder()
+            val tokenEncoder = Sha256TokenEncoder()
+
+            mockAuthDomain = spy(AuthDomain(passwordEncoder, tokenEncoder))
+            testSecret = JWTSecret("testSecret")
+            mockJwtService = buildMockJwtService(testSecret)
         }
     }
 }

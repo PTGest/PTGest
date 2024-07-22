@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Nested
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.leic.ptgest.domain.auth.AuthDomain
+import pt.isel.leic.ptgest.domain.auth.Sha256TokenEncoder
 import pt.isel.leic.ptgest.domain.auth.model.JWTSecret
 import pt.isel.leic.ptgest.domain.auth.model.TokenDetails
 import pt.isel.leic.ptgest.domain.user.Gender
@@ -24,7 +24,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@SpringBootTest
 class AuthServiceTests {
 
     private val mockAuthRepo = MockRepos.mockAuthRepo
@@ -599,11 +598,12 @@ class AuthServiceTests {
 
         @JvmStatic
         @BeforeAll
-        fun setUp(
-            @Autowired authDomain: AuthDomain,
-            @Autowired jwtSecret: JWTSecret
-        ) {
-            mockAuthDomain = spy(authDomain)
+        fun setUp() {
+            val passwordEncoder = BCryptPasswordEncoder()
+            val tokenEncoder = Sha256TokenEncoder()
+            val jwtSecret = JWTSecret("testSecret")
+
+            mockAuthDomain = spy(AuthDomain(passwordEncoder, tokenEncoder))
             mockJwtService = buildMockJwtService(jwtSecret)
             mockAuthService = buildMockAuthService(mockAuthDomain, mockJwtService)
         }
