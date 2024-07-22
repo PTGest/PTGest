@@ -4,7 +4,6 @@
         <router-link v-if="canEdit" :to="{ name: 'registerTrainee', params: { isTrainee: true } }" class="add-trainee">
             <font-awesome-icon :icon="faPlus" class="plus-icon"></font-awesome-icon>
         </router-link>
-        <font-awesome-icon v-if="traineesRef.trainees.length != 0" @click="handleFilters(true)" :icon="faFilter" class="filter-icon"></font-awesome-icon>
         <div v-for="trainee in traineesRef.trainees" class="trainee">
             <TraineesBox :trainee="trainee"></TraineesBox>
         </div>
@@ -19,7 +18,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { faChevronLeft, faChevronRight, faFilter, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faPlus } from "@fortawesome/free-solid-svg-icons"
 import store from "../../../store"
 import router from "../../../plugins/router.ts"
 import {getCompanyTrainersOrTrainees} from "@/services/companyServices/companyServices.ts"

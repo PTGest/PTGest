@@ -47,8 +47,8 @@ async function authenticatedSignup(userRegisterData: TraineeRegisterData | Hired
 }
 
 async function changeUserPassword(currentPassword: string, newPassword: string) {
-    const uri = `${apiBaseUri}/api/auth/change-password`
-    return await fetchData(uri, "GET", new ChangePasswordRequest(currentPassword, newPassword))
+    const uri = `${apiBaseUri}/api/change-password`
+    return await fetchData(uri, "PUT", new ChangePasswordRequest(currentPassword, newPassword))
 }
 
 async function forgetPasswordServices(email: string): Promise<void> {
