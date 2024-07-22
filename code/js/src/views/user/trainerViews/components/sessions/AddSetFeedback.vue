@@ -25,8 +25,10 @@ const props = defineProps<{
 const addSetFeedback = async () => {
     if(RBAC.isTrainer()||RBAC.isHiredTrainer()){
         await addTrainerSessionsSetFeedback(feedback.value, store.getters.sessionDetails.id, props.setId, props.setOrderId)
+        router.go(0)
     }else{
         await addTraineeSessionsSetFeedback(feedback.value, store.getters.sessionDetails.id, props.setId, props.setOrderId)
+        router.go(0)
     }
 }
 </script>
