@@ -30,4 +30,4 @@ The trainers can create progress reports for their clients. These reports are co
 
 ## Supervisors
 
-- [Felipe Freitas](https://github.com/fbfreitas)
+- [Filipe Freitas](https://github.com/fbfreitas)
